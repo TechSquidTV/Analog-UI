@@ -202,6 +202,13 @@ export default function App() {
         </div>
 
         <div className="mb-12 md:mb-20 max-w-xl text-left">
+          <div className="mb-6 inline-flex h-24 w-24 items-center justify-center rounded-[30px] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02))] p-3 shadow-[0_24px_60px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.08)]">
+            <img
+              src="/img/logo/SVG/logo.svg"
+              alt="Analog UI logo"
+              className="h-full w-full rounded-[22px] object-cover shadow-[0_16px_36px_rgba(0,0,0,0.4)]"
+            />
+          </div>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-2">Analog UI</h1>
           <p className="text-xl text-[var(--color-accent)] font-medium mb-6 italic">
             UI you can feel.
