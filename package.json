@@ -8,6 +8,7 @@
     "dev": "turbo run dev --parallel",
     "lint": "turbo run lint",
     "lint:eslint": "turbo run lint:eslint",
+    "registry:build": "pnpm --filter analog-ui registry:build",
     "knip": "pnpm exec knip",
     "format": "pnpm exec prettier --write .",
     "format:check": "pnpm exec prettier --check .",

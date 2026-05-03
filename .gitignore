@@ -9,3 +9,4 @@ coverage/
 .pnpm-store/
 .astro/
 .turbo/
+apps/www/src/public/r/

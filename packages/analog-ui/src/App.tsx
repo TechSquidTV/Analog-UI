@@ -11,7 +11,13 @@ import { Dial } from './registry/components/analog/Dial';
 import { AnalogToggle } from './registry/components/analog/Toggle';
 import { AnalogSwitch } from './registry/components/analog/Switch';
 import { AnalogSlider } from './registry/components/analog/Slider';
-import { AnalogMeter } from './registry/components/analog/Meter';
+import {
+  AnalogMeter,
+  AnalogMeterGroup,
+  AnalogMeterGroupChannel,
+  AnalogMeterGroupSeparator,
+  type AnalogMeterGroupVariant,
+} from './registry/components/analog/Meter';
 import { AnalogWheelSelect } from './registry/components/analog/WheelSelect';
 import { AnalogWheelNumber } from './registry/components/analog/WheelNumber';
 import {
@@ -123,6 +129,7 @@ export default function App() {
   const [meterVariant, setMeterVariant] = useState<
     'metered' | 'lcd-green' | 'lcd-amber' | 'lcd-blue'
   >('metered');
+  const [meterGroupVariant, setMeterGroupVariant] = useState<AnalogMeterGroupVariant>('chrome');
   const [isSegmented, setIsSegmented] = useState(true);
   const [gaugeValue, setGaugeValue] = useState(42);
   const [gaugeVariant, setGaugeVariant] = useState<'lcd-green' | 'lcd-amber' | 'lcd-blue'>(
@@ -503,7 +510,7 @@ export default function App() {
               ),
             },
             {
-              label: 'Variant',
+              label: 'Meter',
               value: (
                 <select
                   className="bg-[#111] text-[#888] border border-[#333] rounded px-2 py-1 text-xs outline-none"
@@ -518,15 +525,28 @@ export default function App() {
               ),
             },
             {
+              label: 'Display',
+              value: (
+                <select
+                  className="bg-[#111] text-[#888] border border-[#333] rounded px-2 py-1 text-xs outline-none"
+                  value={meterGroupVariant}
+                  onChange={(e) => setMeterGroupVariant(e.target.value as AnalogMeterGroupVariant)}
+                >
+                  <option value="chrome">Chrome</option>
+                  <option value="panel">Panel</option>
+                  <option value="black">Black</option>
+                </select>
+              ),
+            },
+            {
               label: 'Segments',
               value: <AnalogSwitch checked={isSegmented} onCheckedChange={setIsSegmented} />,
             },
           ]}
         >
-          <div className="flex gap-8 items-end justify-center py-12">
-            {/* L Channel */}
-            <div className="flex flex-col items-center gap-4">
-              <div className="rounded-md bg-[#181818] p-4 shadow-[inset_0_2px_10px_rgba(0,0,0,0.8),0_1px_1px_rgba(255,255,255,0.05)]">
+          <div className="flex items-center justify-center py-12">
+            <AnalogMeterGroup variant={meterGroupVariant} aria-label="Stereo output meter">
+              <AnalogMeterGroupChannel label="L">
                 <AnalogMeter
                   orientation="vertical"
                   value={isMeterAnimated ? meter.l : staticMeterL}
@@ -534,13 +554,9 @@ export default function App() {
                   variant={meterVariant}
                   segments={isSegmented ? 40 : undefined}
                 />
-              </div>
-              <span className="font-mono text-xs text-[#555] font-bold">L</span>
-            </div>
-
-            {/* R Channel */}
-            <div className="flex flex-col items-center gap-4">
-              <div className="rounded-md bg-[#181818] p-4 shadow-[inset_0_2px_10px_rgba(0,0,0,0.8),0_1px_1px_rgba(255,255,255,0.05)]">
+              </AnalogMeterGroupChannel>
+              <AnalogMeterGroupSeparator />
+              <AnalogMeterGroupChannel label="R">
                 <AnalogMeter
                   orientation="vertical"
                   value={isMeterAnimated ? meter.r : staticMeterR}
@@ -548,9 +564,8 @@ export default function App() {
                   variant={meterVariant}
                   segments={isSegmented ? 40 : undefined}
                 />
-              </div>
-              <span className="font-mono text-xs text-[#555] font-bold">R</span>
-            </div>
+              </AnalogMeterGroupChannel>
+            </AnalogMeterGroup>
           </div>
         </ComponentShowcase>
 
@@ -759,7 +774,7 @@ export default function App() {
             },
           ]}
         >
-          <div className="w-full max-w-sm px-4">
+          <div className="w-full max-w-3xl px-4">
             <Panel
               variant={panelVariant}
               screws={panelScrews}
@@ -768,34 +783,70 @@ export default function App() {
             >
               <PanelHeader>
                 <PanelTitle>Master Bus</PanelTitle>
-                <PanelDescription>Dynamics and EQ</PanelDescription>
+                <PanelDescription>Dynamics, makeup gain, and stereo output</PanelDescription>
               </PanelHeader>
-              <PanelContent className="flex flex-col gap-10">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-[#a0a0a0]">Compression</span>
-                  <AnalogToggle
-                    value={compressionToggle}
-                    onValueChange={setCompressionToggle}
-                    className="w-[104px]"
-                  />
-                </div>
-                <div className="flex flex-col gap-10 pt-4">
+              <PanelContent className="grid gap-12 md:grid-cols-[minmax(0,1fr)_176px] md:items-stretch">
+                <div className="flex flex-col justify-center gap-10 py-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-[#a0a0a0]">Makeup Gain</span>
-                    <span className="text-xs font-mono text-[#555]">{makeupGain[0]} dB</span>
-                  </div>
-                  <div className="px-2 pb-2 mt-4">
-                    <AnalogSlider
-                      value={makeupGain}
-                      onValueChange={(value) =>
-                        setMakeupGain(Array.isArray(value) ? [...value] : [value])
-                      }
-                      max={12}
-                      min={-12}
-                      orientation="horizontal"
-                      className="w-full min-w-0"
+                    <span className="text-sm text-[#a0a0a0]">Compression</span>
+                    <AnalogToggle
+                      value={compressionToggle}
+                      onValueChange={setCompressionToggle}
+                      className="w-[104px]"
                     />
                   </div>
+                  <div className="flex flex-col gap-10 pt-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-[#a0a0a0]">Makeup Gain</span>
+                      <span className="text-xs font-mono text-[#555]">{makeupGain[0]} dB</span>
+                    </div>
+                    <div className="px-2 pb-2 mt-4">
+                      <AnalogSlider
+                        value={makeupGain}
+                        onValueChange={(value) =>
+                          setMakeupGain(Array.isArray(value) ? [...value] : [value])
+                        }
+                        max={12}
+                        min={-12}
+                        orientation="horizontal"
+                        className="w-full min-w-0"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="relative flex min-h-[320px] items-center justify-center md:min-h-0 md:self-stretch md:pl-8">
+                  <div
+                    className="pointer-events-none absolute inset-y-0 left-0 hidden w-px md:block"
+                    style={{
+                      background:
+                        'linear-gradient(to bottom, rgba(255,255,255,0), color-mix(in oklch, var(--analog-surface-raised) 42%, transparent) 18%, rgba(0,0,0,0.55) 50%, color-mix(in oklch, var(--analog-surface-raised) 24%, transparent) 82%, rgba(255,255,255,0))',
+                    }}
+                  />
+                  <AnalogMeterGroup
+                    variant="panel"
+                    className="my-auto"
+                    aria-label="Master bus stereo output"
+                  >
+                    <AnalogMeterGroupChannel label="L">
+                      <AnalogMeter
+                        orientation="vertical"
+                        value={isMeterAnimated ? meter.l : staticMeterL}
+                        peakValue={meter.lPeak}
+                        variant={meterVariant}
+                        segments={isSegmented ? 40 : undefined}
+                      />
+                    </AnalogMeterGroupChannel>
+                    <AnalogMeterGroupSeparator />
+                    <AnalogMeterGroupChannel label="R">
+                      <AnalogMeter
+                        orientation="vertical"
+                        value={isMeterAnimated ? meter.r : staticMeterR}
+                        peakValue={meter.rPeak}
+                        variant={meterVariant}
+                        segments={isSegmented ? 40 : undefined}
+                      />
+                    </AnalogMeterGroupChannel>
+                  </AnalogMeterGroup>
                 </div>
               </PanelContent>
               <PanelFooter>

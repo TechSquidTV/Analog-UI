@@ -6,3 +6,4 @@ coverage
 dist
 node_modules
 pnpm-lock.yaml
+apps/www/src/public/r

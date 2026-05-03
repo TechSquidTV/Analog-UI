@@ -31,6 +31,7 @@
     "dev": "pnpm run build && tsup --watch --config tsup.config.ts --onSuccess \"node ./scripts/copy-assets.mjs\"",
     "lint": "pnpm run lint:eslint && pnpm run typecheck",
     "lint:eslint": "pnpm exec eslint .",
+    "registry:build": "shadcn build ./registry.json --output ../../apps/www/src/public/r",
     "knip": "pnpm -w exec knip --workspace analog-ui",
     "format": "pnpm exec prettier --write .",
     "format:check": "pnpm exec prettier --check .",
@@ -50,6 +51,7 @@
     "tailwind-merge": "^3.5.0"
   },
   "devDependencies": {
+    "shadcn": "^4.6.0",
     "tsup": "^8.3.5"
   }
 }

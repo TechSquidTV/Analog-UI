@@ -5,7 +5,9 @@
   "items": [
     {
       "name": "analog-foundation",
+      "title": "Analog Foundation",
       "type": "registry:style",
+      "description": "The shared token layer, lighting variables, and surface palettes required by Analog UI controls.",
       "docs": "Install this foundation item with Analog UI controls to add the shared analog token layer. The tactile control recipes still live in the package stylesheet while they are being migrated into per-item registry CSS.",
       "cssVars": {
         "theme": {
@@ -53,7 +55,9 @@
     },
     {
       "name": "utils",
+      "title": "Utility Helpers",
       "type": "registry:lib",
+      "description": "Shared `cn` helpers for composing class names across Analog UI registry items.",
       "dependencies": ["clsx", "tailwind-merge"],
       "files": [
         {
@@ -64,7 +68,9 @@
     },
     {
       "name": "refs",
+      "title": "Ref Utilities",
       "type": "registry:lib",
+      "description": "Composable React ref helpers used by focusable Analog UI primitives.",
       "files": [
         {
           "path": "src/lib/refs.ts",
@@ -74,7 +80,9 @@
     },
     {
       "name": "angle-utils",
+      "title": "Lighting Angle Utilities",
       "type": "registry:lib",
+      "description": "Math helpers for blending, constraining, and advancing continuous analog light angles.",
       "files": [
         {
           "path": "src/registry/hooks/angle-utils.ts",
@@ -84,7 +92,9 @@
     },
     {
       "name": "use-analog-lighting",
+      "title": "Analog Lighting Hook",
       "type": "registry:hook",
+      "description": "Provides the shared analog lighting context and resolved material channel styles for tactile controls.",
       "registryDependencies": ["angle-utils"],
       "files": [
         {
@@ -95,7 +105,9 @@
     },
     {
       "name": "use-wheel-scroll",
+      "title": "Wheel Scroll Hook",
       "type": "registry:hook",
+      "description": "Normalizes wheel interactions for rotary and stepped Analog UI controls.",
       "files": [
         {
           "path": "src/registry/hooks/use-wheel-scroll.ts",
@@ -105,7 +117,9 @@
     },
     {
       "name": "use-mouse-lumination",
+      "title": "Mouse Lumination Hook",
       "type": "registry:hook",
+      "description": "Tracks pointer-driven lighting changes so components can react with dynamic lumination effects.",
       "dependencies": ["motion"],
       "registryDependencies": ["angle-utils"],
       "files": [
@@ -117,7 +131,9 @@
     },
     {
       "name": "wheel-interaction",
+      "title": "Wheel Interaction Helpers",
       "type": "registry:lib",
+      "description": "Shared interaction utilities for the trim-wheel style inputs and selectors.",
       "files": [
         {
           "path": "src/registry/components/analog/wheel-interaction.ts",
@@ -127,7 +143,9 @@
     },
     {
       "name": "rocker-thumb-surface",
+      "title": "Rocker Thumb Surface",
       "type": "registry:component",
+      "description": "A reusable tactile thumb shell for sliders and switches with machined analog lighting treatment.",
       "registryDependencies": ["analog-foundation", "utils"],
       "files": [
         {
@@ -138,7 +156,9 @@
     },
     {
       "name": "anisotropic-button",
+      "title": "Anisotropic Button",
       "type": "registry:ui",
+      "description": "A metallic button surface with anisotropic foil reflections and pointer-responsive glare.",
       "dependencies": ["@base-ui/react"],
       "registryDependencies": ["analog-foundation", "refs", "use-analog-lighting", "utils"],
       "files": [
@@ -150,7 +170,9 @@
     },
     {
       "name": "dial",
+      "title": "Anisotropic Dial",
       "type": "registry:ui",
+      "description": "A classic potentiometer dial with radial anisotropic shading and dynamic foil reflections.",
       "registryDependencies": [
         "analog-foundation",
         "anisotropic-button",
@@ -167,9 +189,16 @@
     },
     {
       "name": "gauge",
+      "title": "LCD Radial Gauge",
       "type": "registry:ui",
+      "description": "A circular gauge that pairs a metallic dial face with an illuminated LCD arc display.",
       "dependencies": ["@base-ui/react"],
-      "registryDependencies": ["analog-foundation", "anisotropic-button", "use-analog-lighting", "utils"],
+      "registryDependencies": [
+        "analog-foundation",
+        "anisotropic-button",
+        "use-analog-lighting",
+        "utils"
+      ],
       "files": [
         {
           "path": "src/registry/components/analog/Gauge.tsx",
@@ -179,7 +208,9 @@
     },
     {
       "name": "meter",
+      "title": "Audio Channel Monitor",
       "type": "registry:ui",
+      "description": "A high-fidelity VU meter module with analog needle ballistics and configurable LED accents.",
       "dependencies": ["@base-ui/react"],
       "registryDependencies": ["analog-foundation", "use-analog-lighting", "utils"],
       "files": [
@@ -191,7 +222,9 @@
     },
     {
       "name": "slider",
+      "title": "Professional Audio Fader",
       "type": "registry:ui",
+      "description": "A tactile linear fader with a recessed track, machined thumb, and shared analog lighting response.",
       "dependencies": ["@base-ui/react"],
       "registryDependencies": [
         "analog-foundation",
@@ -208,7 +241,9 @@
     },
     {
       "name": "switch",
+      "title": "Machined Cylinder Switch",
       "type": "registry:ui",
+      "description": "A track switch with a 3D extruded metallic cylinder that rolls through a recessed cavity.",
       "dependencies": ["@base-ui/react"],
       "registryDependencies": ["analog-foundation", "refs", "use-analog-lighting", "utils"],
       "files": [
@@ -220,7 +255,9 @@
     },
     {
       "name": "indicator",
+      "title": "Faceted Jewel Lamp",
       "type": "registry:ui",
+      "description": "A hyper-skeuomorphic status indicator with faceted glass textures, bloom, and a machined bezel.",
       "registryDependencies": ["analog-foundation", "use-analog-lighting", "utils"],
       "files": [
         {
@@ -231,7 +268,9 @@
     },
     {
       "name": "toggle",
+      "title": "Industrial Power Rocker",
       "type": "registry:ui",
+      "description": "A heavy-duty rocker switch with textured grip ridges, an anodized baseplate, and optional LED states.",
       "dependencies": ["@base-ui/react"],
       "registryDependencies": [
         "analog-foundation",
@@ -250,7 +289,9 @@
     },
     {
       "name": "wheel-number",
+      "title": "Tactile Trim Wheel (Numeric)",
       "type": "registry:ui",
+      "description": "A continuous numeric trim wheel for precise scrubbing and fine-grained analog adjustments.",
       "dependencies": ["@base-ui/react", "motion", "lucide-react"],
       "registryDependencies": [
         "analog-foundation",
@@ -268,7 +309,9 @@
     },
     {
       "name": "wheel-select",
+      "title": "Tactile Trim Wheel",
       "type": "registry:ui",
+      "description": "A stepped selection wheel inspired by aircraft trim controls for tactile option navigation.",
       "dependencies": ["motion"],
       "registryDependencies": [
         "analog-foundation",
@@ -286,8 +329,15 @@
     },
     {
       "name": "panel",
+      "title": "Equipment Panel",
       "type": "registry:ui",
-      "registryDependencies": ["analog-foundation", "anisotropic-button", "use-analog-lighting", "utils"],
+      "description": "An industrial rack-style panel container with optional screws and structured layout slots.",
+      "registryDependencies": [
+        "analog-foundation",
+        "anisotropic-button",
+        "use-analog-lighting",
+        "utils"
+      ],
       "files": [
         {
           "path": "src/registry/components/analog/Panel.tsx",

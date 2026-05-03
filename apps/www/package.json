@@ -4,9 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "astro dev --host 0.0.0.0 --port 3000",
-    "build": "astro build",
-    "preview": "astro preview --host 0.0.0.0 --port 3000",
+    "dev": "pnpm --filter analog-ui registry:build && astro dev --host 0.0.0.0 --port 3000",
+    "build": "pnpm --filter analog-ui registry:build && astro build",
+    "preview": "pnpm --filter analog-ui registry:build && astro preview --host 0.0.0.0 --port 3000",
     "lint": "pnpm run lint:eslint && pnpm run typecheck",
     "lint:eslint": "pnpm exec eslint .",
     "knip": "pnpm -w exec knip --workspace analog-ui-www",
