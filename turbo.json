@@ -21,6 +21,14 @@
       "cache": false,
       "outputs": []
     },
+    "format": {
+      "cache": false,
+      "outputs": []
+    },
+    "format:check": {
+      "cache": false,
+      "outputs": []
+    },
     "typecheck": {
       "cache": false,
       "outputs": []

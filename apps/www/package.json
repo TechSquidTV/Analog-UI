@@ -10,6 +10,8 @@
     "lint": "pnpm run lint:eslint && pnpm run typecheck",
     "lint:eslint": "pnpm exec eslint .",
     "knip": "pnpm -w exec knip --workspace analog-ui-www",
+    "format": "pnpm exec prettier --write .",
+    "format:check": "pnpm exec prettier --check .",
     "typecheck": "astro check",
     "clean": "rm -rf dist .astro"
   },

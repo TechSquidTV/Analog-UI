@@ -1,10 +1,7 @@
 import * as React from 'react';
 import { Meter } from '@base-ui/react/meter';
 import { cn } from '../../../lib/utils';
-import {
-  useAnalogLighting,
-  type AnalogLightingConfig,
-} from '../../hooks/use-analog-lighting';
+import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 
 export type AnalogMeterVariant = 'metered' | 'lcd-green' | 'lcd-amber' | 'lcd-blue';
 
@@ -17,16 +14,29 @@ export interface AnalogMeterProps extends React.ComponentPropsWithoutRef<typeof 
 }
 
 export const AnalogMeter = React.forwardRef<HTMLDivElement, AnalogMeterProps>(
-  ({ className, orientation = 'vertical', peakValue: _peakValue = null, value, max = 100, variant = 'metered', segments, lighting, ...props }, ref) => {
+  (
+    {
+      className,
+      orientation = 'vertical',
+      peakValue: _peakValue = null,
+      value,
+      max = 100,
+      variant = 'metered',
+      segments,
+      lighting,
+      ...props
+    },
+    ref,
+  ) => {
     const isVertical = orientation === 'vertical';
 
     const percentage = value != null ? Math.min(100, Math.max(0, (value / max) * 100)) : 0;
-    
+
     // Vertical clip path: inset(top right bottom left)
-    const insetVal = isVertical 
-      ? `inset(${100 - percentage}% 0 0 0)` 
+    const insetVal = isVertical
+      ? `inset(${100 - percentage}% 0 0 0)`
       : `inset(0 0 0 ${100 - percentage}%)`; // wait actually right should be 100-perc for horizontal? Wait, for horizontal left-to-right, it's inset(top right bottom left). So if percentage=20, right=80%. So inset(0 80% 0 0).
-      
+
     const insetValHoriz = `inset(0 ${100 - percentage}% 0 0)`;
 
     const getVariantColors = (v: AnalogMeterVariant, isVert: boolean) => {
@@ -41,9 +51,9 @@ export const AnalogMeter = React.forwardRef<HTMLDivElement, AnalogMeterProps>(
         case 'metered':
         default:
           return {
-             bg: `linear-gradient(${dir}, #65ba59 60%, #e6a227 80%, #d44040 95%)`,
-             glow: `linear-gradient(${dir}, #5ba850 60%, #d49524 80%, #c43b3b 95%)`,
-             isLcd: false
+            bg: `linear-gradient(${dir}, #65ba59 60%, #e6a227 80%, #d44040 95%)`,
+            glow: `linear-gradient(${dir}, #5ba850 60%, #d49524 80%, #c43b3b 95%)`,
+            isLcd: false,
           };
       }
     };
@@ -61,23 +71,26 @@ export const AnalogMeter = React.forwardRef<HTMLDivElement, AnalogMeterProps>(
         value={value ?? 0}
         max={max}
         className={cn(
-          "relative flex items-center justify-center",
-          isVertical ? "flex-col w-8 h-64" : "w-64 h-8",
-          className
+          'relative flex items-center justify-center',
+          isVertical ? 'flex-col w-8 h-64' : 'w-64 h-8',
+          className,
         )}
         {...props}
       >
         {/* Track / Cavity */}
         <Meter.Track
           className={cn(
-            "relative analog-surface-recess-sm",
-            isVertical ? "w-3 h-full" : "w-full h-3"
+            'relative analog-surface-recess-sm',
+            isVertical ? 'w-3 h-full' : 'w-full h-3',
           )}
           style={trackLightingStyle}
         >
           {/* GLOW LAYER */}
-          <div className="absolute inset-0 pointer-events-none mix-blend-screen opacity-[0.40] z-0" style={{ filter: 'blur(6px)' }}>
-            <div 
+          <div
+            className="absolute inset-0 pointer-events-none mix-blend-screen opacity-[0.40] z-0"
+            style={{ filter: 'blur(6px)' }}
+          >
+            <div
               className="absolute inset-0"
               style={{
                 clipPath: isVertical ? insetVal : insetValHoriz,
@@ -95,28 +108,28 @@ export const AnalogMeter = React.forwardRef<HTMLDivElement, AnalogMeterProps>(
               transition: 'clip-path 50ms ease-out', // Real-time audio response
             }}
           >
-             {/* Lit LEDs */}
-             <div 
-               className="absolute inset-0"
-               style={{
-                 background: colors.bg,
-                 boxShadow: colors.isLcd ? 'none' : '0 0 4px rgba(255,255,255,0.15) inset',
-               }}
-             />
+            {/* Lit LEDs */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background: colors.bg,
+                boxShadow: colors.isLcd ? 'none' : '0 0 4px rgba(255,255,255,0.15) inset',
+              }}
+            />
 
-             {/* Analog Noise Overlay (only on lit parts) */}
-             <div 
-               className="absolute inset-0 pointer-events-none mix-blend-multiply z-20"
-               style={{
-                 backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-                 opacity: `calc(0.3 + (0.3 * var(--analog-light-power, 1)))`
-               }}
-             />
+            {/* Analog Noise Overlay (only on lit parts) */}
+            <div
+              className="absolute inset-0 pointer-events-none mix-blend-multiply z-20"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+                opacity: `calc(0.3 + (0.3 * var(--analog-light-power, 1)))`,
+              }}
+            />
           </Meter.Indicator>
 
           {/* Segments Grille Overlay */}
           {segments && (
-            <div 
+            <div
               className="absolute inset-0 pointer-events-none z-20 opacity-90"
               style={{
                 background: isVertical
@@ -126,18 +139,18 @@ export const AnalogMeter = React.forwardRef<HTMLDivElement, AnalogMeterProps>(
             />
           )}
 
-           {/* Inner glass reflection */}
-          <div 
+          {/* Inner glass reflection */}
+          <div
             className="absolute inset-0 pointer-events-none z-30"
             style={{
-               background: `linear-gradient(var(--analog-light-angle-lens, 180deg), rgba(255,255,255,calc(0.15 * var(--analog-light-power, 1))) 0%, transparent 50%, rgba(0,0,0,calc(0.5 * var(--analog-light-power, 1))) 100%)`,
-               mixBlendMode: colors.isLcd ? 'soft-light' : 'overlay',
-               opacity: colors.isLcd ? 0.3 : 1
+              background: `linear-gradient(var(--analog-light-angle-lens, 180deg), rgba(255,255,255,calc(0.15 * var(--analog-light-power, 1))) 0%, transparent 50%, rgba(0,0,0,calc(0.5 * var(--analog-light-power, 1))) 100%)`,
+              mixBlendMode: colors.isLcd ? 'soft-light' : 'overlay',
+              opacity: colors.isLcd ? 0.3 : 1,
             }}
           />
         </Meter.Track>
       </Meter.Root>
     );
-  }
+  },
 );
 AnalogMeter.displayName = 'AnalogMeter';

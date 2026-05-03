@@ -1,0 +1,8 @@
+.codex
+.astro
+.pnpm-store
+.turbo
+coverage
+dist
+node_modules
+pnpm-lock.yaml

@@ -9,6 +9,8 @@
     "lint": "turbo run lint",
     "lint:eslint": "turbo run lint:eslint",
     "knip": "pnpm exec knip",
+    "format": "pnpm exec prettier --write .",
+    "format:check": "pnpm exec prettier --check .",
     "typecheck": "turbo run typecheck",
     "clean": "turbo run clean"
   },
@@ -23,6 +25,8 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "globals": "^17.6.0",
     "knip": "^6.11.0",
+    "prettier": "^3.8.3",
+    "prettier-plugin-astro": "^0.14.1",
     "turbo": "^2.6.0",
     "typescript": "~5.8.2",
     "typescript-eslint": "^8.59.1"

@@ -3,31 +3,31 @@ version: alpha
 name: Analog UI
 description: Studio Hyper-Skeuomorphism for tactile control surfaces, machined hardware, and restrained console lighting.
 colors:
-  background: "#080808"
-  panel: "#121212"
-  surface: "#1A1A1A"
-  surface-raised: "#2A2A2A"
-  chrome-hi: "#E5E5E5"
-  chrome-mid: "#B5B5B5"
-  chrome-low: "#8A8A8A"
-  black-hi: "#3A3A3A"
-  black-mid: "#242424"
-  black-low: "#151515"
-  accent: "#5B5B5B"
-  annotation: "#A0A0A0"
-  legend: "#888888"
-  telemetry-label: "#555555"
-  telemetry-value: "#5B5B5B"
-  led-red: "#D44040"
-  led-red-core: "#FC8888"
-  led-amber: "#D19324"
-  led-amber-core: "#FCEFC7"
-  led-green: "#5CA34D"
-  led-green-core: "#BDF2C3"
-  led-blue: "#3B86E0"
-  led-blue-core: "#C5E2FF"
-  led-white: "#F4F4F4"
-  led-white-core: "#FFFFFF"
+  background: '#080808'
+  panel: '#121212'
+  surface: '#1A1A1A'
+  surface-raised: '#2A2A2A'
+  chrome-hi: '#E5E5E5'
+  chrome-mid: '#B5B5B5'
+  chrome-low: '#8A8A8A'
+  black-hi: '#3A3A3A'
+  black-mid: '#242424'
+  black-low: '#151515'
+  accent: '#5B5B5B'
+  annotation: '#A0A0A0'
+  legend: '#888888'
+  telemetry-label: '#555555'
+  telemetry-value: '#5B5B5B'
+  led-red: '#D44040'
+  led-red-core: '#FC8888'
+  led-amber: '#D19324'
+  led-amber-core: '#FCEFC7'
+  led-green: '#5CA34D'
+  led-green-core: '#BDF2C3'
+  led-blue: '#3B86E0'
+  led-blue-core: '#C5E2FF'
+  led-white: '#F4F4F4'
+  led-white-core: '#FFFFFF'
 typography:
   headline-display:
     fontFamily: Helvetica Neue
@@ -104,50 +104,50 @@ spacing:
   panel-padding: 48px
 components:
   panel-rack:
-    backgroundColor: "{colors.panel}"
-    rounded: "{rounded.lg}"
-    padding: "{spacing.panel-padding}"
+    backgroundColor: '{colors.panel}'
+    rounded: '{rounded.lg}'
+    padding: '{spacing.panel-padding}'
   control-recess-pill:
-    backgroundColor: "{colors.black-low}"
-    rounded: "{rounded.pill}"
-    padding: "{spacing.track-padding}"
+    backgroundColor: '{colors.black-low}'
+    rounded: '{rounded.pill}'
+    padding: '{spacing.track-padding}'
   control-recess-rect:
-    backgroundColor: "{colors.black-low}"
-    rounded: "{rounded.md}"
-    padding: "{spacing.track-padding}"
+    backgroundColor: '{colors.black-low}'
+    rounded: '{rounded.md}'
+    padding: '{spacing.track-padding}'
   dial-face:
-    backgroundColor: "{colors.chrome-mid}"
-    rounded: "{rounded.full}"
+    backgroundColor: '{colors.chrome-mid}'
+    rounded: '{rounded.full}'
   dial-pointer:
-    backgroundColor: "{colors.chrome-low}"
-    rounded: "{rounded.full}"
+    backgroundColor: '{colors.chrome-low}'
+    rounded: '{rounded.full}'
   slider-thumb:
-    backgroundColor: "{colors.chrome-mid}"
-    rounded: "{rounded.sm}"
+    backgroundColor: '{colors.chrome-mid}'
+    rounded: '{rounded.sm}'
   toggle-rocker:
-    backgroundColor: "{colors.chrome-mid}"
-    rounded: "{rounded.sm}"
+    backgroundColor: '{colors.chrome-mid}'
+    rounded: '{rounded.sm}'
   switch-thumb:
-    backgroundColor: "{colors.chrome-mid}"
-    rounded: "{rounded.full}"
+    backgroundColor: '{colors.chrome-mid}'
+    rounded: '{rounded.full}'
   wheel-cylinder:
-    backgroundColor: "{colors.black-mid}"
-    rounded: "{rounded.md}"
+    backgroundColor: '{colors.black-mid}'
+    rounded: '{rounded.md}'
   indicator-red:
-    backgroundColor: "{colors.led-red}"
-    rounded: "{rounded.full}"
+    backgroundColor: '{colors.led-red}'
+    rounded: '{rounded.full}'
   indicator-amber:
-    backgroundColor: "{colors.led-amber}"
-    rounded: "{rounded.full}"
+    backgroundColor: '{colors.led-amber}'
+    rounded: '{rounded.full}'
   indicator-green:
-    backgroundColor: "{colors.led-green}"
-    rounded: "{rounded.full}"
+    backgroundColor: '{colors.led-green}'
+    rounded: '{rounded.full}'
   indicator-blue:
-    backgroundColor: "{colors.led-blue}"
-    rounded: "{rounded.full}"
+    backgroundColor: '{colors.led-blue}'
+    rounded: '{rounded.full}'
   indicator-white:
-    backgroundColor: "{colors.led-white}"
-    rounded: "{rounded.full}"
+    backgroundColor: '{colors.led-white}'
+    rounded: '{rounded.full}'
 ---
 
 # Analog UI

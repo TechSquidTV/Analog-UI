@@ -5,9 +5,7 @@
       "ignoreDependencies": ["analog-ui", "tailwindcss"]
     },
     "packages/analog-ui": {
-      "ignoreFiles": [
-        "src/registry/components/hyper/Indicator.tsx"
-      ]
+      "ignoreFiles": ["src/registry/components/hyper/Indicator.tsx"]
     }
   }
 }

@@ -2,8 +2,14 @@
   "name": "analog-ui",
   "version": "0.0.0",
   "type": "module",
-  "sideEffects": ["**/*.css"],
-  "files": ["dist", "components.json", "registry.json"],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "files": [
+    "dist",
+    "components.json",
+    "registry.json"
+  ],
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -26,6 +32,8 @@
     "lint": "pnpm run lint:eslint && pnpm run typecheck",
     "lint:eslint": "pnpm exec eslint .",
     "knip": "pnpm -w exec knip --workspace analog-ui",
+    "format": "pnpm exec prettier --write .",
+    "format:check": "pnpm exec prettier --check .",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist"
   },

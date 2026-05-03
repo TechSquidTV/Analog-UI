@@ -46,9 +46,7 @@ export function useMouseLumination({
       return;
     }
 
-    angleValue.set(
-      baseAngle + (continuousMouseAngle.current - baseAngle) * resolvedInfluence
-    );
+    angleValue.set(baseAngle + (continuousMouseAngle.current - baseAngle) * resolvedInfluence);
   }, [angleValue, baseAngle, enabled, resolvedInfluence]);
 
   useEffect(() => {
@@ -69,16 +67,11 @@ export function useMouseLumination({
       const stabilizationInnerRadius = Math.max(28, minViewportSize * 0.035);
       const stabilizationOuterRadius = Math.max(
         stabilizationInnerRadius + 1,
-        minViewportSize * 0.18
+        minViewportSize * 0.18,
       );
       const responseWeight =
         0.12 +
-        0.88 *
-          smoothstep(
-            stabilizationInnerRadius,
-            stabilizationOuterRadius,
-            distanceFromCenter
-          );
+        0.88 * smoothstep(stabilizationInnerRadius, stabilizationOuterRadius, distanceFromCenter);
 
       // The viewport center is an angular singularity, so we ease into the
       // pointer direction there instead of letting tiny moves flip the light.
@@ -89,11 +82,11 @@ export function useMouseLumination({
       stabilizedLightVector.current = blendLightingVectors(
         stabilizedLightVector.current,
         targetLightVector,
-        responseWeight
+        responseWeight,
       );
       const targetAngle = vectorToLightingAngle(
         stabilizedLightVector.current.x,
-        stabilizedLightVector.current.y
+        stabilizedLightVector.current.y,
       );
 
       continuousMouseAngle.current =
@@ -102,13 +95,11 @@ export function useMouseLumination({
           : advanceContinuousAngle(
               continuousMouseAngle.current,
               targetAngle,
-              previousRawMouseAngle.current
+              previousRawMouseAngle.current,
             );
       previousRawMouseAngle.current = targetAngle;
 
-      angleValue.set(
-        baseAngle + (continuousMouseAngle.current - baseAngle) * resolvedInfluence
-      );
+      angleValue.set(baseAngle + (continuousMouseAngle.current - baseAngle) * resolvedInfluence);
     };
 
     window.addEventListener('mousemove', handleMouseMove, { passive: true });

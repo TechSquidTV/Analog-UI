@@ -2,10 +2,7 @@ import React, { useRef } from 'react';
 import { Button } from '@base-ui/react';
 import { cn } from '../../../lib/utils';
 import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
-import {
-  useAnalogLighting,
-  type AnalogLightingConfig,
-} from '../../hooks/use-analog-lighting';
+import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 
 interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children?: React.ReactNode;
@@ -29,12 +26,12 @@ export const AnisotropicButton = React.forwardRef<HTMLButtonElement, Props>(
       onMouseLeave,
       ...props
     },
-    forwardedRef
+    forwardedRef,
   ) => {
     const internalRef = useRef<HTMLButtonElement>(null);
     const buttonRef = (forwardedRef as React.RefObject<HTMLButtonElement | null>) || internalRef;
     const lightingStyle = useAnalogLighting(['surface'], lighting);
-    
+
     const rawX = useMotionValue(0);
     const rawY = useMotionValue(0);
     const rawCenter = useMotionValue(0.4);
@@ -53,10 +50,10 @@ export const AnisotropicButton = React.forwardRef<HTMLButtonElement, Props>(
       const centerY = rect.height / 2;
       const deltaX = absoluteX - centerX;
       const deltaY = absoluteY - centerY;
-      
+
       const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
       const maxDistance = Math.sqrt(centerX * centerX + centerY * centerY);
-      
+
       const normalizedDeltaX = centerX > 0 ? deltaX / centerX : 0;
       const normalizedDeltaY = centerY > 0 ? deltaY / centerY : 0;
       const pointerFromCenter = maxDistance > 0 ? Math.min(1, distance / maxDistance) : 0;
@@ -64,7 +61,7 @@ export const AnisotropicButton = React.forwardRef<HTMLButtonElement, Props>(
       rawX.set(normalizedDeltaX);
       rawY.set(normalizedDeltaY);
       rawCenter.set(Math.max(0.4, pointerFromCenter));
-      
+
       onMouseMove?.(e);
     };
 
@@ -75,20 +72,17 @@ export const AnisotropicButton = React.forwardRef<HTMLButtonElement, Props>(
       onMouseLeave?.(e);
     };
 
-    const pointerAngle = useTransform(
-      [springX, springY],
-      ([x, y]: [number, number]) => {
-        return `${-rotation * 0.75 + (x * 30 + y * 15)}deg`;
-      }
-    );
+    const pointerAngle = useTransform([springX, springY], ([x, y]: [number, number]) => {
+      return `${-rotation * 0.75 + (x * 30 + y * 15)}deg`;
+    });
 
     return (
-      <div className={cn("inline-flex", containerClassName)}>
+      <div className={cn('inline-flex', containerClassName)}>
         <Button
           ref={buttonRef}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
-          className={cn("anisotropic-btn", `variant-${variant}`, className)}
+          className={cn('anisotropic-btn', `variant-${variant}`, className)}
           style={{
             ...lightingStyle,
             ...style,
@@ -96,18 +90,20 @@ export const AnisotropicButton = React.forwardRef<HTMLButtonElement, Props>(
           {...props}
         >
           <div className="holo-bg" style={{ transform: `rotate(${rotation}deg)` }} />
-          <motion.div 
-            className="holo-glare" 
-            style={{ 
-              '--pointer-angle': pointerAngle, 
-              '--pointer-from-center': springCenter 
-            } as any} 
+          <motion.div
+            className="holo-glare"
+            style={
+              {
+                '--pointer-angle': pointerAngle,
+                '--pointer-from-center': springCenter,
+              } as any
+            }
           />
           <div className="holo-texture" style={{ transform: `rotate(${rotation}deg)` }} />
           {children && <span className="content">{children}</span>}
         </Button>
       </div>
     );
-  }
+  },
 );
-AnisotropicButton.displayName = "AnisotropicButton";
+AnisotropicButton.displayName = 'AnisotropicButton';

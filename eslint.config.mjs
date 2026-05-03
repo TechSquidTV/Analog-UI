@@ -5,10 +5,7 @@ import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import tseslint from 'typescript-eslint';
 
-const reactFiles = [
-  'apps/www/src/**/*.{jsx,tsx}',
-  'packages/analog-ui/src/**/*.{jsx,tsx}',
-];
+const reactFiles = ['apps/www/src/**/*.{jsx,tsx}', 'packages/analog-ui/src/**/*.{jsx,tsx}'];
 
 export default tseslint.config(
   {

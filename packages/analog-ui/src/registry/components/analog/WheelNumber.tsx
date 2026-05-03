@@ -11,7 +11,9 @@ import {
 } from '../../hooks/use-analog-lighting';
 import { getWheelDirectionFactor, type AnalogWheelDirection } from './wheel-interaction';
 
-export interface AnalogWheelNumberProps extends React.ComponentPropsWithoutRef<typeof NumberField.Root> {
+export interface AnalogWheelNumberProps extends React.ComponentPropsWithoutRef<
+  typeof NumberField.Root
+> {
   lighting?: AnalogLightingConfig<'track' | 'wheel'>;
   /**
    * Which drag direction increases the numeric value.
@@ -42,7 +44,7 @@ export const AnalogWheelNumber = React.forwardRef<HTMLDivElement, AnalogWheelNum
       scrollDirection = 'down',
       ...props
     },
-    ref
+    ref,
   ) => {
     const [internalValue, setInternalValue] = React.useState(defaultValue ?? 0);
     const actualValue = value !== undefined ? (value as number) : internalValue;
@@ -61,7 +63,7 @@ export const AnalogWheelNumber = React.forwardRef<HTMLDivElement, AnalogWheelNum
       {
         varName: '--analog-light-angle-wheel-face',
       },
-      wheelLighting.wheel
+      wheelLighting.wheel,
     );
 
     React.useEffect(() => {
@@ -77,7 +79,7 @@ export const AnalogWheelNumber = React.forwardRef<HTMLDivElement, AnalogWheelNum
         if (shiftKey) return largeStep;
         return step !== undefined && step !== 'any' ? Number(step) : 1;
       },
-      [largeStep, smallStep, step]
+      [largeStep, smallStep, step],
     );
 
     const clampValue = React.useCallback(
@@ -87,20 +89,23 @@ export const AnalogWheelNumber = React.forwardRef<HTMLDivElement, AnalogWheelNum
         if (max !== undefined) clampedValue = Math.min(max, clampedValue);
         return clampedValue;
       },
-      [max, min]
+      [max, min],
     );
 
     useWheelScroll(
       scrubAreaRef,
-      React.useCallback((e, deltaDirection) => {
-        const delta = deltaDirection * scrollDirectionFactor * getStepAmount(e);
-        const newVal = clampValue(actualValue + delta);
+      React.useCallback(
+        (e, deltaDirection) => {
+          const delta = deltaDirection * scrollDirectionFactor * getStepAmount(e);
+          const newVal = clampValue(actualValue + delta);
 
-        if (newVal !== actualValue) {
-          if (value === undefined) setInternalValue(newVal);
-          onValueChange?.(newVal, {} as any);
-        }
-      }, [actualValue, clampValue, getStepAmount, scrollDirectionFactor, value, onValueChange])
+          if (newVal !== actualValue) {
+            if (value === undefined) setInternalValue(newVal);
+            onValueChange?.(newVal, {} as any);
+          }
+        },
+        [actualValue, clampValue, getStepAmount, scrollDirectionFactor, value, onValueChange],
+      ),
     );
 
     return (
@@ -122,7 +127,7 @@ export const AnalogWheelNumber = React.forwardRef<HTMLDivElement, AnalogWheelNum
                     actualValue +
                       getStepAmount(details.event) *
                         details.direction *
-                        -getWheelDirectionFactor(configuredDirection)
+                        -getWheelDirectionFactor(configuredDirection),
                   )
                 : val;
 
@@ -136,15 +141,13 @@ export const AnalogWheelNumber = React.forwardRef<HTMLDivElement, AnalogWheelNum
         smallStep={smallStep}
         largeStep={largeStep}
         {...props}
-        className={cn("flex flex-col items-center gap-4", className)}
+        className={cn('flex flex-col items-center gap-4', className)}
       >
         <NumberField.Group className="flex items-center rounded-md border border-[#333] bg-[#111] p-1 shadow-[inset_0_1px_3px_rgba(0,0,0,0.8)] z-20">
           <NumberField.Decrement className="flex size-8 items-center justify-center rounded-sm text-[#888] hover:bg-[#222] hover:text-white hover:shadow-[0_1px_2px_rgba(0,0,0,0.5)] active:bg-[#000] active:shadow-none transition-all cursor-pointer outline-none">
             <MinusIcon className="size-4 pointer-events-none" />
           </NumberField.Decrement>
-          <NumberField.Input 
-            className="w-16 bg-transparent text-center font-mono text-sm font-bold text-[#eee] tabular-nums outline-none selection:bg-[#555]" 
-          />
+          <NumberField.Input className="w-16 bg-transparent text-center font-mono text-sm font-bold text-[#eee] tabular-nums outline-none selection:bg-[#555]" />
           <NumberField.Increment className="flex size-8 items-center justify-center rounded-sm text-[#888] hover:bg-[#222] hover:text-white hover:shadow-[0_1px_2px_rgba(0,0,0,0.5)] active:bg-[#000] active:shadow-none transition-all cursor-pointer outline-none">
             <PlusIcon className="size-4 pointer-events-none" />
           </NumberField.Increment>
@@ -155,40 +158,40 @@ export const AnalogWheelNumber = React.forwardRef<HTMLDivElement, AnalogWheelNum
           style={{ ...lightingStyle, ...wheelFaceStyle }}
         >
           <div className="absolute inset-[2px] rounded-[4px] analog-track-slot" />
-          <NumberField.ScrubArea 
+          <NumberField.ScrubArea
             ref={scrubAreaRef}
-            direction="vertical" 
+            direction="vertical"
             pixelSensitivity={3}
-            className="relative w-32 h-48 cursor-ns-resize select-none overflow-hidden rounded-md analog-track-slot analog-track-slot-deep" 
+            className="relative w-32 h-48 cursor-ns-resize select-none overflow-hidden rounded-md analog-track-slot analog-track-slot-deep"
             style={{
               perspective: 800,
             }}
           >
             <NumberField.ScrubAreaCursor className="drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] z-50">
-               <CursorGrowIcon className="text-white fill-black" />
+              <CursorGrowIcon className="text-white fill-black" />
             </NumberField.ScrubAreaCursor>
 
             <div className="analog-wheel-lighting" />
 
             <div className="absolute top-1/2 left-0 w-3 h-[4px] -translate-y-1/2 bg-[var(--color-amber-bg)] z-10 pointer-events-none shadow-[0_0_10px_var(--color-amber-glow)] border-y border-[#111]" />
             <div className="absolute top-1/2 right-0 w-3 h-[4px] -translate-y-1/2 bg-[var(--color-amber-bg)] z-10 pointer-events-none shadow-[0_0_10px_var(--color-amber-glow)] border-y border-[#111]" />
-            
+
             {/* Center glass reading line */}
             <div className="absolute top-1/2 left-0 right-0 h-[24px] -translate-y-1/2 border-y border-white/10 bg-white/5 z-10 pointer-events-none mix-blend-screen" />
 
             {/* Rendered Cylinder */}
-            <motion.div 
+            <motion.div
               className="absolute inset-0 w-full h-full pointer-events-none"
-              style={{ 
+              style={{
                 transformStyle: 'preserve-3d',
-                rotateX: rotation 
+                rotateX: rotation,
               }}
             >
               {/* Render 40 ridges around the entire cylinder for realism */}
               {[...Array(40)].map((_, i) => {
                 const angle = (i / 40) * 360;
                 const radius = 100;
-                
+
                 // Paint every 10th ridge with a white stripe for speed reference
                 const isMarked = i % 10 === 0;
 
@@ -199,15 +202,15 @@ export const AnalogWheelNumber = React.forwardRef<HTMLDivElement, AnalogWheelNum
                     style={{
                       transformStyle: 'preserve-3d',
                       backfaceVisibility: 'hidden',
-                      transform: `rotateX(${angle}deg) translateZ(${radius}px)`, 
+                      transform: `rotateX(${angle}deg) translateZ(${radius}px)`,
                     }}
                   >
-                    <div 
+                    <div
                       className="absolute inset-x-2 inset-y-[1px] rounded-[1.5px] border-b border-[#000]"
                       style={{
-                        background: isMarked 
-                          ? `linear-gradient(var(--analog-light-angle-wheel-face, 180deg), rgba(205, 205, 205, calc(0.2 + 0.32 * var(--analog-light-power, 1))) 0%, rgba(158, 158, 158, 0.96) 52%, rgba(126, 126, 126, 1) 100%)` 
-                          : `linear-gradient(var(--analog-light-angle-wheel-face, 180deg), rgba(66, 66, 66, calc(0.18 + 0.34 * var(--analog-light-power, 1))) 0%, rgba(36, 36, 36, 0.94) 48%, rgba(17, 17, 17, 1) 100%)`
+                        background: isMarked
+                          ? `linear-gradient(var(--analog-light-angle-wheel-face, 180deg), rgba(205, 205, 205, calc(0.2 + 0.32 * var(--analog-light-power, 1))) 0%, rgba(158, 158, 158, 0.96) 52%, rgba(126, 126, 126, 1) 100%)`
+                          : `linear-gradient(var(--analog-light-angle-wheel-face, 180deg), rgba(66, 66, 66, calc(0.18 + 0.34 * var(--analog-light-power, 1))) 0%, rgba(36, 36, 36, 0.94) 48%, rgba(17, 17, 17, 1) 100%)`,
                       }}
                     />
                   </div>
@@ -218,7 +221,7 @@ export const AnalogWheelNumber = React.forwardRef<HTMLDivElement, AnalogWheelNum
         </div>
       </NumberField.Root>
     );
-  }
+  },
 );
 AnalogWheelNumber.displayName = 'AnalogWheelNumber';
 

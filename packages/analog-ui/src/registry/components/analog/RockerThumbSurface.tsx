@@ -25,7 +25,7 @@ const axisInset = (
   direction: RockerSingleSide,
   distance: number,
   blur: number,
-  color: string
+  color: string,
 ) =>
   orientation === 'horizontal'
     ? `inset ${direction === 'start' ? distance : -distance}px 0 ${blur}px ${color}`
@@ -38,7 +38,7 @@ const axisDrop = (
   crossOffset: number,
   blur: number,
   spread: number,
-  color: string
+  color: string,
 ) =>
   orientation === 'horizontal'
     ? `${direction === 'start' ? mainOffset : -mainOffset}px ${crossOffset}px ${blur}px ${spread}px ${color}`
@@ -47,7 +47,7 @@ const axisDrop = (
 const singleFaceBackground = (
   variant: RockerVariant,
   orientation: RockerOrientation,
-  raisedSide: RockerSingleSide
+  raisedSide: RockerSingleSide,
 ) => {
   const angle = axisGradientAngle(orientation);
 
@@ -65,7 +65,7 @@ const singleFaceBackground = (
 const singleFaceShadow = (
   variant: RockerVariant,
   orientation: RockerOrientation,
-  raisedSide: RockerSingleSide
+  raisedSide: RockerSingleSide,
 ) => {
   const isChrome = variant === 'chrome';
   const drop = axisDrop(
@@ -77,7 +77,7 @@ const singleFaceShadow = (
     -4,
     isChrome
       ? `rgba(0,0,0,calc(0.7 * var(--analog-light-power, 1)))`
-      : `rgba(0,0,0,calc(0.95 * var(--analog-light-power, 1)))`
+      : `rgba(0,0,0,calc(0.95 * var(--analog-light-power, 1)))`,
   );
 
   return [
@@ -89,7 +89,7 @@ const singleFaceShadow = (
       isChrome ? 6 : 4,
       isChrome
         ? `rgba(255,255,255,calc(1 * var(--analog-light-power, 1)))`
-        : `rgba(255,255,255,calc(0.15 * var(--analog-light-power, 1)))`
+        : `rgba(255,255,255,calc(0.15 * var(--analog-light-power, 1)))`,
     ),
     axisInset(
       orientation,
@@ -98,7 +98,7 @@ const singleFaceShadow = (
       12,
       isChrome
         ? `rgba(0,0,0,calc(0.4 * var(--analog-light-power, 1)))`
-        : `rgba(0,0,0,calc(0.9 * var(--analog-light-power, 1)))`
+        : `rgba(0,0,0,calc(0.9 * var(--analog-light-power, 1)))`,
     ),
     `inset 0 1px ${isChrome ? 3 : 2}px ${
       isChrome
@@ -108,10 +108,7 @@ const singleFaceShadow = (
   ].join(', ');
 };
 
-const getContainerTransform = (
-  orientation: RockerOrientation,
-  raisedSide: RockerSingleSide
-) => {
+const getContainerTransform = (orientation: RockerOrientation, raisedSide: RockerSingleSide) => {
   if (orientation === 'horizontal') {
     return raisedSide === 'start'
       ? 'translateZ(2px) rotateY(-18deg)'
@@ -126,7 +123,7 @@ const getContainerTransform = (
 const getSingleFaceStyle = (
   variant: RockerVariant,
   orientation: RockerOrientation,
-  raisedSide: RockerSingleSide
+  raisedSide: RockerSingleSide,
 ): React.CSSProperties => ({
   background: singleFaceBackground(variant, orientation, raisedSide),
   boxShadow: singleFaceShadow(variant, orientation, raisedSide),
@@ -156,16 +153,13 @@ const GripRidges = ({
             : 'right-[18%]'
           : position === 'start'
             ? 'top-[18%]'
-            : 'bottom-[18%]'
+            : 'bottom-[18%]',
       )}
     >
       {[...Array(4)].map((_, index) => (
         <div
           key={`${position}-ridge-${index}`}
-          className={cn(
-            isHorizontal ? 'h-full w-[2px]' : 'h-[2px] w-full',
-            'rounded-sm'
-          )}
+          className={cn(isHorizontal ? 'h-full w-[2px]' : 'h-[2px] w-full', 'rounded-sm')}
           style={{
             background: isHorizontal
               ? isChrome
@@ -208,7 +202,7 @@ function RockerOverlay({
       <div
         className={cn(
           'analog-foil z-[1]',
-          isChrome ? 'opacity-40' : 'opacity-30 filter grayscale brightness-50'
+          isChrome ? 'opacity-40' : 'opacity-30 filter grayscale brightness-50',
         )}
         style={{ backgroundSize: '250%' }}
       />
@@ -219,7 +213,7 @@ function RockerOverlay({
             'absolute bg-black/20 z-[2]',
             orientation === 'horizontal'
               ? 'top-0 bottom-0 left-1/2 -ml-[1px] w-[2px]'
-              : 'left-0 right-0 top-1/2 -mt-[1px] h-[2px]'
+              : 'left-0 right-0 top-1/2 -mt-[1px] h-[2px]',
           )}
           style={{
             boxShadow:
@@ -284,7 +278,7 @@ function RockerSegment({
                 'absolute inset-0 rounded-sm',
                 isChrome
                   ? 'bg-neutral-400 border border-neutral-500/30'
-                  : 'bg-[#121212] border border-[#222]/50'
+                  : 'bg-[#121212] border border-[#222]/50',
               )}
               style={{ transform: `translateZ(-${index + 1}px)` }}
             />
@@ -306,24 +300,17 @@ function RockerSegment({
   );
 }
 
-const getDualClipStyle = (
-  orientation: RockerOrientation,
-  visibleSide: RockerSingleSide
-) => {
+const getDualClipStyle = (orientation: RockerOrientation, visibleSide: RockerSingleSide) => {
   if (orientation === 'horizontal') {
     return {
       clipPath:
-        visibleSide === 'start'
-          ? 'inset(-24px 49% -24px -24px)'
-          : 'inset(-24px -24px -24px 49%)',
+        visibleSide === 'start' ? 'inset(-24px 49% -24px -24px)' : 'inset(-24px -24px -24px 49%)',
     } satisfies React.CSSProperties;
   }
 
   return {
     clipPath:
-      visibleSide === 'start'
-        ? 'inset(-24px -24px 49% -24px)'
-        : 'inset(49% -24px -24px -24px)',
+      visibleSide === 'start' ? 'inset(-24px -24px 49% -24px)' : 'inset(49% -24px -24px -24px)',
   } satisfies React.CSSProperties;
 };
 
@@ -390,7 +377,9 @@ export function RockerThumbSurface({
           gripPositions={['end']}
         />
       </RockerSegment>
-      {children ? <div className="absolute inset-0 z-[4] pointer-events-none">{children}</div> : null}
+      {children ? (
+        <div className="absolute inset-0 z-[4] pointer-events-none">{children}</div>
+      ) : null}
     </div>
   );
 }

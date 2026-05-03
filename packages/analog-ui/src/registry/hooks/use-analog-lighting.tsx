@@ -29,8 +29,7 @@ export interface AnalogLightingResponse {
 }
 
 export type AnalogLightingSetting = AnalogLightingValue | AnalogLightingResponse;
-export interface AnalogLightEffectOptions
-  extends AnalogLightingResponse {
+export interface AnalogLightEffectOptions extends AnalogLightingResponse {
   varName?: `--${string}`;
 }
 
@@ -45,9 +44,8 @@ export type AnalogMaterialChannel =
   | 'pointer'
   | 'surface';
 
-export type AnalogLightingConfig<
-  Channel extends AnalogMaterialChannel = AnalogMaterialChannel,
-> = Partial<Record<Channel, AnalogLightingSetting>>;
+export type AnalogLightingConfig<Channel extends AnalogMaterialChannel = AnalogMaterialChannel> =
+  Partial<Record<Channel, AnalogLightingSetting>>;
 
 interface ResolvedAnalogLightingResponse {
   travel: number;
@@ -110,7 +108,7 @@ function isMotionValue(value: unknown): value is MotionValue<number> {
 
 function useResolvedMotionNumber(
   value: number | MotionValue<number> | undefined,
-  fallback: number
+  fallback: number,
 ) {
   const [resolved, setResolved] = React.useState(() => {
     if (typeof value === 'number') return value;
@@ -126,7 +124,7 @@ function useResolvedMotionNumber(
 
     if (isMotionValue(value)) {
       setResolved(value.get());
-      return value.on('change', latest => setResolved(latest));
+      return value.on('change', (latest) => setResolved(latest));
     }
 
     setResolved(fallback);
@@ -147,32 +145,36 @@ function resolveLightingValue(value: AnalogLightingValue | undefined, fallback: 
   return fallback;
 }
 
-function isLightingResponse(value: AnalogLightingSetting | undefined): value is AnalogLightingResponse {
+function isLightingResponse(
+  value: AnalogLightingSetting | undefined,
+): value is AnalogLightingResponse {
   return typeof value === 'object' && value !== null;
 }
 
 function resolveLightingConstraint(
   value: AnalogLightConstraint | undefined,
-  fallback: ResolvedAnalogLightConstraint | null
+  fallback: ResolvedAnalogLightConstraint | null,
 ): ResolvedAnalogLightConstraint | null {
   if (!value) return fallback;
 
   return {
-    anchor: Number.isFinite(value.anchor) ? value.anchor : fallback?.anchor ?? 180,
-    arc: Number.isFinite(value.arc) ? Math.min(360, Math.max(0, value.arc!)) : fallback?.arc ?? 180,
+    anchor: Number.isFinite(value.anchor) ? value.anchor : (fallback?.anchor ?? 180),
+    arc: Number.isFinite(value.arc)
+      ? Math.min(360, Math.max(0, value.arc!))
+      : (fallback?.arc ?? 180),
     mode: value.mode ?? fallback?.mode ?? 'fold',
   };
 }
 
 function resolveLightingResponse(
   value: AnalogLightingSetting | undefined,
-  fallback: ResolvedAnalogLightingResponse
+  fallback: ResolvedAnalogLightingResponse,
 ): ResolvedAnalogLightingResponse {
   if (isLightingResponse(value)) {
     const legacyValue = value as LegacyAnalogLightingResponse;
     const resolvedTravel = resolveLightingValue(
       legacyValue.travel ?? legacyValue.follow,
-      fallback.travel
+      fallback.travel,
     );
 
     return {
@@ -208,7 +210,7 @@ function useAnalogLightingEnvironment() {
       : advanceContinuousAngle(
           continuousSourceAngle.current,
           sourceAngle,
-          previousRawSourceAngle.current
+          previousRawSourceAngle.current,
         );
   previousRawSourceAngle.current = sourceAngle;
 
@@ -223,7 +225,7 @@ function useAnalogLightingEnvironment() {
 function resolveAnalogLightAngle(
   baseAngle: number,
   sourceAngle: number,
-  response: ResolvedAnalogLightingResponse
+  response: ResolvedAnalogLightingResponse,
 ) {
   let resolvedAngle =
     blendAngleTowardSource(baseAngle, sourceAngle, response.travel) + response.offset;
@@ -233,7 +235,7 @@ function resolveAnalogLightAngle(
       resolvedAngle,
       response.constraint.anchor,
       response.constraint.arc,
-      response.constraint.mode
+      response.constraint.mode,
     );
   }
 
@@ -248,10 +250,7 @@ export function AnalogLightingProvider({
   materials,
 }: AnalogLightingProviderProps) {
   const resolvedBaseAngle = useResolvedMotionNumber(baseAngle, 180);
-  const resolvedSourceAngle = useResolvedMotionNumber(
-    sourceAngle,
-    resolvedBaseAngle
-  );
+  const resolvedSourceAngle = useResolvedMotionNumber(sourceAngle, resolvedBaseAngle);
   const resolvedPower = useResolvedMotionNumber(power, 1);
 
   const mergedMaterials = React.useMemo(() => {
@@ -260,7 +259,7 @@ export function AnalogLightingProvider({
     for (const channel of Object.keys(DEFAULT_MATERIAL_RESPONSES) as AnalogMaterialChannel[]) {
       next[channel] = resolveLightingResponse(
         materials?.[channel],
-        DEFAULT_MATERIAL_RESPONSES[channel]
+        DEFAULT_MATERIAL_RESPONSES[channel],
       );
     }
 
@@ -274,21 +273,15 @@ export function AnalogLightingProvider({
       power: resolvedPower,
       materials: mergedMaterials,
     }),
-    [mergedMaterials, resolvedBaseAngle, resolvedPower, resolvedSourceAngle]
+    [mergedMaterials, resolvedBaseAngle, resolvedPower, resolvedSourceAngle],
   );
 
-  return (
-    <AnalogLightingContext.Provider value={value}>
-      {children}
-    </AnalogLightingContext.Provider>
-  );
+  return <AnalogLightingContext.Provider value={value}>{children}</AnalogLightingContext.Provider>;
 }
 
-export function useAnalogLighting<
-  Channel extends AnalogMaterialChannel,
->(
+export function useAnalogLighting<Channel extends AnalogMaterialChannel>(
   channels: readonly Channel[],
-  overrides?: AnalogLightingConfig<Channel>
+  overrides?: AnalogLightingConfig<Channel>,
 ) {
   const environment = useAnalogLightingEnvironment();
 
@@ -299,12 +292,12 @@ export function useAnalogLighting<
   for (const channel of channels) {
     const response = resolveLightingResponse(
       overrides?.[channel],
-      environment.materials[channel] ?? DEFAULT_MATERIAL_RESPONSES[channel]
+      environment.materials[channel] ?? DEFAULT_MATERIAL_RESPONSES[channel],
     );
     const resolvedAngle = resolveAnalogLightAngle(
       environment.baseAngle,
       environment.sourceAngle,
-      response
+      response,
     );
     style[`--analog-light-angle-${channel}`] = `${resolvedAngle}deg`;
   }
@@ -312,12 +305,10 @@ export function useAnalogLighting<
   return style;
 }
 
-export function useAnalogLightEffect<
-  Channel extends AnalogMaterialChannel,
->(
+export function useAnalogLightEffect<Channel extends AnalogMaterialChannel>(
   channel: Channel,
   options: AnalogLightEffectOptions = {},
-  override?: AnalogLightingSetting
+  override?: AnalogLightingSetting,
 ) {
   const resolvedAngle = useAnalogLightAngle(channel, options, override);
   const environment = useAnalogLightingEnvironment();
@@ -329,26 +320,21 @@ export function useAnalogLightEffect<
   } as React.CSSProperties & Record<string, string>;
 }
 
-export function useAnalogLightAngle<
-  Channel extends AnalogMaterialChannel,
->(
+export function useAnalogLightAngle<Channel extends AnalogMaterialChannel>(
   channel: Channel,
   options: AnalogLightEffectOptions = {},
-  override?: AnalogLightingSetting
+  override?: AnalogLightingSetting,
 ) {
   const environment = useAnalogLightingEnvironment();
   const response = resolveLightingResponse(
     override ?? options,
-    environment.materials[channel] ?? DEFAULT_MATERIAL_RESPONSES[channel]
+    environment.materials[channel] ?? DEFAULT_MATERIAL_RESPONSES[channel],
   );
-  const effectResponse = resolveLightingResponse(
-    options,
-    response
-  );
+  const effectResponse = resolveLightingResponse(options, response);
   const resolvedAngle = resolveAnalogLightAngle(
     environment.baseAngle,
     environment.sourceAngle,
-    effectResponse
+    effectResponse,
   );
 
   return resolvedAngle;

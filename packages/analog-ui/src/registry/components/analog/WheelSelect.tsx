@@ -39,7 +39,7 @@ export function AnalogWheelSelect({
   const [internalValue, setInternalValue] = useState(options[0] || '');
   const selectedValue = value !== undefined ? value : internalValue;
   const initialIndex = Math.max(0, options.indexOf(selectedValue));
-  
+
   const [activeIndex, setActiveIndex] = useState(initialIndex);
 
   const y = useMotionValue(0);
@@ -55,9 +55,9 @@ export function AnalogWheelSelect({
     {
       varName: '--analog-light-angle-wheel-face',
     },
-    wheelLighting.wheel
+    wheelLighting.wheel,
   );
-  
+
   // Magic numbers for wheel
   const itemHeight = 36;
   const radius = 100; // Radius of the cylinder
@@ -66,7 +66,7 @@ export function AnalogWheelSelect({
   const grabDirectionFactor = getWheelDirectionFactor(grabDirection);
   const scrollDirectionFactor = getWheelDirectionFactor(scrollDirection);
   const maxWheelOffset = maxIndex * itemHeight * grabDirectionFactor;
-  
+
   useEffect(() => {
     return y.on('change', (latest) => {
       let index = Math.round((latest / itemHeight) * grabDirectionFactor);
@@ -85,50 +85,70 @@ export function AnalogWheelSelect({
   const handleDragEnd = () => {
     const currentY = y.get();
     let index = Math.round((currentY / itemHeight) * grabDirectionFactor);
-    
+
     if (index < 0) index = 0;
     if (index >= options.length) index = options.length - 1;
-    
+
     if (value === undefined) {
       setInternalValue(options[index]);
     }
-    
+
     if (onValueChange) {
       onValueChange(options[index]);
     } else {
       // Snap back if unmanaged
-      animate(y, index * itemHeight * grabDirectionFactor, { type: 'spring', stiffness: 300, damping: 30 });
+      animate(y, index * itemHeight * grabDirectionFactor, {
+        type: 'spring',
+        stiffness: 300,
+        damping: 30,
+      });
     }
   };
 
   useWheelScroll(
     containerRef,
-    React.useCallback((e, deltaDirection) => {
-      let newIndex = activeIndex + deltaDirection * scrollDirectionFactor;
-      if (newIndex < 0) newIndex = 0;
-      if (newIndex >= options.length) newIndex = options.length - 1;
+    React.useCallback(
+      (e, deltaDirection) => {
+        let newIndex = activeIndex + deltaDirection * scrollDirectionFactor;
+        if (newIndex < 0) newIndex = 0;
+        if (newIndex >= options.length) newIndex = options.length - 1;
 
-      if (newIndex !== activeIndex) {
-        animate(y, newIndex * itemHeight * grabDirectionFactor, { type: 'spring', stiffness: 300, damping: 30 });
-        if (value === undefined) setInternalValue(options[newIndex]);
-        if (onValueChange) onValueChange(options[newIndex]);
-      }
-    }, [activeIndex, options, value, onValueChange, y, itemHeight, grabDirectionFactor, scrollDirectionFactor])
+        if (newIndex !== activeIndex) {
+          animate(y, newIndex * itemHeight * grabDirectionFactor, {
+            type: 'spring',
+            stiffness: 300,
+            damping: 30,
+          });
+          if (value === undefined) setInternalValue(options[newIndex]);
+          if (onValueChange) onValueChange(options[newIndex]);
+        }
+      },
+      [
+        activeIndex,
+        options,
+        value,
+        onValueChange,
+        y,
+        itemHeight,
+        grabDirectionFactor,
+        scrollDirectionFactor,
+      ],
+    ),
   );
 
   return (
-    <div 
+    <div
       className={cn(
-        "relative inline-flex p-[var(--spacing-track-padding)] rounded-md analog-surface-recess overflow-hidden",
-        className
+        'relative inline-flex p-[var(--spacing-track-padding)] rounded-md analog-surface-recess overflow-hidden',
+        className,
       )}
       style={{ ...lightingStyle, ...wheelFaceStyle }}
     >
       <div className="absolute inset-[2px] rounded-[4px] analog-track-slot" />
-      <div 
+      <div
         ref={containerRef}
         className={cn(
-          "relative w-32 h-48 select-none touch-none overflow-hidden rounded-md analog-track-slot analog-track-slot-deep"
+          'relative w-32 h-48 select-none touch-none overflow-hidden rounded-md analog-track-slot analog-track-slot-deep',
         )}
         style={{
           perspective: 800,
@@ -154,56 +174,65 @@ export function AnalogWheelSelect({
         />
 
         {/* Rendered Cylinder */}
-        <motion.div 
+        <motion.div
           className="absolute inset-0 w-full h-full pointer-events-none"
-          style={{ 
+          style={{
             transformStyle: 'preserve-3d',
-            rotateX: useTransform(y, (latest) => (-(latest * grabDirectionFactor) / circumference) * 360),
+            rotateX: useTransform(
+              y,
+              (latest) => (-(latest * grabDirectionFactor) / circumference) * 360,
+            ),
           }}
         >
           {/* Render 36 ridges around the entire cylinder for realism */}
           {[...Array(36)].map((_, i) => {
             const angle = (i / 36) * 360;
             return (
-               <div
-                  key={`ridge-${i}`}
-                  className="absolute top-1/2 left-0 w-full h-[12px] -translate-y-1/2 flex items-center justify-center select-none"
+              <div
+                key={`ridge-${i}`}
+                className="absolute top-1/2 left-0 w-full h-[12px] -translate-y-1/2 flex items-center justify-center select-none"
+                style={{
+                  transformStyle: 'preserve-3d',
+                  backfaceVisibility: 'hidden',
+                  transform: `rotateX(${angle}deg) translateZ(${radius}px)`,
+                }}
+              >
+                <div
+                  className="absolute inset-x-2 inset-y-[1px] rounded-[1.5px] border-b border-[#000]"
                   style={{
-                    transformStyle: 'preserve-3d',
-                    backfaceVisibility: 'hidden',
-                    transform: `rotateX(${angle}deg) translateZ(${radius}px)`, 
+                    background: `linear-gradient(var(--analog-light-angle-wheel-face, 180deg), rgba(66, 66, 66, calc(0.18 + 0.34 * var(--analog-light-power, 1))) 0%, rgba(36, 36, 36, 0.94) 48%, rgba(17, 17, 17, 1) 100%)`,
                   }}
-               >
-                  <div 
-                    className="absolute inset-x-2 inset-y-[1px] rounded-[1.5px] border-b border-[#000]"
-                    style={{
-                      background: `linear-gradient(var(--analog-light-angle-wheel-face, 180deg), rgba(66, 66, 66, calc(0.18 + 0.34 * var(--analog-light-power, 1))) 0%, rgba(36, 36, 36, 0.94) 48%, rgba(17, 17, 17, 1) 100%)`
-                    }}
-                  />
-               </div>
+                />
+              </div>
             );
           })}
-          
+
           {/* Render options independently, positioned relative to circumference */}
           {options.map((opt, i) => {
-            const angle = (i * itemHeight / circumference) * 360;
+            const angle = ((i * itemHeight) / circumference) * 360;
             return (
-               <div
-                  key={opt}
-                  className="absolute top-1/2 left-0 w-full h-[36px] -translate-y-1/2 flex items-center justify-center font-mono text-xs leading-none font-bold select-none drop-shadow-md z-10"
-                  style={{
-                    transformStyle: 'preserve-3d',
-                    backfaceVisibility: 'hidden',
-                    transform: `rotateX(${angle}deg) translateZ(${radius + 2}px)`, // +2px to push it slightly above the ridges
-                    color: activeIndex === i ? '#fff' : '#666',
-                    textShadow: activeIndex === i ? '0 0 10px rgba(255,255,255,0.5)' : 'none',
-                  }}
-               >
-                  <span className={cn(
-                    "px-2 py-1 rounded transition-colors duration-200",
-                    activeIndex === i ? "bg-[#111] border border-[#333] shadow-[0_2px_4px_rgba(0,0,0,0.5)]" : ""
-                  )}>{opt}</span>
-               </div>
+              <div
+                key={opt}
+                className="absolute top-1/2 left-0 w-full h-[36px] -translate-y-1/2 flex items-center justify-center font-mono text-xs leading-none font-bold select-none drop-shadow-md z-10"
+                style={{
+                  transformStyle: 'preserve-3d',
+                  backfaceVisibility: 'hidden',
+                  transform: `rotateX(${angle}deg) translateZ(${radius + 2}px)`, // +2px to push it slightly above the ridges
+                  color: activeIndex === i ? '#fff' : '#666',
+                  textShadow: activeIndex === i ? '0 0 10px rgba(255,255,255,0.5)' : 'none',
+                }}
+              >
+                <span
+                  className={cn(
+                    'px-2 py-1 rounded transition-colors duration-200',
+                    activeIndex === i
+                      ? 'bg-[#111] border border-[#333] shadow-[0_2px_4px_rgba(0,0,0,0.5)]'
+                      : '',
+                  )}
+                >
+                  {opt}
+                </span>
+              </div>
             );
           })}
         </motion.div>

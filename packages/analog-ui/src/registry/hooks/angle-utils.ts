@@ -23,7 +23,7 @@ function getWrappedAngleDelta(targetAngle: number, currentAngle: number) {
 export function advanceContinuousAngle(
   previousContinuousAngle: number,
   nextRawAngle: number,
-  previousRawAngle: number
+  previousRawAngle: number,
 ) {
   return previousContinuousAngle + getWrappedAngleDelta(nextRawAngle, previousRawAngle);
 }
@@ -34,7 +34,7 @@ export function constrainAngleToArc(
   angle: number,
   anchor: number,
   arc: number,
-  mode: AnalogLightConstraintMode = 'fold'
+  mode: AnalogLightConstraintMode = 'fold',
 ) {
   const constrainedArc = Math.min(360, Math.max(0, arc));
 
@@ -49,7 +49,7 @@ export function constrainAngleToArc(
   }
 
   const cycle = constrainedArc * 2;
-  let foldedDelta = ((delta + halfArc) % cycle + cycle) % cycle;
+  let foldedDelta = (((delta + halfArc) % cycle) + cycle) % cycle;
 
   if (foldedDelta > constrainedArc) {
     foldedDelta = cycle - foldedDelta;
@@ -87,7 +87,7 @@ export function vectorToLightingAngle(x: number, y: number) {
 export function blendLightingVectors(
   current: { x: number; y: number },
   target: { x: number; y: number },
-  weight: number
+  weight: number,
 ) {
   const resolvedWeight = clampLightingInfluence(weight);
 
@@ -96,17 +96,13 @@ export function blendLightingVectors(
 
   const blendedVector = normalizeCartesian(
     current.x * (1 - resolvedWeight) + target.x * resolvedWeight,
-    current.y * (1 - resolvedWeight) + target.y * resolvedWeight
+    current.y * (1 - resolvedWeight) + target.y * resolvedWeight,
   );
 
   return blendedVector ?? current;
 }
 
-export function blendAngleTowardSource(
-  baseAngle: number,
-  sourceAngle: number,
-  travel: number
-) {
+export function blendAngleTowardSource(baseAngle: number, sourceAngle: number, travel: number) {
   const weight = clampLightingInfluence(travel);
 
   if (weight <= 0) return baseAngle;
@@ -115,7 +111,7 @@ export function blendAngleTowardSource(
   const blendedVector = blendLightingVectors(
     angleToLightingVector(baseAngle),
     angleToLightingVector(sourceAngle),
-    weight
+    weight,
   );
   return vectorToLightingAngle(blendedVector.x, blendedVector.y);
 }

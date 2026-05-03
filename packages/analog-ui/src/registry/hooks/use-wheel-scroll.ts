@@ -3,7 +3,7 @@ import { useEffect, type RefObject } from 'react';
 export function useWheelScroll<T extends HTMLElement>(
   ref: RefObject<T | null>,
   callback: (e: WheelEvent, deltaDirection: 1 | -1) => void,
-  options: AddEventListenerOptions = { passive: false }
+  options: AddEventListenerOptions = { passive: false },
 ) {
   useEffect(() => {
     const el = ref.current;
