@@ -170,6 +170,36 @@ The palette is anchored in black chassis surfaces, gunmetal mid-tones, and brigh
 - **Annotation and legend grays** stay split by role: `legend` for printed markings, `annotation` for supporting copy, `telemetry-label` for scale ticks, and `telemetry-value` for live readouts.
 - **LED colors** should feel emissive and concentrated, with brighter cores than housings.
 
+## Token Architecture
+
+Analog UI should layer its tactile tokens on top of the host theme rather than replace it.
+
+- Use the standard shadcn and tweakcn semantic tokens as the source of truth: `background`, `foreground`, `card`, `secondary`, `accent`, `border`, `ring`, and related `-foreground` pairs.
+- Add Analog UI material and finish tokens in the `analog` namespace so the library stays cohesive with its existing lighting API.
+- Derive Analog UI tokens from the host semantics whenever possible instead of hardcoding separate root colors for every surface.
+- Export `--color-analog-*` aliases only for custom color utilities that should be available through Tailwind.
+- Keep non-color recipe tokens as plain CSS variables so they can drive gradients, bevels, texture, and lighting response without polluting Tailwind's utility namespace.
+
+Recommended token tiers:
+
+- **Host semantic tokens:** `--background`, `--foreground`, `--card`, `--accent`, `--border`, `--ring`.
+- **Analog design tokens:** `--analog-surface-*`, `--analog-led-*`, `--analog-shadow-*`, `--analog-grain-*`, `--analog-track-*`, `--analog-bevel-*`.
+- **Runtime lighting tokens:** `--analog-light-power` and `--analog-light-angle-*`.
+
+Recommended naming rules:
+
+- **Surfaces and materials:** `--analog-surface-cavity`, `--analog-surface-panel`, `--analog-surface-metal-hi`, `--analog-surface-onyx-lo`.
+- **Emissive states:** `--analog-led-base`, `--analog-led-glow`, plus scoped variants such as `--analog-led-amber-base`.
+- **Finish controls:** `--analog-shadow-depth`, `--analog-bevel-width`, `--analog-grain-opacity`, `--analog-foil-opacity`, `--analog-bloom-strength`.
+- **Geometry and spacing:** `--analog-track-padding`.
+- **Lighting defaults:** `--analog-light-source`.
+
+Implementation rules:
+
+- `@theme inline` should map host semantic tokens first, then optional `--color-analog-*` aliases for custom Analog UI colors.
+- `:root` and `.dark` should define Analog UI defaults so the package demo works out of the box, but those defaults must still be expressed through semantic shadcn-compatible tokens.
+- Component code should prefer `var(--analog-...)` tokens for material recipes and reserve literal color ramps for one-off prototypes only.
+
 ## Typography
 
 Typography should feel like a control room: bold industrial sans for product voice, restrained body copy, and mono for telemetry.

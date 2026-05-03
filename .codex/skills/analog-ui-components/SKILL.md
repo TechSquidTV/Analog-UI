@@ -7,7 +7,7 @@ description: Create and update Analog UI components and registry entries using t
 
 ## Overview
 
-Use this skill to build or revise Analog UI components that feel tactile, machined, and reactive to the analog lighting system. Keep public components installable through the shadcn registry flow and keep visual finish work tied to resolved per-material lighting variables.
+Use this skill to build or revise Analog UI components that feel tactile, machined, and reactive to the analog lighting system. All implementation details must align with the Studio Hyper-Skeuomorphism standards defined in [DESIGN.md](DESIGN.md). Keep public components installable through the shadcn registry flow and keep visual finish work tied to resolved per-material lighting variables.
 
 ## Workflow
 
@@ -28,7 +28,8 @@ Use this skill to build or revise Analog UI components that feel tactile, machin
 
 ## Visual Direction
 
-- Aim for Studio Hyper-Skeuomorphism: machined metals, dark plastics, foil textures, glossy finishes, and LED indicators.
+- Aim for Studio Hyper-Skeuomorphism as detailed in [DESIGN.md](../../../DESIGN.md): machined metals, dark plastics, foil textures, glossy finishes, and LED indicators.
+- Use the specific color palette (Chrome, Black material, LED cores) and typography defined in the design spec.
 - Stack inset and drop shadows to build realistic depth, bevels, ridges, and cavities.
 - Use layered elements, pseudo-elements, and blend modes when they help add texture, foil, or glare without flattening the base material.
 - Prefer realistic cubic-bezier easing that feels mechanical instead of generic UI motion.
