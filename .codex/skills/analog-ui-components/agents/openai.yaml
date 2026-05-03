@@ -1,0 +1,4 @@
+interface:
+  display_name: "Analog UI"
+  short_description: "Analog UI component guidance"
+  default_prompt: "Use $analog-ui-components to create or update an Analog UI component."

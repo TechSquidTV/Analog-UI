@@ -1,0 +1,89 @@
+{
+  "name": "Analog UI",
+  "homepage": "https://analogui.com",
+  "items": [
+    {
+      "name": "dial",
+      "dependencies": ["@base-ui/react"],
+      "registryDependencies": ["anisotropic-button", "use-wheel-scroll"],
+      "files": ["src/registry/components/analog/Dial.tsx"],
+      "type": "components:ui"
+    },
+    {
+      "name": "anisotropic-button",
+      "dependencies": ["@base-ui/react"],
+      "files": ["src/registry/components/analog/AnisotropicButton.tsx"],
+      "type": "components:ui"
+    },
+    {
+      "name": "meter",
+      "dependencies": ["@base-ui/react"],
+      "files": ["src/registry/components/analog/Meter.tsx"],
+      "type": "components:ui"
+    },
+    {
+      "name": "slider",
+      "dependencies": ["@base-ui/react"],
+      "files": ["src/registry/components/analog/Slider.tsx"],
+      "type": "components:ui"
+    },
+    {
+      "name": "switch",
+      "dependencies": ["@base-ui/react"],
+      "files": ["src/registry/components/analog/Switch.tsx"],
+      "type": "components:ui"
+    },
+    {
+      "name": "toggle",
+      "dependencies": ["@base-ui/react"],
+      "files": ["src/registry/components/analog/Toggle.tsx"],
+      "type": "components:ui"
+    },
+    {
+      "name": "indicator",
+      "dependencies": [],
+      "files": ["src/registry/components/analog/Indicator.tsx"],
+      "type": "components:ui"
+    },
+    {
+      "name": "wheel-number",
+      "dependencies": ["@base-ui/react", "motion", "lucide-react"],
+      "registryDependencies": ["use-wheel-scroll"],
+      "files": ["src/registry/components/analog/WheelNumber.tsx"],
+      "type": "components:ui"
+    },
+    {
+      "name": "wheel-select",
+      "dependencies": ["motion"],
+      "registryDependencies": ["use-wheel-scroll"],
+      "files": ["src/registry/components/analog/WheelSelect.tsx"],
+      "type": "components:ui"
+    },
+    {
+      "name": "gauge",
+      "dependencies": ["@base-ui/react"],
+      "registryDependencies": ["anisotropic-button"],
+      "files": ["src/registry/components/analog/Gauge.tsx"],
+      "type": "components:ui"
+    },
+    {
+      "name": "use-wheel-scroll",
+      "dependencies": [],
+      "files": ["src/registry/hooks/use-wheel-scroll.ts"],
+      "type": "registry:hook"
+    },
+    {
+      "name": "use-mouse-lumination",
+      "dependencies": ["motion"],
+      "files": ["src/registry/hooks/use-mouse-lumination.ts"],
+      "type": "registry:hook"
+    },
+    {
+      "name": "panel",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": ["src/registry/components/analog/Panel.tsx"],
+      "type": "components:ui"
+    }
+  ]
+}

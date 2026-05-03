@@ -1,0 +1,6 @@
+{
+  "name": "Analog UI",
+  "description": "The design principles are called \"studio hyper-skeuomorphism\". Components are based on BaseUI and Tailwind v4, designed to fit into your shadcn-based UI frameworks.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
