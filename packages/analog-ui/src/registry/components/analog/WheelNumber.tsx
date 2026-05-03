@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { cn } from '../../../lib/utils';
 import { NumberField } from '@base-ui/react/number-field';
+import { createChangeEventDetails } from '@base-ui/react/internals/createBaseUIEventDetails';
 import { motion, useMotionValue, animate } from 'motion/react';
 import { MinusIcon, PlusIcon } from 'lucide-react';
 import { useWheelScroll } from '../../hooks/use-wheel-scroll';
@@ -98,10 +99,14 @@ export const AnalogWheelNumber = React.forwardRef<HTMLDivElement, AnalogWheelNum
         (e, deltaDirection) => {
           const delta = deltaDirection * scrollDirectionFactor * getStepAmount(e);
           const newVal = clampValue(actualValue + delta);
+          const direction = delta > 0 ? 1 : -1;
 
           if (newVal !== actualValue) {
             if (value === undefined) setInternalValue(newVal);
-            onValueChange?.(newVal, {} as any);
+            onValueChange?.(
+              newVal,
+              createChangeEventDetails('wheel', e, scrubAreaRef.current, { direction }),
+            );
           }
         },
         [actualValue, clampValue, getStepAmount, scrollDirectionFactor, value, onValueChange],

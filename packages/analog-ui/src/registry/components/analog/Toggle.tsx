@@ -2,6 +2,7 @@ import * as React from 'react';
 import { ToggleGroup } from '@base-ui/react/toggle-group';
 import { Toggle } from '@base-ui/react/toggle';
 import { cn } from '../../../lib/utils';
+import { useMergedRefs } from '../../../lib/refs';
 import { AnalogIndicator } from './Indicator';
 import { RockerThumbSurface } from './RockerThumbSurface';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
@@ -45,7 +46,7 @@ export const AnalogToggle = React.forwardRef<HTMLDivElement, AnalogToggleProps>(
     ref,
   ) => {
     const internalRef = React.useRef<HTMLDivElement>(null);
-    const mergedRef = (ref || internalRef) as React.RefObject<HTMLDivElement>;
+    const mergedRef = useMergedRefs(ref, internalRef);
 
     const [hoverState, setHoverState] = React.useState({
       isHovered: false,
@@ -54,8 +55,8 @@ export const AnalogToggle = React.forwardRef<HTMLDivElement, AnalogToggleProps>(
     });
 
     const handleMouseMove = (e: ToggleGroupMouseMoveEvent) => {
-      if (!mergedRef.current) return;
-      const rect = mergedRef.current.getBoundingClientRect();
+      if (!internalRef.current) return;
+      const rect = internalRef.current.getBoundingClientRect();
       const absoluteX = e.clientX - rect.left;
       const absoluteY = e.clientY - rect.top;
       const centerX = rect.width / 2;
@@ -70,7 +71,11 @@ export const AnalogToggle = React.forwardRef<HTMLDivElement, AnalogToggleProps>(
     };
 
     const handleMouseLeave = (e: ToggleGroupMouseLeaveEvent) => {
-      setHoverState({ ...hoverState, isHovered: false });
+      setHoverState({
+        isHovered: false,
+        deltaX: 0,
+        deltaY: 0,
+      });
       props.onMouseLeave?.(e);
     };
 

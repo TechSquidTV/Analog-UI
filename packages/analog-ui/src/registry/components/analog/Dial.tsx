@@ -31,6 +31,22 @@ export function Dial({
   const centerRef = useRef({ x: 0, y: 0 });
   const lastAngleRef = useRef(0);
   const dragRotationRef = useRef(0); // Tracks exact rotation continuously during drag to prevent drift
+  const applyRotation = React.useCallback(
+    (nextRotation: number) => {
+      if (externalValue === undefined) {
+        setInternalValue(nextRotation);
+      }
+
+      if (onChange) {
+        const degrees = ((nextRotation % 360) + 360) % 360;
+        const revolutions = Math.floor(nextRotation / 360);
+        onChange(nextRotation, degrees, revolutions);
+      }
+    },
+    [externalValue, onChange],
+  );
+  const degrees = ((rotation % 360) + 360) % 360;
+  const revolutions = Math.floor(rotation / 360);
 
   useWheelScroll(
     dialRef,
@@ -41,19 +57,9 @@ export function Dial({
         // Let's use 15 degrees per tick.
         const step = 15;
         const delta = deltaDirection > 0 ? step : -step;
-        const newRotation = rotation + delta;
-
-        if (externalValue === undefined) {
-          setInternalValue(newRotation);
-        }
-
-        if (onChange) {
-          const degrees = ((newRotation % 360) + 360) % 360;
-          const revolutions = Math.floor(newRotation / 360);
-          onChange(newRotation, degrees, revolutions);
-        }
+        applyRotation(rotation + delta);
       },
-      [rotation, disabled, externalValue, onChange],
+      [applyRotation, rotation, disabled],
     ),
   );
 
@@ -62,6 +68,7 @@ export function Dial({
 
     // Use pointer capture to keep tracking even if pointer leaves window bounds
     e.currentTarget.setPointerCapture(e.pointerId);
+    e.currentTarget.focus();
     e.preventDefault();
     setIsDragging(true);
 
@@ -98,16 +105,7 @@ export function Dial({
 
     dragRotationRef.current += delta;
     const newRotation = dragRotationRef.current;
-
-    if (externalValue === undefined) {
-      setInternalValue(newRotation);
-    }
-
-    if (onChange) {
-      const degrees = ((newRotation % 360) + 360) % 360;
-      const revolutions = Math.floor(newRotation / 360);
-      onChange(newRotation, degrees, revolutions);
-    }
+    applyRotation(newRotation);
 
     lastAngleRef.current = angle;
   };
@@ -115,7 +113,42 @@ export function Dial({
   const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
     if (disabled) return;
     setIsDragging(false);
-    e.currentTarget.releasePointerCapture(e.pointerId);
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (disabled) return;
+
+    let nextRotation: number | null = null;
+
+    switch (e.key) {
+      case 'ArrowUp':
+      case 'ArrowRight':
+        nextRotation = rotation + 15;
+        break;
+      case 'ArrowDown':
+      case 'ArrowLeft':
+        nextRotation = rotation - 15;
+        break;
+      case 'PageUp':
+        nextRotation = rotation + 45;
+        break;
+      case 'PageDown':
+        nextRotation = rotation - 45;
+        break;
+      case 'Home':
+        nextRotation = 0;
+        break;
+      default:
+        break;
+    }
+
+    if (nextRotation !== null) {
+      e.preventDefault();
+      applyRotation(nextRotation);
+    }
   };
 
   const isBlack = variant === 'black';
@@ -130,10 +163,17 @@ export function Dial({
         className,
       )}
       style={lightingStyle}
+      role="spinbutton"
+      tabIndex={disabled ? -1 : 0}
+      aria-disabled={disabled || undefined}
+      aria-valuenow={Math.round(rotation)}
+      aria-valuetext={`${Math.round(degrees)} degrees, ${revolutions} revolutions`}
+      aria-label="Analog dial"
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
+      onKeyDown={handleKeyDown}
     >
       <AnisotropicButton
         disabled={disabled}
@@ -141,6 +181,8 @@ export function Dial({
         rotation={rotation}
         containerClassName="w-full h-full"
         className="w-full h-full"
+        tabIndex={-1}
+        aria-hidden="true"
         style={{ pointerEvents: isDragging ? 'none' : 'auto' }}
       >
         <div

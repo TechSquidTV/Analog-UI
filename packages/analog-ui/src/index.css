@@ -1,24 +1,167 @@
 @import 'tailwindcss';
 @source "./**/*.{ts,tsx}";
+@custom-variant dark (&:is(.dark *));
 
-@theme {
-  --color-background: #080808;
-  --color-surface-1: #1a1a1a;
-  --color-surface-2: #333333;
-  --color-surface-3: #eeeeee;
-  --color-accent: #5b5b5b;
-  --color-amber-bg: #e6a42e;
-  --color-amber-glow: #d19324;
-  --color-green-bg: #67b557;
-  --color-green-glow: #5ca34d;
-  --spacing-track-padding: 4px;
+:root {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.556 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.372 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.268 0 0);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.556 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.556 0 0);
+  --chart-4: oklch(0.556 0 0);
+  --chart-5: oklch(0.556 0 0);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.985 0 0);
+  --sidebar-primary-foreground: oklch(0.205 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+  --font-sans: "Helvetica Neue", Arial, sans-serif;
+  --font-serif: "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+  --radius: 0.75rem;
+  --spacing: 0.25rem;
+  --analog-surface-cavity: color-mix(in oklch, var(--background) 84%, black);
+  --analog-surface-cavity-strong: color-mix(in oklch, var(--card) 70%, black);
+  --analog-surface-panel: color-mix(in oklch, var(--card) 88%, black);
+  --analog-surface-raised: color-mix(in oklch, var(--card) 82%, white 6%);
+  --analog-surface-metal-hi: color-mix(in oklch, var(--secondary) 78%, white);
+  --analog-surface-metal-mid: color-mix(in oklch, var(--secondary) 58%, var(--foreground));
+  --analog-surface-metal-lo: color-mix(in oklch, var(--muted-foreground) 42%, black);
+  --analog-surface-onyx-hi: color-mix(in oklch, var(--card) 88%, white 8%);
+  --analog-surface-onyx-mid: color-mix(in oklch, var(--card) 76%, black 12%);
+  --analog-surface-onyx-lo: color-mix(in oklch, var(--background) 90%, black 10%);
+  --analog-annotation: color-mix(in oklch, var(--foreground) 62%, var(--muted-foreground));
+  --analog-legend: color-mix(in oklch, var(--foreground) 48%, var(--muted-foreground));
+  --analog-telemetry-label: color-mix(in oklch, var(--foreground) 34%, var(--muted-foreground));
+  --analog-telemetry-value: color-mix(in oklch, var(--accent) 62%, var(--foreground));
+  --analog-led-red-base: oklch(0.583 0.239 28.477);
+  --analog-led-red-core: oklch(0.84 0.09 24);
+  --analog-led-red-glow: color-mix(in oklch, var(--analog-led-red-base) 82%, white);
+  --analog-led-amber-base: oklch(0.74 0.14 72);
+  --analog-led-amber-core: oklch(0.95 0.05 96);
+  --analog-led-amber-glow: color-mix(in oklch, var(--analog-led-amber-base) 78%, white);
+  --analog-led-green-base: oklch(0.69 0.16 142);
+  --analog-led-green-core: oklch(0.91 0.05 150);
+  --analog-led-green-glow: color-mix(in oklch, var(--analog-led-green-base) 76%, white);
+  --analog-led-blue-base: oklch(0.63 0.15 250);
+  --analog-led-blue-core: oklch(0.9 0.04 245);
+  --analog-led-blue-glow: color-mix(in oklch, var(--analog-led-blue-base) 78%, white);
+  --analog-led-white-base: color-mix(in oklch, var(--foreground) 92%, var(--secondary));
+  --analog-led-white-core: white;
+  --analog-led-white-glow: color-mix(in oklch, white 84%, var(--foreground));
+  --analog-shadow-depth: 0.9;
+  --analog-bevel-width: calc(var(--spacing) * 1);
+  --analog-grain-opacity: 0.18;
+  --analog-foil-opacity: 0.3;
+  --analog-bloom-strength: 0.7;
+  --analog-track-padding: calc(var(--spacing) * 1);
+  --analog-light-source: 180deg;
+  --spacing-track-padding: var(--analog-track-padding);
+  --color-surface-1: var(--analog-surface-panel);
+  --color-surface-2: var(--analog-surface-raised);
+  --color-surface-3: var(--analog-surface-metal-hi);
+  --color-amber-bg: var(--analog-led-amber-base);
+  --color-amber-glow: var(--analog-led-amber-glow);
+  --color-green-bg: var(--analog-led-green-base);
+  --color-green-glow: var(--analog-led-green-glow);
+}
+
+.dark {
+  --analog-surface-cavity: color-mix(in oklch, var(--background) 90%, black);
+  --analog-surface-cavity-strong: color-mix(in oklch, var(--card) 76%, black);
+  --analog-surface-panel: color-mix(in oklch, var(--card) 84%, black);
+  --analog-surface-raised: color-mix(in oklch, var(--card) 76%, white 4%);
+  --analog-surface-metal-hi: color-mix(in oklch, var(--secondary) 56%, white);
+  --analog-surface-metal-mid: color-mix(in oklch, var(--secondary) 74%, var(--foreground));
+  --analog-surface-metal-lo: color-mix(in oklch, var(--muted-foreground) 50%, black);
+  --analog-surface-onyx-hi: color-mix(in oklch, var(--card) 92%, white 6%);
+  --analog-surface-onyx-mid: color-mix(in oklch, var(--card) 82%, black 10%);
+  --analog-surface-onyx-lo: color-mix(in oklch, var(--background) 94%, black 8%);
+  --analog-shadow-depth: 1.05;
+  --analog-grain-opacity: 0.14;
+  --analog-foil-opacity: 0.22;
+  --analog-bloom-strength: 0.62;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-analog-surface-cavity: var(--analog-surface-cavity);
+  --color-analog-surface-panel: var(--analog-surface-panel);
+  --color-analog-surface-metal-hi: var(--analog-surface-metal-hi);
+  --color-analog-surface-metal-mid: var(--analog-surface-metal-mid);
+  --color-analog-surface-metal-lo: var(--analog-surface-metal-lo);
+  --color-analog-led-amber-base: var(--analog-led-amber-base);
+  --color-analog-led-amber-glow: var(--analog-led-amber-glow);
+  --color-analog-led-green-base: var(--analog-led-green-base);
+  --color-analog-led-green-glow: var(--analog-led-green-glow);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --font-serif: var(--font-serif);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
 }
 
 @layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
   body {
-    background-color: var(--color-background);
-    color: #fff;
-    font-family: 'Helvetica Neue', Arial, sans-serif;
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans);
   }
 }
 
@@ -29,7 +172,7 @@
   .analog-surface-recess {
     --recess-depth: 4px;
     --recess-depth-inner: 2px;
-    background-color: #171717;
+    background-color: var(--analog-surface-cavity);
     box-shadow:
       inset calc(sin(var(--analog-light-angle-track, 180deg)) * var(--recess-depth))
         calc(cos(var(--analog-light-angle-track, 180deg)) * calc(-1 * var(--recess-depth)))
@@ -45,7 +188,7 @@
   .analog-surface-recess-sm {
     --recess-depth: 2px;
     --recess-depth-inner: 1px;
-    background-color: #171717;
+    background-color: var(--analog-surface-cavity);
     box-shadow:
       inset calc(sin(var(--analog-light-angle-track, 180deg)) * var(--recess-depth))
         calc(cos(var(--analog-light-angle-track, 180deg)) * calc(-1 * var(--recess-depth)))
@@ -59,7 +202,7 @@
   }
 
   .analog-track-slot {
-    --analog-track-slot-base: #050505;
+    --analog-track-slot-base: var(--analog-surface-cavity-strong);
     --analog-track-slot-gradient-highlight-alpha: 0.08;
     --analog-track-slot-gradient-shadow-alpha: 0.6;
     --analog-track-slot-inset-highlight-alpha: 0.08;
@@ -128,7 +271,7 @@
   }
 
   .analog-track-slot-deep {
-    --analog-track-slot-base: #111;
+    --analog-track-slot-base: var(--analog-surface-panel);
     --analog-track-slot-gradient-shadow-alpha: 0.42;
     --analog-track-slot-inset-highlight-alpha: 0.06;
     --analog-track-slot-inset-shadow-alpha: 0.55;
@@ -149,7 +292,7 @@
   }
 
   .analog-track-slot-guide {
-    background: rgba(38, 38, 38, 0.5);
+    background: color-mix(in oklch, var(--analog-surface-raised) 50%, transparent);
     box-shadow:
       0 0 0 0.5px rgba(255, 255, 255, calc(0.04 * var(--analog-light-power, 1))),
       0 0 4px rgba(0, 0, 0, calc(0.35 * var(--analog-light-power, 1)));
@@ -186,15 +329,10 @@
   }
 
   .anisotropic-btn {
-    @apply relative appearance-none overflow-hidden border-0 bg-[#A0A4A8] text-zinc-100 tracking-wide rounded-full;
+    @apply relative appearance-none overflow-hidden border-0 text-foreground tracking-wide rounded-full;
+    background-color: var(--analog-surface-metal-mid);
     font-family: inherit;
     transform: translateZ(0); /* Force GPU layer to isolate conic-gradients */
-
-    /* 
-     * To use the custom brushed metal texture you provided:
-     * 1. Drag and drop the image into the Explorer pane in AI Studio (this puts it in /public or /assets)
-     * 2. Replace the URL below with `url('/brushed-metal.jpg')` or whatever the filename is.
-     */
     --foil: url('./texture.png');
 
     box-shadow:
@@ -205,7 +343,7 @@
   }
 
   .anisotropic-btn.variant-black {
-    @apply bg-[#151515];
+    background-color: var(--analog-surface-onyx-lo);
     box-shadow:
       0 0 0 1px inset rgba(255, 255, 255, calc(0.1 * var(--analog-light-power, 1))),
       0 8px 16px -4px rgba(0, 0, 0, calc(0.8 * var(--analog-light-power, 1))),
@@ -327,16 +465,72 @@
   }
 
   .analog-switch-face {
+    --foil: url('./texture.png');
     transform-style: preserve-3d;
     transition: all 0.3s cubic-bezier(1, 0, 1, 1);
+  }
+
+  .analog-switch-lighting {
+    border-radius: inherit;
+    pointer-events: none;
+  }
+
+  .analog-switch-lighting.variant-chrome {
+    mix-blend-mode: screen;
+    opacity: calc(0.95 * var(--analog-light-power, 1));
+    background:
+      radial-gradient(
+        circle at
+          calc(50% + sin(var(--analog-light-angle-thumb, 180deg)) * 22%)
+          calc(50% + cos(var(--analog-light-angle-thumb, 180deg)) * -22%),
+        rgba(255, 255, 255, 0.92) 0%,
+        rgba(255, 255, 255, 0.48) 18%,
+        rgba(255, 255, 255, 0.18) 36%,
+        rgba(255, 255, 255, 0.04) 52%,
+        transparent 72%
+      ),
+      linear-gradient(
+        calc(var(--analog-light-angle-thumb, 180deg) - 90deg),
+        rgba(255, 255, 255, 0.24) 0%,
+        rgba(255, 255, 255, 0.08) 38%,
+        rgba(0, 0, 0, 0.06) 72%,
+        rgba(0, 0, 0, 0.18) 100%
+      );
+  }
+
+  .analog-switch-lighting.variant-black {
+    mix-blend-mode: screen;
+    opacity: calc(0.58 * var(--analog-light-power, 1));
+    background:
+      radial-gradient(
+        circle at
+          calc(50% + sin(var(--analog-light-angle-thumb, 180deg)) * 18%)
+          calc(50% + cos(var(--analog-light-angle-thumb, 180deg)) * -18%),
+        rgba(255, 255, 255, 0.42) 0%,
+        rgba(255, 255, 255, 0.22) 18%,
+        rgba(255, 255, 255, 0.08) 34%,
+        transparent 64%
+      ),
+      linear-gradient(
+        calc(var(--analog-light-angle-thumb, 180deg) - 90deg),
+        rgba(255, 255, 255, 0.08) 0%,
+        rgba(255, 255, 255, 0.03) 36%,
+        rgba(0, 0, 0, 0.12) 74%,
+        rgba(0, 0, 0, 0.26) 100%
+      );
+  }
+
+  .analog-switch-foil {
+    background-size: 260%;
+    background-position: center;
   }
 
   .analog-switch-face.variant-chrome {
     background: linear-gradient(
       calc(var(--analog-light-angle-thumb, 180deg) - 90deg),
-      #b5b5b5,
-      #e5e5e5 50%,
-      #8a8a8a
+      var(--analog-surface-metal-mid),
+      var(--analog-surface-metal-hi) 50%,
+      var(--analog-surface-metal-lo)
     );
     box-shadow:
       12px 6px 15px -4px rgba(0, 0, 0, calc(0.7 * var(--analog-light-power, 1))),
@@ -347,9 +541,9 @@
   .group[data-checked] .analog-switch-face.variant-chrome {
     background: linear-gradient(
       calc(var(--analog-light-angle-thumb, 180deg) - 90deg),
-      #8a8a8a,
-      #e5e5e5 50%,
-      #b5b5b5
+      var(--analog-surface-metal-lo),
+      var(--analog-surface-metal-hi) 50%,
+      var(--analog-surface-metal-mid)
     );
     box-shadow:
       -12px 6px 15px -4px rgba(0, 0, 0, calc(0.7 * var(--analog-light-power, 1))),
@@ -361,9 +555,9 @@
   .analog-switch-face.variant-black {
     background: linear-gradient(
       calc(var(--analog-light-angle-thumb, 180deg) - 90deg),
-      #242424,
-      #3a3a3a 50%,
-      #151515
+      var(--analog-surface-onyx-mid),
+      var(--analog-surface-onyx-hi) 50%,
+      var(--analog-surface-onyx-lo)
     );
     box-shadow:
       12px 6px 15px -4px rgba(0, 0, 0, calc(0.95 * var(--analog-light-power, 1))),
@@ -374,9 +568,9 @@
   .group[data-checked] .analog-switch-face.variant-black {
     background: linear-gradient(
       calc(var(--analog-light-angle-thumb, 180deg) - 90deg),
-      #151515,
-      #3a3a3a 50%,
-      #242424
+      var(--analog-surface-onyx-lo),
+      var(--analog-surface-onyx-hi) 50%,
+      var(--analog-surface-onyx-mid)
     );
     box-shadow:
       -12px 6px 15px -4px rgba(0, 0, 0, calc(0.95 * var(--analog-light-power, 1))),

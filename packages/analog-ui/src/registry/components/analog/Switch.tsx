@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Switch as BaseSwitch } from '@base-ui/react';
 import { cn } from '../../../lib/utils';
+import { useMergedRefs } from '../../../lib/refs';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 
 export interface AnalogSwitchProps extends React.ComponentPropsWithoutRef<typeof BaseSwitch.Root> {
@@ -11,7 +12,7 @@ export interface AnalogSwitchProps extends React.ComponentPropsWithoutRef<typeof
 export const AnalogSwitch = React.forwardRef<HTMLButtonElement, AnalogSwitchProps>(
   ({ className, variant = 'chrome', lighting, ...props }, ref) => {
     const internalRef = React.useRef<HTMLButtonElement>(null);
-    const mergedRef = (ref || internalRef) as React.RefObject<HTMLButtonElement>;
+    const mergedRef = useMergedRefs(ref, internalRef);
 
     const isChrome = variant === 'chrome';
     const switchLighting: AnalogLightingConfig<'track' | 'thumb'> = {
@@ -84,20 +85,15 @@ export const AnalogSwitch = React.forwardRef<HTMLButtonElement, AnalogSwitchProp
                 {/* Dial Conic Gradient for Anisotropic Specular Highlight */}
                 <div
                   className={cn(
-                    'absolute inset-0 mix-blend-overlay z-[1]',
-                    isChrome ? 'opacity-100' : 'opacity-[0.4]',
+                    'analog-switch-lighting absolute inset-0 z-[1]',
+                    `variant-${variant}`,
                   )}
-                  style={{
-                    background: isChrome
-                      ? `conic-gradient(from calc(var(--analog-light-angle-thumb, 180deg) - 135deg) at 10% 10%, rgba(255,255,255,0.8), transparent 30%, rgba(255,255,255,0.8) 70%, transparent 90%)`
-                      : `conic-gradient(from calc(var(--analog-light-angle-thumb, 180deg) - 135deg) at 10% 10%, rgba(255,255,255,0.4), transparent 30%, rgba(255,255,255,0.4) 70%, transparent 90%)`,
-                  }}
                 />
 
                 {/* Foil texture wrap for the knob */}
                 <div
                   className={cn(
-                    'analog-foil z-[2]',
+                    'analog-foil analog-switch-foil z-[2]',
                     isChrome
                       ? 'opacity-30 mix-blend-screen'
                       : 'opacity-20 filter grayscale brightness-50',

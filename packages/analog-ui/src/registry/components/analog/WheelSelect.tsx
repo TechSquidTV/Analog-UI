@@ -39,6 +39,7 @@ export function AnalogWheelSelect({
   const [internalValue, setInternalValue] = useState(options[0] || '');
   const selectedValue = value !== undefined ? value : internalValue;
   const initialIndex = Math.max(0, options.indexOf(selectedValue));
+  const optionIdBase = React.useId();
 
   const [activeIndex, setActiveIndex] = useState(initialIndex);
 
@@ -66,6 +67,33 @@ export function AnalogWheelSelect({
   const grabDirectionFactor = getWheelDirectionFactor(grabDirection);
   const scrollDirectionFactor = getWheelDirectionFactor(scrollDirection);
   const maxWheelOffset = maxIndex * itemHeight * grabDirectionFactor;
+  const animateToIndex = React.useCallback(
+    (nextIndex: number) => {
+      animate(y, nextIndex * itemHeight * grabDirectionFactor, {
+        type: 'spring',
+        stiffness: 300,
+        damping: 30,
+      });
+    },
+    [grabDirectionFactor, itemHeight, y],
+  );
+  const clampIndex = React.useCallback(
+    (nextIndex: number) => Math.min(maxIndex, Math.max(0, nextIndex)),
+    [maxIndex],
+  );
+  const commitIndex = React.useCallback(
+    (nextIndex: number) => {
+      const clampedIndex = clampIndex(nextIndex);
+      animateToIndex(clampedIndex);
+
+      if (value === undefined) {
+        setInternalValue(options[clampedIndex]);
+      }
+
+      onValueChange?.(options[clampedIndex]);
+    },
+    [animateToIndex, clampIndex, onValueChange, options, value],
+  );
 
   useEffect(() => {
     return y.on('change', (latest) => {
@@ -84,57 +112,62 @@ export function AnalogWheelSelect({
 
   const handleDragEnd = () => {
     const currentY = y.get();
-    let index = Math.round((currentY / itemHeight) * grabDirectionFactor);
-
-    if (index < 0) index = 0;
-    if (index >= options.length) index = options.length - 1;
-
-    if (value === undefined) {
-      setInternalValue(options[index]);
-    }
-
-    if (onValueChange) {
-      onValueChange(options[index]);
-    } else {
-      // Snap back if unmanaged
-      animate(y, index * itemHeight * grabDirectionFactor, {
-        type: 'spring',
-        stiffness: 300,
-        damping: 30,
-      });
-    }
+    const index = clampIndex(Math.round((currentY / itemHeight) * grabDirectionFactor));
+    commitIndex(index);
   };
 
   useWheelScroll(
     containerRef,
-    React.useCallback(
-      (e, deltaDirection) => {
-        let newIndex = activeIndex + deltaDirection * scrollDirectionFactor;
-        if (newIndex < 0) newIndex = 0;
-        if (newIndex >= options.length) newIndex = options.length - 1;
+      React.useCallback(
+        (e, deltaDirection) => {
+          const newIndex = clampIndex(activeIndex + deltaDirection * scrollDirectionFactor);
 
-        if (newIndex !== activeIndex) {
-          animate(y, newIndex * itemHeight * grabDirectionFactor, {
-            type: 'spring',
-            stiffness: 300,
-            damping: 30,
-          });
-          if (value === undefined) setInternalValue(options[newIndex]);
-          if (onValueChange) onValueChange(options[newIndex]);
-        }
-      },
-      [
-        activeIndex,
-        options,
-        value,
-        onValueChange,
-        y,
-        itemHeight,
-        grabDirectionFactor,
-        scrollDirectionFactor,
-      ],
-    ),
-  );
+          if (newIndex !== activeIndex) {
+            commitIndex(newIndex);
+          }
+        },
+        [
+          activeIndex,
+          clampIndex,
+          commitIndex,
+          scrollDirectionFactor,
+        ],
+      ),
+    );
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    let nextIndex: number | null = null;
+
+    switch (e.key) {
+      case 'ArrowUp':
+      case 'ArrowLeft':
+        nextIndex = activeIndex - 1;
+        break;
+      case 'ArrowDown':
+      case 'ArrowRight':
+        nextIndex = activeIndex + 1;
+        break;
+      case 'PageUp':
+        nextIndex = activeIndex - 5;
+        break;
+      case 'PageDown':
+        nextIndex = activeIndex + 5;
+        break;
+      case 'Home':
+        nextIndex = 0;
+        break;
+      case 'End':
+        nextIndex = maxIndex;
+        break;
+      default:
+        break;
+    }
+
+    if (nextIndex !== null) {
+      e.preventDefault();
+      commitIndex(nextIndex);
+    }
+  };
 
   return (
     <div
@@ -150,9 +183,16 @@ export function AnalogWheelSelect({
         className={cn(
           'relative w-32 h-48 select-none touch-none overflow-hidden rounded-md analog-track-slot analog-track-slot-deep',
         )}
+        role="listbox"
+        tabIndex={0}
+        aria-label="Analog wheel select"
+        aria-orientation="vertical"
+        aria-activedescendant={`${optionIdBase}-${activeIndex}`}
         style={{
           perspective: 800,
         }}
+        onKeyDown={handleKeyDown}
+        onPointerDown={() => containerRef.current?.focus()}
       >
         <div className="analog-wheel-lighting" />
         {/* Selection highlight (overlay) */}
@@ -213,6 +253,9 @@ export function AnalogWheelSelect({
             return (
               <div
                 key={opt}
+                id={`${optionIdBase}-${i}`}
+                role="option"
+                aria-selected={selectedValue === opt}
                 className="absolute top-1/2 left-0 w-full h-[36px] -translate-y-1/2 flex items-center justify-center font-mono text-xs leading-none font-bold select-none drop-shadow-md z-10"
                 style={{
                   transformStyle: 'preserve-3d',

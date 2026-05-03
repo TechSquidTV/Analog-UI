@@ -1,89 +1,299 @@
 {
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
   "name": "Analog UI",
   "homepage": "https://analogui.com",
   "items": [
     {
-      "name": "dial",
-      "dependencies": ["@base-ui/react"],
-      "registryDependencies": ["anisotropic-button", "use-wheel-scroll"],
-      "files": ["src/registry/components/analog/Dial.tsx"],
-      "type": "components:ui"
+      "name": "analog-foundation",
+      "type": "registry:style",
+      "docs": "Install this foundation item with Analog UI controls to add the shared analog token layer. The tactile control recipes still live in the package stylesheet while they are being migrated into per-item registry CSS.",
+      "cssVars": {
+        "theme": {
+          "analog-shadow-depth": "0.9",
+          "analog-bevel-width": "calc(var(--spacing) * 1)",
+          "analog-grain-opacity": "0.18",
+          "analog-foil-opacity": "0.3",
+          "analog-bloom-strength": "0.7",
+          "analog-track-padding": "calc(var(--spacing) * 1)",
+          "analog-light-source": "180deg"
+        },
+        "light": {
+          "analog-surface-cavity": "color-mix(in oklch, var(--background) 84%, black)",
+          "analog-surface-cavity-strong": "color-mix(in oklch, var(--card) 70%, black)",
+          "analog-surface-panel": "color-mix(in oklch, var(--card) 88%, black)",
+          "analog-surface-raised": "color-mix(in oklch, var(--card) 82%, white 6%)",
+          "analog-surface-metal-hi": "color-mix(in oklch, var(--secondary) 78%, white)",
+          "analog-surface-metal-mid": "color-mix(in oklch, var(--secondary) 58%, var(--foreground))",
+          "analog-surface-metal-lo": "color-mix(in oklch, var(--muted-foreground) 42%, black)",
+          "analog-surface-onyx-hi": "color-mix(in oklch, var(--card) 88%, white 8%)",
+          "analog-surface-onyx-mid": "color-mix(in oklch, var(--card) 76%, black 12%)",
+          "analog-surface-onyx-lo": "color-mix(in oklch, var(--background) 90%, black 10%)",
+          "analog-led-amber-base": "oklch(0.74 0.14 72)",
+          "analog-led-amber-glow": "color-mix(in oklch, var(--analog-led-amber-base) 78%, white)",
+          "analog-led-green-base": "oklch(0.69 0.16 142)",
+          "analog-led-green-glow": "color-mix(in oklch, var(--analog-led-green-base) 76%, white)"
+        },
+        "dark": {
+          "analog-surface-cavity": "color-mix(in oklch, var(--background) 90%, black)",
+          "analog-surface-cavity-strong": "color-mix(in oklch, var(--card) 76%, black)",
+          "analog-surface-panel": "color-mix(in oklch, var(--card) 84%, black)",
+          "analog-surface-raised": "color-mix(in oklch, var(--card) 76%, white 4%)",
+          "analog-surface-metal-hi": "color-mix(in oklch, var(--secondary) 56%, white)",
+          "analog-surface-metal-mid": "color-mix(in oklch, var(--secondary) 74%, var(--foreground))",
+          "analog-surface-metal-lo": "color-mix(in oklch, var(--muted-foreground) 50%, black)",
+          "analog-surface-onyx-hi": "color-mix(in oklch, var(--card) 92%, white 6%)",
+          "analog-surface-onyx-mid": "color-mix(in oklch, var(--card) 82%, black 10%)",
+          "analog-surface-onyx-lo": "color-mix(in oklch, var(--background) 94%, black 8%)",
+          "analog-shadow-depth": "1.05",
+          "analog-grain-opacity": "0.14",
+          "analog-foil-opacity": "0.22",
+          "analog-bloom-strength": "0.62"
+        }
+      }
     },
     {
-      "name": "anisotropic-button",
-      "dependencies": ["@base-ui/react"],
-      "files": ["src/registry/components/analog/AnisotropicButton.tsx"],
-      "type": "components:ui"
+      "name": "utils",
+      "type": "registry:lib",
+      "dependencies": ["clsx", "tailwind-merge"],
+      "files": [
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib"
+        }
+      ]
     },
     {
-      "name": "meter",
-      "dependencies": ["@base-ui/react"],
-      "files": ["src/registry/components/analog/Meter.tsx"],
-      "type": "components:ui"
+      "name": "refs",
+      "type": "registry:lib",
+      "files": [
+        {
+          "path": "src/lib/refs.ts",
+          "type": "registry:lib"
+        }
+      ]
     },
     {
-      "name": "slider",
-      "dependencies": ["@base-ui/react"],
-      "files": ["src/registry/components/analog/Slider.tsx"],
-      "type": "components:ui"
+      "name": "angle-utils",
+      "type": "registry:lib",
+      "files": [
+        {
+          "path": "src/registry/hooks/angle-utils.ts",
+          "type": "registry:lib"
+        }
+      ]
     },
     {
-      "name": "switch",
-      "dependencies": ["@base-ui/react"],
-      "files": ["src/registry/components/analog/Switch.tsx"],
-      "type": "components:ui"
-    },
-    {
-      "name": "toggle",
-      "dependencies": ["@base-ui/react"],
-      "files": ["src/registry/components/analog/Toggle.tsx"],
-      "type": "components:ui"
-    },
-    {
-      "name": "indicator",
-      "dependencies": [],
-      "files": ["src/registry/components/analog/Indicator.tsx"],
-      "type": "components:ui"
-    },
-    {
-      "name": "wheel-number",
-      "dependencies": ["@base-ui/react", "motion", "lucide-react"],
-      "registryDependencies": ["use-wheel-scroll"],
-      "files": ["src/registry/components/analog/WheelNumber.tsx"],
-      "type": "components:ui"
-    },
-    {
-      "name": "wheel-select",
-      "dependencies": ["motion"],
-      "registryDependencies": ["use-wheel-scroll"],
-      "files": ["src/registry/components/analog/WheelSelect.tsx"],
-      "type": "components:ui"
-    },
-    {
-      "name": "gauge",
-      "dependencies": ["@base-ui/react"],
-      "registryDependencies": ["anisotropic-button"],
-      "files": ["src/registry/components/analog/Gauge.tsx"],
-      "type": "components:ui"
+      "name": "use-analog-lighting",
+      "type": "registry:hook",
+      "registryDependencies": ["angle-utils"],
+      "files": [
+        {
+          "path": "src/registry/hooks/use-analog-lighting.tsx",
+          "type": "registry:hook"
+        }
+      ]
     },
     {
       "name": "use-wheel-scroll",
-      "dependencies": [],
-      "files": ["src/registry/hooks/use-wheel-scroll.ts"],
-      "type": "registry:hook"
+      "type": "registry:hook",
+      "files": [
+        {
+          "path": "src/registry/hooks/use-wheel-scroll.ts",
+          "type": "registry:hook"
+        }
+      ]
     },
     {
       "name": "use-mouse-lumination",
+      "type": "registry:hook",
       "dependencies": ["motion"],
-      "files": ["src/registry/hooks/use-mouse-lumination.ts"],
-      "type": "registry:hook"
+      "registryDependencies": ["angle-utils"],
+      "files": [
+        {
+          "path": "src/registry/hooks/use-mouse-lumination.ts",
+          "type": "registry:hook"
+        }
+      ]
+    },
+    {
+      "name": "wheel-interaction",
+      "type": "registry:lib",
+      "files": [
+        {
+          "path": "src/registry/components/analog/wheel-interaction.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "rocker-thumb-surface",
+      "type": "registry:component",
+      "registryDependencies": ["analog-foundation", "utils"],
+      "files": [
+        {
+          "path": "src/registry/components/analog/RockerThumbSurface.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "anisotropic-button",
+      "type": "registry:ui",
+      "dependencies": ["@base-ui/react"],
+      "registryDependencies": ["analog-foundation", "refs", "use-analog-lighting", "utils"],
+      "files": [
+        {
+          "path": "src/registry/components/analog/AnisotropicButton.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "dial",
+      "type": "registry:ui",
+      "registryDependencies": [
+        "analog-foundation",
+        "anisotropic-button",
+        "use-analog-lighting",
+        "use-wheel-scroll",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "src/registry/components/analog/Dial.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "gauge",
+      "type": "registry:ui",
+      "dependencies": ["@base-ui/react"],
+      "registryDependencies": ["analog-foundation", "anisotropic-button", "use-analog-lighting", "utils"],
+      "files": [
+        {
+          "path": "src/registry/components/analog/Gauge.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "meter",
+      "type": "registry:ui",
+      "dependencies": ["@base-ui/react"],
+      "registryDependencies": ["analog-foundation", "use-analog-lighting", "utils"],
+      "files": [
+        {
+          "path": "src/registry/components/analog/Meter.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "slider",
+      "type": "registry:ui",
+      "dependencies": ["@base-ui/react"],
+      "registryDependencies": [
+        "analog-foundation",
+        "rocker-thumb-surface",
+        "use-analog-lighting",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "src/registry/components/analog/Slider.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "switch",
+      "type": "registry:ui",
+      "dependencies": ["@base-ui/react"],
+      "registryDependencies": ["analog-foundation", "refs", "use-analog-lighting", "utils"],
+      "files": [
+        {
+          "path": "src/registry/components/analog/Switch.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "indicator",
+      "type": "registry:ui",
+      "registryDependencies": ["analog-foundation", "use-analog-lighting", "utils"],
+      "files": [
+        {
+          "path": "src/registry/components/analog/Indicator.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "toggle",
+      "type": "registry:ui",
+      "dependencies": ["@base-ui/react"],
+      "registryDependencies": [
+        "analog-foundation",
+        "indicator",
+        "refs",
+        "rocker-thumb-surface",
+        "use-analog-lighting",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "src/registry/components/analog/Toggle.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "wheel-number",
+      "type": "registry:ui",
+      "dependencies": ["@base-ui/react", "motion", "lucide-react"],
+      "registryDependencies": [
+        "analog-foundation",
+        "use-analog-lighting",
+        "use-wheel-scroll",
+        "utils",
+        "wheel-interaction"
+      ],
+      "files": [
+        {
+          "path": "src/registry/components/analog/WheelNumber.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "wheel-select",
+      "type": "registry:ui",
+      "dependencies": ["motion"],
+      "registryDependencies": [
+        "analog-foundation",
+        "use-analog-lighting",
+        "use-wheel-scroll",
+        "utils",
+        "wheel-interaction"
+      ],
+      "files": [
+        {
+          "path": "src/registry/components/analog/WheelSelect.tsx",
+          "type": "registry:ui"
+        }
+      ]
     },
     {
       "name": "panel",
-      "dependencies": [],
-      "registryDependencies": [],
-      "files": ["src/registry/components/analog/Panel.tsx"],
-      "type": "components:ui"
+      "type": "registry:ui",
+      "registryDependencies": ["analog-foundation", "anisotropic-button", "use-analog-lighting", "utils"],
+      "files": [
+        {
+          "path": "src/registry/components/analog/Panel.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

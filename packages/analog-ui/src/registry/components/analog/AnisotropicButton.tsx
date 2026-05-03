@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { Button } from '@base-ui/react';
 import { cn } from '../../../lib/utils';
+import { useMergedRefs } from '../../../lib/refs';
 import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 
@@ -29,7 +30,7 @@ export const AnisotropicButton = React.forwardRef<HTMLButtonElement, Props>(
     forwardedRef,
   ) => {
     const internalRef = useRef<HTMLButtonElement>(null);
-    const buttonRef = (forwardedRef as React.RefObject<HTMLButtonElement | null>) || internalRef;
+    const mergedRef = useMergedRefs(forwardedRef, internalRef);
     const lightingStyle = useAnalogLighting(['surface'], lighting);
 
     const rawX = useMotionValue(0);
@@ -42,8 +43,8 @@ export const AnisotropicButton = React.forwardRef<HTMLButtonElement, Props>(
     const springCenter = useSpring(rawCenter, springConfig);
 
     const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement>) => {
-      if (!buttonRef.current) return;
-      const rect = buttonRef.current.getBoundingClientRect();
+      if (!internalRef.current) return;
+      const rect = internalRef.current.getBoundingClientRect();
       const absoluteX = e.clientX - rect.left;
       const absoluteY = e.clientY - rect.top;
       const centerX = rect.width / 2;
@@ -79,7 +80,7 @@ export const AnisotropicButton = React.forwardRef<HTMLButtonElement, Props>(
     return (
       <div className={cn('inline-flex', containerClassName)}>
         <Button
-          ref={buttonRef}
+          ref={mergedRef}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
           className={cn('anisotropic-btn', `variant-${variant}`, className)}
