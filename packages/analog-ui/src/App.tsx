@@ -14,7 +14,12 @@ import { AnalogSlider } from './registry/components/analog/Slider';
 import { AnalogMeter } from './registry/components/analog/Meter';
 import { AnalogWheelSelect } from './registry/components/analog/WheelSelect';
 import { AnalogWheelNumber } from './registry/components/analog/WheelNumber';
-import { AnalogIndicator } from './registry/components/analog/Indicator';
+import {
+  AnalogIndicator,
+  type AnalogIndicatorColor,
+  type AnalogIndicatorShape,
+  type AnalogIndicatorSize,
+} from './registry/components/analog/Indicator';
 import { Gauge } from './registry/components/analog/Gauge';
 import {
   Panel,
@@ -90,12 +95,8 @@ export default function App() {
   const [verticalToggle2, setVerticalToggle2] = useState<'left' | 'right'>('left');
 
   // LED Config for Toggles
-  const [togglesLeftLed, setTogglesLeftLed] = useState<
-    'red' | 'green' | 'amber' | 'blue' | 'white' | 'none'
-  >('none');
-  const [togglesRightLed, setTogglesRightLed] = useState<
-    'red' | 'green' | 'amber' | 'blue' | 'white' | 'none'
-  >('none');
+  const [togglesLeftLed, setTogglesLeftLed] = useState<AnalogIndicatorColor>('none');
+  const [togglesRightLed, setTogglesRightLed] = useState<AnalogIndicatorColor>('none');
   const [togglesLeftActive, setTogglesLeftActive] = useState<'auto' | 'always' | 'never'>('auto');
   const [togglesRightActive, setTogglesRightActive] = useState<'auto' | 'always' | 'never'>('auto');
 
@@ -108,11 +109,11 @@ export default function App() {
   const [fader2, setFader2] = useState(0);
 
   const [indicatorOn, setIndicatorOn] = useState(false);
-  const [indicatorColor, setIndicatorColor] = useState<
-    'red' | 'green' | 'amber' | 'blue' | 'white'
-  >('red');
-  const [indicatorSize, setIndicatorSize] = useState<'sm' | 'md' | 'lg' | 'xl'>('lg');
-  const [indicatorShape, setIndicatorShape] = useState<'round' | 'square'>('round');
+  const [indicatorColor, setIndicatorColor] =
+    useState<Exclude<AnalogIndicatorColor, 'none'>>('red');
+  const [indicatorSize, setIndicatorSize] = useState<Exclude<AnalogIndicatorSize, 'xs'>>('lg');
+  const [indicatorShape, setIndicatorShape] = useState<AnalogIndicatorShape>('round');
+  const [indicatorHasBezel, setIndicatorHasBezel] = useState(true);
 
   // Audio meter logic
   const meter = useAudioMeter();
@@ -669,6 +670,12 @@ export default function App() {
                 </select>
               ),
             },
+            {
+              label: 'Bezel',
+              value: (
+                <AnalogSwitch checked={indicatorHasBezel} onCheckedChange={setIndicatorHasBezel} />
+              ),
+            },
           ]}
         >
           <div className="flex gap-16 items-center justify-center py-12">
@@ -679,6 +686,7 @@ export default function App() {
                 size={indicatorSize}
                 shape={indicatorShape}
                 variant="chrome"
+                disableBezel={!indicatorHasBezel}
               />
               <span className="font-mono text-[10px] text-[#555] uppercase tracking-widest font-bold">
                 Chrome
@@ -691,6 +699,7 @@ export default function App() {
                 size={indicatorSize}
                 shape={indicatorShape}
                 variant="black"
+                disableBezel={!indicatorHasBezel}
               />
               <span className="font-mono text-[10px] text-[#555] uppercase tracking-widest font-bold">
                 Black

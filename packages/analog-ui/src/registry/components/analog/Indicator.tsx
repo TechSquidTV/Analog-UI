@@ -6,12 +6,22 @@ import {
   type AnalogLightingConfig,
 } from '../../hooks/use-analog-lighting';
 
+export type AnalogIndicatorColor = 'red' | 'green' | 'amber' | 'blue' | 'white' | 'none';
+export type AnalogIndicatorSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+export type AnalogIndicatorVariant = 'chrome' | 'black';
+export type AnalogIndicatorShape = 'round' | 'square';
+
 export interface AnalogIndicatorProps extends React.HTMLAttributes<HTMLDivElement> {
   isOn?: boolean;
-  color?: 'red' | 'green' | 'amber' | 'blue' | 'white' | 'none';
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-  variant?: 'chrome' | 'black' | 'none';
-  shape?: 'round' | 'square';
+  color?: AnalogIndicatorColor;
+  size?: AnalogIndicatorSize;
+  /**
+   * Bezel material when the bezel is visible.
+   * `variant="none"` is deprecated; use `disableBezel` instead.
+   */
+  variant?: AnalogIndicatorVariant | 'none';
+  disableBezel?: boolean;
+  shape?: AnalogIndicatorShape;
   lighting?: AnalogLightingConfig<'bezel' | 'lens'>;
 }
 
@@ -69,6 +79,8 @@ const glowMaps = {
   xl: { blur: '16px', shadow: '0 0 24px 4px', shadow2: '0 0 48px 12px' },
 };
 
+const lensInset = '16%';
+
 export const AnalogIndicator = React.forwardRef<HTMLDivElement, AnalogIndicatorProps>(
   (
     {
@@ -77,6 +89,7 @@ export const AnalogIndicator = React.forwardRef<HTMLDivElement, AnalogIndicatorP
       color = 'red',
       size = 'md',
       variant = 'chrome',
+      disableBezel = false,
       shape = 'round',
       lighting,
       ...props
@@ -86,8 +99,9 @@ export const AnalogIndicator = React.forwardRef<HTMLDivElement, AnalogIndicatorP
     const resolvedColor = color === 'none' ? 'red' : color;
     const palette = colorMaps[resolvedColor];
     const glow = glowMaps[size];
-    const isChrome = variant === 'chrome';
-    const hasBezel = variant !== 'none';
+    const resolvedVariant: AnalogIndicatorVariant = variant === 'none' ? 'chrome' : variant;
+    const isChrome = resolvedVariant === 'chrome';
+    const hasBezel = !disableBezel && variant !== 'none';
     const radius = shape === 'square' ? '15%' : '50%';
     const lightingStyle = useAnalogLighting(['bezel', 'lens'], lighting);
     const lensLightAngle = useAnalogLightAngle('lens', {}, lighting?.lens);
@@ -138,7 +152,8 @@ export const AnalogIndicator = React.forwardRef<HTMLDivElement, AnalogIndicatorP
         <div
           className="absolute overflow-hidden pointer-events-none"
           style={{
-            inset: hasBezel ? '16%' : '0%',
+            // Keep the jewel lens geometry stable even when the bezel is hidden.
+            inset: lensInset,
             borderRadius: shape === 'square' ? '8%' : '50%',
             backgroundColor: palette.bg,
             boxShadow: hasBezel
@@ -218,7 +233,7 @@ export const AnalogIndicator = React.forwardRef<HTMLDivElement, AnalogIndicatorP
             isOn ? 'opacity-100' : 'opacity-0',
           )}
           style={{
-            inset: hasBezel ? '16%' : '0%',
+            inset: lensInset,
             borderRadius: shape === 'square' ? '8%' : '50%',
             boxShadow: `${glow.shadow} ${palette.bloom}, ${glow.shadow2} ${palette.bloom}`,
             mixBlendMode: 'screen',

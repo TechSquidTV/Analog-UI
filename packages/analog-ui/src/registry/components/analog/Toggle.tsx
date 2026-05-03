@@ -3,7 +3,7 @@ import { ToggleGroup } from '@base-ui/react/toggle-group';
 import { Toggle } from '@base-ui/react/toggle';
 import { cn } from '../../../lib/utils';
 import { useMergedRefs } from '../../../lib/refs';
-import { AnalogIndicator } from './Indicator';
+import { AnalogIndicator, type AnalogIndicatorColor } from './Indicator';
 import { RockerThumbSurface } from './RockerThumbSurface';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 
@@ -16,8 +16,8 @@ export interface AnalogToggleProps extends Omit<
 > {
   variant?: 'chrome' | 'black';
   orientation?: AnalogToggleOrientation;
-  leftLed?: 'red' | 'green' | 'amber' | 'blue' | 'white' | 'none';
-  rightLed?: 'red' | 'green' | 'amber' | 'blue' | 'white' | 'none';
+  leftLed?: AnalogIndicatorColor;
+  rightLed?: AnalogIndicatorColor;
   leftLedActive?: 'auto' | 'always' | 'never';
   rightLedActive?: 'auto' | 'always' | 'never';
   value?: AnalogToggleValue;
@@ -188,7 +188,7 @@ export const AnalogToggle = React.forwardRef<HTMLDivElement, AnalogToggleProps>(
               >
                 <AnalogIndicator
                   size="xs"
-                  variant="none"
+                  disableBezel
                   shape="round"
                   color={leftLed}
                   isOn={
@@ -206,7 +206,7 @@ export const AnalogToggle = React.forwardRef<HTMLDivElement, AnalogToggleProps>(
               >
                 <AnalogIndicator
                   size="xs"
-                  variant="none"
+                  disableBezel
                   shape="round"
                   color={rightLed}
                   isOn={

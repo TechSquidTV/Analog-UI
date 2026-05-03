@@ -9,6 +9,14 @@ const variantStyles = {
   rack: 'border-[#2a2a2a] shadow-[inset_0_1px_1px_rgba(255,255,255,0.05),0_4px_12px_rgba(0,0,0,0.5)] bg-[#121212]',
 };
 
+export interface PanelProps extends React.HTMLAttributes<HTMLDivElement> {
+  variant?: 'default' | 'rack';
+  screws?: boolean;
+  screwVariant?: 'chrome' | 'black';
+  screwHole?: 'none' | 'slot' | 'cross' | 'star';
+  lighting?: AnalogLightingConfig<'panel' | 'screw'>;
+}
+
 const Screw = ({
   className,
   rotation,
@@ -93,16 +101,7 @@ const Screw = ({
   );
 };
 
-const Panel = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & {
-    variant?: 'default' | 'rack';
-    screws?: boolean;
-    screwVariant?: 'chrome' | 'black';
-    screwHole?: 'none' | 'slot' | 'cross' | 'star';
-    lighting?: AnalogLightingConfig<'panel' | 'screw'>;
-  }
->(
+const Panel = React.forwardRef<HTMLDivElement, PanelProps>(
   (
     {
       className,
