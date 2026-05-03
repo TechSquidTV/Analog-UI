@@ -1,4 +1,4 @@
-import React, { useEffect, RefObject } from 'react';
+import { useEffect, type RefObject } from 'react';
 
 export function useWheelScroll<T extends HTMLElement>(
   ref: RefObject<T | null>,

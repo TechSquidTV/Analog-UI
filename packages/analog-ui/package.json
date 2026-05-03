@@ -23,13 +23,16 @@
   "scripts": {
     "build": "tsup --config tsup.config.ts && node ./scripts/copy-assets.mjs",
     "dev": "pnpm run build && tsup --watch --config tsup.config.ts --onSuccess \"node ./scripts/copy-assets.mjs\"",
-    "lint": "tsc --noEmit",
+    "lint": "pnpm run lint:eslint && pnpm run typecheck",
+    "lint:eslint": "pnpm exec eslint .",
+    "knip": "pnpm -w exec knip --workspace analog-ui",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist"
   },
   "peerDependencies": {
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "tailwindcss": "^4.1.14"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",

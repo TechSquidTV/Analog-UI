@@ -41,10 +41,8 @@ const glowMaps = {
 
 export const AnalogIndicator = React.forwardRef<HTMLDivElement, AnalogIndicatorProps>(
   ({ className, isOn = false, color = 'red', size = 'md', variant = 'chrome', shape = 'round', lighting, ...props }, ref) => {
-    
-    if (color === 'none') return null;
-
-    const palette = colorMaps[color];
+    const resolvedColor = color === 'none' ? 'red' : color;
+    const palette = colorMaps[resolvedColor];
     const glow = glowMaps[size];
     const isChrome = variant === 'chrome';
     const hasBezel = variant !== 'none';
@@ -64,6 +62,8 @@ export const AnalogIndicator = React.forwardRef<HTMLDivElement, AnalogIndicatorP
         y: 50 + projectedY * 22,
       };
     }, [lensLightAngle]);
+
+    if (color === 'none') return null;
 
     return (
       <div 

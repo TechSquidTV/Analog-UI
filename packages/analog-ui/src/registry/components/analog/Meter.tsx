@@ -17,7 +17,7 @@ export interface AnalogMeterProps extends React.ComponentPropsWithoutRef<typeof 
 }
 
 export const AnalogMeter = React.forwardRef<HTMLDivElement, AnalogMeterProps>(
-  ({ className, orientation = 'vertical', peakValue = null, value, max = 100, variant = 'metered', segments, lighting, ...props }, ref) => {
+  ({ className, orientation = 'vertical', peakValue: _peakValue = null, value, max = 100, variant = 'metered', segments, lighting, ...props }, ref) => {
     const isVertical = orientation === 'vertical';
 
     const percentage = value != null ? Math.min(100, Math.max(0, (value / max) * 100)) : 0;

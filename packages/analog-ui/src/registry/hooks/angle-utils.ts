@@ -11,7 +11,7 @@ export function smoothstep(min: number, max: number, value: number) {
   return t * t * (3 - 2 * t);
 }
 
-export function getWrappedAngleDelta(targetAngle: number, currentAngle: number) {
+function getWrappedAngleDelta(targetAngle: number, currentAngle: number) {
   let delta = (targetAngle - currentAngle) % 360;
 
   if (delta > 180) delta -= 360;

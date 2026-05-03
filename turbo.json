@@ -13,6 +13,14 @@
       "cache": false,
       "outputs": []
     },
+    "lint:eslint": {
+      "cache": false,
+      "outputs": []
+    },
+    "knip": {
+      "cache": false,
+      "outputs": []
+    },
     "typecheck": {
       "cache": false,
       "outputs": []

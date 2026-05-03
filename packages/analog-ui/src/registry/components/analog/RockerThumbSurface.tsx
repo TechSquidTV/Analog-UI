@@ -6,7 +6,7 @@ type RockerOrientation = 'horizontal' | 'vertical';
 type RockerRaisedSide = 'start' | 'end' | 'both';
 type RockerSingleSide = Exclude<RockerRaisedSide, 'both'>;
 
-export interface RockerThumbSurfaceProps {
+interface RockerThumbSurfaceProps {
   className?: string;
   variant: RockerVariant;
   orientation?: RockerOrientation;

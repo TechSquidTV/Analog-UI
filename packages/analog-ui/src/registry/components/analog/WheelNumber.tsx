@@ -50,7 +50,6 @@ export const AnalogWheelNumber = React.forwardRef<HTMLDivElement, AnalogWheelNum
     const rotation = useMotionValue(0);
     const scrubAreaRef = React.useRef<HTMLDivElement>(null);
     const scrollDirectionFactor = getWheelDirectionFactor(scrollDirection);
-    const grabDirectionFactor = getWheelDirectionFactor(grabDirection);
     const wheelLighting: AnalogLightingConfig<'track' | 'wheel'> = {
       track: { travel: 1 },
       wheel: { travel: 0.36 },

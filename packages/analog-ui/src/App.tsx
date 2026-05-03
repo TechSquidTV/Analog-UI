@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { cn } from './lib/utils';
 import { useMouseLumination } from './registry/hooks/use-mouse-lumination';
 import { AnalogLightingProvider } from './registry/hooks/use-analog-lighting';
@@ -67,8 +67,6 @@ export default function App() {
   const [revolutions, setRevolutions] = useState(0);
 
   const [blackDialValue, setBlackDialValue] = useState(0);
-  const [blackDegrees, setBlackDegrees] = useState(0);
-  const [blackRevolutions, setBlackRevolutions] = useState(0);
 
   // States for Toggles
   const [toggle1, setToggle1] = useState<'left' | 'right'>('right');
@@ -212,10 +210,8 @@ export default function App() {
           <Dial 
             variant="black"
             value={blackDialValue} 
-            onChange={(val, deg, rev) => {
+            onChange={(val) => {
               setBlackDialValue(val);
-              setBlackDegrees(deg);
-              setBlackRevolutions(rev);
             }} 
           />
         </div>
