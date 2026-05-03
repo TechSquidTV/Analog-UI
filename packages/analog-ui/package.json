@@ -1,0 +1,44 @@
+{
+  "name": "analog-ui",
+  "version": "0.0.0",
+  "type": "module",
+  "sideEffects": ["**/*.css"],
+  "files": ["dist", "components.json", "registry.json"],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./demo": {
+      "types": "./dist/demo.d.ts",
+      "import": "./dist/demo.js"
+    },
+    "./styles.css": "./dist/index.css",
+    "./components.json": "./components.json",
+    "./registry.json": "./registry.json"
+  },
+  "scripts": {
+    "build": "tsup --config tsup.config.ts && node ./scripts/copy-assets.mjs",
+    "dev": "pnpm run build && tsup --watch --config tsup.config.ts --onSuccess \"node ./scripts/copy-assets.mjs\"",
+    "lint": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "dependencies": {
+    "@base-ui/react": "^1.4.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.546.0",
+    "motion": "^12.23.24",
+    "tailwind-merge": "^3.5.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.5"
+  }
+}

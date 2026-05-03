@@ -226,7 +226,9 @@ Implementation guidance:
 - Public components should expose typed lighting props scoped to their visible materials.
 - Internals should consume resolved per-material variables such as `--analog-light-angle-track`, `--analog-light-angle-wheel`, or `--analog-light-angle-panel`.
 - New components should not read legacy pre-provider lighting variables directly.
-- Influence should be numeric-first, with presets as convenience aliases.
+- Material lighting should be numeric-first, with presets as convenience aliases.
+- Materials should react immediately; shape their response with `travel`, `offset`, and optional arc constraints instead of per-material easing lag.
+- Use derived effect angles for special cases such as wheel glare or lens glints when an optic needs to stay within a believable visible arc.
 - The lighting path must preserve smooth 360 degree rotation with no visible seam flip.
 
 ## Do's and Don'ts

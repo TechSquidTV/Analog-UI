@@ -1,6 +1,6 @@
 ---
 name: analog-ui-components
-description: Create and update Analog UI components and registry entries using the repo's Studio Hyper-Skeuomorphism design system. Use when working on public components in `src/registry/components/analog/`, updating `registry.json`, or styling tactile controls that must follow the analog lighting system, BaseUI patterns, and Tailwind CSS v4 conventions.
+description: Create and update Analog UI components and registry entries using the repo's Studio Hyper-Skeuomorphism design system. Use when working on public components in `packages/analog-ui/src/registry/components/analog/`, updating `packages/analog-ui/registry.json`, or styling tactile controls that must follow the analog lighting system, BaseUI patterns, and Tailwind CSS v4 conventions.
 ---
 
 # Analog UI Components
@@ -12,8 +12,8 @@ Use this skill to build or revise Analog UI components that feel tactile, machin
 ## Workflow
 
 1. Read the target component and one or two nearby components before editing so the new work matches existing registry patterns.
-2. Place distributed public components in `src/registry/components/analog/`.
-3. Register every new public component in `registry.json`.
+2. Place distributed public components in `packages/analog-ui/src/registry/components/analog/`.
+3. Register every new public component in `packages/analog-ui/registry.json`.
 4. Keep registry components as self-contained as practical. Prefer headless behavior from `@base-ui/react` and animation from `motion`.
 5. Use Tailwind CSS v4 utilities for layout, spacing, and structure. Use inline styles or CSS variables only when they are the clearest way to express lighting, material finish, or complex layered effects.
 
@@ -49,8 +49,8 @@ style={{
 
 ## Checklist
 
-- Place new public components in `src/registry/components/analog/`.
-- Register new public components in `registry.json`.
+- Place new public components in `packages/analog-ui/src/registry/components/analog/`.
+- Register new public components in `packages/analog-ui/registry.json`.
 - Build interactive behavior on BaseUI primitives when applicable.
 - Use Tailwind CSS v4 for structure and spacing.
 - Drive light-reactive styles from `useAnalogLighting`, `--analog-light-power`, and the appropriate `--analog-light-angle-*` material channels.
