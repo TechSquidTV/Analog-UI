@@ -9,6 +9,8 @@ import { useMouseLumination } from './registry/hooks/use-mouse-lumination';
 import { AnalogLightingProvider } from './registry/hooks/use-analog-lighting';
 import { Dial } from './registry/components/analog/Dial';
 import { AnalogToggle } from './registry/components/analog/Toggle';
+import { SquareButton } from './registry/components/analog/SquareButton';
+import { SquareToggle } from './registry/components/analog/SquareToggle';
 import { AnalogSwitch } from './registry/components/analog/Switch';
 import { AnalogSlider } from './registry/components/analog/Slider';
 import {
@@ -120,6 +122,10 @@ export default function App() {
   const [indicatorSize, setIndicatorSize] = useState<Exclude<AnalogIndicatorSize, 'xs'>>('lg');
   const [indicatorShape, setIndicatorShape] = useState<AnalogIndicatorShape>('round');
   const [indicatorHasBezel, setIndicatorHasBezel] = useState(true);
+
+  // Square Button / Toggle States
+  const [sqToggle1, setSqToggle1] = useState(true);
+  const [sqToggle2, setSqToggle2] = useState(false);
 
   // Audio meter logic
   const meter = useAudioMeter();
@@ -268,6 +274,52 @@ export default function App() {
                 setBlackDialValue(val);
               }}
             />
+          </div>
+        </ComponentShowcase>
+
+        <ComponentShowcase
+          title="3D Square Button & Toggle"
+          description="Skeuomorphic square controls with realistic 3D extrusion, machined finishes, and dynamic lighting. The toggle variant includes an optional LED indicator for state feedback."
+          specs={[
+            { label: 'Toggle 1', value: sqToggle1 ? 'ON' : 'OFF' },
+            { label: 'Toggle 2', value: sqToggle2 ? 'ON' : 'OFF' },
+          ]}
+        >
+          <div className="flex flex-wrap gap-12 items-center justify-center py-8">
+            <div className="flex flex-col items-center gap-6">
+              <div className="flex gap-8">
+                <SquareButton onClick={() => console.log('Click')}>PUSH</SquareButton>
+                <SquareButton variant="black" onClick={() => console.log('Click')}>
+                  EXEC
+                </SquareButton>
+              </div>
+              <span className="font-mono text-[10px] text-[#555] uppercase tracking-widest font-bold">
+                Momentary
+              </span>
+            </div>
+
+            <div className="flex flex-col items-center gap-6">
+              <div className="flex gap-8">
+                <SquareToggle
+                  pressed={sqToggle1}
+                  onPressedChange={setSqToggle1}
+                  indicatorColor="green"
+                >
+                  PWR
+                </SquareToggle>
+                <SquareToggle
+                  variant="black"
+                  pressed={sqToggle2}
+                  onPressedChange={setSqToggle2}
+                  indicatorColor="red"
+                >
+                  ARM
+                </SquareToggle>
+              </div>
+              <span className="font-mono text-[10px] text-[#555] uppercase tracking-widest font-bold">
+                Latching (LED)
+              </span>
+            </div>
           </div>
         </ComponentShowcase>
 

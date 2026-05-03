@@ -231,6 +231,14 @@ Every lit finish should follow the analog lighting system. Surfaces should not s
 - panels should stay calmer than hardware,
 - lenses and indicators can follow the light more eagerly.
 
+### Mechanical Plunger Motion
+
+For high-travel controls (buttons, toggles), prioritize **Isolated Displacement**:
+- **Static Chassis**: The background cavity or track should remain perfectly stationary at `Z=0`.
+- **Moving Plunger**: The entire control block—including face, text, and extrusion—should move as a single unit along the Z and Y axes.
+- **Surface Recess**: When active, the face should physically sink below the panel surface (crossing into negative Z-space).
+- **Perspective Tilt**: Use a moderate perspective tilt (e.g., 12-15 degrees) that levels out to zero when pressed to imply a mechanical seat.
+
 ## Shapes
 
 The shape language mixes long pill recesses with compact machined rectangles and circular control faces.
@@ -238,6 +246,7 @@ The shape language mixes long pill recesses with compact machined rectangles and
 - Use **pill-shaped recesses** for slider tracks and cylindrical travel slots.
 - Use **rectangular recesses** for toggles, wheels, and equipment housings.
 - Use **fully round** geometry for dials, switch thumbs, screws, and jewel lamps.
+- Use **High-Travel Rectangles** for master-bus and power controls, utilizing deep extrusion (32+ layers) and clear physical displacement.
 - Keep corners consistent within a control family. Hard-rect and pill geometry can coexist on a screen, but a single component should not drift between incompatible corner languages.
 
 ## Components
@@ -250,6 +259,9 @@ Buttons, dials, sliders, wheels, toggles, switches, meters, and panels should al
 - **Wheels:** the background cavity uses `track`; the cylinder and overlay glare use `wheel`.
 - **Indicators:** bezels use `bezel`; lit glass uses `lens`.
 - **Panels:** the rack face uses `panel`; screws and hardware use `screw`.
+
+### Edge-Mounted Indicators
+For precision toggles and latching buttons, place LED indicators in the **Top-Right corner**, potentially "breaking" the top boundary of the face to simulate a top-bevel mounting.
 
 Implementation guidance:
 

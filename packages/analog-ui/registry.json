@@ -328,6 +328,48 @@
       ]
     },
     {
+      "name": "square-plunger",
+      "title": "3D Square Plunger",
+      "type": "registry:component",
+      "description": "A reusable 3D square plunger surface with motion-driven physical displacement and machined lighting.",
+      "dependencies": ["motion"],
+      "registryDependencies": ["analog-foundation", "utils"],
+      "files": [
+        {
+          "path": "src/registry/components/analog/SquarePlunger.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "square-button",
+      "title": "3D Square Button",
+      "type": "registry:ui",
+      "description": "A skeuomorphic square button with 3D extrusion, machined finish, and dynamic analog lighting.",
+      "dependencies": ["@base-ui/react", "motion"],
+      "registryDependencies": ["analog-foundation", "refs", "use-analog-lighting", "utils", "square-plunger"],
+      "files": [
+        {
+          "path": "src/registry/components/analog/SquareButton.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "square-toggle",
+      "title": "3D Square Toggle",
+      "type": "registry:ui",
+      "description": "A skeuomorphic square toggle with 3D extrusion, optional LED indicator, and state-aware analog lighting.",
+      "dependencies": ["@base-ui/react", "motion"],
+      "registryDependencies": ["analog-foundation", "indicator", "refs", "use-analog-lighting", "utils", "square-plunger"],
+      "files": [
+        {
+          "path": "src/registry/components/analog/SquareToggle.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "panel",
       "title": "Equipment Panel",
       "type": "registry:ui",
