@@ -7,17 +7,21 @@ import { AnalogIndicator } from './Indicator';
 import { RockerThumbSurface } from './RockerThumbSurface';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 
+type AnalogToggleOrientation = 'horizontal' | 'vertical';
+type AnalogToggleValue = 'left' | 'right';
+
 export interface AnalogToggleProps extends Omit<
   React.ComponentPropsWithoutRef<typeof ToggleGroup>,
   'value' | 'defaultValue' | 'onValueChange'
 > {
   variant?: 'chrome' | 'black';
+  orientation?: AnalogToggleOrientation;
   leftLed?: 'red' | 'green' | 'amber' | 'blue' | 'white' | 'none';
   rightLed?: 'red' | 'green' | 'amber' | 'blue' | 'white' | 'none';
   leftLedActive?: 'auto' | 'always' | 'never';
   rightLedActive?: 'auto' | 'always' | 'never';
-  value?: 'left' | 'right';
-  onValueChange?: (val: 'left' | 'right') => void;
+  value?: AnalogToggleValue;
+  onValueChange?: (val: AnalogToggleValue) => void;
   lighting?: AnalogLightingConfig<'track' | 'thumb' | 'lens' | 'surface'>;
 }
 
@@ -29,11 +33,28 @@ type ToggleGroupMouseLeaveEvent = Parameters<
   NonNullable<React.ComponentPropsWithoutRef<typeof ToggleGroup>['onMouseLeave']>
 >[0];
 
+const getLedPositionStyle = (
+  orientation: AnalogToggleOrientation,
+  side: AnalogToggleValue,
+): React.CSSProperties =>
+  orientation === 'horizontal'
+    ? {
+        left: side === 'left' ? '25%' : '75%',
+        top: '50%',
+        transform: 'translate(-50%, -50%)',
+      }
+    : {
+        left: '50%',
+        top: side === 'left' ? '25%' : '75%',
+        transform: 'translate(-50%, -50%)',
+      };
+
 export const AnalogToggle = React.forwardRef<HTMLDivElement, AnalogToggleProps>(
   (
     {
       className,
       variant = 'chrome',
+      orientation = 'horizontal',
       leftLed = 'none',
       rightLed = 'none',
       leftLedActive = 'auto',
@@ -80,6 +101,7 @@ export const AnalogToggle = React.forwardRef<HTMLDivElement, AnalogToggleProps>(
     };
 
     const isChrome = variant === 'chrome';
+    const isVertical = orientation === 'vertical';
     const lightingStyle = useAnalogLighting(['track', 'thumb', 'lens', 'surface'], lighting);
 
     // We dampen the glare movement significantly so it feels heavy and metallic
@@ -92,7 +114,8 @@ export const AnalogToggle = React.forwardRef<HTMLDivElement, AnalogToggleProps>(
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         className={cn(
-          'analog-toggle group relative inline-flex h-12 w-[104px] shrink-0 items-center justify-center rounded-lg border-none outline-none select-none',
+          'analog-toggle group relative inline-flex shrink-0 items-center justify-center rounded-lg border-none outline-none select-none',
+          isVertical ? 'h-[104px] w-12' : 'h-12 w-[104px]',
           className,
         )}
         style={
@@ -103,23 +126,31 @@ export const AnalogToggle = React.forwardRef<HTMLDivElement, AnalogToggleProps>(
           } as React.CSSProperties
         }
         data-state={value}
+        data-orientation={orientation}
+        aria-orientation={orientation}
         value={value ? [value] : []}
         onValueChange={(val) => {
           // If the user clicks the currently active one, and `val` is empty array,
           // do nothing to prevent deselection.
           if (val.length > 0) {
-            onValueChange?.(val[0] as 'left' | 'right');
+            onValueChange?.(val[0] as AnalogToggleValue);
           }
         }}
         {...props}
       >
         <Toggle
           value="left"
-          className="absolute top-0 bottom-0 left-0 w-1/2 z-[10] opacity-0 cursor-pointer"
+          className={cn(
+            'absolute z-[10] opacity-0 cursor-pointer',
+            isVertical ? 'left-0 right-0 top-0 h-1/2' : 'top-0 bottom-0 left-0 w-1/2',
+          )}
         />
         <Toggle
           value="right"
-          className="absolute top-0 bottom-0 right-0 w-1/2 z-[10] opacity-0 cursor-pointer"
+          className={cn(
+            'absolute z-[10] opacity-0 cursor-pointer',
+            isVertical ? 'left-0 right-0 bottom-0 h-1/2' : 'top-0 bottom-0 right-0 w-1/2',
+          )}
         />
 
         {/* Outer Bevel / Base Plate */}
@@ -143,11 +174,18 @@ export const AnalogToggle = React.forwardRef<HTMLDivElement, AnalogToggleProps>(
           >
             {/* Rocker Pivot Container */}
             <RockerThumbSurface
-              className="absolute inset-y-[2px] inset-x-[6px] rounded-sm"
+              className={cn(
+                'absolute rounded-sm',
+                isVertical ? 'inset-x-[2px] inset-y-[6px]' : 'inset-y-[2px] inset-x-[6px]',
+              )}
               variant={variant}
+              orientation={orientation}
               raisedSide={value === 'right' ? 'end' : 'start'}
             >
-              <div className="absolute top-1/2 -mt-[5px] left-2 pointer-events-none">
+              <div
+                className="absolute pointer-events-none"
+                style={getLedPositionStyle(orientation, 'left')}
+              >
                 <AnalogIndicator
                   size="xs"
                   variant="none"
@@ -162,7 +200,10 @@ export const AnalogToggle = React.forwardRef<HTMLDivElement, AnalogToggleProps>(
                   }
                 />
               </div>
-              <div className="absolute top-1/2 -mt-[5px] right-2 pointer-events-none">
+              <div
+                className="absolute pointer-events-none"
+                style={getLedPositionStyle(orientation, 'right')}
+              >
                 <AnalogIndicator
                   size="xs"
                   variant="none"

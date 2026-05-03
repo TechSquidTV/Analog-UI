@@ -86,10 +86,16 @@ export default function App() {
   // States for Toggles
   const [toggle1, setToggle1] = useState<'left' | 'right'>('right');
   const [toggle2, setToggle2] = useState<'left' | 'right'>('left');
+  const [verticalToggle1, setVerticalToggle1] = useState<'left' | 'right'>('right');
+  const [verticalToggle2, setVerticalToggle2] = useState<'left' | 'right'>('left');
 
   // LED Config for Toggles
-  const [togglesLeftLed, setTogglesLeftLed] = useState<'red' | 'green' | 'none'>('none');
-  const [togglesRightLed, setTogglesRightLed] = useState<'red' | 'green' | 'none'>('none');
+  const [togglesLeftLed, setTogglesLeftLed] = useState<
+    'red' | 'green' | 'amber' | 'blue' | 'white' | 'none'
+  >('none');
+  const [togglesRightLed, setTogglesRightLed] = useState<
+    'red' | 'green' | 'amber' | 'blue' | 'white' | 'none'
+  >('none');
   const [togglesLeftActive, setTogglesLeftActive] = useState<'auto' | 'always' | 'never'>('auto');
   const [togglesRightActive, setTogglesRightActive] = useState<'auto' | 'always' | 'never'>('auto');
 
@@ -274,6 +280,9 @@ export default function App() {
                   <option value="none">None</option>
                   <option value="red">Red</option>
                   <option value="green">Green</option>
+                  <option value="amber">Amber</option>
+                  <option value="blue">Blue</option>
+                  <option value="white">White</option>
                 </select>
               ),
             },
@@ -288,6 +297,9 @@ export default function App() {
                   <option value="none">None</option>
                   <option value="red">Red</option>
                   <option value="green">Green</option>
+                  <option value="amber">Amber</option>
+                  <option value="blue">Blue</option>
+                  <option value="white">White</option>
                 </select>
               ),
             },
@@ -321,33 +333,80 @@ export default function App() {
             },
           ]}
         >
-          <div className="flex flex-col gap-16 items-center justify-center">
-            <div className="flex items-center gap-6">
-              <span className="font-mono text-xs text-[#555] uppercase tracking-widest">
-                Sys Pwr
-              </span>
-              <AnalogToggle
-                leftLed={togglesLeftLed}
-                rightLed={togglesRightLed}
-                leftLedActive={togglesLeftActive}
-                rightLedActive={togglesRightActive}
-                value={toggle1 as 'left' | 'right'}
-                onValueChange={setToggle1 as any}
-              />
+          <div className="flex flex-wrap items-end justify-center gap-12">
+            <div className="flex flex-col gap-16 items-center justify-center">
+              <div className="flex items-center gap-6">
+                <span className="font-mono text-xs text-[#555] uppercase tracking-widest">
+                  Sys Pwr
+                </span>
+                <AnalogToggle
+                  leftLed={togglesLeftLed}
+                  rightLed={togglesRightLed}
+                  leftLedActive={togglesLeftActive}
+                  rightLedActive={togglesRightActive}
+                  value={toggle1 as 'left' | 'right'}
+                  onValueChange={setToggle1 as any}
+                />
+              </div>
+              <div className="flex items-center gap-6">
+                <span className="font-mono text-xs text-[#555] uppercase tracking-widest">
+                  Aux Pwr
+                </span>
+                <AnalogToggle
+                  variant="black"
+                  leftLed={togglesLeftLed}
+                  rightLed={togglesRightLed}
+                  leftLedActive={togglesLeftActive}
+                  rightLedActive={togglesRightActive}
+                  value={toggle2 as 'left' | 'right'}
+                  onValueChange={setToggle2 as any}
+                />
+              </div>
             </div>
-            <div className="flex items-center gap-6">
-              <span className="font-mono text-xs text-[#555] uppercase tracking-widest">
-                Aux Pwr
-              </span>
-              <AnalogToggle
-                variant="black"
-                leftLed={togglesLeftLed}
-                rightLed={togglesRightLed}
-                leftLedActive={togglesLeftActive}
-                rightLedActive={togglesRightActive}
-                value={toggle2 as 'left' | 'right'}
-                onValueChange={setToggle2 as any}
-              />
+
+            <div className="flex items-start gap-10">
+              <div className="flex flex-col items-center gap-4">
+                <span className="font-mono text-xs text-[#555] uppercase tracking-widest">
+                  Bay Door
+                </span>
+                <span className="font-mono text-[10px] text-[#555] uppercase tracking-[0.3em]">
+                  Open
+                </span>
+                <AnalogToggle
+                  orientation="vertical"
+                  leftLed={togglesLeftLed}
+                  rightLed={togglesRightLed}
+                  leftLedActive={togglesLeftActive}
+                  rightLedActive={togglesRightActive}
+                  value={verticalToggle1}
+                  onValueChange={setVerticalToggle1}
+                />
+                <span className="font-mono text-[10px] text-[#555] uppercase tracking-[0.3em]">
+                  Shut
+                </span>
+              </div>
+
+              <div className="flex flex-col items-center gap-4">
+                <span className="font-mono text-xs text-[#555] uppercase tracking-widest">
+                  Aux Bus
+                </span>
+                <span className="font-mono text-[10px] text-[#555] uppercase tracking-[0.3em]">
+                  Arm
+                </span>
+                <AnalogToggle
+                  variant="black"
+                  orientation="vertical"
+                  leftLed={togglesLeftLed}
+                  rightLed={togglesRightLed}
+                  leftLedActive={togglesLeftActive}
+                  rightLedActive={togglesRightActive}
+                  value={verticalToggle2}
+                  onValueChange={setVerticalToggle2}
+                />
+                <span className="font-mono text-[10px] text-[#555] uppercase tracking-[0.3em]">
+                  Safe
+                </span>
+              </div>
             </div>
           </div>
         </ComponentShowcase>

@@ -224,7 +224,7 @@ function RockerOverlay({
         />
       ) : null}
 
-      {children ? <div className="absolute inset-0 z-[3]">{children}</div> : null}
+      {children ? <div className="absolute inset-0 z-[4]">{children}</div> : null}
 
       <div className="absolute inset-0 z-[3]">
         {gripPositions.includes('start') ? (
