@@ -231,6 +231,45 @@ Every lit finish should follow the analog lighting system. Surfaces should not s
 - panels should stay calmer than hardware,
 - lenses and indicators can follow the light more eagerly.
 
+### Lighting Model
+
+Analog UI lighting is driven by three runtime inputs:
+
+- `baseAngle` is the art-directed resting direction for the scene.
+- `sourceAngle` is the live direction from the environment, cursor, or another interaction model.
+- `power` scales highlight and shadow intensity without changing the geometric direction of the light.
+
+Rules for moving light:
+
+- Mouse-driven or pointer-driven lighting should orbit around the lit surface or panel center, not the viewport, unless the whole viewport is intentionally the lit surface.
+- `influence` should only blend the live source back toward the base direction. At `1`, the light should track the live source directly with no hidden damping.
+- If the pointer passes through the exact angular singularity at the center of a surface, prefer a tiny dead zone or a brief hold instead of easing the entire orbit.
+- Per-material feel should come from `travel`, `offset`, and optional arc constraints rather than ad hoc lag.
+- The lighting path must preserve shortest-path 360 degree rotation with no visible seam flip.
+
+### Material Channels
+
+Treat the material channels as the shared vocabulary for lit parts:
+
+- `panel`: large chassis faces, rack plates, meter housings, and macro surfaces. Low travel, broad gradients, restrained highlights.
+- `screw`: exposed fasteners and machined hardware accents. Sharper specular catches and tighter directional shadowing than the parent panel.
+- `track`: recesses, rails, cavities, and slots. Minimal travel, darker occlusion, and slower-moving highlight bands.
+- `wheel`: rotating drums, cylinders, and number wheels. Moderate travel, heavier shading, and directional glare that still feels massive.
+- `bezel`: rings, trims, lamp bezels, and metal housings around optics. Crisp chrome or onyx edge light with stronger bevel response.
+- `lens`: glass, jewels, indicator domes, and optical inserts. Highest travel, focused glints, and believable constrained reflections.
+- `thumb`: handles, rockers, switch paddles, slider caps, and moving plungers. Strong response with clear highlight migration across the face and sidewalls.
+- `pointer`: printed indicator lines, metal needles, and dial pointers. Direct response with the least ambiguity so directional readout stays legible.
+- `surface`: general control faces, caps, and machined tops when no more specific channel exists. Medium-to-high travel with stable material identity.
+
+### Lighting Composition Rules
+
+- Move directional gradients, specular streaks, bevel catches, foil glare, and cast-shadow direction with the resolved material angle.
+- Keep base pigment, cavity darkness, engraved geometry, and most ambient occlusion stable so the object still feels solid when the light moves.
+- Printed legends, ticks, numerals, and icons should stay readable and mostly neutral. They can inherit subtle contrast from the host surface, but they should not rotate their own dramatic light gradients.
+- LED emission stays centered in the optic. The lens glint, bezel, and recess reflections respond to the light; the emissive core should not appear to orbit around the housing.
+- Separate nested materials instead of flattening them. A toggle can use `track` for the cavity, `thumb` for the rocker, and `lens` for the pilot light at the same time.
+- Avoid one-off hover-light systems for a single component. If a surface needs a special optic, derive it from an existing material channel and a constrained effect angle.
+
 ### Mechanical Plunger Motion
 
 For high-travel controls (buttons, toggles), prioritize **Isolated Displacement**:
@@ -253,12 +292,13 @@ The shape language mixes long pill recesses with compact machined rectangles and
 
 Buttons, dials, sliders, wheels, toggles, switches, meters, and panels should all expose the same material logic.
 
-- **Anisotropic buttons and dials:** the main face uses the `surface` channel; pointer lines use `pointer`.
-- **Sliders:** the rail and recess use `track`; the handle and ridges use `thumb`.
-- **Toggle and switch controls:** the housing sits in `surface` or `track`; the moving part uses `thumb`; embedded lamps use `lens`.
-- **Wheels:** the background cavity uses `track`; the cylinder and overlay glare use `wheel`.
-- **Indicators:** bezels use `bezel`; lit glass uses `lens`.
-- **Panels:** the rack face uses `panel`; screws and hardware use `screw`.
+- **Anisotropic buttons and dials:** the main face uses `surface`; pointer lines, pips, or needles use `pointer`. Chamfers and knurled rims can stay on `surface` unless they need a distinctly heavier response.
+- **Sliders:** the rail, recess, and dust slot use `track`; the handle, cap, and grip ridges use `thumb`. The cavity should stay visually seated while the thumb carries the more active highlights.
+- **Toggle and switch controls:** the housing sits in `surface` or `track`; the moving paddle or rocker uses `thumb`; embedded lamps use `lens`. If there is a visible trim ring around the lamp, it should use `bezel`.
+- **Wheels:** the background cavity uses `track`; the cylinder, printed drum surface, and any broad foil glare use `wheel`. Windows or trim around the wheel can stay calmer on `surface` or `bezel`.
+- **Indicators:** bezels, lamp cups, and retaining rings use `bezel`; lit glass, jewels, and clear caps use `lens`. The glow itself is emissive and should not be treated as a separate directional material.
+- **Meters and gauges:** housings and bridge panels use `panel` or `surface`; needles and read pointers use `pointer`; glass covers and optical glints use `lens`.
+- **Panels:** the rack face uses `panel`; screws and hardware use `screw`; mounted control caps still keep their own local channels instead of inheriting panel behavior.
 
 ### Edge-Mounted Indicators
 For precision toggles and latching buttons, place LED indicators in the **Top-Right corner**, potentially "breaking" the top boundary of the face to simulate a top-bevel mounting.
@@ -270,6 +310,7 @@ Implementation guidance:
 - New components should not read legacy pre-provider lighting variables directly.
 - Material lighting should be numeric-first, with presets as convenience aliases.
 - Materials should react immediately; shape their response with `travel`, `offset`, and optional arc constraints instead of per-material easing lag.
+- Mouse-driven light hooks should measure from the active surface bounds whenever a control lives inside a smaller lit panel.
 - Use derived effect angles for special cases such as wheel glare or lens glints when an optic needs to stay within a believable visible arc.
 - The lighting path must preserve smooth 360 degree rotation with no visible seam flip.
 

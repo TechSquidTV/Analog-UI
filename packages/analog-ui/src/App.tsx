@@ -89,6 +89,7 @@ function useAudioMeter() {
 }
 
 export default function App() {
+  const surfaceRef = useRef<HTMLDivElement>(null);
   const [dialValue, setDialValue] = useState(0);
   const [degrees, setDegrees] = useState(0);
   const [revolutions, setRevolutions] = useState(0);
@@ -153,6 +154,7 @@ export default function App() {
   const dynamicLightAngle = useMouseLumination({
     baseAngle: lightAngle,
     influence: mouseInfluence,
+    targetRef: surfaceRef,
   });
 
   const [panelVariant, setPanelVariant] = useState<'default' | 'rack'>('rack');
@@ -189,7 +191,7 @@ export default function App() {
       sourceAngle={dynamicLightAngle}
       power={lightPower / 120}
     >
-      <div className="w-full min-h-screen p-8 md:p-16 flex flex-col pt-32 md:pt-16">
+      <div ref={surfaceRef} className="w-full min-h-screen p-8 md:p-16 flex flex-col pt-32 md:pt-16">
         <div className="fixed top-6 right-6 md:top-12 md:right-12 z-50 bg-[#141414] border border-[#262626] rounded-xl p-5 w-72 shadow-[0_20px_40px_rgba(0,0,0,0.4),0_0_0_1px_rgba(255,255,255,0.05)]">
           <div className="text-[10px] uppercase tracking-[0.3em] text-[var(--color-accent)] mb-5">
             Analog Lighting

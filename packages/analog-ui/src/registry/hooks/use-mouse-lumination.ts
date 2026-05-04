@@ -1,11 +1,9 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, type RefObject } from 'react';
 import { useMotionValue } from 'motion/react';
 import {
-  angleToLightingVector,
   advanceContinuousAngle,
-  blendLightingVectors,
+  blendAngleTowardSource,
   clampLightingInfluence,
-  smoothstep,
   vectorToLightingAngle,
 } from './angle-utils';
 
@@ -13,27 +11,50 @@ export interface UseMouseLuminationOptions {
   baseAngle?: number;
   influence?: number; // 0 keeps the base angle, 1 follows the pointer immediately
   enabled?: boolean;
+  targetRef?: RefObject<HTMLElement | null>;
+  deadZoneRadius?: number;
+}
+
+function resolveAnchorPoint(targetRef: RefObject<HTMLElement | null> | undefined) {
+  const element = targetRef?.current;
+
+  if (element) {
+    const rect = element.getBoundingClientRect();
+
+    if (rect.width > 0 && rect.height > 0) {
+      return {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2,
+      };
+    }
+  }
+
+  return {
+    x: window.innerWidth / 2,
+    y: window.innerHeight / 2,
+  };
 }
 
 /**
- * Maps the global mouse position to a continuous light angle.
- * Lower influence values reduce how much of the mouse orbit becomes source-angle travel.
+ * Maps the global mouse position to a continuous light angle around the lit surface.
+ * Lower influence values blend the moving light back toward the base angle.
  */
 export function useMouseLumination({
   baseAngle = 180,
   influence = 1,
   enabled = true,
+  targetRef,
+  deadZoneRadius = 8,
 }: UseMouseLuminationOptions = {}) {
   const angleValue = useMotionValue(baseAngle);
   const continuousMouseAngle = useRef(baseAngle);
-  const stabilizedLightVector = useRef(angleToLightingVector(baseAngle));
   const previousRawMouseAngle = useRef<number | null>(null);
   const resolvedInfluence = clampLightingInfluence(influence);
+  const resolvedDeadZoneRadius = Math.max(0, deadZoneRadius);
 
   useEffect(() => {
     if (!enabled || resolvedInfluence <= 0) {
       continuousMouseAngle.current = baseAngle;
-      stabilizedLightVector.current = angleToLightingVector(baseAngle);
       previousRawMouseAngle.current = null;
       angleValue.set(baseAngle);
       return;
@@ -41,53 +62,33 @@ export function useMouseLumination({
 
     if (previousRawMouseAngle.current === null) {
       continuousMouseAngle.current = baseAngle;
-      stabilizedLightVector.current = angleToLightingVector(baseAngle);
       angleValue.set(baseAngle);
       return;
     }
 
-    angleValue.set(baseAngle + (continuousMouseAngle.current - baseAngle) * resolvedInfluence);
+    angleValue.set(
+      blendAngleTowardSource(baseAngle, continuousMouseAngle.current, resolvedInfluence),
+    );
   }, [angleValue, baseAngle, enabled, resolvedInfluence]);
 
   useEffect(() => {
     if (!enabled || resolvedInfluence <= 0) return;
 
     const handleMouseMove = (e: MouseEvent) => {
-      const cx = window.innerWidth / 2;
-      const cy = window.innerHeight / 2;
+      const { x: cx, y: cy } = resolveAnchorPoint(targetRef);
       const dx = e.clientX - cx;
       const dy = e.clientY - cy;
       const distanceFromCenter = Math.hypot(dx, dy);
 
-      if (distanceFromCenter <= 1e-6) {
+      if (distanceFromCenter <= Math.max(1e-6, resolvedDeadZoneRadius)) {
         return;
       }
 
-      const minViewportSize = Math.min(window.innerWidth, window.innerHeight);
-      const stabilizationInnerRadius = Math.max(28, minViewportSize * 0.035);
-      const stabilizationOuterRadius = Math.max(
-        stabilizationInnerRadius + 1,
-        minViewportSize * 0.18,
-      );
-      const responseWeight =
-        0.12 +
-        0.88 * smoothstep(stabilizationInnerRadius, stabilizationOuterRadius, distanceFromCenter);
-
-      // The viewport center is an angular singularity, so we ease into the
-      // pointer direction there instead of letting tiny moves flip the light.
       const targetLightVector = {
         x: -dx / distanceFromCenter,
         y: -dy / distanceFromCenter,
       };
-      stabilizedLightVector.current = blendLightingVectors(
-        stabilizedLightVector.current,
-        targetLightVector,
-        responseWeight,
-      );
-      const targetAngle = vectorToLightingAngle(
-        stabilizedLightVector.current.x,
-        stabilizedLightVector.current.y,
-      );
+      const targetAngle = vectorToLightingAngle(targetLightVector.x, targetLightVector.y);
 
       continuousMouseAngle.current =
         previousRawMouseAngle.current === null
@@ -99,13 +100,15 @@ export function useMouseLumination({
             );
       previousRawMouseAngle.current = targetAngle;
 
-      angleValue.set(baseAngle + (continuousMouseAngle.current - baseAngle) * resolvedInfluence);
+      angleValue.set(
+        blendAngleTowardSource(baseAngle, continuousMouseAngle.current, resolvedInfluence),
+      );
     };
 
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
     return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, [angleValue, baseAngle, enabled, resolvedInfluence]);
+  }, [angleValue, baseAngle, enabled, resolvedDeadZoneRadius, resolvedInfluence, targetRef]);
 
   return angleValue;
 }

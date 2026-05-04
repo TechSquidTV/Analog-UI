@@ -47,6 +47,8 @@ export type AnalogMaterialChannel =
 export type AnalogLightingConfig<Channel extends AnalogMaterialChannel = AnalogMaterialChannel> =
   Partial<Record<Channel, AnalogLightingSetting>>;
 
+type AnalogLightingInputValue = number | MotionValue<number>;
+
 interface ResolvedAnalogLightingResponse {
   travel: number;
   offset: number;
@@ -79,9 +81,9 @@ export const DEFAULT_MATERIAL_RESPONSES: Record<
 };
 
 interface AnalogLightingContextValue {
-  baseAngle: number;
-  sourceAngle: number;
-  power: number;
+  baseAngle: AnalogLightingInputValue;
+  sourceAngle: AnalogLightingInputValue;
+  power: AnalogLightingInputValue;
   materials: Partial<Record<AnalogMaterialChannel, ResolvedAnalogLightingResponse>>;
 }
 
@@ -197,9 +199,12 @@ function resolveLightingResponse(
 
 function useAnalogLightingEnvironment() {
   const context = React.useContext(AnalogLightingContext);
-  const baseAngle = context?.baseAngle ?? 180;
-  const sourceAngle = context?.sourceAngle ?? baseAngle;
-  const power = context?.power ?? 1;
+  const baseAngleInput = context?.baseAngle ?? 180;
+  const sourceAngleInput = context?.sourceAngle ?? baseAngleInput;
+  const powerInput = context?.power ?? 1;
+  const baseAngle = useResolvedMotionNumber(baseAngleInput, 180);
+  const sourceAngle = useResolvedMotionNumber(sourceAngleInput, baseAngle);
+  const power = useResolvedMotionNumber(powerInput, 1);
   const materials = context?.materials ?? DEFAULT_MATERIAL_RESPONSES;
   const previousRawSourceAngle = React.useRef<number | null>(null);
   const continuousSourceAngle = React.useRef(sourceAngle);
@@ -249,10 +254,6 @@ export function AnalogLightingProvider({
   power = 1,
   materials,
 }: AnalogLightingProviderProps) {
-  const resolvedBaseAngle = useResolvedMotionNumber(baseAngle, 180);
-  const resolvedSourceAngle = useResolvedMotionNumber(sourceAngle, resolvedBaseAngle);
-  const resolvedPower = useResolvedMotionNumber(power, 1);
-
   const mergedMaterials = React.useMemo(() => {
     const next: Partial<Record<AnalogMaterialChannel, ResolvedAnalogLightingResponse>> = {};
 
@@ -268,12 +269,12 @@ export function AnalogLightingProvider({
 
   const value = React.useMemo(
     () => ({
-      baseAngle: resolvedBaseAngle,
-      sourceAngle: resolvedSourceAngle,
-      power: resolvedPower,
+      baseAngle,
+      sourceAngle: sourceAngle ?? baseAngle,
+      power,
       materials: mergedMaterials,
     }),
-    [mergedMaterials, resolvedBaseAngle, resolvedPower, resolvedSourceAngle],
+    [baseAngle, mergedMaterials, power, sourceAngle],
   );
 
   return <AnalogLightingContext.Provider value={value}>{children}</AnalogLightingContext.Provider>;

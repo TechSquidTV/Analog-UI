@@ -80,9 +80,11 @@ function useStereoMeter(energy: number, enabled: boolean) {
 }
 
 export default function HomeVstSurface() {
+  const surfaceRef = useRef<HTMLDivElement>(null);
   const sourceAngle = useMouseLumination({
     baseAngle: 180,
     influence: 0.34,
+    targetRef: surfaceRef,
   });
 
   const [preset, setPreset] = useState(7);
@@ -123,7 +125,7 @@ export default function HomeVstSurface() {
 
   return (
     <AnalogLightingProvider baseAngle={180} sourceAngle={sourceAngle} power={1}>
-      <Panel variant="rack" screws screwHole="slot" className="w-full">
+      <Panel ref={surfaceRef} variant="rack" screws screwHole="slot" className="w-full">
         <PanelHeader className="gap-4 p-6 md:p-8">
           <div className="text-[10px] font-semibold uppercase tracking-[0.34em] text-[#7f7f7f]">
             Featured Surface

@@ -129,14 +129,17 @@ function DemoStage({
   footer?: ReactNode;
   children: ReactNode;
 }) {
+  const surfaceRef = useRef<HTMLDivElement>(null);
   const sourceAngle = useMouseLumination({
     baseAngle: 180,
     influence: mode === "compact" ? 0.24 : 0.38,
+    targetRef: surfaceRef,
   });
 
   return (
     <AnalogLightingProvider baseAngle={180} sourceAngle={sourceAngle} power={1}>
       <div
+        ref={surfaceRef}
         className={cn(
           "section-panel rounded-[26px]",
           mode === "compact" ? "min-h-[280px] p-5" : "min-h-[430px] p-8",
