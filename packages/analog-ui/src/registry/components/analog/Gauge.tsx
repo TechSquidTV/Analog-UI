@@ -6,13 +6,42 @@ import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-an
 
 export type GaugeVariant = 'lcd-green' | 'lcd-amber' | 'lcd-blue';
 
+export interface GaugeMark {
+  value: number;
+  label: React.ReactNode;
+  position?: number;
+}
+
 export interface GaugeProps extends React.ComponentPropsWithoutRef<typeof Slider.Root> {
   variant?: GaugeVariant;
   lighting?: AnalogLightingConfig<'surface' | 'pointer' | 'lens'>;
+  startAngle?: number;
+  sweepAngle?: number;
+  marks?: readonly GaugeMark[];
+  showMarks?: boolean;
+  fillMode?: 'start' | 'center';
+  centerValue?: number;
 }
 
 export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
-  ({ className, value, min = 0, max = 100, variant = 'lcd-green', lighting, ...props }, ref) => {
+  (
+    {
+      className,
+      value,
+      min = 0,
+      max = 100,
+      variant = 'lcd-green',
+      lighting,
+      startAngle = -135,
+      sweepAngle = 270,
+      marks,
+      showMarks = marks !== undefined,
+      fillMode = 'start',
+      centerValue,
+      ...props
+    },
+    ref,
+  ) => {
     const getVariantColors = (v: GaugeVariant) => {
       switch (v) {
         case 'lcd-amber':
@@ -37,8 +66,30 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
         {...props}
         render={(rootProps, state) => {
           const val = state.values[0] ?? min;
-          const percentage = Math.min(100, Math.max(0, ((val - min) / (max - min)) * 100));
-          const rotationAngle = -135 + (percentage / 100) * 270;
+          const range = max - min;
+          const ratio = range === 0 ? 0 : Math.min(1, Math.max(0, (val - min) / range));
+          const resolvedSweepAngle = Math.min(359.999, Math.max(0, sweepAngle));
+          const rotationAngle = startAngle + ratio * resolvedSweepAngle;
+          const resolvedCenterValue = centerValue ?? (min + max) / 2;
+          const centerRatio =
+            range === 0
+              ? 0
+              : Math.min(1, Math.max(0, (resolvedCenterValue - min) / range));
+          const fillStartRatio = fillMode === 'center' ? Math.min(ratio, centerRatio) : 0;
+          const fillEndRatio = fillMode === 'center' ? Math.max(ratio, centerRatio) : ratio;
+          const fillStart = fillStartRatio * resolvedSweepAngle;
+          const fillLength = Math.max(0, (fillEndRatio - fillStartRatio) * resolvedSweepAngle);
+          const resolvedMarks = showMarks
+            ? (marks ?? []).map((mark) => ({
+                ...mark,
+                ratio:
+                  mark.position !== undefined
+                    ? Math.min(1, Math.max(0, mark.position))
+                    : range === 0
+                      ? 0
+                      : Math.min(1, Math.max(0, (mark.value - min) / range)),
+              }))
+            : [];
 
           return (
             <div
@@ -82,8 +133,9 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
                         strokeWidth="6.5"
                         fill="none"
                         pathLength="360"
-                        strokeDasharray={`${(percentage / 100) * 270} 360`}
-                        transform="rotate(135 50 50)"
+                        strokeDasharray={`${fillLength} 360`}
+                        strokeDashoffset={-fillStart}
+                        transform={`rotate(${startAngle - 90} 50 50)`}
                       />
                     </mask>
                     <pattern
@@ -114,8 +166,8 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
                     strokeWidth="6"
                     fill="none"
                     pathLength="360"
-                    strokeDasharray="270 360"
-                    transform="rotate(135 50 50)"
+                    strokeDasharray={`${resolvedSweepAngle} 360`}
+                    transform={`rotate(${startAngle - 90} 50 50)`}
                     filter="url(#gauge-inset-shadow)"
                   />
 
@@ -128,8 +180,9 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
                     strokeWidth="8"
                     fill="none"
                     pathLength="360"
-                    strokeDasharray={`${(percentage / 100) * 270} 360`}
-                    transform="rotate(135 50 50)"
+                    strokeDasharray={`${fillLength} 360`}
+                    strokeDashoffset={-fillStart}
+                    transform={`rotate(${startAngle - 90} 50 50)`}
                     style={{
                       filter: 'blur(4px)',
                       opacity: 0.5,
@@ -151,6 +204,41 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
                       }}
                     />
                   </g>
+
+                  {resolvedMarks.map((mark) => {
+                    const angle = startAngle + mark.ratio * resolvedSweepAngle;
+                    const radians = (angle * Math.PI) / 180;
+                    const lineStartX = 50 + Math.cos(radians) * 39;
+                    const lineStartY = 50 + Math.sin(radians) * 39;
+                    const lineEndX = 50 + Math.cos(radians) * 44;
+                    const lineEndY = 50 + Math.sin(radians) * 44;
+                    const labelX = 50 + Math.cos(radians) * 33;
+                    const labelY = 50 + Math.sin(radians) * 33;
+
+                    return (
+                      <g key={`${mark.value}-${String(mark.label)}`}>
+                        <line
+                          x1={lineStartX}
+                          y1={lineStartY}
+                          x2={lineEndX}
+                          y2={lineEndY}
+                          stroke="rgba(130,130,130,0.85)"
+                          strokeWidth="0.85"
+                        />
+                        <text
+                          x={labelX}
+                          y={labelY}
+                          fill="#666"
+                          fontSize="4"
+                          fontFamily="var(--font-mono, ui-monospace, monospace)"
+                          textAnchor="middle"
+                          dominantBaseline="central"
+                        >
+                          {mark.label}
+                        </text>
+                      </g>
+                    );
+                  })}
                 </svg>
               </div>
 

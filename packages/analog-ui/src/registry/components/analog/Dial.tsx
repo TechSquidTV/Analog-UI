@@ -6,23 +6,64 @@ import { useWheelScroll } from '../../hooks/use-wheel-scroll';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 
 export interface DialProps {
-  value?: number; // Total degrees accumulated
+  /**
+   * In encoder mode this is the accumulated rotation in degrees.
+   * In knob mode this is the domain value between min and max.
+   */
+  value?: number;
+  defaultValue?: number;
   onChange?: (value: number, degrees: number, revolutions: number) => void;
+  onValueChange?: (value: number) => void;
+  mode?: 'encoder' | 'knob';
   variant?: 'chrome' | 'black';
-  className?: string; // allow overrides
+  className?: string;
   disabled?: boolean;
   lighting?: AnalogLightingConfig<'surface' | 'pointer'>;
+  min?: number;
+  max?: number;
+  step?: number;
+  fineStep?: number;
+  coarseStep?: number;
+  startAngle?: number;
+  sweepAngle?: number;
+  detentValue?: number;
+  detentThreshold?: number;
+}
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function roundToStep(value: number, min: number, step: number) {
+  if (!Number.isFinite(step) || step <= 0) return value;
+  return min + Math.round((value - min) / step) * step;
+}
+
+function roundDisplayValue(value: number) {
+  return Math.round(value * 1000) / 1000;
 }
 
 export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
   (
     {
       value: externalValue,
+      defaultValue,
       onChange,
+      onValueChange,
+      mode,
       variant = 'chrome',
       className,
       disabled,
       lighting,
+      min,
+      max,
+      step,
+      fineStep,
+      coarseStep,
+      startAngle = 210,
+      sweepAngle = 300,
+      detentValue,
+      detentThreshold,
     }: DialProps = {},
     ref,
   ) => {
@@ -30,61 +71,155 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
       typeof className === 'string' &&
       /\b(?:size|min-w|max-w|w|basis)-[^\s]+/.test(className);
 
-    const [internalValue, setInternalValue] = useState(0);
-    const rotation = externalValue !== undefined ? externalValue : internalValue;
+    const resolvedMode = mode ?? (min !== undefined || max !== undefined ? 'knob' : 'encoder');
+    const isKnob = resolvedMode === 'knob';
+    const resolvedMin = min ?? 0;
+    const resolvedMax = max ?? 100;
+    const resolvedRange = resolvedMax - resolvedMin;
+    const resolvedSweepAngle = Math.min(359.999, Math.max(1, sweepAngle));
+    const resolvedStep = step ?? (isKnob ? 1 : 15);
+    const resolvedFineStep = fineStep ?? (isKnob ? resolvedStep / 10 : resolvedStep);
+    const resolvedCoarseStep = coarseStep ?? (isKnob ? resolvedStep * 10 : resolvedStep * 3);
+
+    const [internalValue, setInternalValue] = useState(
+      defaultValue ?? (isKnob ? resolvedMin : 0),
+    );
+    const currentValue = externalValue !== undefined ? externalValue : internalValue;
 
     const [isDragging, setIsDragging] = useState(false);
     const dialRef = useRef<HTMLDivElement>(null);
     const mergedRef = useMergedRefs(ref, dialRef);
 
-    // Cache these to avoid layout thrashing and jitter during drag
+    // Cache these to avoid layout thrashing and jitter during drag.
     const centerRef = useRef({ x: 0, y: 0 });
     const lastAngleRef = useRef(0);
-    const dragRotationRef = useRef(0); // Tracks exact rotation continuously during drag to prevent drift
-    const applyRotation = React.useCallback(
-      (nextRotation: number) => {
-        if (externalValue === undefined) {
-          setInternalValue(nextRotation);
+    const dragRotationRef = useRef(0);
+
+    const valueToRotation = React.useCallback(
+      (nextValue: number) => {
+        if (!isKnob || resolvedRange === 0) return nextValue;
+        const ratio = clamp((nextValue - resolvedMin) / resolvedRange, 0, 1);
+        return startAngle + ratio * resolvedSweepAngle;
+      },
+      [isKnob, resolvedMin, resolvedRange, resolvedSweepAngle, startAngle],
+    );
+
+    const normalizeKnobValue = React.useCallback(
+      (nextValue: number, customStep = resolvedStep) => {
+        let normalizedValue = clamp(nextValue, resolvedMin, resolvedMax);
+        normalizedValue = roundToStep(normalizedValue, resolvedMin, customStep);
+
+        const threshold =
+          detentThreshold ??
+          (Number.isFinite(customStep) && customStep > 0 ? customStep / 2 : resolvedRange * 0.01);
+
+        if (
+          detentValue !== undefined &&
+          Math.abs(normalizedValue - detentValue) <= Math.max(threshold, 0)
+        ) {
+          normalizedValue = detentValue;
         }
 
+        return clamp(roundDisplayValue(normalizedValue), resolvedMin, resolvedMax);
+      },
+      [
+        detentThreshold,
+        detentValue,
+        resolvedMax,
+        resolvedMin,
+        resolvedRange,
+        resolvedStep,
+      ],
+    );
+
+    const rotationToValue = React.useCallback(
+      (nextRotation: number, customStep = resolvedStep) => {
+        if (!isKnob || resolvedRange === 0) return nextRotation;
+        const clampedRotation = clamp(nextRotation, startAngle, startAngle + resolvedSweepAngle);
+        const ratio = (clampedRotation - startAngle) / resolvedSweepAngle;
+        const nextValue = resolvedMin + ratio * resolvedRange;
+        return normalizeKnobValue(nextValue, customStep);
+      },
+      [
+        isKnob,
+        normalizeKnobValue,
+        resolvedMin,
+        resolvedRange,
+        resolvedStep,
+        resolvedSweepAngle,
+        startAngle,
+      ],
+    );
+
+    const getStepAmount = React.useCallback(
+      (event?: { altKey?: boolean; shiftKey?: boolean }) => {
+        if (event?.altKey) return resolvedFineStep;
+        if (event?.shiftKey) return resolvedCoarseStep;
+        return resolvedStep;
+      },
+      [resolvedCoarseStep, resolvedFineStep, resolvedStep],
+    );
+
+    const applyValue = React.useCallback(
+      (nextRawValue: number, customStep = resolvedStep) => {
+        const nextValue = isKnob ? normalizeKnobValue(nextRawValue, customStep) : nextRawValue;
+
+        if (externalValue === undefined) {
+          setInternalValue(nextValue);
+        }
+
+        onValueChange?.(nextValue);
+
         if (onChange) {
-          const degrees = ((nextRotation % 360) + 360) % 360;
-          const revolutions = Math.floor(nextRotation / 360);
-          onChange(nextRotation, degrees, revolutions);
+          if (isKnob) {
+            const rotation = valueToRotation(nextValue);
+            onChange(nextValue, ((rotation % 360) + 360) % 360, 0);
+          } else {
+            const degrees = ((nextValue % 360) + 360) % 360;
+            const revolutions = Math.floor(nextValue / 360);
+            onChange(nextValue, degrees, revolutions);
+          }
         }
       },
-      [externalValue, onChange],
+      [
+        externalValue,
+        isKnob,
+        normalizeKnobValue,
+        onChange,
+        onValueChange,
+        resolvedStep,
+        valueToRotation,
+      ],
     );
-    const degrees = ((rotation % 360) + 360) % 360;
-    const revolutions = Math.floor(rotation / 360);
+
+    const pointerRotation = isKnob ? valueToRotation(currentValue) : currentValue;
+    const degrees = ((pointerRotation % 360) + 360) % 360;
+    const revolutions = isKnob ? 0 : Math.floor(currentValue / 360);
 
     useWheelScroll(
       dialRef,
       React.useCallback(
-        (e, deltaDirection) => {
+        (event, deltaDirection) => {
           if (disabled) return;
-          // Scroll up = positive rotation, scroll down = negative rotation. Usually wheels are 1 or -1 deltaDirection
-          // Let's use 15 degrees per tick.
-          const step = 15;
-          const delta = deltaDirection > 0 ? step : -step;
-          applyRotation(rotation + delta);
+
+          const stepAmount = getStepAmount(event);
+          const delta = deltaDirection > 0 ? stepAmount : -stepAmount;
+          applyValue(currentValue + delta, stepAmount);
         },
-        [applyRotation, rotation, disabled],
+        [applyValue, currentValue, disabled, getStepAmount],
       ),
     );
 
-    const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
       if (disabled) return;
 
-      // Use pointer capture to keep tracking even if pointer leaves window bounds
-      e.currentTarget.setPointerCapture(e.pointerId);
-      e.currentTarget.focus();
-      e.preventDefault();
+      event.currentTarget.setPointerCapture(event.pointerId);
+      event.currentTarget.focus();
+      event.preventDefault();
       setIsDragging(true);
 
       if (!dialRef.current) return;
 
-      // Cache center on drag start
       const rect = dialRef.current.getBoundingClientRect();
       centerRef.current = {
         x: rect.left + rect.width / 2,
@@ -92,19 +227,18 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
       };
 
       const angle =
-        Math.atan2(e.clientY - centerRef.current.y, e.clientX - centerRef.current.x) *
+        Math.atan2(event.clientY - centerRef.current.y, event.clientX - centerRef.current.x) *
         (180 / Math.PI);
       lastAngleRef.current = angle;
-      dragRotationRef.current = rotation;
+      dragRotationRef.current = pointerRotation;
     };
 
-    const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
       if (!isDragging || disabled) return;
 
-      const dx = e.clientX - centerRef.current.x;
-      const dy = e.clientY - centerRef.current.y;
+      const dx = event.clientX - centerRef.current.x;
+      const dy = event.clientY - centerRef.current.y;
 
-      // If we're too close to the center, angle calculations become erratic. Skip update.
       if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
 
       const angle = Math.atan2(dy, dx) * (180 / Math.PI);
@@ -114,50 +248,67 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
       if (delta < -180) delta += 360;
 
       dragRotationRef.current += delta;
-      const newRotation = dragRotationRef.current;
-      applyRotation(newRotation);
+
+      if (isKnob) {
+        dragRotationRef.current = clamp(
+          dragRotationRef.current,
+          startAngle,
+          startAngle + resolvedSweepAngle,
+        );
+        const nextValue = rotationToValue(dragRotationRef.current);
+        applyValue(nextValue);
+        dragRotationRef.current = valueToRotation(nextValue);
+      } else {
+        applyValue(dragRotationRef.current);
+      }
 
       lastAngleRef.current = angle;
     };
 
-    const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    const handlePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
       if (disabled) return;
       setIsDragging(false);
-      if (e.currentTarget.hasPointerCapture(e.pointerId)) {
-        e.currentTarget.releasePointerCapture(e.pointerId);
+      if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+        event.currentTarget.releasePointerCapture(event.pointerId);
       }
     };
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
       if (disabled) return;
 
-      let nextRotation: number | null = null;
+      let nextValue: number | null = null;
+      const stepAmount = getStepAmount(event);
 
-      switch (e.key) {
+      switch (event.key) {
         case 'ArrowUp':
         case 'ArrowRight':
-          nextRotation = rotation + 15;
+          nextValue = currentValue + stepAmount;
           break;
         case 'ArrowDown':
         case 'ArrowLeft':
-          nextRotation = rotation - 15;
+          nextValue = currentValue - stepAmount;
           break;
         case 'PageUp':
-          nextRotation = rotation + 45;
+          nextValue = currentValue + resolvedCoarseStep;
           break;
         case 'PageDown':
-          nextRotation = rotation - 45;
+          nextValue = currentValue - resolvedCoarseStep;
           break;
         case 'Home':
-          nextRotation = 0;
+          nextValue = isKnob ? resolvedMin : 0;
+          break;
+        case 'End':
+          if (isKnob) {
+            nextValue = resolvedMax;
+          }
           break;
         default:
           break;
       }
 
-      if (nextRotation !== null) {
-        e.preventDefault();
-        applyRotation(nextRotation);
+      if (nextValue !== null) {
+        event.preventDefault();
+        applyValue(nextValue, stepAmount);
       }
     };
 
@@ -181,9 +332,15 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
         role="spinbutton"
         tabIndex={disabled ? -1 : 0}
         aria-disabled={disabled || undefined}
-        aria-valuenow={Math.round(rotation)}
-        aria-valuetext={`${Math.round(degrees)} degrees, ${revolutions} revolutions`}
-        aria-label="Analog dial"
+        aria-valuenow={Math.round(currentValue * 1000) / 1000}
+        aria-valuemin={isKnob ? resolvedMin : undefined}
+        aria-valuemax={isKnob ? resolvedMax : undefined}
+        aria-valuetext={
+          isKnob
+            ? `${roundDisplayValue(currentValue)} at ${Math.round(degrees)} degrees`
+            : `${Math.round(degrees)} degrees, ${revolutions} revolutions`
+        }
+        aria-label={isKnob ? 'Analog knob' : 'Analog dial'}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
@@ -193,7 +350,7 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
         <AnisotropicButton
           disabled={disabled}
           variant={variant}
-          rotation={rotation}
+          rotation={pointerRotation}
           containerClassName="w-full h-full"
           className="w-full h-full"
           tabIndex={-1}
@@ -202,9 +359,8 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
         >
           <div
             className="absolute inset-0 rounded-full pointer-events-none"
-            style={{ transform: `rotate(${rotation}deg)` }}
+            style={{ transform: `rotate(${pointerRotation}deg)` }}
           >
-            {/* Dial indicator line */}
             <div
               className={cn(
                 'absolute left-1/2 -translate-x-1/2 rounded-full border',
@@ -215,14 +371,13 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
                 width: '3%',
                 height: '24%',
                 background: isBlack
-                  ? `linear-gradient(calc(var(--analog-light-angle-pointer, 180deg) - ${rotation}deg - 45deg), #444 0%, #222 40%, #000 100%)`
-                  : `linear-gradient(calc(var(--analog-light-angle-pointer, 180deg) - ${rotation}deg - 45deg), #a3a3a3 0%, #737373 40%, #404040 100%)`,
+                  ? `linear-gradient(calc(var(--analog-light-angle-pointer, 180deg) - ${pointerRotation}deg - 45deg), #444 0%, #222 40%, #000 100%)`
+                  : `linear-gradient(calc(var(--analog-light-angle-pointer, 180deg) - ${pointerRotation}deg - 45deg), #a3a3a3 0%, #737373 40%, #404040 100%)`,
                 boxShadow: isBlack
                   ? `inset 0 1px 1px rgba(255,255,255,calc(0.2 * var(--analog-light-power, 1))), inset 0 -1px 2px rgba(0,0,0,calc(0.8 * var(--analog-light-power, 1))), 0 2px 4px rgba(0,0,0,calc(0.9 * var(--analog-light-power, 1)))`
                   : `inset 0 1px 2px rgba(255,255,255,calc(0.6 * var(--analog-light-power, 1))), inset 0 -1px 2px rgba(0,0,0,calc(0.5 * var(--analog-light-power, 1))), 0 2px 4px rgba(0,0,0,calc(0.6 * var(--analog-light-power, 1)))`,
               }}
             >
-              {/* Add a tiny central highlight */}
               <div
                 className={cn(
                   'absolute rounded-full blur-[0.5px]',
@@ -233,7 +388,7 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
                   left: '50%',
                   width: '30%',
                   height: '30%',
-                  transform: `translateX(-50%)`,
+                  transform: 'translateX(-50%)',
                   opacity: 0.6,
                 }}
               />

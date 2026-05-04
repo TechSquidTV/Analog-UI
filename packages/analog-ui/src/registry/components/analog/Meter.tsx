@@ -5,9 +5,30 @@ import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-an
 import type { AnalogOrientation } from './orientation';
 
 export type AnalogMeterVariant = 'metered' | 'lcd-green' | 'lcd-amber' | 'lcd-blue';
+export type AnalogMeterScalePreset = 'linear' | 'dbfs' | 'vu';
 type AnalogMeterGroupOrientation = AnalogOrientation;
 type AnalogMeterGroupLabelPosition = 'top' | 'bottom' | 'left' | 'right';
 export type AnalogMeterGroupVariant = 'panel' | 'chrome' | 'black';
+
+export interface AnalogMeterMark {
+  value: number;
+  label: React.ReactNode;
+  position?: number;
+}
+
+export interface AnalogMeterZone {
+  from?: number;
+  to?: number;
+  color: string;
+  glow?: string;
+}
+
+export interface AnalogMeterBallistics {
+  attackMs?: number;
+  releaseMs?: number;
+  peakHoldMs?: number;
+  peakReleaseMs?: number;
+}
 
 export interface AnalogMeterProps extends React.ComponentPropsWithoutRef<typeof Meter.Root> {
   orientation?: AnalogOrientation;
@@ -15,6 +36,12 @@ export interface AnalogMeterProps extends React.ComponentPropsWithoutRef<typeof 
   variant?: AnalogMeterVariant;
   segments?: number;
   lighting?: AnalogLightingConfig<'surface' | 'lens'>;
+  scalePreset?: AnalogMeterScalePreset;
+  marks?: readonly AnalogMeterMark[];
+  showScale?: boolean;
+  scaleSide?: 'leading' | 'trailing';
+  zones?: readonly AnalogMeterZone[];
+  ballistics?: 'none' | 'vu' | 'ppm' | AnalogMeterBallistics;
 }
 
 export interface AnalogMeterGroupProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -64,6 +91,95 @@ const getPeakMarkerStyle = (isVertical: boolean, percentage: number): React.CSSP
         height: 'calc(100% + 6px)',
       };
 
+const defaultScaleMarks: Record<Exclude<AnalogMeterScalePreset, 'linear'>, AnalogMeterMark[]> = {
+  dbfs: [
+    { value: -60, label: '-60' },
+    { value: -40, label: '-40' },
+    { value: -20, label: '-20' },
+    { value: -10, label: '-10' },
+    { value: -6, label: '-6' },
+    { value: -3, label: '-3' },
+    { value: 0, label: '0' },
+    { value: 3, label: '+3' },
+    { value: 6, label: '+6' },
+  ],
+  vu: [
+    { value: -20, label: '-20' },
+    { value: -10, label: '-10' },
+    { value: -7, label: '-7' },
+    { value: -5, label: '-5' },
+    { value: -3, label: '-3' },
+    { value: 0, label: '0' },
+    { value: 3, label: '+3' },
+  ],
+};
+
+const defaultScaleDomains: Record<AnalogMeterScalePreset, { min: number; max: number }> = {
+  linear: { min: 0, max: 100 },
+  dbfs: { min: -60, max: 6 },
+  vu: { min: -20, max: 3 },
+};
+
+const defaultScaleZones: Record<Exclude<AnalogMeterScalePreset, 'linear'>, AnalogMeterZone[]> = {
+  dbfs: [
+    { from: -60, to: -6, color: '#65ba59', glow: '#5ba850' },
+    { from: -6, to: 0, color: '#e6a227', glow: '#d49524' },
+    { from: 0, to: 6, color: '#d44040', glow: '#c43b3b' },
+  ],
+  vu: [
+    { from: -20, to: 0, color: '#65ba59', glow: '#5ba850' },
+    { from: 0, to: 3, color: '#e6a227', glow: '#d49524' },
+  ],
+};
+
+function resolveBallisticsConfig(
+  ballistics: AnalogMeterProps['ballistics'],
+): Required<AnalogMeterBallistics> {
+  if (ballistics === 'vu') {
+    return { attackMs: 300, releaseMs: 700, peakHoldMs: 900, peakReleaseMs: 450 };
+  }
+
+  if (ballistics === 'ppm') {
+    return { attackMs: 30, releaseMs: 1200, peakHoldMs: 1400, peakReleaseMs: 600 };
+  }
+
+  if (ballistics === 'none' || ballistics == null) {
+    return { attackMs: 50, releaseMs: 50, peakHoldMs: 0, peakReleaseMs: 50 };
+  }
+
+  return {
+    attackMs: ballistics.attackMs ?? 80,
+    releaseMs: ballistics.releaseMs ?? 220,
+    peakHoldMs: ballistics.peakHoldMs ?? 0,
+    peakReleaseMs: ballistics.peakReleaseMs ?? 160,
+  };
+}
+
+function buildZoneGradient(
+  zones: readonly AnalogMeterZone[],
+  min: number,
+  max: number,
+  isVertical: boolean,
+  key: 'color' | 'glow',
+) {
+  const direction = isVertical ? 'to top' : 'to right';
+  const ordered = [...zones]
+    .map((zone) => ({
+      start: zone.from ?? min,
+      end: zone.to ?? max,
+      tone: key === 'glow' ? zone.glow ?? zone.color : zone.color,
+    }))
+    .sort((a, b) => a.start - b.start);
+
+  const stops = ordered.flatMap((zone) => {
+    const start = clampMeterPercentage(zone.start, min, max);
+    const end = clampMeterPercentage(zone.end, min, max);
+    return [`${zone.tone} ${start}%`, `${zone.tone} ${end}%`];
+  });
+
+  return `linear-gradient(${direction}, ${stops.join(', ')})`;
+}
+
 const getMeterGroupShellStyle = (variant: AnalogMeterGroupVariant): React.CSSProperties => {
   switch (variant) {
     case 'chrome':
@@ -106,21 +222,87 @@ export const AnalogMeter = React.forwardRef<HTMLDivElement, AnalogMeterProps>(
       orientation = 'vertical',
       peakValue = null,
       value,
-      min = 0,
-      max = 100,
+      min,
+      max,
       variant = 'metered',
       segments,
       lighting,
+      scalePreset = 'linear',
+      marks,
+      showScale = false,
+      scaleSide = 'leading',
+      zones,
+      ballistics = 'none',
       ...props
     },
     ref,
   ) => {
     const isVertical = orientation === 'vertical';
-    const currentValue = value ?? min;
-    const percentage = clampMeterPercentage(currentValue, min, max);
+    const domain = defaultScaleDomains[scalePreset];
+    const resolvedMin = min ?? domain.min;
+    const resolvedMax = max ?? domain.max;
+    const currentValue = value ?? resolvedMin;
+    const effectiveBallistics = resolveBallisticsConfig(ballistics);
+    const previousValueRef = React.useRef(currentValue);
+    const [displayPeakValue, setDisplayPeakValue] = React.useState<number | null>(
+      peakValue ?? null,
+    );
+    const transitionMs =
+      currentValue >= previousValueRef.current
+        ? effectiveBallistics.attackMs
+        : effectiveBallistics.releaseMs;
+
+    React.useEffect(() => {
+      previousValueRef.current = currentValue;
+    }, [currentValue]);
+
+    React.useEffect(() => {
+      if (peakValue == null) {
+        setDisplayPeakValue(null);
+        return;
+      }
+
+      setDisplayPeakValue((previous) => {
+        if (previous == null || peakValue >= previous) {
+          return peakValue;
+        }
+
+        if (effectiveBallistics.peakHoldMs === 0) {
+          return peakValue;
+        }
+
+        return previous;
+      });
+
+      if (displayPeakValue != null && peakValue < displayPeakValue && effectiveBallistics.peakHoldMs > 0) {
+        const timeout = window.setTimeout(() => {
+          setDisplayPeakValue(peakValue);
+        }, effectiveBallistics.peakHoldMs);
+
+        return () => window.clearTimeout(timeout);
+      }
+    }, [displayPeakValue, effectiveBallistics.peakHoldMs, peakValue]);
+
+    const percentage = clampMeterPercentage(currentValue, resolvedMin, resolvedMax);
     const peakPercentage =
-      peakValue != null ? clampMeterPercentage(Math.max(currentValue, peakValue), min, max) : null;
+      displayPeakValue != null
+        ? clampMeterPercentage(Math.max(currentValue, displayPeakValue), resolvedMin, resolvedMax)
+        : null;
     const indicatorClipPath = getMeterIndicatorClipPath(isVertical, percentage);
+    const resolvedMarks = React.useMemo(() => {
+      if (!showScale) return [];
+
+      const sourceMarks =
+        marks ?? (scalePreset === 'linear' ? [] : defaultScaleMarks[scalePreset]);
+
+      return sourceMarks.map((mark) => ({
+        ...mark,
+        ratio:
+          mark.position !== undefined
+            ? Math.min(1, Math.max(0, mark.position))
+            : clampMeterPercentage(mark.value, resolvedMin, resolvedMax) / 100,
+      }));
+    }, [marks, resolvedMax, resolvedMin, scalePreset, showScale]);
 
     const getVariantColors = (v: AnalogMeterVariant, isVert: boolean) => {
       const dir = isVert ? 'to top' : 'to right';
@@ -143,6 +325,16 @@ export const AnalogMeter = React.forwardRef<HTMLDivElement, AnalogMeterProps>(
     };
 
     const colors = getVariantColors(variant as AnalogMeterVariant, isVertical);
+    const resolvedZones =
+      zones ?? (scalePreset === 'linear' ? undefined : defaultScaleZones[scalePreset]);
+    const zoneBackground =
+      variant === 'metered' && resolvedZones?.length
+        ? buildZoneGradient(resolvedZones, resolvedMin, resolvedMax, isVertical, 'color')
+        : colors.bg;
+    const zoneGlow =
+      variant === 'metered' && resolvedZones?.length
+        ? buildZoneGradient(resolvedZones, resolvedMin, resolvedMax, isVertical, 'glow')
+        : colors.glow;
     const lightingStyle = useAnalogLighting(['surface', 'lens'], lighting);
     const trackLightingStyle = {
       ...lightingStyle,
@@ -153,8 +345,8 @@ export const AnalogMeter = React.forwardRef<HTMLDivElement, AnalogMeterProps>(
       <Meter.Root
         ref={ref}
         value={currentValue}
-        min={min}
-        max={max}
+        min={resolvedMin}
+        max={resolvedMax}
         className={cn(
           'relative flex items-center justify-center',
           isVertical ? 'h-64 w-8 shrink-0 flex-col' : 'h-8 w-full min-w-0',
@@ -163,6 +355,44 @@ export const AnalogMeter = React.forwardRef<HTMLDivElement, AnalogMeterProps>(
         data-orientation={orientation}
         {...props}
       >
+        {showScale ? (
+          <div
+            className={cn(
+              'pointer-events-none absolute text-[9px] font-mono text-[#555] opacity-90',
+              isVertical
+                ? scaleSide === 'leading'
+                  ? '-left-8 top-0 bottom-0 w-6'
+                  : '-right-8 top-0 bottom-0 w-6'
+                : scaleSide === 'leading'
+                  ? 'left-0 right-0 -top-6 h-4'
+                  : 'left-0 right-0 -bottom-6 h-4',
+            )}
+          >
+            {resolvedMarks.map((mark) =>
+              isVertical ? (
+                <span
+                  key={`${mark.value}-${String(mark.label)}`}
+                  className={cn(
+                    'absolute w-full -translate-y-1/2',
+                    scaleSide === 'leading' ? 'right-0 text-right' : 'left-0 text-left',
+                  )}
+                  style={{ top: `${(1 - mark.ratio) * 100}%` }}
+                >
+                  {mark.label}
+                </span>
+              ) : (
+                <span
+                  key={`${mark.value}-${String(mark.label)}`}
+                  className="absolute -translate-x-1/2 text-center"
+                  style={{ left: `${mark.ratio * 100}%` }}
+                >
+                  {mark.label}
+                </span>
+              ),
+            )}
+          </div>
+        ) : null}
+
         {/* Track / Cavity */}
         <Meter.Track
           className={cn(
@@ -180,8 +410,8 @@ export const AnalogMeter = React.forwardRef<HTMLDivElement, AnalogMeterProps>(
               className="absolute inset-0"
               style={{
                 clipPath: indicatorClipPath,
-                transition: 'clip-path 50ms ease-out',
-                background: colors.glow,
+                transition: `clip-path ${transitionMs}ms ease-out`,
+                background: zoneGlow,
               }}
             />
           </div>
@@ -191,14 +421,14 @@ export const AnalogMeter = React.forwardRef<HTMLDivElement, AnalogMeterProps>(
             className="absolute inset-0 pointer-events-none !w-full !h-full z-10"
             style={{
               clipPath: indicatorClipPath,
-              transition: 'clip-path 50ms ease-out', // Real-time audio response
+              transition: `clip-path ${transitionMs}ms ease-out`,
             }}
           >
             {/* Lit LEDs */}
             <div
               className="absolute inset-0"
               style={{
-                background: colors.bg,
+                background: zoneBackground,
                 boxShadow: colors.isLcd ? 'none' : '0 0 4px rgba(255,255,255,0.15) inset',
               }}
             />
@@ -220,6 +450,7 @@ export const AnalogMeter = React.forwardRef<HTMLDivElement, AnalogMeterProps>(
                 ...getPeakMarkerStyle(isVertical, peakPercentage),
                 background: colors.peak,
                 boxShadow: `0 0 10px color-mix(in srgb, ${colors.peak} 75%, transparent)`,
+                transition: `all ${effectiveBallistics.peakReleaseMs}ms ease-out`,
               }}
             />
           )}

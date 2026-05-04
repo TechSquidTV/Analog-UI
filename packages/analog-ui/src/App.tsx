@@ -40,42 +40,41 @@ import {
 import { ComponentShowcase } from './components/ComponentShowcase';
 
 function useAudioMeter() {
-  const [channels, setChannels] = useState({ l: 0, r: 0, lPeak: 0, rPeak: 0 });
-  const lPeakRef = useRef(0);
-  const rPeakRef = useRef(0);
+  const [channels, setChannels] = useState({ l: -60, r: -60, lPeak: -60, rPeak: -60 });
+  const lPeakRef = useRef(-60);
+  const rPeakRef = useRef(-60);
   const lPeakTime = useRef(0);
   const rPeakTime = useRef(0);
 
   useEffect(() => {
     const tick = () => {
       setChannels((prev) => {
-        // More realistic bouncy audio simulation
-        const isHitL = Math.random() < 0.1;
-        const isHitR = Math.random() < 0.1;
+        const isHitL = Math.random() < 0.18;
+        const isHitR = Math.random() < 0.15;
 
-        const targetL = isHitL ? 50 + Math.random() * 50 : 0;
-        const targetR = isHitR ? 50 + Math.random() * 50 : 0;
+        const targetL = isHitL ? -18 + Math.random() * 24 : -60;
+        const targetR = isHitR ? -20 + Math.random() * 26 : -60;
 
         let newL = prev.l;
         if (targetL > prev.l) newL = targetL;
-        else newL = Math.max(0, prev.l - 6);
+        else newL = Math.max(-60, prev.l - 2.4);
 
         let newR = prev.r;
         if (targetR > prev.r) newR = targetR;
-        else newR = Math.max(0, prev.r - 6);
+        else newR = Math.max(-60, prev.r - 2.6);
 
         if (newL >= prev.lPeak) {
           lPeakRef.current = newL;
           lPeakTime.current = Date.now();
         } else if (Date.now() - lPeakTime.current > 1500) {
-          lPeakRef.current = Math.max(newL, lPeakRef.current - 1);
+          lPeakRef.current = Math.max(newL, lPeakRef.current - 1.5);
         }
 
         if (newR >= prev.rPeak) {
           rPeakRef.current = newR;
           rPeakTime.current = Date.now();
         } else if (Date.now() - rPeakTime.current > 1500) {
-          rPeakRef.current = Math.max(newR, rPeakRef.current - 1);
+          rPeakRef.current = Math.max(newR, rPeakRef.current - 1.5);
         }
 
         return { l: newL, r: newR, lPeak: lPeakRef.current, rPeak: rPeakRef.current };
@@ -132,14 +131,14 @@ export default function App() {
   // Audio meter logic
   const meter = useAudioMeter();
   const [isMeterAnimated, setIsMeterAnimated] = useState(true);
-  const [staticMeterL, setStaticMeterL] = useState(70);
-  const [staticMeterR, setStaticMeterR] = useState(50);
+  const [staticMeterL, setStaticMeterL] = useState(-12);
+  const [staticMeterR, setStaticMeterR] = useState(-18);
   const [meterVariant, setMeterVariant] = useState<
     'metered' | 'lcd-green' | 'lcd-amber' | 'lcd-blue'
   >('metered');
   const [meterGroupVariant, setMeterGroupVariant] = useState<AnalogMeterGroupVariant>('chrome');
   const [isSegmented, setIsSegmented] = useState(true);
-  const [gaugeValue, setGaugeValue] = useState(42);
+  const [gaugeValue, setGaugeValue] = useState(0);
   const [gaugeVariant, setGaugeVariant] = useState<'lcd-green' | 'lcd-amber' | 'lcd-blue'>(
     'lcd-green',
   );
@@ -163,6 +162,26 @@ export default function App() {
   const [compressionToggle, setCompressionToggle] = useState<'left' | 'right'>('left');
   const [makeupGain, setMakeupGain] = useState<number[]>([4]);
   const [bypass, setBypass] = useState(false);
+  const faderMarks = [
+    { value: -60, label: '-∞', position: 0 },
+    { value: -30, label: '-30', position: 0.22 },
+    { value: -20, label: '-20', position: 0.42 },
+    { value: -10, label: '-10', position: 0.62 },
+    { value: 0, label: '0', position: 0.8 },
+    { value: 10, label: '+10', position: 1 },
+  ] as const;
+  const makeupGainMarks = [
+    { value: -12, label: '-12' },
+    { value: -6, label: '-6' },
+    { value: 0, label: '0' },
+    { value: 6, label: '+6' },
+    { value: 12, label: '+12' },
+  ] as const;
+  const panGaugeMarks = [
+    { value: -100, label: 'L' },
+    { value: 0, label: 'C' },
+    { value: 100, label: 'R' },
+  ] as const;
 
   return (
     <AnalogLightingProvider
@@ -252,12 +271,13 @@ export default function App() {
         </div>
 
         <ComponentShowcase
-          title="Anisotropic Dial"
-          description="A classic potentiometer dial featuring radial anisotropic shading and dynamic foil reflections. Responds to the shared analog lighting system for a realistic metallic sheen. Drag to rotate."
+          title="Analog Encoder & Knob"
+          description="A rotary control that can behave as an endless encoder or a bounded audio knob. The bounded mode adds a real value range, sweep, steps, and a center detent while keeping the same tactile lighting response."
           specs={[
-            { label: 'Value', value: `${Math.round(dialValue)}°` },
+            { label: 'Encoder', value: `${Math.round(dialValue)}°` },
             { label: 'Degrees', value: `${Math.round(degrees)}°` },
             { label: 'Revolutions', value: revolutions },
+            { label: 'Trim', value: `${blackDialValue.toFixed(1)} dB` },
           ]}
         >
           <div className="flex w-full flex-wrap items-center justify-center gap-16">
@@ -271,10 +291,13 @@ export default function App() {
             />
             <Dial
               variant="black"
+              mode="knob"
+              min={-12}
+              max={12}
+              step={0.5}
+              detentValue={0}
               value={blackDialValue}
-              onChange={(val) => {
-                setBlackDialValue(val);
-              }}
+              onValueChange={setBlackDialValue}
             />
           </div>
         </ComponentShowcase>
@@ -538,20 +561,24 @@ export default function App() {
               <AnalogSlider
                 orientation="vertical"
                 variant="chrome"
-                min={-40}
+                min={-60}
                 max={10}
                 value={fader1}
                 onValueChange={(val) => setFader1(val as number)}
+                marks={faderMarks}
+                showMarks
               />
             </div>
             <div className="flex w-full max-w-sm">
               <AnalogSlider
                 orientation="horizontal"
                 variant="black"
-                min={-40}
+                min={-60}
                 max={10}
                 value={fader2}
                 onValueChange={(val) => setFader2(val as number)}
+                marks={faderMarks}
+                showMarks
                 className="w-full"
               />
             </div>
@@ -560,7 +587,7 @@ export default function App() {
 
         <ComponentShowcase
           title="Audio Channel Monitor"
-          description="A high-fidelity VU meter module. Features customizable LCD variants, smooth analog needle ballistics, and segmented or continuous LED arrays."
+          description="A calibrated stereo level meter with optional display ballistics, dbFS scale marks, and segmented or continuous LED arrays."
           specs={[
             {
               label: 'Animated',
@@ -575,6 +602,9 @@ export default function App() {
                   type="range"
                   className="w-24 accent-[#555]"
                   disabled={isMeterAnimated}
+                  min={-60}
+                  max={6}
+                  step={1}
                   value={staticMeterL}
                   onChange={(e) => setStaticMeterL(Number(e.target.value))}
                 />
@@ -587,6 +617,9 @@ export default function App() {
                   type="range"
                   className="w-24 accent-[#555]"
                   disabled={isMeterAnimated}
+                  min={-60}
+                  max={6}
+                  step={1}
                   value={staticMeterR}
                   onChange={(e) => setStaticMeterR(Number(e.target.value))}
                 />
@@ -635,6 +668,9 @@ export default function App() {
                   value={isMeterAnimated ? meter.l : staticMeterL}
                   peakValue={meter.lPeak}
                   variant={meterVariant}
+                  scalePreset="dbfs"
+                  showScale
+                  ballistics="ppm"
                   segments={isSegmented ? 40 : undefined}
                 />
               </AnalogMeterGroupChannel>
@@ -645,6 +681,9 @@ export default function App() {
                   value={isMeterAnimated ? meter.r : staticMeterR}
                   peakValue={meter.rPeak}
                   variant={meterVariant}
+                  scalePreset="dbfs"
+                  showScale
+                  ballistics="ppm"
                   segments={isSegmented ? 40 : undefined}
                 />
               </AnalogMeterGroupChannel>
@@ -653,15 +692,17 @@ export default function App() {
         </ComponentShowcase>
 
         <ComponentShowcase
-          title="LCD Radial Gauge"
-          description="A circular gauge that merges an anisotropic metallic dial with an LCD arc display. Operates as a purely visual monitor."
+          title="Bipolar Pan Gauge"
+          description="A configurable radial gauge with custom sweep geometry, caller-defined marks, and an optional center-fill mode for bipolar audio values like pan and balance."
           specs={[
             {
-              label: 'Value',
+              label: 'Pan',
               value: (
                 <input
                   type="range"
                   className="w-24 accent-[#555]"
+                  min={-100}
+                  max={100}
                   value={gaugeValue}
                   onChange={(e) => setGaugeValue(Number(e.target.value))}
                 />
@@ -686,9 +727,15 @@ export default function App() {
           <div className="flex w-full items-center justify-center py-12">
             <Gauge
               className="max-w-sm"
+              min={-100}
+              max={100}
               value={gaugeValue}
               onValueChange={(val) => setGaugeValue(val as number)}
               variant={gaugeVariant}
+              fillMode="center"
+              centerValue={0}
+              marks={panGaugeMarks}
+              showMarks
             />
           </div>
         </ComponentShowcase>
@@ -897,6 +944,8 @@ export default function App() {
                         }
                         max={12}
                         min={-12}
+                        marks={makeupGainMarks}
+                        showMarks
                         orientation="horizontal"
                         className="w-full min-w-0"
                       />
@@ -922,6 +971,9 @@ export default function App() {
                         value={isMeterAnimated ? meter.l : staticMeterL}
                         peakValue={meter.lPeak}
                         variant={meterVariant}
+                        scalePreset="dbfs"
+                        showScale
+                        ballistics="ppm"
                         segments={isSegmented ? 40 : undefined}
                       />
                     </AnalogMeterGroupChannel>
@@ -932,6 +984,9 @@ export default function App() {
                         value={isMeterAnimated ? meter.r : staticMeterR}
                         peakValue={meter.rPeak}
                         variant={meterVariant}
+                        scalePreset="dbfs"
+                        showScale
+                        ballistics="ppm"
                         segments={isSegmented ? 40 : undefined}
                       />
                     </AnalogMeterGroupChannel>

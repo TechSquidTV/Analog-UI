@@ -172,7 +172,7 @@
       "name": "dial",
       "title": "Anisotropic Dial",
       "type": "registry:ui",
-      "description": "A classic potentiometer dial with radial anisotropic shading and dynamic foil reflections.",
+      "description": "A tactile rotary control that can behave as an endless encoder or a bounded knob with sweep, steps, and detents.",
       "registryDependencies": [
         "analog-foundation",
         "anisotropic-button",
@@ -191,7 +191,7 @@
       "name": "gauge",
       "title": "LCD Radial Gauge",
       "type": "registry:ui",
-      "description": "A circular gauge that pairs a metallic dial face with an illuminated LCD arc display.",
+      "description": "A configurable radial gauge with custom sweep geometry, caller-defined marks, and optional center-fill behavior.",
       "dependencies": ["@base-ui/react"],
       "registryDependencies": [
         "analog-foundation",
@@ -210,7 +210,7 @@
       "name": "meter",
       "title": "Audio Channel Monitor",
       "type": "registry:ui",
-      "description": "A high-fidelity VU meter module with analog needle ballistics and configurable LED accents.",
+      "description": "A calibrated level meter display with optional scale presets, display ballistics, and configurable LED styling.",
       "dependencies": ["@base-ui/react"],
       "registryDependencies": ["analog-foundation", "use-analog-lighting", "utils"],
       "files": [
@@ -224,7 +224,7 @@
       "name": "slider",
       "title": "Professional Audio Fader",
       "type": "registry:ui",
-      "description": "A tactile linear fader with a recessed track, machined thumb, and shared analog lighting response.",
+      "description": "A tactile linear slider with caller-defined scale marks, optional audio-style legends, and shared analog lighting response.",
       "dependencies": ["@base-ui/react"],
       "registryDependencies": [
         "analog-foundation",

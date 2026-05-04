@@ -5,32 +5,71 @@ import { RockerThumbSurface } from './RockerThumbSurface';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 import type { AnalogOrientation } from './orientation';
 
+export interface AnalogSliderMark {
+  value: number;
+  label: React.ReactNode;
+  /**
+   * Optional normalized position from 0 to 1 for non-linear legends such as audio fader laws.
+   * When omitted, the mark is placed linearly between min and max.
+   */
+  position?: number;
+  align?: 'start' | 'center' | 'end';
+}
+
 export interface AnalogSliderProps
   extends Omit<React.ComponentPropsWithoutRef<typeof Slider.Root>, 'orientation'> {
   variant?: 'chrome' | 'black';
   orientation?: AnalogOrientation;
   lighting?: AnalogLightingConfig<'track' | 'thumb'>;
+  marks?: readonly AnalogSliderMark[];
+  showMarks?: boolean;
 }
 
 export const AnalogSlider = React.forwardRef<HTMLDivElement, AnalogSliderProps>(
-  ({ className, variant = 'chrome', orientation = 'horizontal', lighting, ...props }, ref) => {
+  (
+    {
+      className,
+      variant = 'chrome',
+      orientation = 'horizontal',
+      lighting,
+      min = 0,
+      max = 100,
+      marks,
+      showMarks = marks !== undefined,
+      ...props
+    },
+    ref,
+  ) => {
     const isVertical = orientation === 'vertical';
-    const horizontalMarks = [
-      { label: '-∞', pos: '0%', align: 'start' },
-      { label: '-30', pos: '20%', align: 'center' },
-      { label: '-20', pos: '40%', align: 'center' },
-      { label: '-10', pos: '60%', align: 'center' },
-      { label: '0', pos: '80%', align: 'center' },
-      { label: '+10', pos: '100%', align: 'end' },
-    ] as const;
     const sliderLighting: AnalogLightingConfig<'track' | 'thumb'> = {
       track: { travel: 1 },
       ...lighting,
     };
     const lightingStyle = useAnalogLighting(['track', 'thumb'], sliderLighting);
+    const sliderRange = max - min;
+    const resolvedMarks = React.useMemo(() => {
+      if (!showMarks || !marks?.length) return [];
+
+      return marks.map((mark) => {
+        const ratio =
+          mark.position !== undefined
+            ? Math.min(1, Math.max(0, mark.position))
+            : sliderRange === 0
+              ? 0
+              : Math.min(1, Math.max(0, (mark.value - min) / sliderRange));
+
+        return {
+          ...mark,
+          ratio,
+          align:
+            mark.align ??
+            (ratio <= 0.001 ? 'start' : ratio >= 0.999 ? 'end' : 'center'),
+        };
+      });
+    }, [marks, min, showMarks, sliderRange]);
 
     return (
-      <Slider.Root ref={ref} orientation={orientation} {...props}>
+      <Slider.Root ref={ref} orientation={orientation} min={min} max={max} {...props}>
         <Slider.Control
           className={cn(
             'group relative flex items-center justify-center touch-none select-none data-[orientation=horizontal]:h-16 data-[orientation=horizontal]:w-full data-[orientation=horizontal]:min-w-0 data-[orientation=vertical]:h-64 data-[orientation=vertical]:w-16 data-[orientation=vertical]:shrink-0',
@@ -39,30 +78,23 @@ export const AnalogSlider = React.forwardRef<HTMLDivElement, AnalogSliderProps>(
           style={lightingStyle}
         >
           {/* Scale Markings */}
-          {isVertical ? (
+          {showMarks && isVertical ? (
             <div className="absolute top-0 bottom-0 -left-6 w-4 pointer-events-none">
-              {[
-                { label: '+10', pos: '0%' },
-                { label: '0', pos: '20%' },
-                { label: '-10', pos: '40%' },
-                { label: '-20', pos: '60%' },
-                { label: '-30', pos: '80%' },
-                { label: '-∞', pos: '100%' },
-              ].map((mark) => (
+              {resolvedMarks.map((mark) => (
                 <span
-                  key={mark.pos}
+                  key={`${mark.value}-${String(mark.label)}`}
                   className="absolute left-0 w-full text-right text-[9px] font-mono text-[#555] opacity-80 -translate-y-1/2"
-                  style={{ top: mark.pos }}
+                  style={{ top: `${(1 - mark.ratio) * 100}%` }}
                 >
                   {mark.label}
                 </span>
               ))}
             </div>
-          ) : (
+          ) : showMarks ? (
             <div className="absolute left-0 right-0 -top-6 h-4 pointer-events-none">
-              {horizontalMarks.map((mark) => (
+              {resolvedMarks.map((mark) => (
                 <span
-                  key={mark.pos}
+                  key={`${mark.value}-${String(mark.label)}`}
                   className={cn(
                     'absolute top-0 text-[9px] font-mono text-[#555] opacity-80',
                     mark.align === 'start'
@@ -71,13 +103,13 @@ export const AnalogSlider = React.forwardRef<HTMLDivElement, AnalogSliderProps>(
                         ? '-translate-x-full text-right'
                         : '-translate-x-1/2 text-center',
                   )}
-                  style={{ left: mark.pos }}
+                  style={{ left: `${mark.ratio * 100}%` }}
                 >
                   {mark.label}
                 </span>
               ))}
             </div>
-          )}
+          ) : null}
 
           {/* Beveled Outer Track Recess */}
           <div
