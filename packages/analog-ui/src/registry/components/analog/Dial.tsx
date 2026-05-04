@@ -26,6 +26,10 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
     }: DialProps = {},
     ref,
   ) => {
+    const hasExplicitSizeOverride =
+      typeof className === 'string' &&
+      /\b(?:size|min-w|max-w|w|basis)-[^\s]+/.test(className);
+
     const [internalValue, setInternalValue] = useState(0);
     const rotation = externalValue !== undefined ? externalValue : internalValue;
 
@@ -164,7 +168,8 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
       <div
         ref={mergedRef}
         className={cn(
-          'mx-auto aspect-square w-full min-w-0 max-w-[16rem] shrink-0 rounded-full touch-none',
+          'mx-auto aspect-square max-w-full shrink-0 rounded-full touch-none',
+          !hasExplicitSizeOverride && 'w-64',
           isDragging
             ? 'cursor-grabbing'
             : disabled
