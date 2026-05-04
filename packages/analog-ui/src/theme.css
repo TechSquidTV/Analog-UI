@@ -75,6 +75,34 @@
   --analog-foil-opacity: 0.3;
   --analog-bloom-strength: 0.7;
   --analog-track-padding: calc(var(--spacing) * 1);
+  --analog-wheel-control-height: calc(var(--spacing) * 48);
+  --analog-wheel-control-width: calc(
+    var(--analog-wheel-cylinder-width) + (var(--analog-track-padding) * 2)
+  );
+  --analog-wheel-cylinder-width: calc(var(--spacing) * 19);
+  --analog-wheel-cylinder-inset-inline: calc(var(--analog-track-padding) * 0.5);
+  --analog-wheel-cylinder-radius: calc(var(--spacing) * 25);
+  --analog-wheel-step-height: calc(var(--spacing) * 10.5);
+  --analog-wheel-ridge-height: calc(var(--spacing) * 3);
+  --analog-wheel-ridge-inset-inline: calc(var(--spacing) * 2);
+  --analog-wheel-ridge-radius: calc(var(--radius-sm) * 0.25);
+  --analog-wheel-slot-radius: var(--radius-sm);
+  --analog-wheel-readout-width: calc(
+    var(--analog-wheel-cylinder-width) - (var(--analog-wheel-cylinder-inset-inline) * 2)
+  );
+  --analog-wheel-readout-height: calc(var(--spacing) * 10);
+  --analog-wheel-label-min-width: var(--analog-wheel-readout-width);
+  --analog-wheel-adjacent-label-width: var(--analog-wheel-readout-width);
+  --analog-wheel-adjacent-label-min-height: calc(var(--spacing) * 5);
+  --analog-wheel-adjacent-label-gap: calc(var(--spacing) * 6);
+  --analog-wheel-label-side-inset: calc(var(--spacing) * 2);
+  --analog-wheel-indicator-width: calc(var(--spacing) * 3);
+  --analog-wheel-indicator-height: calc(var(--spacing) * 1);
+  --analog-wheel-label-primary-size: calc(var(--spacing) * 2.5);
+  --analog-wheel-label-primary-line-height: calc(var(--spacing) * 2.75);
+  --analog-wheel-label-secondary-size: calc(var(--spacing) * 2);
+  --analog-wheel-label-secondary-line-height: calc(var(--spacing) * 2.5);
+  --analog-wheel-label-letter-spacing: 0.05em;
   --analog-light-source: 180deg;
   --spacing-track-padding: var(--analog-track-padding);
   --color-surface-1: var(--analog-surface-panel);

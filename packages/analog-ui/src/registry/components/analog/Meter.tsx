@@ -2,14 +2,15 @@ import * as React from 'react';
 import { Meter } from '@base-ui/react/meter';
 import { cn } from '../../../lib/utils';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
+import type { AnalogOrientation } from './orientation';
 
 export type AnalogMeterVariant = 'metered' | 'lcd-green' | 'lcd-amber' | 'lcd-blue';
-type AnalogMeterGroupOrientation = 'horizontal' | 'vertical';
+type AnalogMeterGroupOrientation = AnalogOrientation;
 type AnalogMeterGroupLabelPosition = 'top' | 'bottom' | 'left' | 'right';
 export type AnalogMeterGroupVariant = 'panel' | 'chrome' | 'black';
 
 export interface AnalogMeterProps extends React.ComponentPropsWithoutRef<typeof Meter.Root> {
-  orientation?: 'horizontal' | 'vertical';
+  orientation?: AnalogOrientation;
   peakValue?: number | null;
   variant?: AnalogMeterVariant;
   segments?: number;
@@ -27,7 +28,7 @@ export interface AnalogMeterGroupChannelProps extends React.HTMLAttributes<HTMLD
   labelPosition?: AnalogMeterGroupLabelPosition;
 }
 
-export interface AnalogMeterGroupSeparatorProps extends React.HTMLAttributes<HTMLDivElement> {}
+export type AnalogMeterGroupSeparatorProps = React.HTMLAttributes<HTMLDivElement>;
 
 const AnalogMeterGroupContext = React.createContext<{
   orientation: AnalogMeterGroupOrientation;
@@ -159,6 +160,7 @@ export const AnalogMeter = React.forwardRef<HTMLDivElement, AnalogMeterProps>(
           isVertical ? 'h-64 w-8 shrink-0 flex-col' : 'h-8 w-full min-w-0',
           className,
         )}
+        data-orientation={orientation}
         {...props}
       >
         {/* Track / Cavity */}

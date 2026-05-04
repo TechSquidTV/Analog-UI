@@ -6,16 +6,16 @@ import { useMergedRefs } from '../../../lib/refs';
 import { AnalogIndicator, type AnalogIndicatorColor } from './Indicator';
 import { RockerThumbSurface } from './RockerThumbSurface';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
+import type { AnalogOrientation } from './orientation';
 
-type AnalogToggleOrientation = 'horizontal' | 'vertical';
 type AnalogToggleValue = 'left' | 'right';
 
 export interface AnalogToggleProps extends Omit<
   React.ComponentPropsWithoutRef<typeof ToggleGroup>,
-  'value' | 'defaultValue' | 'onValueChange'
+  'value' | 'defaultValue' | 'onValueChange' | 'orientation'
 > {
   variant?: 'chrome' | 'black';
-  orientation?: AnalogToggleOrientation;
+  orientation?: AnalogOrientation;
   leftLed?: AnalogIndicatorColor;
   rightLed?: AnalogIndicatorColor;
   leftLedActive?: 'auto' | 'always' | 'never';
@@ -34,7 +34,7 @@ type ToggleGroupMouseLeaveEvent = Parameters<
 >[0];
 
 const getLedPositionStyle = (
-  orientation: AnalogToggleOrientation,
+  orientation: AnalogOrientation,
   side: AnalogToggleValue,
 ): React.CSSProperties =>
   orientation === 'horizontal'
@@ -126,8 +126,7 @@ export const AnalogToggle = React.forwardRef<HTMLDivElement, AnalogToggleProps>(
           } as React.CSSProperties
         }
         data-state={value}
-        data-orientation={orientation}
-        aria-orientation={orientation}
+        orientation={orientation}
         value={value ? [value] : []}
         onValueChange={(val) => {
           // If the user clicks the currently active one, and `val` is empty array,

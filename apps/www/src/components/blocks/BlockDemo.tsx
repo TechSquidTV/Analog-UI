@@ -377,6 +377,8 @@ function SquareToggleDemo({ mode }: { mode: DemoMode }) {
 function SwitchDemo({ mode }: { mode: DemoMode }) {
   const [warp, setWarp] = useState(true);
   const [stealth, setStealth] = useState(false);
+  const [launch, setLaunch] = useState(true);
+  const [cloak, setCloak] = useState(false);
 
   return (
     <DemoStage
@@ -385,22 +387,46 @@ function SwitchDemo({ mode }: { mode: DemoMode }) {
         <>
           <FooterItem label="Warp" value={warp ? "Enabled" : "Disabled"} />
           <FooterItem label="Stealth" value={stealth ? "Enabled" : "Disabled"} />
-          <FooterItem label="Behavior" value="Rolling thumb" />
+          <FooterItem label="Launch" value={launch ? "Enabled" : "Disabled"} />
+          <FooterItem label="Cloak" value={cloak ? "Enabled" : "Disabled"} />
+          <FooterItem label="Behavior" value="Center-pivot roll" />
         </>
       }
     >
-      <div className="flex w-full max-w-md flex-col gap-10">
-        <div className="flex items-center justify-between gap-6">
-          <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#686868]">
-            Warp
-          </span>
-          <AnalogSwitch checked={warp} onCheckedChange={setWarp} />
+      <div className="flex w-full max-w-3xl flex-wrap items-start justify-center gap-12">
+        <div className="flex w-full max-w-md flex-col gap-10">
+          <div className="flex items-center justify-between gap-6">
+            <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#686868]">
+              Warp
+            </span>
+            <AnalogSwitch checked={warp} onCheckedChange={setWarp} />
+          </div>
+          <div className="flex items-center justify-between gap-6">
+            <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#686868]">
+              Stealth
+            </span>
+            <AnalogSwitch variant="black" checked={stealth} onCheckedChange={setStealth} />
+          </div>
         </div>
-        <div className="flex items-center justify-between gap-6">
-          <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#686868]">
-            Stealth
-          </span>
-          <AnalogSwitch variant="black" checked={stealth} onCheckedChange={setStealth} />
+
+        <div className="flex items-start justify-center gap-10">
+          <div className="flex flex-col items-center gap-4">
+            <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#686868]">
+              Launch
+            </span>
+            <AnalogSwitch orientation="vertical" checked={launch} onCheckedChange={setLaunch} />
+          </div>
+          <div className="flex flex-col items-center gap-4">
+            <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#686868]">
+              Cloak
+            </span>
+            <AnalogSwitch
+              orientation="vertical"
+              variant="black"
+              checked={cloak}
+              onCheckedChange={setCloak}
+            />
+          </div>
         </div>
       </div>
     </DemoStage>

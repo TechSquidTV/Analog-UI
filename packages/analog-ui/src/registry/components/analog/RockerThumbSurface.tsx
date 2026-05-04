@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { cn } from '../../../lib/utils';
+import type { AnalogOrientation } from './orientation';
 
 type RockerVariant = 'chrome' | 'black';
-type RockerOrientation = 'horizontal' | 'vertical';
+type RockerOrientation = AnalogOrientation;
 type RockerRaisedSide = 'start' | 'end' | 'both';
 type RockerSingleSide = Exclude<RockerRaisedSide, 'both'>;
 

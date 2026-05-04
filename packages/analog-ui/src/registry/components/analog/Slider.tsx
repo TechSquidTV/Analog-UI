@@ -3,16 +3,18 @@ import { Slider } from '@base-ui/react';
 import { cn } from '../../../lib/utils';
 import { RockerThumbSurface } from './RockerThumbSurface';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
+import type { AnalogOrientation } from './orientation';
 
-export interface AnalogSliderProps extends React.ComponentPropsWithoutRef<typeof Slider.Root> {
+export interface AnalogSliderProps
+  extends Omit<React.ComponentPropsWithoutRef<typeof Slider.Root>, 'orientation'> {
   variant?: 'chrome' | 'black';
+  orientation?: AnalogOrientation;
   lighting?: AnalogLightingConfig<'track' | 'thumb'>;
 }
 
 export const AnalogSlider = React.forwardRef<HTMLDivElement, AnalogSliderProps>(
-  ({ className, variant = 'chrome', lighting, ...props }, ref) => {
-    // Check if the component is vertical or horizontal
-    const isVertical = props.orientation === 'vertical';
+  ({ className, variant = 'chrome', orientation = 'horizontal', lighting, ...props }, ref) => {
+    const isVertical = orientation === 'vertical';
     const horizontalMarks = [
       { label: '-∞', pos: '0%', align: 'start' },
       { label: '-30', pos: '20%', align: 'center' },
@@ -28,12 +30,10 @@ export const AnalogSlider = React.forwardRef<HTMLDivElement, AnalogSliderProps>(
     const lightingStyle = useAnalogLighting(['track', 'thumb'], sliderLighting);
 
     return (
-      <Slider.Root {...props}>
+      <Slider.Root ref={ref} orientation={orientation} {...props}>
         <Slider.Control
-          ref={ref}
           className={cn(
-            'group flex items-center justify-center relative touch-none select-none',
-            isVertical ? 'h-64 w-16 shrink-0' : 'h-16 w-full min-w-0',
+            'group relative flex items-center justify-center touch-none select-none data-[orientation=horizontal]:h-16 data-[orientation=horizontal]:w-full data-[orientation=horizontal]:min-w-0 data-[orientation=vertical]:h-64 data-[orientation=vertical]:w-16 data-[orientation=vertical]:shrink-0',
             className,
           )}
           style={lightingStyle}
@@ -110,16 +110,13 @@ export const AnalogSlider = React.forwardRef<HTMLDivElement, AnalogSliderProps>(
 
             <Slider.Thumb
               className={cn(
-                'absolute outline-none select-none pointer-events-auto',
-                isVertical
-                  ? 'w-8 h-[72px] -translate-x-1/2 left-0'
-                  : 'w-[72px] h-8 -translate-y-1/2 top-0',
+                'absolute pointer-events-auto outline-none select-none data-[orientation=horizontal]:top-0 data-[orientation=horizontal]:h-8 data-[orientation=horizontal]:w-[72px] data-[orientation=horizontal]:-translate-y-1/2 data-[orientation=vertical]:left-0 data-[orientation=vertical]:h-[72px] data-[orientation=vertical]:w-8 data-[orientation=vertical]:-translate-x-1/2',
               )}
             >
               <RockerThumbSurface
                 className="absolute inset-0 rounded-sm"
                 variant={variant}
-                orientation={isVertical ? 'vertical' : 'horizontal'}
+                orientation={orientation}
                 raisedSide="both"
               >
                 <div className="absolute inset-[4px] rounded-[6px] ring-2 ring-[var(--color-accent)] opacity-0 group-has-[[data-focus-visible]]:opacity-100 transition-opacity duration-300 pointer-events-none z-[4]" />

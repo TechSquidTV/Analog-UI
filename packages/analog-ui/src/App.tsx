@@ -111,6 +111,8 @@ export default function App() {
   // Analog Switch States
   const [switch1, setSwitch1] = useState(true);
   const [switch2, setSwitch2] = useState(false);
+  const [verticalSwitch1, setVerticalSwitch1] = useState(true);
+  const [verticalSwitch2, setVerticalSwitch2] = useState(false);
 
   // States for Faders
   const [fader1, setFader1] = useState(0);
@@ -473,22 +475,51 @@ export default function App() {
 
         <ComponentShowcase
           title="Machined Cylinder Switch"
-          description="A tactile track switch that reimagines the standard toggle. Features a 3D-extruded metallic cylinder that rolls through a recessed cavity."
+          description="A tactile track switch that reimagines the standard toggle. Features a 3D-extruded metallic cylinder that rolls through a recessed cavity in horizontal or vertical layouts."
           specs={[
-            { label: 'State (Chrome)', value: switch1 ? 'ON' : 'OFF' },
-            { label: 'State (Black)', value: switch2 ? 'ON' : 'OFF' },
+            { label: 'Horizontal (Chrome)', value: switch1 ? 'ON' : 'OFF' },
+            { label: 'Horizontal (Black)', value: switch2 ? 'ON' : 'OFF' },
+            { label: 'Vertical (Chrome)', value: verticalSwitch1 ? 'ON' : 'OFF' },
+            { label: 'Vertical (Black)', value: verticalSwitch2 ? 'ON' : 'OFF' },
           ]}
         >
-          <div className="flex flex-col gap-16 items-center justify-center py-12">
-            <div className="flex items-center justify-between w-48 gap-6">
-              <span className="font-mono text-xs text-[#555] uppercase tracking-widest">Warp</span>
-              <AnalogSwitch variant="chrome" checked={switch1} onCheckedChange={setSwitch1} />
+          <div className="flex flex-col gap-14 items-center justify-center py-12">
+            <div className="flex flex-col gap-8 w-full max-w-sm">
+              <div className="flex items-center justify-between w-full gap-6">
+                <span className="font-mono text-xs text-[#555] uppercase tracking-widest">Warp</span>
+                <AnalogSwitch variant="chrome" checked={switch1} onCheckedChange={setSwitch1} />
+              </div>
+              <div className="flex items-center justify-between w-full gap-6">
+                <span className="font-mono text-xs text-[#555] uppercase tracking-widest">
+                  Stealth
+                </span>
+                <AnalogSwitch variant="black" checked={switch2} onCheckedChange={setSwitch2} />
+              </div>
             </div>
-            <div className="flex items-center justify-between w-48 gap-6">
-              <span className="font-mono text-xs text-[#555] uppercase tracking-widest">
-                Stealth
-              </span>
-              <AnalogSwitch variant="black" checked={switch2} onCheckedChange={setSwitch2} />
+
+            <div className="flex flex-wrap items-start justify-center gap-10">
+              <div className="flex flex-col items-center gap-4">
+                <span className="font-mono text-xs text-[#555] uppercase tracking-widest">
+                  Launch
+                </span>
+                <AnalogSwitch
+                  orientation="vertical"
+                  variant="chrome"
+                  checked={verticalSwitch1}
+                  onCheckedChange={setVerticalSwitch1}
+                />
+              </div>
+              <div className="flex flex-col items-center gap-4">
+                <span className="font-mono text-xs text-[#555] uppercase tracking-widest">
+                  Cloak
+                </span>
+                <AnalogSwitch
+                  orientation="vertical"
+                  variant="black"
+                  checked={verticalSwitch2}
+                  onCheckedChange={setVerticalSwitch2}
+                />
+              </div>
             </div>
           </div>
         </ComponentShowcase>

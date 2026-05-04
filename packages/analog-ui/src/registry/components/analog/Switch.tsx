@@ -3,18 +3,21 @@ import { Switch as BaseSwitch } from '@base-ui/react';
 import { cn } from '../../../lib/utils';
 import { useMergedRefs } from '../../../lib/refs';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
+import type { AnalogOrientation } from './orientation';
 
 export interface AnalogSwitchProps extends React.ComponentPropsWithoutRef<typeof BaseSwitch.Root> {
   variant?: 'chrome' | 'black';
+  orientation?: AnalogOrientation;
   lighting?: AnalogLightingConfig<'track' | 'thumb'>;
 }
 
-export const AnalogSwitch = React.forwardRef<HTMLButtonElement, AnalogSwitchProps>(
-  ({ className, variant = 'chrome', lighting, ...props }, ref) => {
-    const internalRef = React.useRef<HTMLButtonElement>(null);
+export const AnalogSwitch = React.forwardRef<HTMLElement, AnalogSwitchProps>(
+  ({ className, variant = 'chrome', orientation = 'horizontal', lighting, ...props }, ref) => {
+    const internalRef = React.useRef<HTMLElement>(null);
     const mergedRef = useMergedRefs(ref, internalRef);
 
     const isChrome = variant === 'chrome';
+    const isVertical = orientation === 'vertical';
     const switchLighting: AnalogLightingConfig<'track' | 'thumb'> = {
       track: { travel: 1 },
       ...lighting,
@@ -25,25 +28,28 @@ export const AnalogSwitch = React.forwardRef<HTMLButtonElement, AnalogSwitchProp
       <BaseSwitch.Root
         ref={mergedRef}
         className={cn(
-          'analog-switch group relative inline-flex h-[36px] w-[104px] min-w-0 shrink-0 cursor-pointer items-center justify-center rounded-full border-none outline-none select-none',
+          'analog-switch group relative inline-flex min-w-0 shrink-0 cursor-pointer items-center justify-center rounded-full border-none outline-none select-none',
+          isVertical ? 'h-[104px] w-[36px]' : 'h-[36px] w-[104px]',
           className,
         )}
         style={lightingStyle}
         {...props}
+        data-orientation={orientation}
       >
         {/* Outer Bevel / Base Plate (Track) */}
         <div className="absolute inset-0 rounded-full overflow-hidden analog-surface-recess">
           {/* The actual slot cavity */}
           <div
             className={cn(
-              'absolute inset-[var(--spacing-track-padding)] rounded-full analog-track-slot analog-track-slot-unlit flex items-center justify-between px-[24px]',
+              'absolute inset-[var(--spacing-track-padding)] rounded-full analog-track-slot analog-track-slot-unlit flex items-center justify-between',
+              isVertical ? 'flex-col py-[18px]' : 'px-[24px]',
             )}
           >
             {/* Labels */}
-            <span className="font-mono text-[9px] font-bold text-[#555] opacity-0 group-data-[checked]:opacity-100 transition-opacity duration-300">
+            <span className="font-mono text-[9px] leading-none font-bold tracking-[0.18em] text-[#555] opacity-0 group-data-[checked]:opacity-100 transition-opacity duration-300">
               ON
             </span>
-            <span className="font-mono text-[9px] font-bold text-[#555] opacity-50 group-data-[checked]:opacity-0 transition-opacity duration-300">
+            <span className="font-mono text-[9px] leading-none font-bold tracking-[0.18em] text-[#555] opacity-50 group-data-[checked]:opacity-0 transition-opacity duration-300">
               OFF
             </span>
           </div>

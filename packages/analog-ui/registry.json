@@ -243,7 +243,7 @@
       "name": "switch",
       "title": "Machined Cylinder Switch",
       "type": "registry:ui",
-      "description": "A track switch with a 3D extruded metallic cylinder that rolls through a recessed cavity.",
+      "description": "A track switch with a 3D extruded metallic cylinder that rolls through a recessed cavity in horizontal or vertical orientations.",
       "dependencies": ["@base-ui/react"],
       "registryDependencies": ["analog-foundation", "refs", "use-analog-lighting", "utils"],
       "files": [
