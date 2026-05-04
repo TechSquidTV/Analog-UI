@@ -164,7 +164,7 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
       <div
         ref={mergedRef}
         className={cn(
-          'aspect-square w-64 shrink-0 mx-auto rounded-full touch-none',
+          'mx-auto aspect-square w-full min-w-0 max-w-[16rem] shrink-0 rounded-full touch-none',
           isDragging
             ? 'cursor-grabbing'
             : disabled

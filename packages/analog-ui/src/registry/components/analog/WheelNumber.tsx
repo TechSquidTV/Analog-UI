@@ -146,20 +146,20 @@ export const AnalogWheelNumber = React.forwardRef<HTMLDivElement, AnalogWheelNum
         smallStep={smallStep}
         largeStep={largeStep}
         {...props}
-        className={cn('flex flex-col items-center gap-4', className)}
+        className={cn('flex w-full min-w-0 max-w-[8rem] flex-col items-stretch gap-4', className)}
       >
-        <NumberField.Group className="flex items-center rounded-md border border-[#333] bg-[#111] p-1 shadow-[inset_0_1px_3px_rgba(0,0,0,0.8)] z-20">
+        <NumberField.Group className="z-20 flex w-full min-w-0 items-center rounded-md border border-[#333] bg-[#111] p-1 shadow-[inset_0_1px_3px_rgba(0,0,0,0.8)]">
           <NumberField.Decrement className="flex size-8 items-center justify-center rounded-sm text-[#888] hover:bg-[#222] hover:text-white hover:shadow-[0_1px_2px_rgba(0,0,0,0.5)] active:bg-[#000] active:shadow-none transition-all cursor-pointer outline-none">
             <MinusIcon className="size-4 pointer-events-none" />
           </NumberField.Decrement>
-          <NumberField.Input className="w-16 bg-transparent text-center font-mono text-sm font-bold text-[#eee] tabular-nums outline-none selection:bg-[#555]" />
+          <NumberField.Input className="min-w-0 flex-1 bg-transparent px-2 text-center font-mono text-sm font-bold text-[#eee] tabular-nums outline-none selection:bg-[#555]" />
           <NumberField.Increment className="flex size-8 items-center justify-center rounded-sm text-[#888] hover:bg-[#222] hover:text-white hover:shadow-[0_1px_2px_rgba(0,0,0,0.5)] active:bg-[#000] active:shadow-none transition-all cursor-pointer outline-none">
             <PlusIcon className="size-4 pointer-events-none" />
           </NumberField.Increment>
         </NumberField.Group>
 
         <div
-          className="relative inline-flex p-[var(--spacing-track-padding)] rounded-md analog-surface-recess overflow-hidden"
+          className="relative flex w-full min-w-0 overflow-hidden rounded-md p-[var(--spacing-track-padding)] analog-surface-recess"
           style={{ ...lightingStyle, ...wheelFaceStyle }}
         >
           <div className="absolute inset-[2px] rounded-[4px] analog-track-slot" />
@@ -167,7 +167,7 @@ export const AnalogWheelNumber = React.forwardRef<HTMLDivElement, AnalogWheelNum
             ref={scrubAreaRef}
             direction="vertical"
             pixelSensitivity={3}
-            className="relative w-32 h-48 cursor-ns-resize select-none overflow-hidden rounded-md analog-track-slot analog-track-slot-deep"
+            className="relative h-48 w-full min-w-0 cursor-ns-resize select-none overflow-hidden rounded-md analog-track-slot analog-track-slot-deep"
             style={{
               perspective: 800,
             }}

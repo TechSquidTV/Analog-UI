@@ -313,7 +313,7 @@ export default function HomeVstSurface() {
                 </div>
               </div>
 
-              <div className="overflow-x-auto pb-1 pt-3">
+              <div className="min-w-0 pt-3">
                 <AnalogSlider
                   orientation="horizontal"
                   variant="black"
@@ -321,7 +321,7 @@ export default function HomeVstSurface() {
                   max={10}
                   value={mix}
                   onValueChange={(next) => setMix(next as number)}
-                  className="w-full min-w-[250px]"
+                  className="w-full min-w-0"
                 />
               </div>
             </PanelContent>

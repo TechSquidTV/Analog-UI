@@ -258,7 +258,7 @@ export default function App() {
             { label: 'Revolutions', value: revolutions },
           ]}
         >
-          <div className="flex gap-16 items-center justify-center flex-wrap">
+          <div className="flex w-full flex-wrap items-center justify-center gap-16">
             <Dial
               value={dialValue}
               onChange={(val, deg, rev) => {
@@ -652,8 +652,9 @@ export default function App() {
             },
           ]}
         >
-          <div className="flex justify-center items-center py-12">
+          <div className="flex w-full items-center justify-center py-12">
             <Gauge
+              className="max-w-sm"
               value={gaugeValue}
               onValueChange={(val) => setGaugeValue(val as number)}
               variant={gaugeVariant}
@@ -666,8 +667,9 @@ export default function App() {
           description="A vertically-oriented selection wheel inspired by aircraft pitch trim mechanisms. Provides tactile, stepped navigation through options."
           specs={[{ label: 'Value', value: wheelValue }]}
         >
-          <div className="flex gap-8 items-center justify-center py-12">
+          <div className="flex w-full items-center justify-center py-12">
             <AnalogWheelSelect
+              className="max-w-sm"
               options={['PITCH DOWN', 'NEUTRAL', 'PITCH UP', 'AUTO TRIM', 'MANUAL']}
               value={wheelValue}
               onValueChange={setWheelValue}
@@ -680,8 +682,12 @@ export default function App() {
           description="A continuous numeric input mechanism with scrub interactions. Perfect for precision adjustments requiring fine-grained control."
           specs={[{ label: 'Value', value: wheelNum.toString() }]}
         >
-          <div className="flex gap-8 items-center justify-center py-12">
-            <AnalogWheelNumber value={wheelNum} onValueChange={(val) => setWheelNum(val ?? 0)} />
+          <div className="flex w-full items-center justify-center py-12">
+            <AnalogWheelNumber
+              className="max-w-sm"
+              value={wheelNum}
+              onValueChange={(val) => setWheelNum(val ?? 0)}
+            />
           </div>
         </ComponentShowcase>
 

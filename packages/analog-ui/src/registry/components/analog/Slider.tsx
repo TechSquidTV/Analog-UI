@@ -13,6 +13,14 @@ export const AnalogSlider = React.forwardRef<HTMLDivElement, AnalogSliderProps>(
   ({ className, variant = 'chrome', lighting, ...props }, ref) => {
     // Check if the component is vertical or horizontal
     const isVertical = props.orientation === 'vertical';
+    const horizontalMarks = [
+      { label: '-∞', pos: '0%', align: 'start' },
+      { label: '-30', pos: '20%', align: 'center' },
+      { label: '-20', pos: '40%', align: 'center' },
+      { label: '-10', pos: '60%', align: 'center' },
+      { label: '0', pos: '80%', align: 'center' },
+      { label: '+10', pos: '100%', align: 'end' },
+    ] as const;
     const sliderLighting: AnalogLightingConfig<'track' | 'thumb'> = {
       track: { travel: 1 },
       ...lighting,
@@ -25,7 +33,7 @@ export const AnalogSlider = React.forwardRef<HTMLDivElement, AnalogSliderProps>(
           ref={ref}
           className={cn(
             'group flex items-center justify-center relative touch-none select-none',
-            isVertical ? 'h-64 w-16' : 'w-full min-w-[250px] h-16',
+            isVertical ? 'h-64 w-16 shrink-0' : 'h-16 w-full min-w-0',
             className,
           )}
           style={lightingStyle}
@@ -52,17 +60,17 @@ export const AnalogSlider = React.forwardRef<HTMLDivElement, AnalogSliderProps>(
             </div>
           ) : (
             <div className="absolute left-0 right-0 -top-6 h-4 pointer-events-none">
-              {[
-                { label: '-∞', pos: '0%' },
-                { label: '-30', pos: '20%' },
-                { label: '-20', pos: '40%' },
-                { label: '-10', pos: '60%' },
-                { label: '0', pos: '80%' },
-                { label: '+10', pos: '100%' },
-              ].map((mark) => (
+              {horizontalMarks.map((mark) => (
                 <span
                   key={mark.pos}
-                  className="absolute top-0 text-center text-[9px] font-mono text-[#555] opacity-80 -translate-x-1/2"
+                  className={cn(
+                    'absolute top-0 text-[9px] font-mono text-[#555] opacity-80',
+                    mark.align === 'start'
+                      ? 'translate-x-0 text-left'
+                      : mark.align === 'end'
+                        ? '-translate-x-full text-right'
+                        : '-translate-x-1/2 text-center',
+                  )}
                   style={{ left: mark.pos }}
                 >
                   {mark.label}

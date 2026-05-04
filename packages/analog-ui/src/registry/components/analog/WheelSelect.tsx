@@ -181,8 +181,7 @@ export const AnalogWheelSelect = React.forwardRef<HTMLDivElement, AnalogWheelSel
         {...props}
         ref={mergedRef}
         className={cn(
-          'relative inline-flex p-[var(--spacing-track-padding)] rounded-md analog-surface-recess overflow-hidden',
-          'w-32 h-48 select-none touch-none',
+          'relative flex h-48 w-full min-w-0 max-w-[8rem] select-none touch-none overflow-hidden rounded-md p-[var(--spacing-track-padding)] analog-surface-recess',
           className,
         )}
         style={{ ...lightingStyle, ...wheelFaceStyle, ...style }}
@@ -202,7 +201,7 @@ export const AnalogWheelSelect = React.forwardRef<HTMLDivElement, AnalogWheelSel
         <div className="absolute inset-[2px] rounded-[4px] analog-track-slot" />
         <div
           className={cn(
-            'relative size-full overflow-hidden rounded-md analog-track-slot analog-track-slot-deep',
+            'relative size-full min-w-0 overflow-hidden rounded-md analog-track-slot analog-track-slot-deep',
           )}
           style={{
             perspective: 800,
@@ -270,7 +269,7 @@ export const AnalogWheelSelect = React.forwardRef<HTMLDivElement, AnalogWheelSel
                   id={`${optionIdBase}-${i}`}
                   role="option"
                   aria-selected={selectedValue === opt}
-                  className="absolute top-1/2 left-0 w-full h-[36px] -translate-y-1/2 flex items-center justify-center font-mono text-xs leading-none font-bold select-none drop-shadow-md z-10"
+                  className="absolute top-1/2 left-0 z-10 flex h-[36px] w-full min-w-0 -translate-y-1/2 items-center justify-center px-3 font-mono text-xs leading-none font-bold select-none drop-shadow-md"
                   style={{
                     transformStyle: 'preserve-3d',
                     backfaceVisibility: 'hidden',
@@ -281,7 +280,7 @@ export const AnalogWheelSelect = React.forwardRef<HTMLDivElement, AnalogWheelSel
                 >
                   <span
                     className={cn(
-                      'px-2 py-1 rounded transition-colors duration-200',
+                      'max-w-full truncate rounded px-2 py-1 transition-colors duration-200',
                       activeIndex === i
                         ? 'bg-[#111] border border-[#333] shadow-[0_2px_4px_rgba(0,0,0,0.5)]'
                         : '',

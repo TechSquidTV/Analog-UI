@@ -25,7 +25,7 @@ export const AnalogSwitch = React.forwardRef<HTMLButtonElement, AnalogSwitchProp
       <BaseSwitch.Root
         ref={mergedRef}
         className={cn(
-          'analog-switch group relative inline-flex h-[36px] w-[104px] shrink-0 cursor-pointer items-center justify-center rounded-full border-none outline-none select-none',
+          'analog-switch group relative inline-flex h-[36px] w-[104px] min-w-0 shrink-0 cursor-pointer items-center justify-center rounded-full border-none outline-none select-none',
           className,
         )}
         style={lightingStyle}

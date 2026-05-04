@@ -156,7 +156,7 @@ export const AnalogMeter = React.forwardRef<HTMLDivElement, AnalogMeterProps>(
         max={max}
         className={cn(
           'relative flex items-center justify-center',
-          isVertical ? 'flex-col w-8 h-64' : 'w-64 h-8',
+          isVertical ? 'h-64 w-8 shrink-0 flex-col' : 'h-8 w-full min-w-0',
           className,
         )}
         {...props}
@@ -274,7 +274,7 @@ export const AnalogMeterGroup = React.forwardRef<HTMLDivElement, AnalogMeterGrou
           role={role ?? 'group'}
           data-orientation={orientation}
           className={cn(
-            'relative inline-flex rounded-xl border border-transparent p-[var(--spacing-track-padding)] text-white',
+            'relative inline-flex min-w-0 max-w-full rounded-xl border border-transparent p-[var(--spacing-track-padding)] text-white',
             orientation === 'horizontal' ? 'flex-row items-stretch' : 'flex-col items-stretch',
             className,
           )}
@@ -300,7 +300,7 @@ export const AnalogMeterGroup = React.forwardRef<HTMLDivElement, AnalogMeterGrou
               />
               <div
                 className={cn(
-                  'relative z-10 inline-flex',
+                  'relative z-10 inline-flex min-w-0 max-w-full',
                   orientation === 'horizontal' ? 'flex-row items-end' : 'flex-col items-stretch',
                 )}
               >

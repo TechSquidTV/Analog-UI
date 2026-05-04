@@ -114,7 +114,7 @@ export const AnalogToggle = React.forwardRef<HTMLDivElement, AnalogToggleProps>(
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         className={cn(
-          'analog-toggle group relative inline-flex shrink-0 items-center justify-center rounded-lg border-none outline-none select-none',
+          'analog-toggle group relative inline-flex min-w-0 shrink-0 items-center justify-center rounded-lg border-none outline-none select-none',
           isVertical ? 'h-[104px] w-12' : 'h-12 w-[104px]',
           className,
         )}

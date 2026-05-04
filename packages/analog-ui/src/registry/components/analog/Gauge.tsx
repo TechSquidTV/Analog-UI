@@ -44,8 +44,7 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
             <div
               {...rootProps}
               className={cn(
-                'relative flex items-center justify-center p-4',
-                'w-48 h-48',
+                'relative mx-auto flex aspect-square w-full min-w-0 max-w-[12rem] items-center justify-center p-4',
                 className,
               )}
               style={lightingStyle}
