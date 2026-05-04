@@ -1,0 +1,50 @@
+---
+import BlockDemo from "../../components/blocks/BlockDemo";
+import BlockShowcase from "../../components/blocks/BlockShowcase.astro";
+import SectionNav from "../../components/site/SectionNav.astro";
+import { blockCategories } from "../../data/block-catalog";
+import SiteLayout from "../../layouts/SiteLayout.astro";
+import { getFeaturedBlocks } from "../../lib/blocks";
+
+const navLinks = [
+  { href: "/blocks", label: "Featured" },
+  ...Object.entries(blockCategories).map(([slug, meta]) => ({
+    href: `/blocks/${slug}`,
+    label: meta.label,
+  })),
+];
+
+const blocks = getFeaturedBlocks();
+---
+
+<SiteLayout
+  title="Blocks"
+  description="Browse the featured Analog UI control families across inputs, readouts, and tactile surfaces."
+>
+  <section class="site-frame pt-10 md:pt-12">
+    <div class="max-w-3xl">
+      <div class="eyebrow mb-4">Block Catalog</div>
+      <h1 class="text-4xl font-semibold tracking-[-0.03em] text-white md:text-5xl">
+        Featured control families, staged for browsing.
+      </h1>
+      <p class="mt-4 text-lg leading-8 text-[#a8a8a8]">
+        This route mirrors the reference site’s examples surface: high-signal entries, strong previews,
+        and install links that point back to the registry feed.
+      </p>
+    </div>
+
+    <div class="mt-8">
+      <SectionNav links={navLinks} currentPath="/blocks" />
+    </div>
+
+    <div class="mt-10 space-y-14">
+      {
+        blocks.map((block) => (
+          <BlockShowcase item={block}>
+            <BlockDemo name={block.name} mode="full" client:load />
+          </BlockShowcase>
+        ))
+      }
+    </div>
+  </section>
+</SiteLayout>

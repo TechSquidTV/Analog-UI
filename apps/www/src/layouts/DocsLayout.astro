@@ -1,0 +1,55 @@
+---
+import DocsSidebar from "../components/docs/DocsSidebar.astro";
+import DocsToc from "../components/docs/DocsToc.astro";
+import SiteLayout from "./SiteLayout.astro";
+
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface NavItem {
+  href: string;
+  label: string;
+}
+
+interface NavGroup {
+  section: string;
+  items: NavItem[];
+}
+
+interface Props {
+  title: string;
+  description: string;
+  currentPath: string;
+  navigation: NavGroup[];
+  headings?: Heading[];
+}
+
+const { title, description, currentPath, navigation, headings = [] } = Astro.props;
+---
+
+<SiteLayout title={title} description={description}>
+  <section class="site-frame pt-10 md:pt-12">
+    <div class="mb-8 max-w-3xl">
+      <div class="eyebrow mb-4">Documentation</div>
+      <h1 class="max-w-3xl text-4xl font-semibold tracking-[-0.03em] text-white md:text-5xl">
+        {title}
+      </h1>
+      <p class="mt-4 max-w-2xl text-lg leading-8 text-[#a7a7a7]">
+        {description}
+      </p>
+    </div>
+
+    <div class="grid gap-8 lg:grid-cols-[250px_minmax(0,1fr)] xl:grid-cols-[250px_minmax(0,1fr)_220px]">
+      <DocsSidebar groups={navigation} currentPath={currentPath} />
+      <div class="section-panel min-w-0 p-6 md:p-8">
+        <article class="docs-prose">
+          <slot />
+        </article>
+      </div>
+      <DocsToc headings={headings} />
+    </div>
+  </section>
+</SiteLayout>

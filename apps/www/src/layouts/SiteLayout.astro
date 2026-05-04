@@ -1,0 +1,40 @@
+---
+import SiteFooter from "../components/site/SiteFooter.astro";
+import SiteHeader from "../components/site/SiteHeader.astro";
+import "../styles/site.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "Analog UI",
+  description = "Analog UI is a tactile component library and custom registry for studio-grade, hyper-skeuomorphic interfaces.",
+} = Astro.props;
+
+const pageTitle = title === "Analog UI" ? title : `${title} | Analog UI`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/img/logo/SVG/logo.svg" />
+    <link rel="icon" type="image/png" sizes="64x64" href="/img/logo/64w/logo.png" />
+    <link rel="apple-touch-icon" sizes="256x256" href="/img/logo/256w/logo.png" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+  </head>
+  <body class="text-foreground antialiased selection:bg-white/10 selection:text-white">
+    <div class="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.04),transparent_34%)]"></div>
+    <div class="relative flex min-h-screen flex-col">
+      <SiteHeader pathname={Astro.url.pathname} />
+      <main class="flex-1 pb-20">
+        <slot />
+      </main>
+      <SiteFooter />
+    </div>
+  </body>
+</html>

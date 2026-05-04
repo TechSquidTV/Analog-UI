@@ -1,0 +1,35 @@
+---
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings: Heading[];
+}
+
+const { headings } = Astro.props;
+const visibleHeadings = headings.filter((heading) => heading.depth <= 3);
+---
+
+{
+  visibleHeadings.length > 0 && (
+    <aside class="section-panel hidden h-fit p-4 xl:block">
+      <div class="eyebrow mb-4">On This Page</div>
+      <nav class="space-y-2 text-sm text-[#a2a2a2]">
+        {visibleHeadings.map((heading) => (
+          <a
+            href={`#${heading.slug}`}
+            class:list={[
+              "block rounded-lg px-2 py-1 transition-colors duration-200 hover:bg-white/[0.04] hover:text-white",
+              heading.depth === 3 && "ml-3 text-[#8a8a8a]",
+            ]}
+          >
+            {heading.text}
+          </a>
+        ))}
+      </nav>
+    </aside>
+  )
+}

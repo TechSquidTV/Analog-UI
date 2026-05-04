@@ -1,0 +1,25 @@
+---
+import { render } from "astro:content";
+
+import DocsLayout from "../../layouts/DocsLayout.astro";
+import { getDocBySlug, getDocsNavigation } from "../../lib/docs";
+
+const entry = await getDocBySlug();
+
+if (!entry) {
+  throw new Error("Missing docs index entry.");
+}
+
+const { Content, headings } = await render(entry);
+const navigation = await getDocsNavigation();
+---
+
+<DocsLayout
+  title={entry.data.title}
+  description={entry.data.description}
+  currentPath="/docs"
+  navigation={navigation}
+  headings={headings}
+>
+  <Content />
+</DocsLayout>

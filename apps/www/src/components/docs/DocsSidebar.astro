@@ -1,0 +1,41 @@
+---
+interface NavItem {
+  href: string;
+  label: string;
+}
+
+interface NavGroup {
+  section: string;
+  items: NavItem[];
+}
+
+interface Props {
+  groups: NavGroup[];
+  currentPath: string;
+}
+
+const { groups, currentPath } = Astro.props;
+---
+
+<aside class="section-panel h-fit p-4">
+  {
+    groups.map((group) => (
+      <div class="mb-6 last:mb-0">
+        <div class="eyebrow mb-3">{group.section}</div>
+        <div class="space-y-1">
+          {
+            group.items.map((item) => (
+              <a
+                href={item.href}
+                class="docs-sidebar-link"
+                data-active={item.href === currentPath || undefined}
+              >
+                {item.label}
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    ))
+  }
+</aside>
