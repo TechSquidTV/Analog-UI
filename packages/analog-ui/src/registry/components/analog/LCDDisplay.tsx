@@ -220,7 +220,7 @@ export const LCDDisplay = React.forwardRef<HTMLDivElement, LCDDisplayProps>(
               {label ? (
                 <div
                   className={cn(
-                    'font-mono font-semibold uppercase leading-none whitespace-pre',
+                    'font-lcd font-semibold uppercase leading-none whitespace-pre',
                     sizeStyle.label,
                   )}
                   style={{
@@ -236,7 +236,7 @@ export const LCDDisplay = React.forwardRef<HTMLDivElement, LCDDisplayProps>(
               <div className={cn('flex min-w-0 items-end', sizeStyle.valueGap)}>
                 <div
                   className={cn(
-                    'flex min-w-0 flex-1 items-center whitespace-pre font-mono font-bold uppercase leading-none',
+                    'flex min-w-0 flex-1 items-center whitespace-pre font-lcd font-bold uppercase leading-none',
                     sizeStyle.value,
                     alignClassNameMap[align],
                     valueClassName,
@@ -253,7 +253,7 @@ export const LCDDisplay = React.forwardRef<HTMLDivElement, LCDDisplayProps>(
                 {units ? (
                   <div
                     className={cn(
-                      'shrink-0 whitespace-pre font-mono font-semibold uppercase leading-none',
+                      'shrink-0 whitespace-pre font-lcd font-semibold uppercase leading-none',
                       sizeStyle.units,
                     )}
                     style={{

@@ -38,6 +38,7 @@
   --font-serif: "Helvetica Neue", Arial, sans-serif;
   --font-mono:
     ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+  --analog-font-lcd: var(--font-mono);
   --radius: 0.75rem;
   --spacing: 0.25rem;
   --analog-surface-cavity: color-mix(in oklch, var(--background) 84%, black);
@@ -175,6 +176,7 @@
   --color-analog-led-green-glow: var(--analog-led-green-glow);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
+  --font-lcd: var(--analog-font-lcd);
   --font-serif: var(--font-serif);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);

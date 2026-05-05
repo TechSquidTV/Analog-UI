@@ -2,6 +2,15 @@
 @source "../**/*.{astro,ts,tsx,md}";
 @source "../../../../packages/analog-ui/src/**/*.{ts,tsx}";
 
+@font-face {
+  font-family: "Geist Pixel Square";
+  src: url("../../node_modules/geist/dist/fonts/geist-pixel/GeistPixel-Square.woff2")
+    format("woff2");
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+
 :root {
   color-scheme: dark;
 }
@@ -26,6 +35,10 @@ a {
 @layer components {
   .site-frame {
     @apply mx-auto w-full max-w-[1380px] px-4 sm:px-6 lg:px-8;
+  }
+
+  .analog-docs-lcd-pixel {
+    --analog-font-lcd: "Geist Pixel Square", var(--font-mono);
   }
 
   .section-panel {

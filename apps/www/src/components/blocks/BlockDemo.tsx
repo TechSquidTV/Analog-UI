@@ -556,7 +556,7 @@ function LCDDisplayDemo({ mode }: { mode: DemoMode }) {
         </>
       }
     >
-      <div className="flex flex-col items-center gap-6">
+      <div className="analog-docs-lcd-pixel flex flex-col items-center gap-6">
         <LCDDisplay
           label={current.label}
           value={current.value}

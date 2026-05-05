@@ -92,7 +92,7 @@ export const blockCatalog = {
     category: "readouts",
     featured: true,
     order: 75,
-    summary: "A seven-segment screen with shadowed numerals, static texture, and softly glowing LCD glass.",
+    summary: "An LCD readout with shadowed glyphs, static texture, glowing glass, and an opt-in display font slot.",
   },
   meter: {
     name: "meter",
