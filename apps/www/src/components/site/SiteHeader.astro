@@ -7,14 +7,13 @@ const { pathname } = Astro.props;
 
 const links = [
   { href: "/docs", label: "Docs" },
+  { href: "/docs/components", label: "Components" },
   { href: "/blocks", label: "Blocks" },
-  { href: "/r/registry.json", label: "Registry" },
 ];
 
-const isActive = (href: string) =>
-  href === "/r/registry.json"
-    ? pathname === href
-    : pathname === href || pathname.startsWith(`${href}/`);
+const activeHref = links
+  .filter((link) => pathname === link.href || pathname.startsWith(`${link.href}/`))
+  .sort((left, right) => right.href.length - left.href.length)[0]?.href;
 ---
 
 <header class="sticky top-0 z-50 border-b border-white/8 bg-[#060606]/82 backdrop-blur-xl">
@@ -42,7 +41,7 @@ const isActive = (href: string) =>
             href={link.href}
             class:list={[
               "rounded-full border px-4 py-2 text-sm transition-colors duration-200",
-              isActive(link.href)
+              activeHref === link.href
                 ? "border-white/14 bg-white/[0.08] text-white"
                 : "border-white/8 bg-white/[0.02] text-[#b8b8b8] hover:border-white/14 hover:bg-white/[0.06] hover:text-white",
             ]}

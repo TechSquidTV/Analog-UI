@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "build": "turbo run build",
-    "dev": "turbo run dev --parallel",
+    "dev": "pnpm --filter analog-ui-www dev",
+    "dev:all": "turbo run dev --parallel",
+    "dev:package": "pnpm --filter analog-ui dev",
     "lint": "turbo run lint",
     "lint:eslint": "turbo run lint:eslint",
     "registry:build": "pnpm --filter analog-ui registry:build",

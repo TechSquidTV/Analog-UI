@@ -1,8 +1,9 @@
 ---
-title: Getting Started
+title: Installation
 description: Install Analog UI from the package or the registry, then wire the shared analog foundation into your app.
 section: getting-started
 order: 10
+navTitle: Installation
 draft: false
 ---
 

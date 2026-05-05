@@ -69,12 +69,23 @@ a {
     @apply inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm text-[#dfdfdf] transition-colors duration-200 hover:border-white/20 hover:bg-white/[0.08];
   }
 
+  .docs-sidebar-shell {
+    @apply rounded-[24px] border border-white/8 bg-black/18 p-3;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.04),
+      0 10px 30px rgba(0, 0, 0, 0.16);
+  }
+
+  .docs-sidebar-heading {
+    @apply mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.24em] text-[#7d7d7d];
+  }
+
   .docs-sidebar-link {
-    @apply block rounded-xl border border-transparent px-3 py-2 text-sm text-[#a8a8a8] transition-colors duration-200 hover:border-white/10 hover:bg-white/[0.04] hover:text-white;
+    @apply block rounded-lg px-3 py-1.5 text-sm text-[#acacac] transition-colors duration-200 hover:bg-white/[0.04] hover:text-white;
   }
 
   .docs-sidebar-link[data-active="true"] {
-    @apply border-white/10 bg-white/[0.05] text-white;
+    @apply bg-white/[0.06] text-white;
   }
 
   .docs-prose {

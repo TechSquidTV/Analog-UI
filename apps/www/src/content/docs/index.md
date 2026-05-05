@@ -1,31 +1,33 @@
 ---
-title: Analog UI
-description: A documentation home for the tactile component library, registry surface, and design system.
+title: Get Started
+description: Start with the docs structure, install flow, and component map before you drop Analog UI into a product surface.
 section: introduction
 order: 0
-navTitle: Overview
+navTitle: Introduction
 draft: false
 ---
 
-Analog UI is a tactile component library and registry for building interfaces that feel machined, weighted, and reactive to light. The system leans on dark chassis surfaces, metallic highlights, LCD accents, and movement that suggests real travel rather than flat state changes.
+Analog UI is a tactile component library and registry for building interfaces that feel machined, weighted, and reactive to light. The docs are organized in a familiar product shape: start here, move into install and theming guidance, then browse component pages and examples.
 
-## What Lives Here
+## How The Site Is Organized
 
-This site is organized around a few distinct surfaces:
+There are three primary surfaces:
 
-- **Docs** explain installation, theming, and the lighting model.
-- **Blocks** showcase the component families in a browsable catalog.
+- **Docs** cover the install path, token model, registry flow, and per-component documentation.
+- **Components** live under [`/docs/components`](/docs/components) as a hub plus one page per control.
+- **Blocks** stay under [`/blocks`](/blocks) as the example surface, grouped by family.
 - **Registry JSON** stays available under [`/r/registry.json`](/r/registry.json) and per-item files such as [`/r/dial.json`](/r/dial.json).
-- **Preview routes** under `/view/*` isolate each block for focused testing and captures.
+- **Preview routes** under `/view/*` isolate each block for focused testing, screenshots, and QA.
 
 ## Recommended Path
 
 If you are evaluating the system for the first time, start here:
 
-1. Read [Getting Started](/docs/getting-started) for package and registry usage.
+1. Read [Installation](/docs/getting-started) for package and registry usage.
 2. Review [Tokens and Lighting](/docs/design/tokens-and-lighting) to understand the finish system.
-3. Browse [Blocks](/blocks) to see the input, readout, and surface families in action.
-4. Use [Registry](/docs/registry) when you need the install surface and dependency model.
+3. Browse [All Components](/docs/components) to jump into a specific control.
+4. Use [Blocks](/blocks) when you want the example-driven browsing surface.
+5. Use [Registry](/docs/registry) when you need the install surface and dependency model.
 
 ## Design Intent
 
@@ -44,4 +46,4 @@ The first website transition wave emphasizes these families:
 - **Readouts:** gauges, meters, and jewel indicators
 - **Surfaces:** panels, button finishes, and reusable thumb hardware
 
-That keeps the registry contract stable while the website grows into a more navigable product surface.
+That keeps the registry contract stable while the website grows into a more familiar docs-plus-examples product surface.

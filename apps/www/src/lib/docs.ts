@@ -1,5 +1,7 @@
 import { getCollection, type CollectionEntry } from "astro:content";
 
+import { getBlockEntries } from "./blocks";
+
 export type DocEntry = CollectionEntry<"docs">;
 
 const sectionOrder = {
@@ -9,15 +11,31 @@ const sectionOrder = {
   reference: 3,
 } as const;
 
-const sectionLabel = {
-  introduction: "Introduction",
-  "getting-started": "Getting Started",
-  design: "Design System",
-  reference: "Reference",
+const guideSlugs = ["index", "getting-started", "design/tokens-and-lighting", "registry"] as const;
+
+const componentNavLabels = {
+  dial: "Dial",
+  slider: "Slider",
+  toggle: "Toggle",
+  "square-button": "Square Button",
+  "square-toggle": "Square Toggle",
+  switch: "Switch",
+  "wheel-select": "Wheel Select",
+  "wheel-number": "Wheel Number",
+  gauge: "Gauge",
+  "lcd-display": "LCD Display",
+  meter: "Meter",
+  indicator: "Indicator",
+  panel: "Panel",
+  "rocker-thumb-surface": "Rocker Thumb Surface",
 } as const;
 
 export function getDocHref(entry: DocEntry) {
   return entry.slug === "index" ? "/docs" : `/docs/${entry.slug}`;
+}
+
+export function getComponentDocHref(name: string) {
+  return `/docs/components/${name}`;
 }
 
 export async function getDocsEntries() {
@@ -43,20 +61,47 @@ export async function getDocBySlug(slug?: string) {
 
 export async function getDocsNavigation() {
   const entries = await getDocsEntries();
-  const groups = new Map<string, Array<{ href: string; label: string }>>();
+  const entriesBySlug = new Map(entries.map((entry) => [entry.slug, entry]));
 
-  for (const entry of entries) {
-    const label = sectionLabel[entry.data.section];
-    const items = groups.get(label) ?? [];
-    items.push({
-      href: getDocHref(entry),
-      label: entry.data.navTitle ?? entry.data.title,
-    });
-    groups.set(label, items);
-  }
+  const guides = guideSlugs.flatMap((slug) => {
+    const entry = entriesBySlug.get(slug);
 
-  return Array.from(groups.entries()).map(([section, items]) => ({
-    section,
-    items,
-  }));
+    if (!entry) {
+      return [];
+    }
+
+    return [
+      {
+        href: getDocHref(entry),
+        label: entry.data.navTitle ?? entry.data.title,
+      },
+    ];
+  });
+
+  const componentsHub = entriesBySlug.get("components");
+  const components = [
+    ...(componentsHub
+      ? [
+          {
+            href: getDocHref(componentsHub),
+            label: componentsHub.data.navTitle ?? componentsHub.data.title,
+          },
+        ]
+      : []),
+    ...getBlockEntries().map((entry) => ({
+      href: getComponentDocHref(entry.name),
+      label: componentNavLabels[entry.name],
+    })),
+  ];
+
+  return [
+    {
+      section: "Getting Started",
+      items: guides,
+    },
+    {
+      section: "Components",
+      items: components,
+    },
+  ];
 }

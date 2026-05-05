@@ -27,9 +27,9 @@ const registryUiCount = getRegistryItems().filter((item) => item.type === 'regis
         </p>
 
         <div class="mt-8 flex flex-wrap gap-3">
-          <a class="pill-link" href="/docs">Read the docs</a>
-          <a class="pill-link" href="/blocks">Browse blocks</a>
-          <a class="pill-link" href="/r/registry.json">Registry JSON</a>
+          <a class="pill-link" href="/docs">Get Started</a>
+          <a class="pill-link" href="/docs/components">View Components</a>
+          <a class="pill-link" href="/blocks">Browse Blocks</a>
         </div>
       </div>
 
@@ -62,11 +62,25 @@ pnpm dlx shadcn@latest add https://analogui.com/r/dial.json`}</code></pre>
 
   <section class="site-frame mt-8 grid gap-4 md:grid-cols-3">
     <a href="/docs" class="section-panel p-5 transition-colors duration-200 hover:bg-white/[0.05]">
-      <div class="eyebrow">Docs</div>
-      <h2 class="mt-3 text-2xl font-semibold text-white">Installation, tokens, and usage</h2>
+      <div class="eyebrow">Get Started</div>
+      <h2 class="mt-3 text-2xl font-semibold text-white">
+        Install the foundation and wire the lighting model
+      </h2>
       <p class="mt-3 text-sm leading-7 text-[#959595]">
-        Start with the package path, registry flow, and lighting model before you copy controls into
-        a host app.
+        Start with the docs flow people expect: introduction, installation, tokens, and registry
+        setup before you pull components into an app.
+      </p>
+    </a>
+
+    <a
+      href="/docs/components"
+      class="section-panel p-5 transition-colors duration-200 hover:bg-white/[0.05]"
+    >
+      <div class="eyebrow">Components</div>
+      <h2 class="mt-3 text-2xl font-semibold text-white">Browse every public control in one place</h2>
+      <p class="mt-3 text-sm leading-7 text-[#959595]">
+        Use the hub page and per-component docs routes for install commands, dependencies, previews,
+        and quick jumps into the examples.
       </p>
     </a>
 
@@ -75,22 +89,10 @@ pnpm dlx shadcn@latest add https://analogui.com/r/dial.json`}</code></pre>
       class="section-panel p-5 transition-colors duration-200 hover:bg-white/[0.05]"
     >
       <div class="eyebrow">Blocks</div>
-      <h2 class="mt-3 text-2xl font-semibold text-white">Preview the families</h2>
+      <h2 class="mt-3 text-2xl font-semibold text-white">See the examples grouped by family</h2>
       <p class="mt-3 text-sm leading-7 text-[#959595]">
-        Browse inputs, readouts, and surfaces with dedicated pages, install snippets, and isolated
-        previews.
-      </p>
-    </a>
-
-    <a
-      href="/view/panel"
-      class="section-panel p-5 transition-colors duration-200 hover:bg-white/[0.05]"
-    >
-      <div class="eyebrow">Preview</div>
-      <h2 class="mt-3 text-2xl font-semibold text-white">Review one block at a time</h2>
-      <p class="mt-3 text-sm leading-7 text-[#959595]">
-        Use the isolated preview routes for focused QA, screenshots, and screenshot-friendly
-        staging.
+        `/blocks` remains the examples surface: category pages, broader demos, and install-adjacent
+        browsing for design review.
       </p>
     </a>
   </section>
