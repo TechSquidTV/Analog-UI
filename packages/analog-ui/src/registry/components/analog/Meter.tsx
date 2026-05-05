@@ -435,10 +435,10 @@ export const AnalogMeter = React.forwardRef<HTMLDivElement, AnalogMeterProps>(
 
             {/* Analog Noise Overlay (only on lit parts) */}
             <div
-              className="absolute inset-0 pointer-events-none mix-blend-multiply z-20"
+              className="absolute inset-0 pointer-events-none mix-blend-screen z-20"
               style={{
-                backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-                opacity: `calc(0.3 + (0.3 * var(--analog-light-power, 1)))`,
+                backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='discrete' tableValues='0 0 0 1 1'/%3E%3CfeFuncG type='discrete' tableValues='0 0 0 1 1'/%3E%3CfeFuncB type='discrete' tableValues='0 0 0 1 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+                opacity: `calc(var(--analog-grain-opacity) + (var(--analog-grain-opacity) * var(--analog-light-power, 1)))`,
               }}
             />
           </Meter.Indicator>

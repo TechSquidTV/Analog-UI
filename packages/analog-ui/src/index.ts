@@ -6,6 +6,7 @@ export * from './registry/components/analog/AnisotropicButton';
 export * from './registry/components/analog/Dial';
 export * from './registry/components/analog/Gauge';
 export * from './registry/components/analog/Indicator';
+export * from './registry/components/analog/LCDDisplay';
 export * from './registry/components/analog/Meter';
 export * from './registry/components/analog/Panel';
 export * from './registry/components/analog/Slider';

@@ -71,7 +71,7 @@
   --analog-led-white-glow: color-mix(in oklch, white 84%, var(--foreground));
   --analog-shadow-depth: 0.9;
   --analog-bevel-width: calc(var(--spacing) * 1);
-  --analog-grain-opacity: 0.18;
+  --analog-grain-opacity: 0.36;
   --analog-foil-opacity: 0.3;
   --analog-bloom-strength: 0.7;
   --analog-track-padding: calc(var(--spacing) * 1);
@@ -126,7 +126,7 @@
   --analog-surface-onyx-mid: color-mix(in oklch, var(--card) 82%, black 10%);
   --analog-surface-onyx-lo: color-mix(in oklch, var(--background) 94%, black 8%);
   --analog-shadow-depth: 1.05;
-  --analog-grain-opacity: 0.14;
+  --analog-grain-opacity: 0.28;
   --analog-foil-opacity: 0.22;
   --analog-bloom-strength: 0.62;
 }

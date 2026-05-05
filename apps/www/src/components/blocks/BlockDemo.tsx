@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import {
   AnalogIndicator,
+  LCDDisplay,
   AnalogLightingProvider,
   AnalogMeter,
   AnalogMeterGroup,
@@ -507,6 +508,71 @@ function GaugeDemo({ mode }: { mode: DemoMode }) {
   );
 }
 
+function LCDDisplayDemo({ mode }: { mode: DemoMode }) {
+  const programs = [
+    { label: "Program", value: "CH-07", units: "MEM" },
+    { label: "Output Trim", value: "-12.8", units: "DB" },
+    { label: "Delay Time", value: "88:12", units: "MS" },
+  ] as const;
+  const [variant, setVariant] = useState<"lcd-green" | "lcd-amber" | "lcd-blue">("lcd-green");
+  const [programIndex, setProgramIndex] = useState(0);
+  const current = programs[programIndex];
+
+  return (
+    <DemoStage
+      mode={mode}
+      footer={
+        <>
+          <FooterItem label="Readout" value={current.value} />
+          <FooterItem label="Preset" value={current.label} />
+          <div className="flex min-w-[220px] flex-1 flex-wrap gap-2 rounded-2xl border border-white/10 bg-black/30 px-3 py-2">
+            <div className="w-full text-[9px] font-semibold uppercase tracking-[0.26em] text-[#787878]">
+              Variant
+            </div>
+            <ControlButton
+              isActive={variant === "lcd-green"}
+              onClick={() => setVariant("lcd-green")}
+            >
+              Green
+            </ControlButton>
+            <ControlButton
+              isActive={variant === "lcd-amber"}
+              onClick={() => setVariant("lcd-amber")}
+            >
+              Amber
+            </ControlButton>
+            <ControlButton
+              isActive={variant === "lcd-blue"}
+              onClick={() => setVariant("lcd-blue")}
+            >
+              Blue
+            </ControlButton>
+            <ControlButton
+              onClick={() => setProgramIndex((index) => (index + 1) % programs.length)}
+            >
+              Profile
+            </ControlButton>
+          </div>
+        </>
+      }
+    >
+      <div className="flex flex-col items-center gap-6">
+        <LCDDisplay
+          label={current.label}
+          value={current.value}
+          units={current.units}
+          variant={variant}
+          size={mode === "compact" ? "md" : "lg"}
+          digits={6}
+        />
+        {mode === "full" ? (
+          <LCDDisplay label="Peak Hold" value="-03.2" units="DB" variant="lcd-amber" size="sm" digits={5} />
+        ) : null}
+      </div>
+    </DemoStage>
+  );
+}
+
 function MeterDemo({ mode }: { mode: DemoMode }) {
   const meter = useAudioMeter();
 
@@ -761,6 +827,8 @@ export default function BlockDemo({ name, mode = "full" }: BlockDemoProps) {
       return <WheelNumberDemo mode={mode} />;
     case "gauge":
       return <GaugeDemo mode={mode} />;
+    case "lcd-display":
+      return <LCDDisplayDemo mode={mode} />;
     case "meter":
       return <MeterDemo mode={mode} />;
     case "indicator":

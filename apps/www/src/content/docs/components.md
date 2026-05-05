@@ -24,6 +24,7 @@ Browse the whole family in [Blocks / Inputs](/blocks/inputs).
 ## Readouts
 
 - [Gauge](/view/gauge): circular LCD monitor with dial-face styling
+- [LCD Display](/view/lcd-display): seven-segment readout with vintage screen glow and texture
 - [Meter](/view/meter): stereo output monitor with analog ballistics
 - [Indicator](/view/indicator): jewel lamp with bloom and bezel variants
 

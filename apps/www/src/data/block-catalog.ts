@@ -87,6 +87,13 @@ export const blockCatalog = {
     order: 70,
     summary: "A circular monitor that layers LCD arc feedback over a machined control face.",
   },
+  "lcd-display": {
+    name: "lcd-display",
+    category: "readouts",
+    featured: true,
+    order: 75,
+    summary: "A seven-segment screen with shadowed numerals, static texture, and softly glowing LCD glass.",
+  },
   meter: {
     name: "meter",
     category: "readouts",
