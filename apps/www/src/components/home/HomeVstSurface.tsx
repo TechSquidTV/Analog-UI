@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type RefObject } from 'react';
 
 import {
   AnalogIndicator,
@@ -36,15 +36,28 @@ function useStereoMeter(energy: number, enabled: boolean) {
   const rPeakTime = useRef(0);
 
   useEffect(() => {
+    if (!enabled) {
+      lPeakRef.current = 0;
+      rPeakRef.current = 0;
+      lPeakTime.current = 0;
+      rPeakTime.current = 0;
+      setChannels((prev) =>
+        prev.l === 0 && prev.r === 0 && prev.lPeak === 0 && prev.rPeak === 0
+          ? prev
+          : { l: 0, r: 0, lPeak: 0, rPeak: 0 },
+      );
+      return;
+    }
+
     const tick = () => {
       setChannels((prev) => {
-        const base = enabled ? 10 + energy * 44 : 0;
-        const burstChance = enabled ? 0.11 + energy * 0.14 : 0;
+        const base = 10 + energy * 44;
+        const burstChance = 0.11 + energy * 0.14;
         const burstL = Math.random() < burstChance ? 12 + Math.random() * 30 : 0;
         const burstR = Math.random() < burstChance ? 12 + Math.random() * 30 : 0;
-        const targetL = enabled ? Math.min(100, base * (0.55 + Math.random() * 0.48) + burstL) : 0;
-        const targetR = enabled ? Math.min(100, base * (0.5 + Math.random() * 0.5) + burstR) : 0;
-        const decay = enabled ? Math.max(2.4, 5.2 - energy * 2.2) : 10;
+        const targetL = Math.min(100, base * (0.55 + Math.random() * 0.48) + burstL);
+        const targetR = Math.min(100, base * (0.5 + Math.random() * 0.5) + burstR);
+        const decay = Math.max(2.4, 5.2 - energy * 2.2);
 
         const nextL = targetL > prev.l ? targetL : Math.max(0, prev.l - decay);
         const nextR = targetR > prev.r ? targetR : Math.max(0, prev.r - decay);
@@ -66,8 +79,8 @@ function useStereoMeter(energy: number, enabled: boolean) {
         return {
           l: nextL,
           r: nextR,
-          lPeak: enabled ? lPeakRef.current : Math.max(0, lPeakRef.current - 3),
-          rPeak: enabled ? rPeakRef.current : Math.max(0, rPeakRef.current - 3),
+          lPeak: lPeakRef.current,
+          rPeak: rPeakRef.current,
         };
       });
     };
@@ -79,11 +92,112 @@ function useStereoMeter(energy: number, enabled: boolean) {
   return channels;
 }
 
+function useElementVisibility(targetRef: RefObject<HTMLElement | null>, rootMargin = '160px 0px') {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const element = targetRef.current;
+
+    if (!element) return;
+
+    if (typeof IntersectionObserver === 'undefined') {
+      setIsVisible(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { rootMargin },
+    );
+
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, [rootMargin, targetRef]);
+
+  return isVisible;
+}
+
+interface MasterOutPanelProps {
+  active: boolean;
+  driveHot: boolean;
+  energy: number;
+  onClipChange: (clip: boolean) => void;
+}
+
+function MasterOutPanel({ active, driveHot, energy, onClipChange }: MasterOutPanelProps) {
+  const meter = useStereoMeter(energy, active);
+  const meterClip = active && (meter.lPeak > 82 || meter.rPeak > 82);
+  const clipSentRef = useRef(false);
+
+  useEffect(() => {
+    if (clipSentRef.current === meterClip) return;
+
+    clipSentRef.current = meterClip;
+    onClipChange(meterClip);
+  }, [meterClip, onClipChange]);
+
+  return (
+    <Panel variant="rack" screws={false} className="h-full">
+      <PanelHeader className="gap-2 p-5 pb-3">
+        <PanelTitle className="text-xl uppercase tracking-[0.14em]">Master Out</PanelTitle>
+        <PanelDescription>Stereo metering and output display.</PanelDescription>
+      </PanelHeader>
+
+      <PanelContent className="grid gap-6 px-5 pb-5">
+        <div className="flex justify-center">
+          <div className="origin-top scale-[0.84] sm:scale-100">
+            <AnalogMeterGroup variant="panel" aria-label="Stereo output meter">
+              <AnalogMeterGroupChannel label="L">
+                <AnalogMeter
+                  orientation="vertical"
+                  value={meter.l}
+                  peakValue={meter.lPeak}
+                  variant="metered"
+                  segments={40}
+                />
+              </AnalogMeterGroupChannel>
+              <AnalogMeterGroupSeparator />
+              <AnalogMeterGroupChannel label="R">
+                <AnalogMeter
+                  orientation="vertical"
+                  value={meter.r}
+                  peakValue={meter.rPeak}
+                  variant="metered"
+                  segments={40}
+                />
+              </AnalogMeterGroupChannel>
+            </AnalogMeterGroup>
+          </div>
+        </div>
+      </PanelContent>
+
+      <PanelFooter className="flex flex-wrap gap-5 px-5 pb-5">
+        <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#878787]">
+          Left {Math.round(meter.l)} / {Math.round(meter.lPeak)}
+        </span>
+        <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#878787]">
+          Right {Math.round(meter.r)} / {Math.round(meter.rPeak)}
+        </span>
+        <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#878787]">
+          Ceiling {driveHot || meterClip ? 'Hot' : '-1.0 dB'}
+        </span>
+      </PanelFooter>
+    </Panel>
+  );
+}
+
 export default function HomeVstSurface() {
   const surfaceRef = useRef<HTMLDivElement>(null);
+  const isSurfaceVisible = useElementVisibility(surfaceRef, '160px 0px');
+  const [isLightingActive, setIsLightingActive] = useState(false);
+  const [meterClip, setMeterClip] = useState(false);
   const sourceAngle = useMouseLumination({
     baseAngle: 180,
     influence: 0.34,
+    enabled: isSurfaceVisible && isLightingActive,
     targetRef: surfaceRef,
   });
 
@@ -113,19 +227,34 @@ export default function HomeVstSurface() {
           (oversample ? 0.03 : 0),
       )
     : 0;
-  const meter = useStereoMeter(energy, power);
   const gaugeVariant =
     algorithm === 'TAPE' || algorithm === 'VALVE'
       ? 'lcd-amber'
       : algorithm === 'WIDE'
         ? 'lcd-blue'
         : 'lcd-green';
-  const clip = power && (drive > 230 || meter.lPeak > 82 || meter.rPeak > 82);
+  const driveHot = power && drive > 230;
+  const clip = driveHot || meterClip;
   const stereoMode = fieldMode === 'right' ? 'Wide' : 'Mid';
+  const isMeterActive = power && isSurfaceVisible;
+
+  useEffect(() => {
+    if (isMeterActive) return;
+
+    setMeterClip(false);
+  }, [isMeterActive]);
 
   return (
     <AnalogLightingProvider baseAngle={180} sourceAngle={sourceAngle} power={1}>
-      <Panel ref={surfaceRef} variant="rack" screws screwHole="slot" className="w-full">
+      <Panel
+        ref={surfaceRef}
+        variant="rack"
+        screws
+        screwHole="slot"
+        className="w-full"
+        onPointerEnter={() => setIsLightingActive(true)}
+        onPointerLeave={() => setIsLightingActive(false)}
+      >
         <PanelHeader className="gap-4 p-6 md:p-8">
           <div className="text-[10px] font-semibold uppercase tracking-[0.34em] text-[#7f7f7f]">
             Featured Surface
@@ -419,52 +548,12 @@ export default function HomeVstSurface() {
             </PanelFooter>
           </Panel>
 
-          <Panel variant="rack" screws={false} className="h-full">
-            <PanelHeader className="gap-2 p-5 pb-3">
-              <PanelTitle className="text-xl uppercase tracking-[0.14em]">Master Out</PanelTitle>
-              <PanelDescription>Stereo metering and output display.</PanelDescription>
-            </PanelHeader>
-
-            <PanelContent className="grid gap-6 px-5 pb-5">
-              <div className="flex justify-center">
-                <div className="origin-top scale-[0.84] sm:scale-100">
-                  <AnalogMeterGroup variant="panel" aria-label="Stereo output meter">
-                    <AnalogMeterGroupChannel label="L">
-                      <AnalogMeter
-                        orientation="vertical"
-                        value={meter.l}
-                        peakValue={meter.lPeak}
-                        variant="metered"
-                        segments={40}
-                      />
-                    </AnalogMeterGroupChannel>
-                    <AnalogMeterGroupSeparator />
-                    <AnalogMeterGroupChannel label="R">
-                      <AnalogMeter
-                        orientation="vertical"
-                        value={meter.r}
-                        peakValue={meter.rPeak}
-                        variant="metered"
-                        segments={40}
-                      />
-                    </AnalogMeterGroupChannel>
-                  </AnalogMeterGroup>
-                </div>
-              </div>
-            </PanelContent>
-
-            <PanelFooter className="flex flex-wrap gap-5 px-5 pb-5">
-              <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#878787]">
-                Left {Math.round(meter.l)} / {Math.round(meter.lPeak)}
-              </span>
-              <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#878787]">
-                Right {Math.round(meter.r)} / {Math.round(meter.rPeak)}
-              </span>
-              <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#878787]">
-                Ceiling {clip ? 'Hot' : '-1.0 dB'}
-              </span>
-            </PanelFooter>
-          </Panel>
+          <MasterOutPanel
+            active={isMeterActive}
+            driveHot={driveHot}
+            energy={energy}
+            onClipChange={setMeterClip}
+          />
         </PanelContent>
 
         <PanelFooter className="flex flex-wrap gap-5 px-4 pb-4 pt-0 md:px-6 md:pb-6">
