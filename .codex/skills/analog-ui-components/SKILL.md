@@ -34,6 +34,15 @@ Use this skill to build or revise Analog UI components that feel tactile, machin
 - Use layered elements, pseudo-elements, and blend modes when they help add texture, foil, or glare without flattening the base material.
 - Prefer realistic cubic-bezier easing that feels mechanical instead of generic UI motion.
 
+## Performance Guardrails
+
+- Keep drag, scrub, and telemetry state in the smallest subtree that needs to animate. Do not let a slider, meter, or wheel rerender a whole demo surface every frame.
+- When a control lives inside an expensive showcase, prefer local live state during interaction and synchronize broader derived state on commit when the design allows it.
+- Scope pointer lighting to the active surface, cache measured bounds, and coalesce pointer updates with `requestAnimationFrame`.
+- Avoid React hover-state toggles that only exist to “wake up” pointer lighting on first movement; first-touch hitching is usually worse than always-ready tracking.
+- Idle synthetic telemetry and decorative motion when the component or showcase is offscreen.
+- Pre-promote heavily dragged parts such as slider thumbs when the visual shell is dense enough to benefit from an isolated transform layer.
+
 ## Implementation Pattern
 
 ```tsx

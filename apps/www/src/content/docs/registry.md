@@ -31,8 +31,10 @@ The registry currently includes:
 
 - **Style:** `analog-foundation`
 - **Lib:** `utils`, `refs`, `angle-utils`, `wheel-interaction`
-- **Hooks:** `use-analog-lighting`, `use-mouse-lumination`, `use-wheel-scroll`
+- **Hooks:** `use-analog-lighting`, `use-analog-material`, `use-mouse-lumination`, `use-wheel-scroll`
 - **Components and UI:** dials, meters, switches, wheels, panels, buttons, toggles, and thumb surfaces
+
+Controls that support inherited material finishes pull in `use-analog-material` automatically through their registry dependencies, so you only need to install it directly when composing your own subtree scopes.
 
 ## Local Build Source
 

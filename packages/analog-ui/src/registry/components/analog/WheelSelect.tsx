@@ -13,6 +13,23 @@ import { getWheelDirectionFactor, type AnalogWheelDirection } from './wheel-inte
 const useIsomorphicLayoutEffect =
   typeof window !== 'undefined' ? React.useLayoutEffect : React.useEffect;
 
+const wheelIndicatorStyle: React.CSSProperties = {
+  backgroundColor: 'var(--analog-led-amber-base)',
+  borderColor: 'var(--analog-control-surface-strong)',
+  boxShadow: '0 0 10px var(--analog-led-amber-glow)',
+};
+
+const wheelReadoutGlassStyle: React.CSSProperties = {
+  backgroundColor: 'var(--analog-control-glass)',
+  borderColor: 'var(--analog-control-glass-border)',
+};
+
+function getWheelRidgeBackground(isMarked: boolean) {
+  return isMarked
+    ? `linear-gradient(var(--analog-light-angle-wheel-face, 180deg), color-mix(in oklch, var(--analog-surface-metal-hi) 78%, white 22%) 0%, var(--analog-surface-metal-mid) 52%, var(--analog-surface-metal-lo) 100%)`
+    : `linear-gradient(var(--analog-light-angle-wheel-face, 180deg), color-mix(in oklch, var(--analog-surface-onyx-hi) 74%, white 10%) 0%, var(--analog-surface-onyx-mid) 48%, var(--analog-surface-onyx-lo) 100%)`;
+}
+
 function resolveLengthPx(node: HTMLElement, value: string) {
   const probe = document.createElement('div');
   probe.style.position = 'absolute';
@@ -52,13 +69,7 @@ function splitWheelLabel(label: string) {
   return [words.slice(0, midpoint).join(' '), words.slice(midpoint).join(' ')];
 }
 
-function WheelOptionLabel({
-  label,
-  tone,
-}: {
-  label: string;
-  tone: 'primary' | 'secondary';
-}) {
+function WheelOptionLabel({ label, tone }: { label: string; tone: 'primary' | 'secondary' }) {
   const lines = splitWheelLabel(label);
   const labelStyle: React.CSSProperties =
     tone === 'primary'
@@ -66,7 +77,7 @@ function WheelOptionLabel({
           fontSize: 'var(--analog-wheel-label-primary-size)',
           lineHeight: 'var(--analog-wheel-label-primary-line-height)',
           letterSpacing: 'var(--analog-wheel-label-letter-spacing)',
-          color: 'var(--foreground)',
+          color: 'var(--analog-control-foreground)',
         }
       : {
           fontSize: 'var(--analog-wheel-label-secondary-size)',
@@ -332,32 +343,43 @@ export const AnalogWheelSelect = React.forwardRef<HTMLDivElement, AnalogWheelSel
             }}
           >
             <div
-              className="pointer-events-none absolute inset-y-0 rounded-sm border border-white/6"
+              className="pointer-events-none absolute inset-y-0 rounded-sm border"
               style={{
                 insetInline: 'var(--analog-wheel-cylinder-inset-inline)',
-                background: `linear-gradient(var(--analog-light-angle-wheel-face, 180deg), rgba(52, 52, 52, calc(0.34 + 0.16 * var(--analog-light-power, 1))) 0%, rgba(20, 20, 20, 0.96) 48%, rgba(8, 8, 8, 1) 100%)`,
+                borderColor:
+                  'color-mix(in oklch, var(--analog-control-glass-border) 72%, transparent)',
+                background:
+                  `linear-gradient(var(--analog-light-angle-wheel-face, 180deg), ` +
+                  `color-mix(in oklch, var(--analog-surface-onyx-hi) 74%, white 10%) 0%, ` +
+                  `var(--analog-surface-onyx-mid) 48%, ` +
+                  `var(--analog-surface-onyx-lo) 100%)`,
                 boxShadow:
                   'inset 0 0 0 1px rgba(0, 0, 0, 0.5), inset 10px 0 14px rgba(255,255,255,0.04), inset -10px 0 14px rgba(0,0,0,0.5)',
               }}
             />
             <div className="analog-wheel-lighting" />
             <div
-              className="absolute top-1/2 left-0 -translate-y-1/2 border-y border-[#111] bg-[var(--color-amber-bg)] z-10 pointer-events-none shadow-[0_0_10px_var(--color-amber-glow)]"
+              className="absolute top-1/2 left-0 z-10 -translate-y-1/2 border-y pointer-events-none"
               style={{
                 width: 'var(--analog-wheel-indicator-width)',
                 height: 'var(--analog-wheel-indicator-height)',
+                ...wheelIndicatorStyle,
               }}
             />
             <div
-              className="absolute top-1/2 right-0 -translate-y-1/2 border-y border-[#111] bg-[var(--color-amber-bg)] z-10 pointer-events-none shadow-[0_0_10px_var(--color-amber-glow)]"
+              className="absolute top-1/2 right-0 z-10 -translate-y-1/2 border-y pointer-events-none"
               style={{
                 width: 'var(--analog-wheel-indicator-width)',
                 height: 'var(--analog-wheel-indicator-height)',
+                ...wheelIndicatorStyle,
               }}
             />
             <div
-              className="absolute top-1/2 left-0 right-0 -translate-y-1/2 border-y border-white/10 bg-white/5 z-10 pointer-events-none mix-blend-screen"
-              style={{ height: 'var(--analog-wheel-readout-height)' }}
+              className="absolute top-1/2 left-0 right-0 z-10 -translate-y-1/2 border-y pointer-events-none mix-blend-screen"
+              style={{
+                height: 'var(--analog-wheel-readout-height)',
+                ...wheelReadoutGlassStyle,
+              }}
             />
 
             {/* Draggable Cylinder */}
@@ -400,14 +422,14 @@ export const AnalogWheelSelect = React.forwardRef<HTMLDivElement, AnalogWheelSel
                     }}
                   >
                     <div
-                      className="absolute border-b border-[#000]"
+                      className="absolute border-b"
                       style={{
                         insetBlock: 'calc(var(--spacing) * 0.25)',
                         insetInline: 'var(--analog-wheel-ridge-inset-inline)',
                         borderRadius: 'var(--analog-wheel-ridge-radius)',
-                        background: isMarked
-                          ? `linear-gradient(var(--analog-light-angle-wheel-face, 180deg), rgba(205, 205, 205, calc(0.2 + 0.32 * var(--analog-light-power, 1))) 0%, rgba(158, 158, 158, 0.96) 52%, rgba(126, 126, 126, 1) 100%)`
-                          : `linear-gradient(var(--analog-light-angle-wheel-face, 180deg), rgba(66, 66, 66, calc(0.18 + 0.34 * var(--analog-light-power, 1))) 0%, rgba(36, 36, 36, 0.94) 48%, rgba(17, 17, 17, 1) 100%)`,
+                        borderColor:
+                          'color-mix(in oklch, var(--analog-control-border-strong) 80%, black 20%)',
+                        background: getWheelRidgeBackground(isMarked),
                       }}
                     />
                   </div>
@@ -426,7 +448,8 @@ export const AnalogWheelSelect = React.forwardRef<HTMLDivElement, AnalogWheelSel
                   width: 'var(--analog-wheel-adjacent-label-width)',
                   paddingInline: 'calc(var(--spacing) * 2)',
                   paddingBlock: 'calc(var(--spacing) * 0.5)',
-                  transform: 'translate(-50%, calc(-100% - var(--analog-wheel-adjacent-label-gap)))',
+                  transform:
+                    'translate(-50%, calc(-100% - var(--analog-wheel-adjacent-label-gap)))',
                 }}
               >
                 <WheelOptionLabel label={previousValue} tone="secondary" />
@@ -434,16 +457,25 @@ export const AnalogWheelSelect = React.forwardRef<HTMLDivElement, AnalogWheelSel
             ) : null}
 
             <div
-              className="absolute top-1/2 left-1/2 flex items-center justify-center rounded border border-[#333] bg-[#111]/92 shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
+              className="absolute top-1/2 left-1/2 flex items-center justify-center rounded border"
               style={{
                 boxSizing: 'border-box',
                 height: 'var(--analog-wheel-readout-height)',
                 width: 'var(--analog-wheel-readout-width)',
                 paddingInline: 'calc(var(--spacing) * 2)',
+                borderColor: 'var(--analog-control-border)',
+                backgroundColor:
+                  'color-mix(in oklch, var(--analog-control-surface) 92%, transparent)',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.5)',
                 transform: 'translate(-50%, -50%)',
               }}
             >
-              <span className="drop-shadow-[0_0_8px_rgba(255,255,255,0.18)]">
+              <span
+                style={{
+                  filter:
+                    'drop-shadow(0 0 8px color-mix(in oklch, var(--analog-control-foreground) 18%, transparent))',
+                }}
+              >
                 <WheelOptionLabel label={displayValue} tone="primary" />
               </span>
             </div>

@@ -17,7 +17,7 @@ export const SquareToggle = React.forwardRef<HTMLButtonElement, SquareToggleProp
   (
     {
       className,
-      variant = 'chrome',
+      variant,
       indicatorColor = 'none',
       lighting,
       extrusionLayers = 32,

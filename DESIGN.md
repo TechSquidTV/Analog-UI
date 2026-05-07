@@ -273,6 +273,7 @@ Treat the material channels as the shared vocabulary for lit parts:
 ### Mechanical Plunger Motion
 
 For high-travel controls (buttons, toggles), prioritize **Isolated Displacement**:
+
 - **Static Chassis**: The background cavity or track should remain perfectly stationary at `Z=0`.
 - **Moving Plunger**: The entire control block—including face, text, and extrusion—should move as a single unit along the Z and Y axes.
 - **Surface Recess**: When active, the face should physically sink below the panel surface (crossing into negative Z-space).
@@ -301,6 +302,7 @@ Buttons, dials, sliders, wheels, toggles, switches, meters, and panels should al
 - **Panels:** the rack face uses `panel`; screws and hardware use `screw`; mounted control caps still keep their own local channels instead of inheriting panel behavior.
 
 ### Edge-Mounted Indicators
+
 For precision toggles and latching buttons, place LED indicators in the **Top-Right corner**, potentially "breaking" the top boundary of the face to simulate a top-bevel mounting.
 
 Implementation guidance:
@@ -314,13 +316,28 @@ Implementation guidance:
 - Use derived effect angles for special cases such as wheel glare or lens glints when an optic needs to stay within a believable visible arc.
 - The lighting path must preserve smooth 360 degree rotation with no visible seam flip.
 
+## Interaction Performance
+
+Analog UI can afford rich gradients, bevels, foil, and glow, but the interaction path must stay local and cheap. Perceived lag usually comes from broad React churn or pointer-time layout work, not from one gradient by itself.
+
+Rules for interactive controls and demos:
+
+- Keep continuous motion state in the smallest subtree that actually needs it. Meter ballistics, scrub state, and other high-frequency updates should not live at the page or whole-surface level if only one panel is moving.
+- For expensive showcase surfaces, let controls keep their own live drag state and only synchronize heavier outer state on commit when possible. Scrubbing should stay responsive even if labels, derived stats, or unrelated controls update later.
+- Scope mouse or pointer lighting to the active surface, cache its bounds, and coalesce movement with `requestAnimationFrame`. Do not force fresh layout reads on every raw pointer event.
+- Avoid “wake-up” React state flips just to start tracking the pointer. First-touch latency matters, especially for sliders, dials, and other scrub controls.
+- Pause decorative animation and synthetic telemetry when a showcase is offscreen or otherwise inactive.
+- Pre-promote heavily dragged or transformed parts such as slider thumbs when the visual treatment is dense enough to benefit from an isolated layer.
+
 ## Do's and Don'ts
 
 - Do reserve saturated color for LEDs, live signals, and status states.
 - Do keep labels, legends, and telemetry visually distinct instead of collapsing them into one gray.
 - Do make chrome, black plastic, lenses, and panels feel like different materials.
 - Do keep track and wheel lighting independently tunable.
+- Do isolate high-frequency interaction state from large showcase surfaces.
 - Don't flatten tactile controls into generic gradients or single-shadow cards.
 - Don't use soft pastel accents or bright page backgrounds.
 - Don't introduce one-off lighting variables for special cases when a material channel already exists.
 - Don't mix extra-light presentation typography with otherwise industrial component styling.
+- Don't let pointer lighting or demo telemetry force whole-page rerenders during drag.

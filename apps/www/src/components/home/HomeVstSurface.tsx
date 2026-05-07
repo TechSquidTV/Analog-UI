@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type RefObject } from 'react';
+import { useEffect, useRef, useState, type ComponentPropsWithoutRef, type RefObject } from 'react';
 
 import {
   AnalogIndicator,
@@ -28,7 +28,7 @@ import {
 
 const algorithms = ['TAPE', 'VALVE', 'BUS', 'WIDE', 'PUNCH'];
 
-function useStereoMeter(energy: number, enabled: boolean) {
+function useStereoMeter(energy: number, enabled: boolean, suspendRef?: RefObject<boolean>) {
   const [channels, setChannels] = useState({ l: 0, r: 0, lPeak: 0, rPeak: 0 });
   const lPeakRef = useRef(0);
   const rPeakRef = useRef(0);
@@ -50,6 +50,8 @@ function useStereoMeter(energy: number, enabled: boolean) {
     }
 
     const tick = () => {
+      if (suspendRef?.current) return;
+
       setChannels((prev) => {
         const base = 10 + energy * 44;
         const burstChance = 0.11 + energy * 0.14;
@@ -87,7 +89,7 @@ function useStereoMeter(energy: number, enabled: boolean) {
 
     const interval = window.setInterval(tick, 42);
     return () => window.clearInterval(interval);
-  }, [enabled, energy]);
+  }, [enabled, energy, suspendRef]);
 
   return channels;
 }
@@ -125,10 +127,58 @@ interface MasterOutPanelProps {
   driveHot: boolean;
   energy: number;
   onClipChange: (clip: boolean) => void;
+  suspendRef?: RefObject<boolean>;
 }
 
-function MasterOutPanel({ active, driveHot, energy, onClipChange }: MasterOutPanelProps) {
-  const meter = useStereoMeter(energy, active);
+interface DemoSliderProps extends Omit<
+  ComponentPropsWithoutRef<typeof AnalogSlider>,
+  'value' | 'onValueChange'
+> {
+  value: number;
+  onValueChange: (value: number) => void;
+  onScrubbingChange?: (isScrubbing: boolean) => void;
+}
+
+function DemoSlider({ value, onValueChange, onScrubbingChange, ...props }: DemoSliderProps) {
+  const [localValue, setLocalValue] = useState(value);
+
+  useEffect(() => {
+    setLocalValue(value);
+  }, [value]);
+
+  return (
+    <AnalogSlider
+      {...props}
+      value={localValue}
+      onPointerDownCapture={() => onScrubbingChange?.(true)}
+      onPointerUpCapture={() => onScrubbingChange?.(false)}
+      onPointerCancelCapture={() => onScrubbingChange?.(false)}
+      onValueChange={(next, eventDetails) => {
+        setLocalValue(next as number);
+
+        if (eventDetails.reason === 'drag' || eventDetails.reason === 'track-press') {
+          onScrubbingChange?.(true);
+        }
+      }}
+      onValueCommitted={(next) => {
+        const resolvedValue = next as number;
+
+        setLocalValue(resolvedValue);
+        onScrubbingChange?.(false);
+        onValueChange(resolvedValue);
+      }}
+    />
+  );
+}
+
+function MasterOutPanel({
+  active,
+  driveHot,
+  energy,
+  onClipChange,
+  suspendRef,
+}: MasterOutPanelProps) {
+  const meter = useStereoMeter(energy, active, suspendRef);
   const meterClip = active && (meter.lPeak > 82 || meter.rPeak > 82);
   const clipSentRef = useRef(false);
 
@@ -191,13 +241,14 @@ function MasterOutPanel({ active, driveHot, energy, onClipChange }: MasterOutPan
 
 export default function HomeVstSurface() {
   const surfaceRef = useRef<HTMLDivElement>(null);
+  const isScrubbingRef = useRef(false);
   const isSurfaceVisible = useElementVisibility(surfaceRef, '160px 0px');
-  const [isLightingActive, setIsLightingActive] = useState(false);
   const [meterClip, setMeterClip] = useState(false);
   const sourceAngle = useMouseLumination({
     baseAngle: 180,
     influence: 0.34,
-    enabled: isSurfaceVisible && isLightingActive,
+    enabled: isSurfaceVisible,
+    suspendRef: isScrubbingRef,
     targetRef: surfaceRef,
   });
 
@@ -237,6 +288,9 @@ export default function HomeVstSurface() {
   const clip = driveHot || meterClip;
   const stereoMode = fieldMode === 'right' ? 'Wide' : 'Mid';
   const isMeterActive = power && isSurfaceVisible;
+  const handleScrubbingChange = (isScrubbing: boolean) => {
+    isScrubbingRef.current = isScrubbing;
+  };
 
   useEffect(() => {
     if (isMeterActive) return;
@@ -246,15 +300,7 @@ export default function HomeVstSurface() {
 
   return (
     <AnalogLightingProvider baseAngle={180} sourceAngle={sourceAngle} power={1}>
-      <Panel
-        ref={surfaceRef}
-        variant="rack"
-        screws
-        screwHole="slot"
-        className="w-full"
-        onPointerEnter={() => setIsLightingActive(true)}
-        onPointerLeave={() => setIsLightingActive(false)}
-      >
+      <Panel ref={surfaceRef} variant="rack" screws screwHole="slot" className="w-full">
         <PanelHeader className="gap-4 p-6 md:p-8">
           <div className="text-[10px] font-semibold uppercase tracking-[0.34em] text-[#7f7f7f]">
             Featured Surface
@@ -445,13 +491,14 @@ export default function HomeVstSurface() {
               </div>
 
               <div className="min-w-0 pt-3">
-                <AnalogSlider
+                <DemoSlider
                   orientation="horizontal"
                   variant="black"
                   min={-40}
                   max={10}
                   value={mix}
                   onValueChange={(next) => setMix(next as number)}
+                  onScrubbingChange={handleScrubbingChange}
                   className="w-full min-w-0"
                 />
               </div>
@@ -497,12 +544,13 @@ export default function HomeVstSurface() {
                     <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#818181]">
                       Input
                     </span>
-                    <AnalogSlider
+                    <DemoSlider
                       orientation="vertical"
                       min={-40}
                       max={10}
                       value={inputTrim}
                       onValueChange={(next) => setInputTrim(next as number)}
+                      onScrubbingChange={handleScrubbingChange}
                     />
                     <div className="flex items-center gap-2">
                       <AnalogIndicator isOn={power} color="white" size="xs" />
@@ -516,13 +564,14 @@ export default function HomeVstSurface() {
                     <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#818181]">
                       Output
                     </span>
-                    <AnalogSlider
+                    <DemoSlider
                       orientation="vertical"
                       variant="black"
                       min={-40}
                       max={10}
                       value={outputTrim}
                       onValueChange={(next) => setOutputTrim(next as number)}
+                      onScrubbingChange={handleScrubbingChange}
                     />
                     <div className="flex items-center gap-2">
                       <AnalogIndicator isOn={power} color="amber" size="xs" />
@@ -553,6 +602,7 @@ export default function HomeVstSurface() {
             driveHot={driveHot}
             energy={energy}
             onClipChange={setMeterClip}
+            suspendRef={isScrubbingRef}
           />
         </PanelContent>
 

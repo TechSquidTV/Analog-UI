@@ -12,6 +12,7 @@ export interface UseMouseLuminationOptions {
   influence?: number; // 0 keeps the base angle, 1 follows the pointer immediately
   enabled?: boolean;
   targetRef?: RefObject<HTMLElement | null>;
+  suspendRef?: RefObject<boolean>;
   deadZoneRadius?: number;
 }
 
@@ -44,6 +45,7 @@ export function useMouseLumination({
   influence = 1,
   enabled = true,
   targetRef,
+  suspendRef,
   deadZoneRadius = 8,
 }: UseMouseLuminationOptions = {}) {
   const angleValue = useMotionValue(baseAngle);
@@ -91,8 +93,12 @@ export function useMouseLumination({
       anchorPoint.current = resolveAnchorPoint(targetRef);
     };
 
+    const isSuspended = () => suspendRef?.current === true;
+
     const processPointer = () => {
       pendingFrame.current = null;
+
+      if (isSuspended()) return;
 
       const pointer = latestPointer.current;
       const anchor = anchorPoint.current;
@@ -129,6 +135,8 @@ export function useMouseLumination({
     };
 
     const handleMouseMove = (e: MouseEvent) => {
+      if (isSuspended()) return;
+
       latestPointer.current = {
         x: e.clientX,
         y: e.clientY,
@@ -139,12 +147,40 @@ export function useMouseLumination({
       pendingFrame.current = window.requestAnimationFrame(processPointer);
     };
 
+    const targetElement = targetRef?.current;
+    const handlePointerMove = (e: PointerEvent) => {
+      if (isSuspended()) return;
+
+      latestPointer.current = {
+        x: e.clientX,
+        y: e.clientY,
+      };
+
+      if (pendingFrame.current !== null) return;
+
+      pendingFrame.current = window.requestAnimationFrame(processPointer);
+    };
+
+    const handleTargetWarmup = () => {
+      if (isSuspended()) return;
+
+      updateAnchorPoint();
+    };
+
     updateAnchorPoint();
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+
+    if (targetElement) {
+      targetElement.addEventListener('pointermove', handlePointerMove, { passive: true });
+      targetElement.addEventListener('pointerdown', handleTargetWarmup, { passive: true });
+      targetElement.addEventListener('pointerenter', handleTargetWarmup, { passive: true });
+    } else {
+      window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    }
+
     window.addEventListener('resize', updateAnchorPoint, { passive: true });
     window.addEventListener('scroll', updateAnchorPoint, { passive: true });
 
-    const observerTarget = targetRef?.current;
+    const observerTarget = targetElement;
     const resizeObserver =
       observerTarget && typeof ResizeObserver !== 'undefined'
         ? new ResizeObserver(() => updateAnchorPoint())
@@ -158,11 +194,25 @@ export function useMouseLumination({
       }
 
       resizeObserver?.disconnect();
-      window.removeEventListener('mousemove', handleMouseMove);
+      if (targetElement) {
+        targetElement.removeEventListener('pointermove', handlePointerMove);
+        targetElement.removeEventListener('pointerdown', handleTargetWarmup);
+        targetElement.removeEventListener('pointerenter', handleTargetWarmup);
+      } else {
+        window.removeEventListener('mousemove', handleMouseMove);
+      }
       window.removeEventListener('resize', updateAnchorPoint);
       window.removeEventListener('scroll', updateAnchorPoint);
     };
-  }, [angleValue, baseAngle, enabled, resolvedDeadZoneRadius, resolvedInfluence, targetRef]);
+  }, [
+    angleValue,
+    baseAngle,
+    enabled,
+    resolvedDeadZoneRadius,
+    resolvedInfluence,
+    suspendRef,
+    targetRef,
+  ]);
 
   return angleValue;
 }

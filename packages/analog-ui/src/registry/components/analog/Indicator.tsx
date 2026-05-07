@@ -5,6 +5,7 @@ import {
   useAnalogLighting,
   type AnalogLightingConfig,
 } from '../../hooks/use-analog-lighting';
+import { useAnalogMaterialVariant } from '../../hooks/use-analog-material';
 
 export type AnalogIndicatorColor = 'red' | 'green' | 'amber' | 'blue' | 'white' | 'none';
 export type AnalogIndicatorSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -27,39 +28,39 @@ export interface AnalogIndicatorProps extends React.HTMLAttributes<HTMLDivElemen
 
 const colorMaps = {
   red: {
-    bg: '#3a0808',
-    core: '#fc8888',
-    mid: '#d44040',
-    edge: '#8c1c1c',
-    bloom: 'rgba(212, 64, 64, 0.7)',
+    bg: 'var(--analog-led-red-surface)',
+    core: 'var(--analog-led-red-core)',
+    mid: 'var(--analog-led-red-base)',
+    edge: 'var(--analog-led-red-edge)',
+    bloom: 'var(--analog-led-red-glow)',
   },
   green: {
-    bg: '#0f2913',
-    core: '#bdf2c3',
-    mid: '#5ca34d',
-    edge: '#2b5e20',
-    bloom: 'rgba(92, 163, 77, 0.7)',
+    bg: 'var(--analog-led-green-surface)',
+    core: 'var(--analog-led-green-core)',
+    mid: 'var(--analog-led-green-base)',
+    edge: 'var(--analog-led-green-edge)',
+    bloom: 'var(--analog-led-green-glow)',
   },
   amber: {
-    bg: '#2e1d05',
-    core: '#fcefc7',
-    mid: '#d19324',
-    edge: '#8a5b0f',
-    bloom: 'rgba(209, 147, 36, 0.7)',
+    bg: 'var(--analog-led-amber-surface)',
+    core: 'var(--analog-led-amber-core)',
+    mid: 'var(--analog-led-amber-base)',
+    edge: 'var(--analog-led-amber-edge)',
+    bloom: 'var(--analog-led-amber-glow)',
   },
   blue: {
-    bg: '#081e36',
-    core: '#c5e2ff',
-    mid: '#3b86e0',
-    edge: '#164882',
-    bloom: 'rgba(59, 134, 224, 0.7)',
+    bg: 'var(--analog-led-blue-surface)',
+    core: 'var(--analog-led-blue-core)',
+    mid: 'var(--analog-led-blue-base)',
+    edge: 'var(--analog-led-blue-edge)',
+    bloom: 'var(--analog-led-blue-glow)',
   },
   white: {
-    bg: '#404040',
-    core: '#ffffff',
-    mid: '#f4f4f4',
-    edge: '#a3a3a3',
-    bloom: 'rgba(255, 255, 255, 0.8)',
+    bg: 'var(--analog-led-white-surface)',
+    core: 'var(--analog-led-white-core)',
+    mid: 'var(--analog-led-white-base)',
+    edge: 'var(--analog-led-white-edge)',
+    bloom: 'var(--analog-led-white-glow)',
   },
 };
 
@@ -88,7 +89,7 @@ export const AnalogIndicator = React.forwardRef<HTMLDivElement, AnalogIndicatorP
       isOn = false,
       color = 'red',
       size = 'md',
-      variant = 'chrome',
+      variant,
       disableBezel = false,
       shape = 'round',
       lighting,
@@ -99,7 +100,7 @@ export const AnalogIndicator = React.forwardRef<HTMLDivElement, AnalogIndicatorP
     const resolvedColor = color === 'none' ? 'red' : color;
     const palette = colorMaps[resolvedColor];
     const glow = glowMaps[size];
-    const resolvedVariant: AnalogIndicatorVariant = variant === 'none' ? 'chrome' : variant;
+    const resolvedVariant = useAnalogMaterialVariant(variant === 'none' ? undefined : variant);
     const isChrome = resolvedVariant === 'chrome';
     const hasBezel = !disableBezel && variant !== 'none';
     const radius = shape === 'square' ? '15%' : '50%';
@@ -129,6 +130,7 @@ export const AnalogIndicator = React.forwardRef<HTMLDivElement, AnalogIndicatorP
           sizeMaps[size],
           className,
         )}
+        data-analog-variant={resolvedVariant}
         style={{ ...lightingStyle, borderRadius: radius }}
         {...props}
       >
@@ -139,8 +141,8 @@ export const AnalogIndicator = React.forwardRef<HTMLDivElement, AnalogIndicatorP
             style={{
               borderRadius: radius,
               background: isChrome
-                ? `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 90deg), #e5e5e5, #888 40%, #e5e5e5 60%, #444)`
-                : `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 90deg), #444, #111 40%, #222 60%, #000)`,
+                ? `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 90deg), var(--analog-surface-metal-hi), var(--analog-surface-metal-mid) 40%, var(--analog-surface-metal-hi) 60%, var(--analog-surface-metal-lo))`
+                : `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 90deg), var(--analog-surface-onyx-hi), var(--analog-surface-onyx-lo) 40%, var(--analog-surface-onyx-mid) 60%, color-mix(in oklch, var(--analog-surface-onyx-lo) 82%, black))`,
               boxShadow: isChrome
                 ? `inset 0 2px 3px rgba(255,255,255,calc(1.2 * var(--analog-light-power, 1))), inset 0 -3px 4px rgba(0,0,0,calc(0.4 * var(--analog-light-power, 1))), 0 4px 6px rgba(0,0,0,calc(0.6 * var(--analog-light-power, 1))), 0 0 0 1px rgba(0,0,0,calc(0.15 * var(--analog-light-power, 1)))`
                 : `inset 0 1px 2px rgba(255,255,255,calc(0.15 * var(--analog-light-power, 1))), inset 0 -2px 3px rgba(0,0,0,calc(0.8 * var(--analog-light-power, 1))), 0 3px 5px rgba(0,0,0,calc(0.9 * var(--analog-light-power, 1))), 0 0 0 1px rgba(0,0,0,calc(0.6 * var(--analog-light-power, 1)))`,
@@ -251,7 +253,7 @@ export const AnalogIndicator = React.forwardRef<HTMLDivElement, AnalogIndicatorP
             borderRadius: radius,
             background: `
                radial-gradient(circle at 50% 50%, ${palette.bloom} 0%, transparent 20%),
-               radial-gradient(circle at 50% 50%, ${palette.bloom.replace(/[\d.]+\)$/, '0.3)')} 20%, transparent 60%)
+               radial-gradient(circle at 50% 50%, color-mix(in oklch, ${palette.bloom} 30%, transparent) 20%, transparent 60%)
              `,
             filter: `blur(${glow.blur})`,
             mixBlendMode: 'screen',

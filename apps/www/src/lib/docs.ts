@@ -1,37 +1,25 @@
-import { getCollection, type CollectionEntry } from "astro:content";
+import { getCollection, type CollectionEntry } from 'astro:content';
 
-import { getBlockEntries } from "./blocks";
+import { getBlockEntries } from './blocks';
 
-export type DocEntry = CollectionEntry<"docs">;
+export type DocEntry = CollectionEntry<'docs'>;
 
 const sectionOrder = {
   introduction: 0,
-  "getting-started": 1,
+  'getting-started': 1,
   design: 2,
   reference: 3,
 } as const;
 
-const guideSlugs = ["index", "getting-started", "design/tokens-and-lighting", "registry"] as const;
-
-const componentNavLabels = {
-  dial: "Dial",
-  slider: "Slider",
-  toggle: "Toggle",
-  "square-button": "Square Button",
-  "square-toggle": "Square Toggle",
-  switch: "Switch",
-  "wheel-select": "Wheel Select",
-  "wheel-number": "Wheel Number",
-  gauge: "Gauge",
-  "lcd-display": "LCD Display",
-  meter: "Meter",
-  indicator: "Indicator",
-  panel: "Panel",
-  "rocker-thumb-surface": "Rocker Thumb Surface",
+const sectionLabels = {
+  introduction: 'Introduction',
+  'getting-started': 'Getting Started',
+  design: 'Design',
+  reference: 'Reference',
 } as const;
 
 export function getDocHref(entry: DocEntry) {
-  return entry.slug === "index" ? "/docs" : `/docs/${entry.slug}`;
+  return entry.slug === 'index' ? '/docs' : `/docs/${entry.slug}`;
 }
 
 export function getComponentDocHref(name: string) {
@@ -39,7 +27,7 @@ export function getComponentDocHref(name: string) {
 }
 
 export async function getDocsEntries() {
-  const entries = await getCollection("docs", ({ data }) => !data.draft);
+  const entries = await getCollection('docs', ({ data }) => !data.draft);
 
   return entries.sort((left, right) => {
     const leftSection = sectionOrder[left.data.section];
@@ -54,7 +42,7 @@ export async function getDocsEntries() {
 }
 
 export async function getDocBySlug(slug?: string) {
-  const targetSlug = !slug || slug.length === 0 ? "index" : slug;
+  const targetSlug = !slug || slug.length === 0 ? 'index' : slug;
   const entries = await getDocsEntries();
   return entries.find((entry) => entry.slug === targetSlug);
 }
@@ -63,22 +51,27 @@ export async function getDocsNavigation() {
   const entries = await getDocsEntries();
   const entriesBySlug = new Map(entries.map((entry) => [entry.slug, entry]));
 
-  const guides = guideSlugs.flatMap((slug) => {
-    const entry = entriesBySlug.get(slug);
+  const guideGroups = (Object.keys(sectionOrder) as Array<keyof typeof sectionOrder>).flatMap(
+    (section) => {
+      const items = entries
+        .filter((entry) => entry.slug !== 'components' && entry.data.section === section)
+        .map((entry) => ({
+          href: getDocHref(entry),
+          label: entry.data.navTitle ?? entry.data.title,
+        }));
 
-    if (!entry) {
-      return [];
-    }
+      return items.length > 0
+        ? [
+            {
+              section: sectionLabels[section],
+              items,
+            },
+          ]
+        : [];
+    },
+  );
 
-    return [
-      {
-        href: getDocHref(entry),
-        label: entry.data.navTitle ?? entry.data.title,
-      },
-    ];
-  });
-
-  const componentsHub = entriesBySlug.get("components");
+  const componentsHub = entriesBySlug.get('components');
   const components = [
     ...(componentsHub
       ? [
@@ -90,17 +83,14 @@ export async function getDocsNavigation() {
       : []),
     ...getBlockEntries().map((entry) => ({
       href: getComponentDocHref(entry.name),
-      label: componentNavLabels[entry.name],
+      label: entry.title,
     })),
   ];
 
   return [
+    ...guideGroups,
     {
-      section: "Getting Started",
-      items: guides,
-    },
-    {
-      section: "Components",
+      section: 'Components',
       items: components,
     },
   ];

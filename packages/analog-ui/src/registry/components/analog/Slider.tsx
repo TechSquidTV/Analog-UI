@@ -3,6 +3,7 @@ import { Slider } from '@base-ui/react';
 import { cn } from '../../../lib/utils';
 import { RockerThumbSurface } from './RockerThumbSurface';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
+import { useAnalogMaterialVariant } from '../../hooks/use-analog-material';
 import type { AnalogOrientation } from './orientation';
 
 export interface AnalogSliderMark {
@@ -16,8 +17,10 @@ export interface AnalogSliderMark {
   align?: 'start' | 'center' | 'end';
 }
 
-export interface AnalogSliderProps
-  extends Omit<React.ComponentPropsWithoutRef<typeof Slider.Root>, 'orientation'> {
+export interface AnalogSliderProps extends Omit<
+  React.ComponentPropsWithoutRef<typeof Slider.Root>,
+  'orientation'
+> {
   variant?: 'chrome' | 'black';
   orientation?: AnalogOrientation;
   lighting?: AnalogLightingConfig<'track' | 'thumb'>;
@@ -29,7 +32,7 @@ export const AnalogSlider = React.forwardRef<HTMLDivElement, AnalogSliderProps>(
   (
     {
       className,
-      variant = 'chrome',
+      variant,
       orientation = 'horizontal',
       lighting,
       min = 0,
@@ -40,6 +43,7 @@ export const AnalogSlider = React.forwardRef<HTMLDivElement, AnalogSliderProps>(
     },
     ref,
   ) => {
+    const resolvedVariant = useAnalogMaterialVariant(variant);
     const isVertical = orientation === 'vertical';
     const sliderLighting: AnalogLightingConfig<'track' | 'thumb'> = {
       track: { travel: 1 },
@@ -61,15 +65,20 @@ export const AnalogSlider = React.forwardRef<HTMLDivElement, AnalogSliderProps>(
         return {
           ...mark,
           ratio,
-          align:
-            mark.align ??
-            (ratio <= 0.001 ? 'start' : ratio >= 0.999 ? 'end' : 'center'),
+          align: mark.align ?? (ratio <= 0.001 ? 'start' : ratio >= 0.999 ? 'end' : 'center'),
         };
       });
     }, [marks, min, showMarks, sliderRange]);
 
     return (
-      <Slider.Root ref={ref} orientation={orientation} min={min} max={max} {...props}>
+      <Slider.Root
+        ref={ref}
+        orientation={orientation}
+        min={min}
+        max={max}
+        data-analog-variant={resolvedVariant}
+        {...props}
+      >
         <Slider.Control
           className={cn(
             'group relative flex items-center justify-center touch-none select-none data-[orientation=horizontal]:h-16 data-[orientation=horizontal]:w-full data-[orientation=horizontal]:min-w-0 data-[orientation=vertical]:h-64 data-[orientation=vertical]:w-16 data-[orientation=vertical]:shrink-0',
@@ -83,7 +92,7 @@ export const AnalogSlider = React.forwardRef<HTMLDivElement, AnalogSliderProps>(
               {resolvedMarks.map((mark) => (
                 <span
                   key={`${mark.value}-${String(mark.label)}`}
-                  className="absolute left-0 w-full text-right text-[9px] font-mono text-[#555] opacity-80 -translate-y-1/2"
+                  className="absolute left-0 w-full -translate-y-1/2 text-right text-[9px] font-mono text-[color:var(--analog-telemetry-label)] opacity-80"
                   style={{ top: `${(1 - mark.ratio) * 100}%` }}
                 >
                   {mark.label}
@@ -96,7 +105,7 @@ export const AnalogSlider = React.forwardRef<HTMLDivElement, AnalogSliderProps>(
                 <span
                   key={`${mark.value}-${String(mark.label)}`}
                   className={cn(
-                    'absolute top-0 text-[9px] font-mono text-[#555] opacity-80',
+                    'absolute top-0 text-[9px] font-mono text-[color:var(--analog-telemetry-label)] opacity-80',
                     mark.align === 'start'
                       ? 'translate-x-0 text-left'
                       : mark.align === 'end'
@@ -142,14 +151,16 @@ export const AnalogSlider = React.forwardRef<HTMLDivElement, AnalogSliderProps>(
 
             <Slider.Thumb
               className={cn(
-                'absolute pointer-events-auto outline-none select-none data-[orientation=horizontal]:top-0 data-[orientation=horizontal]:h-8 data-[orientation=horizontal]:w-[72px] data-[orientation=horizontal]:-translate-y-1/2 data-[orientation=vertical]:left-0 data-[orientation=vertical]:h-[72px] data-[orientation=vertical]:w-8 data-[orientation=vertical]:-translate-x-1/2',
+                'absolute pointer-events-auto outline-none select-none transform-gpu data-[orientation=horizontal]:top-0 data-[orientation=horizontal]:h-8 data-[orientation=horizontal]:w-[72px] data-[orientation=horizontal]:-translate-y-1/2 data-[orientation=vertical]:left-0 data-[orientation=vertical]:h-[72px] data-[orientation=vertical]:w-8 data-[orientation=vertical]:-translate-x-1/2',
               )}
+              style={{ willChange: 'transform' }}
             >
               <RockerThumbSurface
                 className="absolute inset-0 rounded-sm"
-                variant={variant}
+                variant={resolvedVariant}
                 orientation={orientation}
                 raisedSide="both"
+                extrusionLayers={16}
               >
                 <div className="absolute inset-[4px] rounded-[6px] ring-2 ring-[var(--color-accent)] opacity-0 group-has-[[data-focus-visible]]:opacity-100 transition-opacity duration-300 pointer-events-none z-[4]" />
               </RockerThumbSurface>

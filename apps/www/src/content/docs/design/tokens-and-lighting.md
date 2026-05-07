@@ -29,6 +29,31 @@ The default design language uses a few consistent material channels:
 
 The system is intentionally neutral until something is lit.
 
+## Material Scope
+
+Analog UI treats `chrome` and `black` as inherited material finishes, not as a second app theme. The host shadcn tokens still define the core palette, and Analog UI resolves its surface recipes from there.
+
+Use `AnalogMaterialScope` when you want a whole subtree to default to one finish:
+
+```tsx
+import { AnalogMaterialScope, AnalogToggle, Dial, Panel } from 'analog-ui';
+
+<AnalogMaterialScope variant="black">
+  <Panel>
+    <Dial />
+    <AnalogToggle />
+  </Panel>
+</AnalogMaterialScope>;
+```
+
+Important behavior:
+
+- `AnalogMaterialScope` sets a default finish for descendant Analog UI controls
+- component-level `variant` props still override the inherited finish
+- the scope does not replace `background`, `foreground`, `primary`, `border`, or other host shadcn tokens
+
+This keeps Analog UI compatible with tools like tweakcn because the material finish is additive to the host theme instead of redefining it.
+
 ## Lighting Rules
 
 Light response is a first-class part of the product language. Components should not hardcode a single global gradient direction. Instead, they should read the resolved per-material angles exposed by the lighting provider.

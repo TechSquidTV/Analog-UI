@@ -12,6 +12,23 @@ import {
 } from '../../hooks/use-analog-lighting';
 import { getWheelDirectionFactor, type AnalogWheelDirection } from './wheel-interaction';
 
+const wheelIndicatorStyle: React.CSSProperties = {
+  backgroundColor: 'var(--analog-led-amber-base)',
+  borderColor: 'var(--analog-control-surface-strong)',
+  boxShadow: '0 0 10px var(--analog-led-amber-glow)',
+};
+
+const wheelReadoutGlassStyle: React.CSSProperties = {
+  backgroundColor: 'var(--analog-control-glass)',
+  borderColor: 'var(--analog-control-glass-border)',
+};
+
+function getWheelRidgeBackground(isMarked: boolean) {
+  return isMarked
+    ? `linear-gradient(var(--analog-light-angle-wheel-face, 180deg), color-mix(in oklch, var(--analog-surface-metal-hi) 78%, white 22%) 0%, var(--analog-surface-metal-mid) 52%, var(--analog-surface-metal-lo) 100%)`
+    : `linear-gradient(var(--analog-light-angle-wheel-face, 180deg), color-mix(in oklch, var(--analog-surface-onyx-hi) 74%, white 10%) 0%, var(--analog-surface-onyx-mid) 48%, var(--analog-surface-onyx-lo) 100%)`;
+}
+
 export interface AnalogWheelNumberProps extends React.ComponentPropsWithoutRef<
   typeof NumberField.Root
 > {
@@ -148,12 +165,19 @@ export const AnalogWheelNumber = React.forwardRef<HTMLDivElement, AnalogWheelNum
         {...props}
         className={cn('flex w-full min-w-0 max-w-[8rem] flex-col items-stretch gap-4', className)}
       >
-        <NumberField.Group className="z-20 flex w-full min-w-0 items-center rounded-md border border-[#333] bg-[#111] p-1 shadow-[inset_0_1px_3px_rgba(0,0,0,0.8)]">
-          <NumberField.Decrement className="flex size-8 items-center justify-center rounded-sm text-[#888] hover:bg-[#222] hover:text-white hover:shadow-[0_1px_2px_rgba(0,0,0,0.5)] active:bg-[#000] active:shadow-none transition-all cursor-pointer outline-none">
+        <NumberField.Group
+          className="z-20 flex w-full min-w-0 items-center rounded-md border p-1"
+          style={{
+            borderColor: 'var(--analog-control-border)',
+            backgroundColor: 'var(--analog-control-surface)',
+            boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.8)',
+          }}
+        >
+          <NumberField.Decrement className="flex size-8 cursor-pointer items-center justify-center rounded-sm text-[var(--analog-control-foreground-muted)] transition-all outline-none hover:bg-[var(--analog-control-surface-strong)] hover:text-[var(--analog-control-foreground)] hover:shadow-[0_1px_2px_rgba(0,0,0,0.5)] active:bg-[var(--analog-surface-cavity-strong)] active:shadow-none">
             <MinusIcon className="size-4 pointer-events-none" />
           </NumberField.Decrement>
-          <NumberField.Input className="min-w-0 flex-1 bg-transparent px-2 text-center font-mono text-sm font-bold text-[#eee] tabular-nums outline-none selection:bg-[#555]" />
-          <NumberField.Increment className="flex size-8 items-center justify-center rounded-sm text-[#888] hover:bg-[#222] hover:text-white hover:shadow-[0_1px_2px_rgba(0,0,0,0.5)] active:bg-[#000] active:shadow-none transition-all cursor-pointer outline-none">
+          <NumberField.Input className="min-w-0 flex-1 bg-transparent px-2 text-center font-mono text-sm font-bold text-[var(--analog-control-foreground)] tabular-nums outline-none selection:bg-[var(--analog-control-selection)] selection:text-[var(--analog-control-foreground)]" />
+          <NumberField.Increment className="flex size-8 cursor-pointer items-center justify-center rounded-sm text-[var(--analog-control-foreground-muted)] transition-all outline-none hover:bg-[var(--analog-control-surface-strong)] hover:text-[var(--analog-control-foreground)] hover:shadow-[0_1px_2px_rgba(0,0,0,0.5)] active:bg-[var(--analog-surface-cavity-strong)] active:shadow-none">
             <PlusIcon className="size-4 pointer-events-none" />
           </NumberField.Increment>
         </NumberField.Group>
@@ -173,16 +197,25 @@ export const AnalogWheelNumber = React.forwardRef<HTMLDivElement, AnalogWheelNum
             }}
           >
             <NumberField.ScrubAreaCursor className="drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] z-50">
-              <CursorGrowIcon className="text-white fill-black" />
+              <CursorGrowIcon className="fill-[var(--analog-surface-cavity-strong)] text-[var(--analog-control-foreground)]" />
             </NumberField.ScrubAreaCursor>
 
             <div className="analog-wheel-lighting" />
 
-            <div className="absolute top-1/2 left-0 w-3 h-[4px] -translate-y-1/2 bg-[var(--color-amber-bg)] z-10 pointer-events-none shadow-[0_0_10px_var(--color-amber-glow)] border-y border-[#111]" />
-            <div className="absolute top-1/2 right-0 w-3 h-[4px] -translate-y-1/2 bg-[var(--color-amber-bg)] z-10 pointer-events-none shadow-[0_0_10px_var(--color-amber-glow)] border-y border-[#111]" />
+            <div
+              className="absolute top-1/2 left-0 z-10 h-[4px] w-3 -translate-y-1/2 border-y pointer-events-none"
+              style={wheelIndicatorStyle}
+            />
+            <div
+              className="absolute top-1/2 right-0 z-10 h-[4px] w-3 -translate-y-1/2 border-y pointer-events-none"
+              style={wheelIndicatorStyle}
+            />
 
             {/* Center glass reading line */}
-            <div className="absolute top-1/2 left-0 right-0 h-[24px] -translate-y-1/2 border-y border-white/10 bg-white/5 z-10 pointer-events-none mix-blend-screen" />
+            <div
+              className="absolute top-1/2 left-0 right-0 z-10 h-[24px] -translate-y-1/2 border-y pointer-events-none mix-blend-screen"
+              style={wheelReadoutGlassStyle}
+            />
 
             {/* Rendered Cylinder */}
             <motion.div
@@ -211,11 +244,11 @@ export const AnalogWheelNumber = React.forwardRef<HTMLDivElement, AnalogWheelNum
                     }}
                   >
                     <div
-                      className="absolute inset-x-2 inset-y-[1px] rounded-[1.5px] border-b border-[#000]"
+                      className="absolute inset-x-2 inset-y-[1px] rounded-[1.5px] border-b"
                       style={{
-                        background: isMarked
-                          ? `linear-gradient(var(--analog-light-angle-wheel-face, 180deg), rgba(205, 205, 205, calc(0.2 + 0.32 * var(--analog-light-power, 1))) 0%, rgba(158, 158, 158, 0.96) 52%, rgba(126, 126, 126, 1) 100%)`
-                          : `linear-gradient(var(--analog-light-angle-wheel-face, 180deg), rgba(66, 66, 66, calc(0.18 + 0.34 * var(--analog-light-power, 1))) 0%, rgba(36, 36, 36, 0.94) 48%, rgba(17, 17, 17, 1) 100%)`,
+                        borderColor:
+                          'color-mix(in oklch, var(--analog-control-border-strong) 80%, black 20%)',
+                        background: getWheelRidgeBackground(isMarked),
                       }}
                     />
                   </div>

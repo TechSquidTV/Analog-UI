@@ -122,13 +122,38 @@ const defaultScaleDomains: Record<AnalogMeterScalePreset, { min: number; max: nu
 
 const defaultScaleZones: Record<Exclude<AnalogMeterScalePreset, 'linear'>, AnalogMeterZone[]> = {
   dbfs: [
-    { from: -60, to: -6, color: '#65ba59', glow: '#5ba850' },
-    { from: -6, to: 0, color: '#e6a227', glow: '#d49524' },
-    { from: 0, to: 6, color: '#d44040', glow: '#c43b3b' },
+    {
+      from: -60,
+      to: -6,
+      color: 'var(--analog-meter-zone-green)',
+      glow: 'var(--analog-meter-zone-green-glow)',
+    },
+    {
+      from: -6,
+      to: 0,
+      color: 'var(--analog-meter-zone-amber)',
+      glow: 'var(--analog-meter-zone-amber-glow)',
+    },
+    {
+      from: 0,
+      to: 6,
+      color: 'var(--analog-meter-zone-red)',
+      glow: 'var(--analog-meter-zone-red-glow)',
+    },
   ],
   vu: [
-    { from: -20, to: 0, color: '#65ba59', glow: '#5ba850' },
-    { from: 0, to: 3, color: '#e6a227', glow: '#d49524' },
+    {
+      from: -20,
+      to: 0,
+      color: 'var(--analog-meter-zone-green)',
+      glow: 'var(--analog-meter-zone-green-glow)',
+    },
+    {
+      from: 0,
+      to: 3,
+      color: 'var(--analog-meter-zone-amber)',
+      glow: 'var(--analog-meter-zone-amber-glow)',
+    },
   ],
 };
 
@@ -167,7 +192,7 @@ function buildZoneGradient(
     .map((zone) => ({
       start: zone.from ?? min,
       end: zone.to ?? max,
-      tone: key === 'glow' ? zone.glow ?? zone.color : zone.color,
+      tone: key === 'glow' ? (zone.glow ?? zone.color) : zone.color,
     }))
     .sort((a, b) => a.start - b.start);
 
@@ -274,7 +299,11 @@ export const AnalogMeter = React.forwardRef<HTMLDivElement, AnalogMeterProps>(
         return previous;
       });
 
-      if (displayPeakValue != null && peakValue < displayPeakValue && effectiveBallistics.peakHoldMs > 0) {
+      if (
+        displayPeakValue != null &&
+        peakValue < displayPeakValue &&
+        effectiveBallistics.peakHoldMs > 0
+      ) {
         const timeout = window.setTimeout(() => {
           setDisplayPeakValue(peakValue);
         }, effectiveBallistics.peakHoldMs);
@@ -292,8 +321,7 @@ export const AnalogMeter = React.forwardRef<HTMLDivElement, AnalogMeterProps>(
     const resolvedMarks = React.useMemo(() => {
       if (!showScale) return [];
 
-      const sourceMarks =
-        marks ?? (scalePreset === 'linear' ? [] : defaultScaleMarks[scalePreset]);
+      const sourceMarks = marks ?? (scalePreset === 'linear' ? [] : defaultScaleMarks[scalePreset]);
 
       return sourceMarks.map((mark) => ({
         ...mark,
@@ -308,17 +336,36 @@ export const AnalogMeter = React.forwardRef<HTMLDivElement, AnalogMeterProps>(
       const dir = isVert ? 'to top' : 'to right';
       switch (v) {
         case 'lcd-green':
-          return { glow: '#5ca34d', bg: '#67b557', peak: 'rgba(235, 255, 237, 0.96)', isLcd: true };
+          return {
+            glow: 'var(--analog-lcd-green-glow)',
+            bg: 'var(--analog-lcd-green-fill)',
+            peak: 'color-mix(in oklch, var(--analog-led-green-core) 74%, white 26%)',
+            peakGlow: 'color-mix(in oklch, var(--analog-led-green-glow) 72%, transparent)',
+            isLcd: true,
+          };
         case 'lcd-amber':
-          return { glow: '#d19324', bg: '#e6a42e', peak: 'rgba(255, 244, 218, 0.96)', isLcd: true };
+          return {
+            glow: 'var(--analog-lcd-amber-glow)',
+            bg: 'var(--analog-lcd-amber-fill)',
+            peak: 'color-mix(in oklch, var(--analog-led-amber-core) 74%, white 26%)',
+            peakGlow: 'color-mix(in oklch, var(--analog-led-amber-glow) 72%, transparent)',
+            isLcd: true,
+          };
         case 'lcd-blue':
-          return { glow: '#3b86e0', bg: '#4d98f0', peak: 'rgba(232, 244, 255, 0.96)', isLcd: true };
+          return {
+            glow: 'var(--analog-lcd-blue-glow)',
+            bg: 'var(--analog-lcd-blue-fill)',
+            peak: 'color-mix(in oklch, var(--analog-led-blue-core) 74%, white 26%)',
+            peakGlow: 'color-mix(in oklch, var(--analog-led-blue-glow) 72%, transparent)',
+            isLcd: true,
+          };
         case 'metered':
         default:
           return {
-            bg: `linear-gradient(${dir}, #65ba59 60%, #e6a227 80%, #d44040 95%)`,
-            glow: `linear-gradient(${dir}, #5ba850 60%, #d49524 80%, #c43b3b 95%)`,
-            peak: '#fff0aa',
+            bg: `linear-gradient(${dir}, var(--analog-meter-zone-green) 60%, var(--analog-meter-zone-amber) 80%, var(--analog-meter-zone-red) 95%)`,
+            glow: `linear-gradient(${dir}, var(--analog-meter-zone-green-glow) 60%, var(--analog-meter-zone-amber-glow) 80%, var(--analog-meter-zone-red-glow) 95%)`,
+            peak: 'var(--analog-meter-peak-marker)',
+            peakGlow: 'color-mix(in oklch, var(--analog-meter-peak-marker) 78%, transparent)',
             isLcd: false,
           };
       }
@@ -358,7 +405,7 @@ export const AnalogMeter = React.forwardRef<HTMLDivElement, AnalogMeterProps>(
         {showScale ? (
           <div
             className={cn(
-              'pointer-events-none absolute text-[9px] font-mono text-[#555] opacity-90',
+              'pointer-events-none absolute text-[9px] font-mono text-[color:var(--analog-telemetry-label)] opacity-90',
               isVertical
                 ? scaleSide === 'leading'
                   ? '-left-8 top-0 bottom-0 w-6'
@@ -429,7 +476,9 @@ export const AnalogMeter = React.forwardRef<HTMLDivElement, AnalogMeterProps>(
               className="absolute inset-0"
               style={{
                 background: zoneBackground,
-                boxShadow: colors.isLcd ? 'none' : '0 0 4px rgba(255,255,255,0.15) inset',
+                boxShadow: colors.isLcd
+                  ? 'none'
+                  : '0 0 4px color-mix(in oklch, var(--analog-control-foreground) 18%, transparent) inset',
               }}
             />
 
@@ -449,7 +498,7 @@ export const AnalogMeter = React.forwardRef<HTMLDivElement, AnalogMeterProps>(
               style={{
                 ...getPeakMarkerStyle(isVertical, peakPercentage),
                 background: colors.peak,
-                boxShadow: `0 0 10px color-mix(in srgb, ${colors.peak} 75%, transparent)`,
+                boxShadow: `0 0 10px ${colors.peakGlow}`,
                 transition: `all ${effectiveBallistics.peakReleaseMs}ms ease-out`,
               }}
             />
@@ -461,8 +510,8 @@ export const AnalogMeter = React.forwardRef<HTMLDivElement, AnalogMeterProps>(
               className="absolute inset-0 pointer-events-none z-20 opacity-90"
               style={{
                 background: isVertical
-                  ? `repeating-linear-gradient(to bottom, transparent 0%, transparent calc(100% / ${segments} - 1.5px), #171717 calc(100% / ${segments} - 1.5px), #171717 calc(100% / ${segments}))`
-                  : `repeating-linear-gradient(to right, transparent 0%, transparent calc(100% / ${segments} - 1.5px), #171717 calc(100% / ${segments} - 1.5px), #171717 calc(100% / ${segments}))`,
+                  ? `repeating-linear-gradient(to bottom, transparent 0%, transparent calc(100% / ${segments} - 1.5px), var(--analog-meter-segment-divider) calc(100% / ${segments} - 1.5px), var(--analog-meter-segment-divider) calc(100% / ${segments}))`
+                  : `repeating-linear-gradient(to right, transparent 0%, transparent calc(100% / ${segments} - 1.5px), var(--analog-meter-segment-divider) calc(100% / ${segments} - 1.5px), var(--analog-meter-segment-divider) calc(100% / ${segments}))`,
               }}
             />
           )}
@@ -507,7 +556,7 @@ export const AnalogMeterGroup = React.forwardRef<HTMLDivElement, AnalogMeterGrou
           role={role ?? 'group'}
           data-orientation={orientation}
           className={cn(
-            'relative inline-flex min-w-0 max-w-full rounded-xl border border-transparent p-[var(--spacing-track-padding)] text-white',
+            'relative inline-flex min-w-0 max-w-full rounded-xl border border-transparent p-[var(--spacing-track-padding)] text-[color:var(--analog-panel-foreground)]',
             orientation === 'horizontal' ? 'flex-row items-stretch' : 'flex-col items-stretch',
             className,
           )}

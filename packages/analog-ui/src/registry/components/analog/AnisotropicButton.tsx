@@ -4,6 +4,7 @@ import { cn } from '../../../lib/utils';
 import { useMergedRefs } from '../../../lib/refs';
 import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
+import { useAnalogMaterialVariant } from '../../hooks/use-analog-material';
 
 interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children?: React.ReactNode;
@@ -21,7 +22,7 @@ export const AnisotropicButton = React.forwardRef<HTMLButtonElement, Props>(
       containerClassName,
       style,
       rotation = 0,
-      variant = 'chrome',
+      variant,
       lighting,
       onMouseMove,
       onMouseLeave,
@@ -32,6 +33,7 @@ export const AnisotropicButton = React.forwardRef<HTMLButtonElement, Props>(
     const internalRef = useRef<HTMLButtonElement>(null);
     const mergedRef = useMergedRefs(forwardedRef, internalRef);
     const lightingStyle = useAnalogLighting(['surface'], lighting);
+    const resolvedVariant = useAnalogMaterialVariant(variant);
 
     const rawX = useMotionValue(0);
     const rawY = useMotionValue(0);
@@ -83,7 +85,8 @@ export const AnisotropicButton = React.forwardRef<HTMLButtonElement, Props>(
           ref={mergedRef}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
-          className={cn('anisotropic-btn', `variant-${variant}`, className)}
+          data-analog-variant={resolvedVariant}
+          className={cn('anisotropic-btn', `variant-${resolvedVariant}`, className)}
           style={{
             ...lightingStyle,
             ...style,

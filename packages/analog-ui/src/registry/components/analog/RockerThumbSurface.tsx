@@ -1,15 +1,16 @@
 import * as React from 'react';
 import { cn } from '../../../lib/utils';
 import type { AnalogOrientation } from './orientation';
+import { useAnalogMaterialVariant, type AnalogMaterialVariant } from '../../hooks/use-analog-material';
 
-type RockerVariant = 'chrome' | 'black';
+type RockerVariant = AnalogMaterialVariant;
 type RockerOrientation = AnalogOrientation;
 type RockerRaisedSide = 'start' | 'end' | 'both';
 type RockerSingleSide = Exclude<RockerRaisedSide, 'both'>;
 
 interface RockerThumbSurfaceProps {
   className?: string;
-  variant: RockerVariant;
+  variant?: RockerVariant;
   orientation?: RockerOrientation;
   raisedSide?: RockerRaisedSide;
   children?: React.ReactNode;
@@ -51,16 +52,20 @@ const singleFaceBackground = (
   raisedSide: RockerSingleSide,
 ) => {
   const angle = axisGradientAngle(orientation);
+  const leadingTone =
+    variant === 'chrome'
+      ? 'color-mix(in oklch, var(--analog-surface-metal-mid) 68%, var(--analog-surface-metal-hi) 32%)'
+      : 'color-mix(in oklch, var(--analog-surface-onyx-mid) 74%, var(--analog-surface-onyx-hi) 26%)';
+  const centerTone =
+    variant === 'chrome'
+      ? 'color-mix(in oklch, var(--analog-surface-metal-hi) 88%, white 12%)'
+      : 'color-mix(in oklch, var(--analog-surface-onyx-hi) 60%, var(--analog-surface-metal-lo) 40%)';
+  const trailingTone =
+    variant === 'chrome' ? 'var(--analog-surface-metal-lo)' : 'var(--analog-surface-onyx-lo)';
+  const [startTone, endTone] =
+    raisedSide === 'start' ? [leadingTone, trailingTone] : [trailingTone, leadingTone];
 
-  if (variant === 'chrome') {
-    return raisedSide === 'start'
-      ? `linear-gradient(${angle}, #b5b5b5, #e5e5e5 50%, #8a8a8a)`
-      : `linear-gradient(${angle}, #8a8a8a, #e5e5e5 50%, #b5b5b5)`;
-  }
-
-  return raisedSide === 'start'
-    ? `linear-gradient(${angle}, #242424, #3a3a3a 50%, #151515)`
-    : `linear-gradient(${angle}, #151515, #3a3a3a 50%, #242424)`;
+  return `linear-gradient(${angle}, ${startTone}, ${centerTone} 50%, ${endTone})`;
 };
 
 const singleFaceShadow = (
@@ -162,13 +167,19 @@ const GripRidges = ({
           key={`${position}-ridge-${index}`}
           className={cn(isHorizontal ? 'h-full w-[2px]' : 'h-[2px] w-full', 'rounded-sm')}
           style={{
-            background: isHorizontal
-              ? isChrome
-                ? 'linear-gradient(to right, #a3a3a3, #f5f5f5 50%, #a3a3a3)'
-                : 'linear-gradient(to right, #262626, #5a5a5a 50%, #262626)'
-              : isChrome
-                ? 'linear-gradient(to bottom, #a3a3a3, #f5f5f5 50%, #a3a3a3)'
-                : 'linear-gradient(to bottom, #262626, #5a5a5a 50%, #262626)',
+            background: `linear-gradient(${isHorizontal ? 'to right' : 'to bottom'}, ${
+              isChrome
+                ? 'color-mix(in oklch, var(--analog-surface-metal-mid) 72%, var(--analog-surface-metal-lo) 28%)'
+                : 'color-mix(in oklch, var(--analog-surface-onyx-mid) 78%, var(--analog-surface-onyx-lo) 22%)'
+            }, ${
+              isChrome
+                ? 'color-mix(in oklch, var(--analog-surface-metal-hi) 92%, white 8%)'
+                : 'color-mix(in oklch, var(--analog-surface-onyx-hi) 54%, var(--analog-surface-metal-lo) 46%)'
+            } 50%, ${
+              isChrome
+                ? 'color-mix(in oklch, var(--analog-surface-metal-mid) 72%, var(--analog-surface-metal-lo) 28%)'
+                : 'color-mix(in oklch, var(--analog-surface-onyx-mid) 78%, var(--analog-surface-onyx-lo) 22%)'
+            })`,
             boxShadow: isHorizontal
               ? isChrome
                 ? `1px 0 1px rgba(255,255,255,calc(0.9 * var(--analog-light-power, 1))), -1px 0 1px rgba(0,0,0,calc(0.2 * var(--analog-light-power, 1)))`
@@ -275,13 +286,16 @@ function RockerSegment({
           {[...Array(extrusionLayers)].map((_, index) => (
             <div
               key={`extrusion-${raisedSide}-${index}`}
-              className={cn(
-                'absolute inset-0 rounded-sm',
-                isChrome
-                  ? 'bg-neutral-400 border border-neutral-500/30'
-                  : 'bg-[#121212] border border-[#222]/50',
-              )}
-              style={{ transform: `translateZ(-${index + 1}px)` }}
+              className="absolute inset-0 rounded-sm border"
+              style={{
+                transform: `translateZ(-${index + 1}px)`,
+                backgroundColor: isChrome
+                  ? 'var(--analog-surface-metal-mid)'
+                  : 'var(--analog-surface-onyx-mid)',
+                borderColor: isChrome
+                  ? 'color-mix(in oklch, var(--analog-surface-metal-lo) 34%, transparent)'
+                  : 'color-mix(in oklch, var(--analog-control-border) 78%, transparent)',
+              }}
             />
           ))}
 
@@ -323,20 +337,24 @@ export function RockerThumbSurface({
   children,
   extrusionLayers = 24,
 }: RockerThumbSurfaceProps) {
+  const resolvedVariant = useAnalogMaterialVariant(variant);
   const isDual = raisedSide === 'both';
 
   if (!isDual) {
     return (
-      <div className={cn('relative pointer-events-none', className)}>
+      <div
+        data-analog-variant={resolvedVariant}
+        className={cn('relative pointer-events-none', className)}
+      >
         <RockerSegment
           className="absolute inset-0"
           faceClassName="overflow-hidden rounded-sm"
-          variant={variant}
+          variant={resolvedVariant}
           orientation={orientation}
           raisedSide={raisedSide}
           extrusionLayers={extrusionLayers}
         >
-          <RockerOverlay variant={variant} orientation={orientation}>
+          <RockerOverlay variant={resolvedVariant} orientation={orientation}>
             {children}
           </RockerOverlay>
         </RockerSegment>
@@ -345,18 +363,21 @@ export function RockerThumbSurface({
   }
 
   return (
-    <div className={cn('relative pointer-events-none', className)}>
+    <div
+      data-analog-variant={resolvedVariant}
+      className={cn('relative pointer-events-none', className)}
+    >
       <RockerSegment
         className="absolute inset-0"
         faceClassName="overflow-hidden rounded-sm"
-        variant={variant}
+        variant={resolvedVariant}
         orientation={orientation}
         raisedSide="end"
         extrusionLayers={extrusionLayers}
         style={getDualClipStyle(orientation, 'start')}
       >
         <RockerOverlay
-          variant={variant}
+          variant={resolvedVariant}
           orientation={orientation}
           showCenterSeam={false}
           gripPositions={['start']}
@@ -365,14 +386,14 @@ export function RockerThumbSurface({
       <RockerSegment
         className="absolute inset-0"
         faceClassName="overflow-hidden rounded-sm"
-        variant={variant}
+        variant={resolvedVariant}
         orientation={orientation}
         raisedSide="start"
         extrusionLayers={extrusionLayers}
         style={getDualClipStyle(orientation, 'end')}
       >
         <RockerOverlay
-          variant={variant}
+          variant={resolvedVariant}
           orientation={orientation}
           showCenterSeam={false}
           gripPositions={['end']}

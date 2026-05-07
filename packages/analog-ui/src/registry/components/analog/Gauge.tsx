@@ -45,12 +45,21 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
     const getVariantColors = (v: GaugeVariant) => {
       switch (v) {
         case 'lcd-amber':
-          return { glow: '#d19324', bg: '#e6a42e' };
+          return {
+            glow: 'var(--analog-lcd-amber-glow)',
+            bg: 'var(--analog-lcd-amber-fill)',
+          };
         case 'lcd-blue':
-          return { glow: '#3b86e0', bg: '#4d98f0' };
+          return {
+            glow: 'var(--analog-lcd-blue-glow)',
+            bg: 'var(--analog-lcd-blue-fill)',
+          };
         case 'lcd-green':
         default:
-          return { glow: '#5ca34d', bg: '#67b557' };
+          return {
+            glow: 'var(--analog-lcd-green-glow)',
+            bg: 'var(--analog-lcd-green-fill)',
+          };
       }
     };
 
@@ -72,9 +81,7 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
           const rotationAngle = startAngle + ratio * resolvedSweepAngle;
           const resolvedCenterValue = centerValue ?? (min + max) / 2;
           const centerRatio =
-            range === 0
-              ? 0
-              : Math.min(1, Math.max(0, (resolvedCenterValue - min) / range));
+            range === 0 ? 0 : Math.min(1, Math.max(0, (resolvedCenterValue - min) / range));
           const fillStartRatio = fillMode === 'center' ? Math.min(ratio, centerRatio) : 0;
           const fillEndRatio = fillMode === 'center' ? Math.max(ratio, centerRatio) : ratio;
           const fillStart = fillStartRatio * resolvedSweepAngle;
@@ -162,7 +169,7 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
                     cx="50"
                     cy="50"
                     r="46"
-                    stroke="#171717"
+                    stroke="var(--analog-surface-cavity-strong)"
                     strokeWidth="6"
                     fill="none"
                     pathLength="360"
@@ -222,13 +229,14 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
                           y1={lineStartY}
                           x2={lineEndX}
                           y2={lineEndY}
-                          stroke="rgba(130,130,130,0.85)"
+                          stroke="var(--analog-telemetry-label)"
                           strokeWidth="0.85"
+                          style={{ opacity: 0.85 }}
                         />
                         <text
                           x={labelX}
                           y={labelY}
-                          fill="#666"
+                          fill="var(--analog-legend)"
                           fontSize="4"
                           fontFamily="var(--font-mono, ui-monospace, monospace)"
                           textAnchor="middle"
@@ -245,7 +253,6 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
               {/* Central Dial (Anisotropic Indicator) */}
               <div className="absolute inset-6 pointer-events-none">
                 <AnisotropicButton
-                  variant="chrome"
                   rotation={rotationAngle}
                   containerClassName="w-full h-full pointer-events-none"
                   className="w-full h-full pointer-events-none"
@@ -259,22 +266,29 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
                   >
                     {/* Dial indicator line */}
                     <div
-                      className="absolute left-1/2 -translate-x-1/2 rounded-full border border-neutral-600/50"
+                      className="absolute left-1/2 -translate-x-1/2 rounded-full border"
                       style={{
                         top: '12%',
                         width: '3%',
                         height: '24%',
-                        background: `linear-gradient(calc(var(--analog-light-angle-pointer, 180deg) - ${rotationAngle}deg - 45deg), #a3a3a3 0%, #737373 40%, #404040 100%)`,
+                        borderColor:
+                          'color-mix(in oklch, var(--analog-control-border-strong) 65%, transparent)',
+                        background:
+                          `linear-gradient(calc(var(--analog-light-angle-pointer, 180deg) - ${rotationAngle}deg - 45deg), ` +
+                          `color-mix(in oklch, var(--analog-surface-metal-hi) 78%, white 22%) 0%, ` +
+                          `var(--analog-surface-metal-mid) 40%, ` +
+                          `var(--analog-surface-metal-lo) 100%)`,
                         boxShadow: `inset 0 1px 2px rgba(255,255,255,calc(0.6 * var(--analog-light-power, 1))), inset 0 -1px 2px rgba(0,0,0,calc(0.5 * var(--analog-light-power, 1))), 0 2px 4px rgba(0,0,0,calc(0.6 * var(--analog-light-power, 1)))`,
                       }}
                     >
                       <div
-                        className="absolute rounded-full blur-[0.5px] bg-white"
+                        className="absolute rounded-full blur-[0.5px]"
                         style={{
                           top: '10%',
                           left: '50%',
                           width: '30%',
                           height: '30%',
+                          backgroundColor: 'var(--analog-surface-metal-hi)',
                           transform: `translateX(-50%)`,
                           opacity: 0.6,
                         }}

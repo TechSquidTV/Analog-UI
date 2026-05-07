@@ -1,5 +1,6 @@
 export * from './lib/utils';
 export * from './registry/hooks/use-analog-lighting';
+export * from './registry/hooks/use-analog-material';
 export * from './registry/hooks/use-mouse-lumination';
 export * from './registry/hooks/use-wheel-scroll';
 export * from './registry/components/analog/AnisotropicButton';

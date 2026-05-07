@@ -11,7 +11,7 @@ Analog UI is a tactile component library and registry for building interfaces th
 
 ## How The Site Is Organized
 
-There are three primary surfaces:
+There are five primary surfaces:
 
 - **Docs** cover the install path, token model, registry flow, and per-component documentation.
 - **Components** live under [`/docs/components`](/docs/components) as a hub plus one page per control.

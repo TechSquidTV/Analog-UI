@@ -3,6 +3,7 @@ import { Switch as BaseSwitch } from '@base-ui/react';
 import { cn } from '../../../lib/utils';
 import { useMergedRefs } from '../../../lib/refs';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
+import { useAnalogMaterialVariant } from '../../hooks/use-analog-material';
 import type { AnalogOrientation } from './orientation';
 
 export interface AnalogSwitchProps extends React.ComponentPropsWithoutRef<typeof BaseSwitch.Root> {
@@ -12,11 +13,12 @@ export interface AnalogSwitchProps extends React.ComponentPropsWithoutRef<typeof
 }
 
 export const AnalogSwitch = React.forwardRef<HTMLElement, AnalogSwitchProps>(
-  ({ className, variant = 'chrome', orientation = 'horizontal', lighting, ...props }, ref) => {
+  ({ className, variant, orientation = 'horizontal', lighting, ...props }, ref) => {
     const internalRef = React.useRef<HTMLElement>(null);
     const mergedRef = useMergedRefs(ref, internalRef);
 
-    const isChrome = variant === 'chrome';
+    const resolvedVariant = useAnalogMaterialVariant(variant);
+    const isChrome = resolvedVariant === 'chrome';
     const isVertical = orientation === 'vertical';
     const switchLighting: AnalogLightingConfig<'track' | 'thumb'> = {
       track: { travel: 1 },
@@ -34,6 +36,7 @@ export const AnalogSwitch = React.forwardRef<HTMLElement, AnalogSwitchProps>(
         )}
         style={lightingStyle}
         {...props}
+        data-analog-variant={resolvedVariant}
         data-orientation={orientation}
       >
         {/* Outer Bevel / Base Plate (Track) */}
@@ -46,10 +49,10 @@ export const AnalogSwitch = React.forwardRef<HTMLElement, AnalogSwitchProps>(
             )}
           >
             {/* Labels */}
-            <span className="font-mono text-[9px] leading-none font-bold tracking-[0.18em] text-[#555] opacity-0 group-data-[checked]:opacity-100 transition-opacity duration-300">
+            <span className="font-mono text-[9px] leading-none font-bold tracking-[0.18em] text-[color:var(--analog-telemetry-label)] opacity-0 group-data-[checked]:opacity-100 transition-opacity duration-300">
               ON
             </span>
-            <span className="font-mono text-[9px] leading-none font-bold tracking-[0.18em] text-[#555] opacity-50 group-data-[checked]:opacity-0 transition-opacity duration-300">
+            <span className="font-mono text-[9px] leading-none font-bold tracking-[0.18em] text-[color:var(--analog-telemetry-label)] opacity-50 group-data-[checked]:opacity-0 transition-opacity duration-300">
               OFF
             </span>
           </div>
@@ -67,15 +70,16 @@ export const AnalogSwitch = React.forwardRef<HTMLElement, AnalogSwitchProps>(
                 return (
                   <div
                     key={`extrusion-${i}`}
-                    className={cn(
-                      'absolute inset-0 rounded-full',
-                      isChrome
-                        ? 'bg-neutral-400 border border-neutral-500/20'
-                        : 'bg-[#121212] border border-[#222]/50',
-                    )}
+                    className="absolute inset-0 rounded-full border"
                     style={{
                       transform: `translateZ(-${zDepth}px) scale(${scale})`,
                       opacity,
+                      backgroundColor: isChrome
+                        ? 'var(--analog-surface-metal-mid)'
+                        : 'var(--analog-surface-onyx-mid)',
+                      borderColor: isChrome
+                        ? 'color-mix(in oklch, var(--analog-surface-metal-lo) 28%, transparent)'
+                        : 'color-mix(in oklch, var(--analog-control-border) 78%, transparent)',
                     }}
                   />
                 );
@@ -85,14 +89,14 @@ export const AnalogSwitch = React.forwardRef<HTMLElement, AnalogSwitchProps>(
               <div
                 className={cn(
                   'analog-switch-face absolute inset-0 rounded-full overflow-hidden',
-                  `variant-${variant}`,
+                  `variant-${resolvedVariant}`,
                 )}
               >
                 {/* Dial Conic Gradient for Anisotropic Specular Highlight */}
                 <div
                   className={cn(
                     'analog-switch-lighting absolute inset-0 z-[1]',
-                    `variant-${variant}`,
+                    `variant-${resolvedVariant}`,
                   )}
                 />
 

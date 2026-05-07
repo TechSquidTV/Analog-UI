@@ -18,7 +18,95 @@
           "analog-foil-opacity": "0.3",
           "analog-bloom-strength": "0.7",
           "analog-track-padding": "calc(var(--spacing) * 1)",
-          "analog-light-source": "180deg"
+          "analog-light-source": "180deg",
+          "spacing-track-padding": "var(--analog-track-padding)",
+          "analog-annotation": "color-mix(in oklch, var(--foreground) 62%, var(--muted-foreground))",
+          "analog-legend": "color-mix(in oklch, var(--foreground) 48%, var(--muted-foreground))",
+          "analog-telemetry-label": "color-mix(in oklch, var(--foreground) 34%, var(--muted-foreground))",
+          "analog-telemetry-value": "color-mix(in oklch, var(--accent) 62%, var(--foreground))",
+          "analog-control-surface": "color-mix(in oklch, var(--card) 84%, var(--foreground) 16%)",
+          "analog-control-surface-strong": "color-mix(in oklch, var(--card) 72%, var(--foreground) 28%)",
+          "analog-control-border": "color-mix(in oklch, var(--border) 70%, var(--foreground) 30%)",
+          "analog-control-border-strong": "color-mix(in oklch, var(--border) 52%, var(--foreground) 48%)",
+          "analog-control-foreground": "var(--foreground)",
+          "analog-control-foreground-muted": "color-mix(in oklch, var(--muted-foreground) 88%, var(--foreground) 12%)",
+          "analog-control-foreground-subtle": "color-mix(in oklch, var(--muted-foreground) 72%, var(--foreground) 28%)",
+          "analog-control-selection": "color-mix(in oklch, var(--accent) 78%, var(--foreground) 22%)",
+          "analog-control-glass": "color-mix(in oklch, var(--foreground) 5%, transparent)",
+          "analog-control-glass-border": "color-mix(in oklch, var(--border) 68%, transparent)",
+          "analog-panel-border": "color-mix(in oklch, var(--border) 62%, var(--analog-surface-raised) 38%)",
+          "analog-panel-foreground": "var(--card-foreground, var(--foreground))",
+          "analog-panel-muted": "color-mix(in oklch, var(--muted-foreground) 82%, var(--foreground) 18%)",
+          "analog-screw-hole": "color-mix(in oklch, var(--analog-surface-cavity-strong) 72%, black 28%)",
+          "analog-led-red-base": "oklch(0.583 0.239 28.477)",
+          "analog-led-red-core": "oklch(0.84 0.09 24)",
+          "analog-led-red-glow": "color-mix(in oklch, var(--analog-led-red-base) 82%, white)",
+          "analog-led-red-surface": "color-mix(in oklch, var(--analog-led-red-base) 34%, black 66%)",
+          "analog-led-red-edge": "color-mix(in oklch, var(--analog-led-red-base) 62%, black 38%)",
+          "analog-led-amber-base": "oklch(0.74 0.14 72)",
+          "analog-led-amber-core": "oklch(0.95 0.05 96)",
+          "analog-led-amber-glow": "color-mix(in oklch, var(--analog-led-amber-base) 78%, white)",
+          "analog-led-amber-surface": "color-mix(in oklch, var(--analog-led-amber-base) 34%, black 66%)",
+          "analog-led-amber-edge": "color-mix(in oklch, var(--analog-led-amber-base) 62%, black 38%)",
+          "analog-led-green-base": "oklch(0.69 0.16 142)",
+          "analog-led-green-core": "oklch(0.91 0.05 150)",
+          "analog-led-green-glow": "color-mix(in oklch, var(--analog-led-green-base) 76%, white)",
+          "analog-led-green-surface": "color-mix(in oklch, var(--analog-led-green-base) 34%, black 66%)",
+          "analog-led-green-edge": "color-mix(in oklch, var(--analog-led-green-base) 62%, black 38%)",
+          "analog-led-blue-base": "oklch(0.63 0.15 250)",
+          "analog-led-blue-core": "oklch(0.9 0.04 245)",
+          "analog-led-blue-glow": "color-mix(in oklch, var(--analog-led-blue-base) 78%, white)",
+          "analog-led-blue-surface": "color-mix(in oklch, var(--analog-led-blue-base) 34%, black 66%)",
+          "analog-led-blue-edge": "color-mix(in oklch, var(--analog-led-blue-base) 62%, black 38%)",
+          "analog-led-white-base": "color-mix(in oklch, var(--foreground) 92%, var(--secondary))",
+          "analog-led-white-core": "white",
+          "analog-led-white-glow": "color-mix(in oklch, white 84%, var(--foreground))",
+          "analog-led-white-surface": "color-mix(in oklch, var(--analog-led-white-base) 34%, black 66%)",
+          "analog-led-white-edge": "color-mix(in oklch, var(--analog-led-white-base) 62%, black 38%)",
+          "analog-lcd-green-glow": "var(--analog-led-green-base)",
+          "analog-lcd-green-fill": "color-mix(in oklch, var(--analog-led-green-base) 84%, white 16%)",
+          "analog-lcd-green-ink": "color-mix(in oklch, var(--analog-led-green-base) 18%, black 82%)",
+          "analog-lcd-green-legend": "color-mix(in oklch, var(--analog-led-green-base) 30%, black 70%)",
+          "analog-lcd-amber-glow": "var(--analog-led-amber-base)",
+          "analog-lcd-amber-fill": "color-mix(in oklch, var(--analog-led-amber-base) 84%, white 16%)",
+          "analog-lcd-amber-ink": "color-mix(in oklch, var(--analog-led-amber-base) 18%, black 82%)",
+          "analog-lcd-amber-legend": "color-mix(in oklch, var(--analog-led-amber-base) 30%, black 70%)",
+          "analog-lcd-blue-glow": "var(--analog-led-blue-base)",
+          "analog-lcd-blue-fill": "color-mix(in oklch, var(--analog-led-blue-base) 84%, white 16%)",
+          "analog-lcd-blue-ink": "color-mix(in oklch, var(--analog-led-blue-base) 18%, black 82%)",
+          "analog-lcd-blue-legend": "color-mix(in oklch, var(--analog-led-blue-base) 30%, black 70%)",
+          "analog-meter-zone-green": "var(--analog-led-green-base)",
+          "analog-meter-zone-green-glow": "var(--analog-led-green-glow)",
+          "analog-meter-zone-amber": "var(--analog-led-amber-base)",
+          "analog-meter-zone-amber-glow": "var(--analog-led-amber-glow)",
+          "analog-meter-zone-red": "var(--analog-led-red-base)",
+          "analog-meter-zone-red-glow": "var(--analog-led-red-glow)",
+          "analog-meter-peak-marker": "color-mix(in oklch, var(--analog-led-amber-core) 76%, white 24%)",
+          "analog-meter-segment-divider": "color-mix(in oklch, var(--analog-surface-cavity-strong) 74%, black 26%)",
+          "analog-wheel-control-height": "calc(var(--spacing) * 48)",
+          "analog-wheel-control-width": "calc(var(--analog-wheel-cylinder-width) + (var(--analog-track-padding) * 2))",
+          "analog-wheel-cylinder-width": "calc(var(--spacing) * 19)",
+          "analog-wheel-cylinder-inset-inline": "calc(var(--analog-track-padding) * 0.5)",
+          "analog-wheel-cylinder-radius": "calc(var(--spacing) * 25)",
+          "analog-wheel-step-height": "calc(var(--spacing) * 10.5)",
+          "analog-wheel-ridge-height": "calc(var(--spacing) * 3)",
+          "analog-wheel-ridge-inset-inline": "calc(var(--spacing) * 2)",
+          "analog-wheel-ridge-radius": "calc((var(--radius) * 0.6) * 0.25)",
+          "analog-wheel-slot-radius": "calc(var(--radius) * 0.6)",
+          "analog-wheel-readout-width": "calc(var(--analog-wheel-cylinder-width) - (var(--analog-wheel-cylinder-inset-inline) * 2))",
+          "analog-wheel-readout-height": "calc(var(--spacing) * 10)",
+          "analog-wheel-label-min-width": "var(--analog-wheel-readout-width)",
+          "analog-wheel-adjacent-label-width": "var(--analog-wheel-readout-width)",
+          "analog-wheel-adjacent-label-min-height": "calc(var(--spacing) * 5)",
+          "analog-wheel-adjacent-label-gap": "calc(var(--spacing) * 6)",
+          "analog-wheel-label-side-inset": "calc(var(--spacing) * 2)",
+          "analog-wheel-indicator-width": "calc(var(--spacing) * 3)",
+          "analog-wheel-indicator-height": "calc(var(--spacing) * 1)",
+          "analog-wheel-label-primary-size": "calc(var(--spacing) * 2.5)",
+          "analog-wheel-label-primary-line-height": "calc(var(--spacing) * 2.75)",
+          "analog-wheel-label-secondary-size": "calc(var(--spacing) * 2)",
+          "analog-wheel-label-secondary-line-height": "calc(var(--spacing) * 2.5)",
+          "analog-wheel-label-letter-spacing": "0.05em"
         },
         "light": {
           "analog-surface-cavity": "color-mix(in oklch, var(--background) 84%, black)",
@@ -30,11 +118,7 @@
           "analog-surface-metal-lo": "color-mix(in oklch, var(--muted-foreground) 42%, black)",
           "analog-surface-onyx-hi": "color-mix(in oklch, var(--card) 88%, white 8%)",
           "analog-surface-onyx-mid": "color-mix(in oklch, var(--card) 76%, black 12%)",
-          "analog-surface-onyx-lo": "color-mix(in oklch, var(--background) 90%, black 10%)",
-          "analog-led-amber-base": "oklch(0.74 0.14 72)",
-          "analog-led-amber-glow": "color-mix(in oklch, var(--analog-led-amber-base) 78%, white)",
-          "analog-led-green-base": "oklch(0.69 0.16 142)",
-          "analog-led-green-glow": "color-mix(in oklch, var(--analog-led-green-base) 76%, white)"
+          "analog-surface-onyx-lo": "color-mix(in oklch, var(--background) 90%, black 10%)"
         },
         "dark": {
           "analog-surface-cavity": "color-mix(in oklch, var(--background) 90%, black)",
@@ -105,6 +189,19 @@
       ]
     },
     {
+      "name": "use-analog-material",
+      "title": "Analog Material Scope",
+      "type": "registry:hook",
+      "description": "Provides inherited chrome and black material defaults for Analog UI control subtrees.",
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "src/registry/hooks/use-analog-material.tsx",
+          "type": "registry:hook"
+        }
+      ]
+    },
+    {
       "name": "use-wheel-scroll",
       "title": "Wheel Scroll Hook",
       "type": "registry:hook",
@@ -147,7 +244,7 @@
       "title": "Rocker Thumb Surface",
       "type": "registry:component",
       "description": "A reusable tactile thumb shell for sliders and switches with machined analog lighting treatment.",
-      "registryDependencies": ["analog-foundation", "utils"],
+      "registryDependencies": ["analog-foundation", "use-analog-material", "utils"],
       "files": [
         {
           "path": "src/registry/components/analog/RockerThumbSurface.tsx",
@@ -161,7 +258,13 @@
       "type": "registry:ui",
       "description": "A metallic button surface with anisotropic foil reflections and pointer-responsive glare.",
       "dependencies": ["@base-ui/react"],
-      "registryDependencies": ["analog-foundation", "refs", "use-analog-lighting", "utils"],
+      "registryDependencies": [
+        "analog-foundation",
+        "refs",
+        "use-analog-lighting",
+        "use-analog-material",
+        "utils"
+      ],
       "files": [
         {
           "path": "src/registry/components/analog/AnisotropicButton.tsx",
@@ -178,6 +281,7 @@
         "analog-foundation",
         "anisotropic-button",
         "use-analog-lighting",
+        "use-analog-material",
         "use-wheel-scroll",
         "utils"
       ],
@@ -244,6 +348,7 @@
         "analog-foundation",
         "rocker-thumb-surface",
         "use-analog-lighting",
+        "use-analog-material",
         "utils"
       ],
       "files": [
@@ -259,7 +364,13 @@
       "type": "registry:ui",
       "description": "A track switch with a 3D extruded metallic cylinder that rolls through a recessed cavity in horizontal or vertical orientations.",
       "dependencies": ["@base-ui/react"],
-      "registryDependencies": ["analog-foundation", "refs", "use-analog-lighting", "utils"],
+      "registryDependencies": [
+        "analog-foundation",
+        "refs",
+        "use-analog-lighting",
+        "use-analog-material",
+        "utils"
+      ],
       "files": [
         {
           "path": "src/registry/components/analog/Switch.tsx",
@@ -272,7 +383,12 @@
       "title": "Faceted Jewel Lamp",
       "type": "registry:ui",
       "description": "A hyper-skeuomorphic status indicator with faceted glass textures, bloom, and a machined bezel.",
-      "registryDependencies": ["analog-foundation", "use-analog-lighting", "utils"],
+      "registryDependencies": [
+        "analog-foundation",
+        "use-analog-lighting",
+        "use-analog-material",
+        "utils"
+      ],
       "files": [
         {
           "path": "src/registry/components/analog/Indicator.tsx",
@@ -292,6 +408,7 @@
         "refs",
         "rocker-thumb-surface",
         "use-analog-lighting",
+        "use-analog-material",
         "utils"
       ],
       "files": [
@@ -347,7 +464,7 @@
       "type": "registry:component",
       "description": "A reusable 3D square plunger surface with motion-driven physical displacement and machined lighting.",
       "dependencies": ["motion"],
-      "registryDependencies": ["analog-foundation", "utils"],
+      "registryDependencies": ["analog-foundation", "use-analog-material", "utils"],
       "files": [
         {
           "path": "src/registry/components/analog/SquarePlunger.tsx",
@@ -361,7 +478,13 @@
       "type": "registry:ui",
       "description": "A skeuomorphic square button with 3D extrusion, machined finish, and dynamic analog lighting.",
       "dependencies": ["@base-ui/react", "motion"],
-      "registryDependencies": ["analog-foundation", "refs", "use-analog-lighting", "utils", "square-plunger"],
+      "registryDependencies": [
+        "analog-foundation",
+        "refs",
+        "use-analog-lighting",
+        "utils",
+        "square-plunger"
+      ],
       "files": [
         {
           "path": "src/registry/components/analog/SquareButton.tsx",
@@ -375,7 +498,14 @@
       "type": "registry:ui",
       "description": "A skeuomorphic square toggle with 3D extrusion, optional LED indicator, and state-aware analog lighting.",
       "dependencies": ["@base-ui/react", "motion"],
-      "registryDependencies": ["analog-foundation", "indicator", "refs", "use-analog-lighting", "utils", "square-plunger"],
+      "registryDependencies": [
+        "analog-foundation",
+        "indicator",
+        "refs",
+        "use-analog-lighting",
+        "utils",
+        "square-plunger"
+      ],
       "files": [
         {
           "path": "src/registry/components/analog/SquareToggle.tsx",
@@ -392,6 +522,7 @@
         "analog-foundation",
         "anisotropic-button",
         "use-analog-lighting",
+        "use-analog-material",
         "utils"
       ],
       "files": [

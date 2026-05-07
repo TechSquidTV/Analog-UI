@@ -27,7 +27,7 @@ export const SquareButton = React.forwardRef<HTMLButtonElement, SquareButtonProp
   (
     {
       className,
-      variant = 'chrome',
+      variant,
       lighting,
       extrusionLayers = 32,
       children,

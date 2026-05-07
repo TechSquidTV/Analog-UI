@@ -4,6 +4,7 @@ import { cn } from '../../../lib/utils';
 import { useMergedRefs } from '../../../lib/refs';
 import { useWheelScroll } from '../../hooks/use-wheel-scroll';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
+import { useAnalogMaterialVariant } from '../../hooks/use-analog-material';
 
 export interface DialProps {
   /**
@@ -51,7 +52,7 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
       onChange,
       onValueChange,
       mode,
-      variant = 'chrome',
+      variant,
       className,
       disabled,
       lighting,
@@ -68,8 +69,7 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
     ref,
   ) => {
     const hasExplicitSizeOverride =
-      typeof className === 'string' &&
-      /\b(?:size|min-w|max-w|w|basis)-[^\s]+/.test(className);
+      typeof className === 'string' && /\b(?:size|min-w|max-w|w|basis)-[^\s]+/.test(className);
 
     const resolvedMode = mode ?? (min !== undefined || max !== undefined ? 'knob' : 'encoder');
     const isKnob = resolvedMode === 'knob';
@@ -81,9 +81,7 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
     const resolvedFineStep = fineStep ?? (isKnob ? resolvedStep / 10 : resolvedStep);
     const resolvedCoarseStep = coarseStep ?? (isKnob ? resolvedStep * 10 : resolvedStep * 3);
 
-    const [internalValue, setInternalValue] = useState(
-      defaultValue ?? (isKnob ? resolvedMin : 0),
-    );
+    const [internalValue, setInternalValue] = useState(defaultValue ?? (isKnob ? resolvedMin : 0));
     const currentValue = externalValue !== undefined ? externalValue : internalValue;
 
     const [isDragging, setIsDragging] = useState(false);
@@ -122,14 +120,7 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
 
         return clamp(roundDisplayValue(normalizedValue), resolvedMin, resolvedMax);
       },
-      [
-        detentThreshold,
-        detentValue,
-        resolvedMax,
-        resolvedMin,
-        resolvedRange,
-        resolvedStep,
-      ],
+      [detentThreshold, detentValue, resolvedMax, resolvedMin, resolvedRange, resolvedStep],
     );
 
     const rotationToValue = React.useCallback(
@@ -312,12 +303,23 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
       }
     };
 
-    const isBlack = variant === 'black';
+    const resolvedVariant = useAnalogMaterialVariant(variant);
+    const isBlack = resolvedVariant === 'black';
     const lightingStyle = useAnalogLighting(['surface', 'pointer'], lighting);
+    const pointerBorderColor = isBlack
+      ? 'var(--analog-control-border-strong)'
+      : 'color-mix(in oklch, var(--analog-surface-metal-lo) 52%, transparent)';
+    const pointerBackground = isBlack
+      ? `linear-gradient(calc(var(--analog-light-angle-pointer, 180deg) - ${pointerRotation}deg - 45deg), color-mix(in oklch, var(--analog-surface-onyx-hi) 38%, var(--analog-surface-metal-lo) 62%) 0%, var(--analog-surface-onyx-mid) 40%, var(--analog-surface-onyx-lo) 100%)`
+      : `linear-gradient(calc(var(--analog-light-angle-pointer, 180deg) - ${pointerRotation}deg - 45deg), color-mix(in oklch, var(--analog-surface-metal-hi) 78%, white 22%) 0%, var(--analog-surface-metal-mid) 40%, var(--analog-surface-metal-lo) 100%)`;
+    const pointerHighlight = isBlack
+      ? 'color-mix(in oklch, var(--analog-surface-metal-mid) 72%, var(--analog-surface-metal-hi) 28%)'
+      : 'color-mix(in oklch, var(--analog-surface-metal-hi) 88%, white 12%)';
 
     return (
       <div
         ref={mergedRef}
+        data-analog-variant={resolvedVariant}
         className={cn(
           'mx-auto aspect-square max-w-full shrink-0 rounded-full touch-none',
           !hasExplicitSizeOverride && 'w-64',
@@ -349,7 +351,7 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
       >
         <AnisotropicButton
           disabled={disabled}
-          variant={variant}
+          variant={resolvedVariant}
           rotation={pointerRotation}
           containerClassName="w-full h-full"
           className="w-full h-full"
@@ -362,27 +364,20 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
             style={{ transform: `rotate(${pointerRotation}deg)` }}
           >
             <div
-              className={cn(
-                'absolute left-1/2 -translate-x-1/2 rounded-full border',
-                isBlack ? 'border-[#0a0a0a]' : 'border-neutral-600/50',
-              )}
+              className="absolute left-1/2 -translate-x-1/2 rounded-full border"
               style={{
                 top: '12%',
                 width: '3%',
                 height: '24%',
-                background: isBlack
-                  ? `linear-gradient(calc(var(--analog-light-angle-pointer, 180deg) - ${pointerRotation}deg - 45deg), #444 0%, #222 40%, #000 100%)`
-                  : `linear-gradient(calc(var(--analog-light-angle-pointer, 180deg) - ${pointerRotation}deg - 45deg), #a3a3a3 0%, #737373 40%, #404040 100%)`,
+                borderColor: pointerBorderColor,
+                background: pointerBackground,
                 boxShadow: isBlack
                   ? `inset 0 1px 1px rgba(255,255,255,calc(0.2 * var(--analog-light-power, 1))), inset 0 -1px 2px rgba(0,0,0,calc(0.8 * var(--analog-light-power, 1))), 0 2px 4px rgba(0,0,0,calc(0.9 * var(--analog-light-power, 1)))`
                   : `inset 0 1px 2px rgba(255,255,255,calc(0.6 * var(--analog-light-power, 1))), inset 0 -1px 2px rgba(0,0,0,calc(0.5 * var(--analog-light-power, 1))), 0 2px 4px rgba(0,0,0,calc(0.6 * var(--analog-light-power, 1)))`,
               }}
             >
               <div
-                className={cn(
-                  'absolute rounded-full blur-[0.5px]',
-                  isBlack ? 'bg-neutral-400' : 'bg-white',
-                )}
+                className="absolute rounded-full blur-[0.5px]"
                 style={{
                   top: '10%',
                   left: '50%',
@@ -390,6 +385,7 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
                   height: '30%',
                   transform: 'translateX(-50%)',
                   opacity: 0.6,
+                  backgroundColor: pointerHighlight,
                 }}
               />
             </div>

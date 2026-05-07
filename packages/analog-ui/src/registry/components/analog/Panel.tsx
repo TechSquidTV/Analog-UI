@@ -2,11 +2,11 @@ import * as React from 'react';
 import { cn } from '../../../lib/utils';
 import { AnisotropicButton } from './AnisotropicButton';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
+import { useAnalogMaterialVariant } from '../../hooks/use-analog-material';
 
 const variantStyles = {
-  default:
-    'bg-[radial-gradient(circle_at_center,#111_0%,var(--color-background)_70%)] border-[var(--color-surface-1)] shadow-sm',
-  rack: 'border-[#2a2a2a] shadow-[inset_0_1px_1px_rgba(255,255,255,0.05),0_4px_12px_rgba(0,0,0,0.5)] bg-[#121212]',
+  default: 'border-[color:var(--analog-panel-border)] shadow-sm',
+  rack: 'border-[color:var(--analog-panel-border)]',
 };
 
 export interface PanelProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -20,7 +20,7 @@ export interface PanelProps extends React.HTMLAttributes<HTMLDivElement> {
 const Screw = ({
   className,
   rotation,
-  variant = 'chrome',
+  variant,
   hole = 'none',
 }: {
   className?: string;
@@ -28,8 +28,15 @@ const Screw = ({
   variant?: 'chrome' | 'black';
   hole?: 'none' | 'slot' | 'cross' | 'star';
 }) => {
-  const holeColor = variant === 'black' ? '#090909' : '#1a1a1a';
-  const shadowColor = variant === 'black' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.4)';
+  const resolvedVariant = useAnalogMaterialVariant(variant);
+  const holeColor =
+    resolvedVariant === 'black'
+      ? 'color-mix(in oklch, var(--analog-surface-onyx-lo) 82%, black)'
+      : 'var(--analog-screw-hole)';
+  const shadowColor =
+    resolvedVariant === 'black'
+      ? 'color-mix(in oklch, var(--analog-control-foreground) 10%, transparent)'
+      : 'color-mix(in oklch, var(--analog-control-foreground) 40%, transparent)';
 
   const filterStyle = {
     filter: `drop-shadow(calc(sin(var(--analog-light-angle-screw, 180deg)) * 1px) calc(cos(var(--analog-light-angle-screw, 180deg)) * -1px) 0px ${shadowColor})`,
@@ -47,10 +54,15 @@ const Screw = ({
       }
     >
       <AnisotropicButton
-        variant={variant}
+        variant={resolvedVariant}
         rotation={rotation}
         containerClassName="w-full h-full"
-        className="!p-0 w-full h-full min-h-[0px] min-w-[0px] flex items-center justify-center shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),0_1px_6px_rgba(0,0,0,0.8)] no-chamfer"
+        className="!p-0 w-full h-full min-h-[0px] min-w-[0px] flex items-center justify-center no-chamfer"
+        style={{
+          boxShadow:
+            'inset 0 1px 1px color-mix(in oklch, var(--analog-control-foreground) 40%, transparent), ' +
+            '0 1px 6px color-mix(in oklch, black 80%, transparent)',
+        }}
       >
         {hole === 'slot' && (
           <div
@@ -107,7 +119,7 @@ const Panel = React.forwardRef<HTMLDivElement, PanelProps>(
       className,
       variant = 'default',
       screws = true,
-      screwVariant = 'chrome',
+      screwVariant,
       screwHole = 'none',
       lighting,
       style,
@@ -122,7 +134,7 @@ const Panel = React.forwardRef<HTMLDivElement, PanelProps>(
       <div
         ref={ref}
         className={cn(
-          'rounded-xl border relative overflow-hidden text-white',
+          'relative overflow-hidden rounded-xl border text-[var(--analog-panel-foreground)]',
           variantStyles[variant],
           className,
         )}
@@ -131,10 +143,22 @@ const Panel = React.forwardRef<HTMLDivElement, PanelProps>(
           ...style,
           ...(variant === 'rack'
             ? {
-                background: `linear-gradient(calc(var(--analog-light-angle-panel, 180deg) - 90deg), rgba(255,255,255,calc(0.03 * var(--analog-light-power, 1))), rgba(255,255,255,0) 45%, rgba(0,0,0,calc(0.22 * var(--analog-light-power, 1)))), #121212`,
-                boxShadow: `inset 0 1px 1px rgba(255, 255, 255, calc(0.07 * var(--analog-light-power, 1))), 0 4px 12px rgba(0, 0, 0, 0.5)`,
+                background:
+                  `linear-gradient(calc(var(--analog-light-angle-panel, 180deg) - 90deg), ` +
+                  `rgba(255,255,255,calc(0.03 * var(--analog-light-power, 1))), ` +
+                  `rgba(255,255,255,0) 45%, ` +
+                  `rgba(0,0,0,calc(0.22 * var(--analog-light-power, 1))))` +
+                  `, var(--analog-surface-panel)`,
+                boxShadow:
+                  `inset 0 1px 1px rgba(255, 255, 255, calc(0.07 * var(--analog-light-power, 1))), ` +
+                  `0 4px 12px rgba(0, 0, 0, 0.5)`,
               }
-            : {}),
+            : {
+                background:
+                  `radial-gradient(circle at center, ` +
+                  `color-mix(in oklch, var(--analog-control-surface-strong) 72%, var(--analog-surface-panel) 28%) 0%, ` +
+                  `var(--background, var(--analog-fallback-background)) 72%)`,
+              }),
         }}
         {...props}
       >
@@ -184,7 +208,10 @@ const PanelTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<H
   ({ className, ...props }, ref) => (
     <h3
       ref={ref}
-      className={cn('text-lg font-semibold leading-none tracking-tight text-white', className)}
+      className={cn(
+        'text-lg font-semibold leading-none tracking-tight text-[var(--analog-panel-foreground)]',
+        className,
+      )}
       {...props}
     />
   ),
@@ -195,7 +222,7 @@ const PanelDescription = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
-  <p ref={ref} className={cn('text-sm text-[#a0a0a0]', className)} {...props} />
+  <p ref={ref} className={cn('text-sm text-[var(--analog-panel-muted)]', className)} {...props} />
 ));
 PanelDescription.displayName = 'PanelDescription';
 

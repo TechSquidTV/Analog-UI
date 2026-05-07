@@ -191,7 +191,10 @@ export default function App() {
       sourceAngle={dynamicLightAngle}
       power={lightPower / 120}
     >
-      <div ref={surfaceRef} className="w-full min-h-screen p-8 md:p-16 flex flex-col pt-32 md:pt-16">
+      <div
+        ref={surfaceRef}
+        className="flex min-h-screen w-full flex-col bg-background p-8 pt-32 font-sans text-foreground md:p-16 md:pt-16"
+      >
         <div className="fixed top-6 right-6 md:top-12 md:right-12 z-50 bg-[#141414] border border-[#262626] rounded-xl p-5 w-72 shadow-[0_20px_40px_rgba(0,0,0,0.4),0_0_0_1px_rgba(255,255,255,0.05)]">
           <div className="text-[10px] uppercase tracking-[0.3em] text-[var(--color-accent)] mb-5">
             Analog Lighting
@@ -511,7 +514,9 @@ export default function App() {
           <div className="flex flex-col gap-14 items-center justify-center py-12">
             <div className="flex flex-col gap-8 w-full max-w-sm">
               <div className="flex items-center justify-between w-full gap-6">
-                <span className="font-mono text-xs text-[#555] uppercase tracking-widest">Warp</span>
+                <span className="font-mono text-xs text-[#555] uppercase tracking-widest">
+                  Warp
+                </span>
                 <AnalogSwitch variant="chrome" checked={switch1} onCheckedChange={setSwitch1} />
               </div>
               <div className="flex items-center justify-between w-full gap-6">

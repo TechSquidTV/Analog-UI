@@ -27,33 +27,35 @@ interface LCDPalette {
 }
 
 const NOISE_TEXTURE =
-  'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'1.1\' numOctaves=\'2\' stitchTiles=\'stitch\'/%3E%3CfeColorMatrix type=\'saturate\' values=\'0\'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type=\'discrete\' tableValues=\'0 0 0 1 1\'/%3E%3CfeFuncG type=\'discrete\' tableValues=\'0 0 0 1 1\'/%3E%3CfeFuncB type=\'discrete\' tableValues=\'0 0 0 1 1\'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E")';
+  "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='discrete' tableValues='0 0 0 1 1'/%3E%3CfeFuncG type='discrete' tableValues='0 0 0 1 1'/%3E%3CfeFuncB type='discrete' tableValues='0 0 0 1 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")";
 
 const displayPalettes: Record<LCDDisplayVariant, LCDPalette> = {
   'lcd-green': {
-    glow: '#5ca34d',
-    fill: '#67b557',
-    ink: '#122014',
-    legend: '#203424',
+    glow: 'var(--analog-lcd-green-glow)',
+    fill: 'var(--analog-lcd-green-fill)',
+    ink: 'var(--analog-lcd-green-ink)',
+    legend: 'var(--analog-lcd-green-legend)',
   },
   'lcd-amber': {
-    glow: '#d19324',
-    fill: '#e6a42e',
-    ink: '#2a1b06',
-    legend: '#3b290f',
+    glow: 'var(--analog-lcd-amber-glow)',
+    fill: 'var(--analog-lcd-amber-fill)',
+    ink: 'var(--analog-lcd-amber-ink)',
+    legend: 'var(--analog-lcd-amber-legend)',
   },
   'lcd-blue': {
-    glow: '#3b86e0',
-    fill: '#4d98f0',
-    ink: '#081827',
-    legend: '#13273d',
+    glow: 'var(--analog-lcd-blue-glow)',
+    fill: 'var(--analog-lcd-blue-fill)',
+    ink: 'var(--analog-lcd-blue-ink)',
+    legend: 'var(--analog-lcd-blue-legend)',
   },
 };
 
 const displaySizeStyles = {
   sm: {
-    root: 'rounded-[18px] p-[5px]',
-    screen: 'rounded-[14px] px-3 py-2',
+    rootClass: 'p-[5px]',
+    screenClass: 'px-3 py-2',
+    rootRadius: 'calc(var(--radius, 0.75rem) * 1.5)',
+    screenRadius: 'calc(var(--radius, 0.75rem) * 1.15)',
     label: 'text-[8px] tracking-[0.34em]',
     units: 'text-[11px] tracking-[0.24em]',
     value: 'text-[24px] tracking-[0.12em]',
@@ -61,8 +63,10 @@ const displaySizeStyles = {
     valueGap: 'gap-2',
   },
   md: {
-    root: 'rounded-[22px] p-[6px]',
-    screen: 'rounded-[18px] px-4 py-3',
+    rootClass: 'p-[6px]',
+    screenClass: 'px-4 py-3',
+    rootRadius: 'calc(var(--radius, 0.75rem) * 1.85)',
+    screenRadius: 'calc(var(--radius, 0.75rem) * 1.5)',
     label: 'text-[9px] tracking-[0.34em]',
     units: 'text-[13px] tracking-[0.24em]',
     value: 'text-[32px] tracking-[0.14em]',
@@ -70,8 +74,10 @@ const displaySizeStyles = {
     valueGap: 'gap-3',
   },
   lg: {
-    root: 'rounded-[28px] p-[7px]',
-    screen: 'rounded-[22px] px-5 py-4',
+    rootClass: 'p-[7px]',
+    screenClass: 'px-5 py-4',
+    rootRadius: 'calc(var(--radius, 0.75rem) * 2.35)',
+    screenRadius: 'calc(var(--radius, 0.75rem) * 1.85)',
     label: 'text-[10px] tracking-[0.38em]',
     units: 'text-[15px] tracking-[0.24em]',
     value: 'text-[42px] tracking-[0.16em]',
@@ -155,8 +161,10 @@ export const LCDDisplay = React.forwardRef<HTMLDivElement, LCDDisplayProps>(
         {...props}
       >
         <div
-          className={cn('relative overflow-hidden border border-black/55', sizeStyle.root)}
+          className={cn('relative overflow-hidden border', sizeStyle.rootClass)}
           style={{
+            borderRadius: sizeStyle.rootRadius,
+            borderColor: 'color-mix(in oklch, var(--analog-control-border-strong) 72%, black 28%)',
             background:
               `linear-gradient(calc(var(--analog-light-angle-surface, 180deg) - 90deg), ` +
               `rgba(255,255,255,calc(0.08 * var(--analog-light-power, 1))) 0%, ` +
@@ -174,18 +182,15 @@ export const LCDDisplay = React.forwardRef<HTMLDivElement, LCDDisplayProps>(
           <div
             className="pointer-events-none absolute inset-[1px] rounded-[inherit]"
             style={{
-              border: '1px solid rgba(255,255,255,0.035)',
-              boxShadow:
-                'inset 0 1px 0 rgba(255,255,255,0.03), inset 0 -8px 16px rgba(0,0,0,0.18)',
+              border:
+                '1px solid color-mix(in oklch, var(--analog-control-foreground) 3.5%, transparent)',
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.03), inset 0 -8px 16px rgba(0,0,0,0.18)',
             }}
           />
 
           <div
-            className={cn(
-              'relative overflow-visible',
-              sizeStyle.screen,
-              screenClassName,
-            )}
+            className={cn('relative overflow-visible', sizeStyle.screenClass, screenClassName)}
+            style={{ borderRadius: sizeStyle.screenRadius }}
           >
             <div
               className="pointer-events-none absolute inset-[-4px] z-20 rounded-[inherit]"
@@ -196,10 +201,14 @@ export const LCDDisplay = React.forwardRef<HTMLDivElement, LCDDisplayProps>(
               }}
             />
             <div
-              className="absolute inset-0 z-10 overflow-hidden rounded-[inherit] border border-black/60 analog-surface-recess"
-              style={{
-                '--analog-light-angle-track': 'var(--analog-light-angle-lens)',
-              } as React.CSSProperties}
+              className="absolute inset-0 z-10 overflow-hidden rounded-[inherit] border analog-surface-recess"
+              style={
+                {
+                  '--analog-light-angle-track': 'var(--analog-light-angle-lens)',
+                  borderColor:
+                    'color-mix(in oklch, var(--analog-control-border-strong) 76%, black 24%)',
+                } as React.CSSProperties
+              }
             >
               <div
                 className="pointer-events-none absolute inset-0"

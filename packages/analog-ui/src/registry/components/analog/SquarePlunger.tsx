@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { motion } from 'motion/react';
 import { cn } from '../../../lib/utils';
+import { useAnalogMaterialVariant } from '../../hooks/use-analog-material';
 
 export interface SquarePlungerProps {
   variant?: 'chrome' | 'black';
@@ -12,17 +13,19 @@ export interface SquarePlungerProps {
 }
 
 export const SquarePlunger = ({
-  variant = 'chrome',
+  variant,
   isPressed,
   extrusionLayers = 32,
   children,
   indicator,
   className,
 }: SquarePlungerProps) => {
-  const isChrome = variant === 'chrome';
+  const resolvedVariant = useAnalogMaterialVariant(variant);
+  const isChrome = resolvedVariant === 'chrome';
 
   return (
     <motion.div
+      data-analog-variant={resolvedVariant}
       className={cn('absolute inset-0', className)}
       initial={false}
       animate={{
@@ -45,7 +48,9 @@ export const SquarePlunger = ({
             key={`extrusion-${index}`}
             className={cn(
               'absolute inset-0',
-              isChrome ? 'bg-[var(--analog-surface-metal-mid)]' : 'bg-[var(--analog-surface-onyx-lo)]',
+              isChrome
+                ? 'bg-[var(--analog-surface-metal-mid)]'
+                : 'bg-[var(--analog-surface-onyx-lo)]',
             )}
             style={{
               transform: `translateZ(-${index + 1}px)`,
@@ -92,7 +97,14 @@ export const SquarePlunger = ({
           {indicator}
 
           {/* Face Content */}
-          <div className="relative z-10 flex size-full items-center justify-center p-1 text-[10px] font-bold uppercase tracking-[0.25em] text-white/90 drop-shadow-[0_2px_4px_rgba(0,0,0,1)]">
+          <div
+            className="relative z-10 flex size-full items-center justify-center p-1 text-[10px] font-bold uppercase tracking-[0.25em] drop-shadow-[0_2px_4px_rgba(0,0,0,1)]"
+            style={{
+              color: isChrome
+                ? 'color-mix(in oklch, var(--analog-surface-metal-lo) 42%, var(--analog-control-foreground) 58%)'
+                : 'color-mix(in oklch, var(--analog-surface-metal-hi) 72%, white 28%)',
+            }}
+          >
             {children}
           </div>
         </div>

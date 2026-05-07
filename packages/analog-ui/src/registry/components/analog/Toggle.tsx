@@ -6,6 +6,7 @@ import { useMergedRefs } from '../../../lib/refs';
 import { AnalogIndicator, type AnalogIndicatorColor } from './Indicator';
 import { RockerThumbSurface } from './RockerThumbSurface';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
+import { useAnalogMaterialVariant } from '../../hooks/use-analog-material';
 import type { AnalogOrientation } from './orientation';
 
 type AnalogToggleValue = 'left' | 'right';
@@ -53,7 +54,7 @@ export const AnalogToggle = React.forwardRef<HTMLDivElement, AnalogToggleProps>(
   (
     {
       className,
-      variant = 'chrome',
+      variant,
       orientation = 'horizontal',
       leftLed = 'none',
       rightLed = 'none',
@@ -100,9 +101,13 @@ export const AnalogToggle = React.forwardRef<HTMLDivElement, AnalogToggleProps>(
       props.onMouseLeave?.(e);
     };
 
-    const isChrome = variant === 'chrome';
+    const resolvedVariant = useAnalogMaterialVariant(variant);
+    const isChrome = resolvedVariant === 'chrome';
     const isVertical = orientation === 'vertical';
     const lightingStyle = useAnalogLighting(['track', 'thumb', 'lens', 'surface'], lighting);
+    const basePlateBackground = isChrome
+      ? `linear-gradient(calc(var(--analog-light-angle-surface, 180deg) - 180deg), color-mix(in oklch, var(--analog-surface-metal-hi) 76%, white 24%) 0%, var(--analog-surface-metal-mid) 42%, var(--analog-surface-metal-lo) 100%)`
+      : `linear-gradient(calc(var(--analog-light-angle-surface, 180deg) - 180deg), color-mix(in oklch, var(--analog-surface-onyx-hi) 72%, var(--analog-surface-metal-lo) 28%) 0%, var(--analog-surface-onyx-mid) 46%, var(--analog-surface-onyx-lo) 100%)`;
 
     // We dampen the glare movement significantly so it feels heavy and metallic
     const glareX = hoverState.isHovered ? hoverState.deltaX * 0.15 : 0;
@@ -118,6 +123,7 @@ export const AnalogToggle = React.forwardRef<HTMLDivElement, AnalogToggleProps>(
           isVertical ? 'h-[104px] w-12' : 'h-12 w-[104px]',
           className,
         )}
+        data-analog-variant={resolvedVariant}
         style={
           {
             ...lightingStyle,
@@ -154,13 +160,9 @@ export const AnalogToggle = React.forwardRef<HTMLDivElement, AnalogToggleProps>(
 
         {/* Outer Bevel / Base Plate */}
         <div
-          className={cn(
-            'absolute inset-0 rounded-lg pointer-events-none',
-            isChrome
-              ? 'bg-gradient-to-b from-neutral-300 to-neutral-500'
-              : 'bg-gradient-to-b from-neutral-700 to-neutral-900',
-          )}
+          className="absolute inset-0 rounded-lg pointer-events-none"
           style={{
+            background: basePlateBackground,
             boxShadow: isChrome
               ? `inset 0 1px 1px rgba(255,255,255,calc(1 * var(--analog-light-power, 1))), inset 0 -1px 2px rgba(0,0,0,calc(0.2 * var(--analog-light-power, 1))), 0 2px 4px rgba(0,0,0,calc(0.5 * var(--analog-light-power, 1))), 0 0 0 1px rgba(0,0,0,calc(0.1 * var(--analog-light-power, 1)))`
               : `inset 0 1px 1px rgba(255,255,255,calc(0.15 * var(--analog-light-power, 1))), inset 0 -1px 2px rgba(0,0,0,calc(0.8 * var(--analog-light-power, 1))), 0 2px 4px rgba(0,0,0,calc(0.9 * var(--analog-light-power, 1))), 0 0 0 1px rgba(0,0,0,calc(0.6 * var(--analog-light-power, 1)))`,
@@ -177,7 +179,7 @@ export const AnalogToggle = React.forwardRef<HTMLDivElement, AnalogToggleProps>(
                 'absolute rounded-sm',
                 isVertical ? 'inset-x-[2px] inset-y-[6px]' : 'inset-y-[2px] inset-x-[6px]',
               )}
-              variant={variant}
+              variant={resolvedVariant}
               orientation={orientation}
               raisedSide={value === 'right' ? 'end' : 'start'}
             >
