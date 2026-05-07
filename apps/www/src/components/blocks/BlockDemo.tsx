@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 
 import {
   AnalogIndicator,
@@ -24,12 +24,12 @@ import {
   SquareButton,
   SquareToggle,
   useMouseLumination,
-} from "../../../../../packages/analog-ui/src/index";
-import { cn } from "../../../../../packages/analog-ui/src/lib/utils";
-import { RockerThumbSurface } from "../../../../../packages/analog-ui/src/registry/components/analog/RockerThumbSurface";
-import type { BlockName } from "../../data/block-catalog";
+} from '../../../../../packages/analog-ui/src/index';
+import { cn } from '../../../../../packages/analog-ui/src/lib/utils';
+import { RockerThumbSurface } from '../../../../../packages/analog-ui/src/registry/components/analog/RockerThumbSurface';
+import type { BlockName } from '../../data/block-catalog';
 
-type DemoMode = "compact" | "full";
+type DemoMode = 'compact' | 'full';
 
 export interface BlockDemoProps {
   name: BlockName;
@@ -110,10 +110,10 @@ function ControlButton({
       type="button"
       onClick={onClick}
       className={cn(
-        "rounded-full border px-3 py-1.5 text-[11px] uppercase tracking-[0.2em] transition-colors duration-200",
+        'rounded-full border px-3 py-1.5 text-[11px] uppercase tracking-[0.2em] transition-colors duration-200',
         isActive
-          ? "border-white/16 bg-white/[0.08] text-white"
-          : "border-white/8 bg-white/[0.03] text-[#a8a8a8] hover:border-white/14 hover:bg-white/[0.06] hover:text-white",
+          ? 'border-white/16 bg-white/[0.08] text-white'
+          : 'border-white/8 bg-white/[0.03] text-[#a8a8a8] hover:border-white/14 hover:bg-white/[0.06] hover:text-white',
       )}
     >
       {children}
@@ -133,7 +133,7 @@ function DemoStage({
   const surfaceRef = useRef<HTMLDivElement>(null);
   const sourceAngle = useMouseLumination({
     baseAngle: 180,
-    influence: mode === "compact" ? 0.24 : 0.38,
+    influence: mode === 'compact' ? 0.24 : 0.38,
     targetRef: surfaceRef,
   });
 
@@ -142,8 +142,8 @@ function DemoStage({
       <div
         ref={surfaceRef}
         className={cn(
-          "section-panel rounded-[26px]",
-          mode === "compact" ? "min-h-[280px] p-5" : "min-h-[430px] p-8",
+          'section-panel rounded-[26px]',
+          mode === 'compact' ? 'min-h-[280px] p-5' : 'min-h-[430px] p-8',
         )}
       >
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_34%)]" />
@@ -174,7 +174,7 @@ function DialDemo({ mode }: { mode: DemoMode }) {
     >
       <div className="flex flex-wrap items-center justify-center gap-10">
         <Dial value={value} onChange={(next) => setValue(next)} />
-        {mode === "full" ? (
+        {mode === 'full' ? (
           <Dial variant="black" value={auxValue} onChange={(next) => setAuxValue(next)} />
         ) : null}
       </div>
@@ -199,11 +199,11 @@ function SliderDemo({ mode }: { mode: DemoMode }) {
     >
       <div
         className={cn(
-          "flex w-full items-center justify-center gap-10",
-          mode === "compact" ? "max-w-[360px] flex-col" : "max-w-3xl",
+          'flex w-full items-center justify-center gap-10',
+          mode === 'compact' ? 'max-w-[360px] flex-col' : 'max-w-3xl',
         )}
       >
-        {mode === "full" ? (
+        {mode === 'full' ? (
           <AnalogSlider
             orientation="vertical"
             variant="chrome"
@@ -231,25 +231,25 @@ function SliderDemo({ mode }: { mode: DemoMode }) {
 }
 
 function ToggleDemo({ mode }: { mode: DemoMode }) {
-  const [mainValue, setMainValue] = useState<"left" | "right">("right");
-  const [auxValue, setAuxValue] = useState<"left" | "right">("left");
-  const [verticalValue, setVerticalValue] = useState<"left" | "right">("right");
+  const [mainValue, setMainValue] = useState<'left' | 'right'>('right');
+  const [auxValue, setAuxValue] = useState<'left' | 'right'>('left');
+  const [verticalValue, setVerticalValue] = useState<'left' | 'right'>('right');
 
   return (
     <DemoStage
       mode={mode}
       footer={
         <>
-          <FooterItem label="Main Bus" value={mainValue === "right" ? "On" : "Off"} />
-          <FooterItem label="Aux Bus" value={auxValue === "right" ? "On" : "Off"} />
+          <FooterItem label="Main Bus" value={mainValue === 'right' ? 'On' : 'Off'} />
+          <FooterItem label="Aux Bus" value={auxValue === 'right' ? 'On' : 'Off'} />
           <FooterItem label="Lighting" value="LED aware" />
         </>
       }
     >
       <div
         className={cn(
-          "flex flex-wrap items-center justify-center gap-10",
-          mode === "compact" && "max-w-[420px]",
+          'flex flex-wrap items-center justify-center gap-10',
+          mode === 'compact' && 'max-w-[420px]',
         )}
       >
         <div className="flex flex-col gap-6">
@@ -278,7 +278,7 @@ function ToggleDemo({ mode }: { mode: DemoMode }) {
           </div>
         </div>
 
-        {mode === "full" ? (
+        {mode === 'full' ? (
           <div className="flex flex-col items-center gap-4">
             <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#636363]">
               Bay Door
@@ -298,7 +298,7 @@ function ToggleDemo({ mode }: { mode: DemoMode }) {
 }
 
 function SquareButtonDemo({ mode }: { mode: DemoMode }) {
-  const [lastAction, setLastAction] = useState("Idle");
+  const [lastAction, setLastAction] = useState('Idle');
 
   return (
     <DemoStage
@@ -314,14 +314,14 @@ function SquareButtonDemo({ mode }: { mode: DemoMode }) {
       <div className="flex flex-wrap items-center justify-center gap-12">
         <div className="flex flex-col items-center gap-6">
           <div className="flex gap-8">
-            <SquareButton onClick={() => setLastAction("Push")}>PUSH</SquareButton>
-            {mode === "full" ? (
-              <SquareButton variant="black" onClick={() => setLastAction("Exec")}>
+            <SquareButton onClick={() => setLastAction('Push')}>PUSH</SquareButton>
+            {mode === 'full' ? (
+              <SquareButton variant="black" onClick={() => setLastAction('Exec')}>
                 EXEC
               </SquareButton>
             ) : null}
           </div>
-              <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#555]">
+          <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#555]">
             Momentary
           </span>
         </div>
@@ -339,16 +339,16 @@ function SquareToggleDemo({ mode }: { mode: DemoMode }) {
       mode={mode}
       footer={
         <>
-          <FooterItem label="Power" value={mainToggle ? "On" : "Off"} />
-          <FooterItem label="Arm" value={auxToggle ? "On" : "Off"} />
+          <FooterItem label="Power" value={mainToggle ? 'On' : 'Off'} />
+          <FooterItem label="Arm" value={auxToggle ? 'On' : 'Off'} />
           <FooterItem label="Behavior" value="Latching LED" />
         </>
       }
     >
       <div
         className={cn(
-          "flex flex-wrap items-center justify-center gap-12",
-          mode === "compact" && "max-w-[420px]",
+          'flex flex-wrap items-center justify-center gap-12',
+          mode === 'compact' && 'max-w-[420px]',
         )}
       >
         <div className="flex flex-col items-center gap-6">
@@ -389,10 +389,10 @@ function SwitchDemo({ mode }: { mode: DemoMode }) {
       mode={mode}
       footer={
         <>
-          <FooterItem label="Warp" value={warp ? "Enabled" : "Disabled"} />
-          <FooterItem label="Stealth" value={stealth ? "Enabled" : "Disabled"} />
-          <FooterItem label="Launch" value={launch ? "Enabled" : "Disabled"} />
-          <FooterItem label="Cloak" value={cloak ? "Enabled" : "Disabled"} />
+          <FooterItem label="Warp" value={warp ? 'Enabled' : 'Disabled'} />
+          <FooterItem label="Stealth" value={stealth ? 'Enabled' : 'Disabled'} />
+          <FooterItem label="Launch" value={launch ? 'Enabled' : 'Disabled'} />
+          <FooterItem label="Cloak" value={cloak ? 'Enabled' : 'Disabled'} />
           <FooterItem label="Behavior" value="Center-pivot roll" />
         </>
       }
@@ -438,7 +438,7 @@ function SwitchDemo({ mode }: { mode: DemoMode }) {
 }
 
 function WheelSelectDemo({ mode }: { mode: DemoMode }) {
-  const options = ["PITCH DOWN", "NEUTRAL", "PITCH UP", "AUTO TRIM", "MANUAL"];
+  const options = ['PITCH DOWN', 'NEUTRAL', 'PITCH UP'];
   const [value, setValue] = useState(options[1]);
 
   return (
@@ -447,12 +447,12 @@ function WheelSelectDemo({ mode }: { mode: DemoMode }) {
       footer={
         <>
           <FooterItem label="Selected" value={value} />
-          <FooterItem label="Travel" value="Stepped" />
+          <FooterItem label="Mode" value="Infinite cycle" />
         </>
       }
     >
       <div className="flex items-center justify-center gap-8">
-        <AnalogWheelSelect options={options} value={value} onValueChange={setValue} />
+        <AnalogWheelSelect options={options} value={value} onValueChange={setValue} infinite />
       </div>
     </DemoStage>
   );
@@ -478,7 +478,7 @@ function WheelNumberDemo({ mode }: { mode: DemoMode }) {
 
 function GaugeDemo({ mode }: { mode: DemoMode }) {
   const [value, setValue] = useState(42);
-  const [variant, setVariant] = useState<"lcd-green" | "lcd-amber" | "lcd-blue">("lcd-green");
+  const [variant, setVariant] = useState<'lcd-green' | 'lcd-amber' | 'lcd-blue'>('lcd-green');
 
   return (
     <DemoStage
@@ -490,13 +490,19 @@ function GaugeDemo({ mode }: { mode: DemoMode }) {
             <div className="w-full text-[9px] font-semibold uppercase tracking-[0.26em] text-[#787878]">
               Variant
             </div>
-            <ControlButton isActive={variant === "lcd-green"} onClick={() => setVariant("lcd-green")}>
+            <ControlButton
+              isActive={variant === 'lcd-green'}
+              onClick={() => setVariant('lcd-green')}
+            >
               Green
             </ControlButton>
-            <ControlButton isActive={variant === "lcd-amber"} onClick={() => setVariant("lcd-amber")}>
+            <ControlButton
+              isActive={variant === 'lcd-amber'}
+              onClick={() => setVariant('lcd-amber')}
+            >
               Amber
             </ControlButton>
-            <ControlButton isActive={variant === "lcd-blue"} onClick={() => setVariant("lcd-blue")}>
+            <ControlButton isActive={variant === 'lcd-blue'} onClick={() => setVariant('lcd-blue')}>
               Blue
             </ControlButton>
           </div>
@@ -510,11 +516,11 @@ function GaugeDemo({ mode }: { mode: DemoMode }) {
 
 function LCDDisplayDemo({ mode }: { mode: DemoMode }) {
   const programs = [
-    { label: "Program", value: "CH-07", units: "MEM" },
-    { label: "Output Trim", value: "-12.8", units: "DB" },
-    { label: "Delay Time", value: "88:12", units: "MS" },
+    { label: 'Program', value: 'CH-07', units: 'MEM' },
+    { label: 'Output Trim', value: '-12.8', units: 'DB' },
+    { label: 'Delay Time', value: '88:12', units: 'MS' },
   ] as const;
-  const [variant, setVariant] = useState<"lcd-green" | "lcd-amber" | "lcd-blue">("lcd-green");
+  const [variant, setVariant] = useState<'lcd-green' | 'lcd-amber' | 'lcd-blue'>('lcd-green');
   const [programIndex, setProgramIndex] = useState(0);
   const current = programs[programIndex];
 
@@ -530,21 +536,18 @@ function LCDDisplayDemo({ mode }: { mode: DemoMode }) {
               Variant
             </div>
             <ControlButton
-              isActive={variant === "lcd-green"}
-              onClick={() => setVariant("lcd-green")}
+              isActive={variant === 'lcd-green'}
+              onClick={() => setVariant('lcd-green')}
             >
               Green
             </ControlButton>
             <ControlButton
-              isActive={variant === "lcd-amber"}
-              onClick={() => setVariant("lcd-amber")}
+              isActive={variant === 'lcd-amber'}
+              onClick={() => setVariant('lcd-amber')}
             >
               Amber
             </ControlButton>
-            <ControlButton
-              isActive={variant === "lcd-blue"}
-              onClick={() => setVariant("lcd-blue")}
-            >
+            <ControlButton isActive={variant === 'lcd-blue'} onClick={() => setVariant('lcd-blue')}>
               Blue
             </ControlButton>
             <ControlButton
@@ -562,11 +565,18 @@ function LCDDisplayDemo({ mode }: { mode: DemoMode }) {
           value={current.value}
           units={current.units}
           variant={variant}
-          size={mode === "compact" ? "md" : "lg"}
+          size={mode === 'compact' ? 'md' : 'lg'}
           digits={6}
         />
-        {mode === "full" ? (
-          <LCDDisplay label="Peak Hold" value="-03.2" units="DB" variant="lcd-amber" size="sm" digits={5} />
+        {mode === 'full' ? (
+          <LCDDisplay
+            label="Peak Hold"
+            value="-03.2"
+            units="DB"
+            variant="lcd-amber"
+            size="sm"
+            digits={5}
+          />
         ) : null}
       </div>
     </DemoStage>
@@ -587,7 +597,7 @@ function MeterDemo({ mode }: { mode: DemoMode }) {
         </>
       }
     >
-      <div className={cn(mode === "compact" ? "scale-[0.82]" : "scale-100")}>
+      <div className={cn(mode === 'compact' ? 'scale-[0.82]' : 'scale-100')}>
         <AnalogMeterGroup aria-label="Stereo output meter">
           <AnalogMeterGroupChannel label="L">
             <AnalogMeter
@@ -615,7 +625,7 @@ function MeterDemo({ mode }: { mode: DemoMode }) {
 }
 
 function IndicatorDemo({ mode }: { mode: DemoMode }) {
-  const colors = ["red", "amber", "green", "blue", "white"] as const;
+  const colors = ['red', 'amber', 'green', 'blue', 'white'] as const;
   const [isOn, setIsOn] = useState(true);
   const [colorIndex, setColorIndex] = useState(1);
   const color = colors[colorIndex];
@@ -628,8 +638,12 @@ function IndicatorDemo({ mode }: { mode: DemoMode }) {
           <FooterItem
             label="State"
             value={
-              <button type="button" onClick={() => setIsOn((current) => !current)} className="text-left">
-                {isOn ? "Powered" : "Dark"}
+              <button
+                type="button"
+                onClick={() => setIsOn((current) => !current)}
+                className="text-left"
+              >
+                {isOn ? 'Powered' : 'Dark'}
               </button>
             }
           />
@@ -668,7 +682,7 @@ function IndicatorDemo({ mode }: { mode: DemoMode }) {
 
 function PanelDemo({ mode }: { mode: DemoMode }) {
   const meter = useAudioMeter();
-  const [compression, setCompression] = useState<"left" | "right">("left");
+  const [compression, setCompression] = useState<'left' | 'right'>('left');
   const [makeupGain, setMakeupGain] = useState<number[]>([4]);
   const [bypass, setBypass] = useState(false);
 
@@ -677,13 +691,13 @@ function PanelDemo({ mode }: { mode: DemoMode }) {
       mode={mode}
       footer={
         <>
-          <FooterItem label="Compression" value={compression === "right" ? "Fast" : "Warm"} />
+          <FooterItem label="Compression" value={compression === 'right' ? 'Fast' : 'Warm'} />
           <FooterItem label="Makeup" value={`${makeupGain[0]} dB`} />
-          <FooterItem label="Bypass" value={bypass ? "Armed" : "Listening"} />
+          <FooterItem label="Bypass" value={bypass ? 'Armed' : 'Listening'} />
         </>
       }
     >
-      <div className={cn("w-full max-w-4xl", mode === "compact" ? "scale-[0.86]" : "scale-100")}>
+      <div className={cn('w-full max-w-4xl', mode === 'compact' ? 'scale-[0.86]' : 'scale-100')}>
         <Panel variant="rack" screws className="w-full">
           <PanelHeader>
             <PanelTitle>Master Bus</PanelTitle>
@@ -693,7 +707,11 @@ function PanelDemo({ mode }: { mode: DemoMode }) {
             <div className="flex flex-col justify-center gap-10 py-2">
               <div className="flex items-center justify-between gap-6">
                 <span className="text-sm text-[#a0a0a0]">Compression</span>
-                <AnalogToggle value={compression} onValueChange={setCompression} className="w-[104px]" />
+                <AnalogToggle
+                  value={compression}
+                  onValueChange={setCompression}
+                  className="w-[104px]"
+                />
               </div>
               <div className="flex flex-col gap-10 pt-4">
                 <div className="flex items-center justify-between gap-6">
@@ -720,7 +738,7 @@ function PanelDemo({ mode }: { mode: DemoMode }) {
                 className="pointer-events-none absolute inset-y-0 left-0 hidden w-px md:block"
                 style={{
                   background:
-                    "linear-gradient(to bottom, rgba(255,255,255,0), color-mix(in oklch, var(--analog-surface-raised) 42%, transparent) 18%, rgba(0,0,0,0.55) 50%, color-mix(in oklch, var(--analog-surface-raised) 24%, transparent) 82%, rgba(255,255,255,0))",
+                    'linear-gradient(to bottom, rgba(255,255,255,0), color-mix(in oklch, var(--analog-surface-raised) 42%, transparent) 18%, rgba(0,0,0,0.55) 50%, color-mix(in oklch, var(--analog-surface-raised) 24%, transparent) 82%, rgba(255,255,255,0))',
                 }}
               />
               <AnalogMeterGroup variant="panel" aria-label="Master bus stereo output">
@@ -751,8 +769,10 @@ function PanelDemo({ mode }: { mode: DemoMode }) {
               type="button"
               onClick={() => setBypass((current) => !current)}
               className={cn(
-                "w-full rounded py-2 font-mono text-sm uppercase tracking-widest shadow-[inset_0_1px_rgba(255,255,255,0.05),0_1px_4px_rgba(0,0,0,0.5)] transition-colors",
-                bypass ? "bg-[var(--color-accent)] text-white" : "bg-[#222] text-[#888] hover:bg-[#333]",
+                'w-full rounded py-2 font-mono text-sm uppercase tracking-widest shadow-[inset_0_1px_rgba(255,255,255,0.05),0_1px_4px_rgba(0,0,0,0.5)] transition-colors',
+                bypass
+                  ? 'bg-[var(--color-accent)] text-white'
+                  : 'bg-[#222] text-[#888] hover:bg-[#333]',
               )}
             >
               Bypass
@@ -807,35 +827,35 @@ function RockerThumbSurfaceDemo({ mode }: { mode: DemoMode }) {
   );
 }
 
-export default function BlockDemo({ name, mode = "full" }: BlockDemoProps) {
+export default function BlockDemo({ name, mode = 'full' }: BlockDemoProps) {
   switch (name) {
-    case "dial":
+    case 'dial':
       return <DialDemo mode={mode} />;
-    case "slider":
+    case 'slider':
       return <SliderDemo mode={mode} />;
-    case "toggle":
+    case 'toggle':
       return <ToggleDemo mode={mode} />;
-    case "square-button":
+    case 'square-button':
       return <SquareButtonDemo mode={mode} />;
-    case "square-toggle":
+    case 'square-toggle':
       return <SquareToggleDemo mode={mode} />;
-    case "switch":
+    case 'switch':
       return <SwitchDemo mode={mode} />;
-    case "wheel-select":
+    case 'wheel-select':
       return <WheelSelectDemo mode={mode} />;
-    case "wheel-number":
+    case 'wheel-number':
       return <WheelNumberDemo mode={mode} />;
-    case "gauge":
+    case 'gauge':
       return <GaugeDemo mode={mode} />;
-    case "lcd-display":
+    case 'lcd-display':
       return <LCDDisplayDemo mode={mode} />;
-    case "meter":
+    case 'meter':
       return <MeterDemo mode={mode} />;
-    case "indicator":
+    case 'indicator':
       return <IndicatorDemo mode={mode} />;
-    case "panel":
+    case 'panel':
       return <PanelDemo mode={mode} />;
-    case "rocker-thumb-surface":
+    case 'rocker-thumb-surface':
       return <RockerThumbSurfaceDemo mode={mode} />;
     default:
       return null;
