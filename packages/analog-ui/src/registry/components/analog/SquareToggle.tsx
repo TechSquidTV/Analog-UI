@@ -56,12 +56,7 @@ export const SquareToggle = React.forwardRef<HTMLButtonElement, SquareToggleProp
             indicator={
               indicatorColor !== 'none' && (
                 <div className="absolute right-0.5 top-[-3px]">
-                  <AnalogIndicator
-                    size="xs"
-                    color={indicatorColor}
-                    isOn={isPressed}
-                    disableBezel
-                  />
+                  <AnalogIndicator size="xs" color={indicatorColor} isOn={isPressed} disableBezel />
                 </div>
               )
             }

@@ -79,11 +79,7 @@ export const SquareButton = React.forwardRef<HTMLButtonElement, SquareButtonProp
           style={{ transformStyle: 'preserve-3d' }}
           {...props}
         >
-          <SquarePlunger
-            variant={variant}
-            isPressed={isPressed}
-            extrusionLayers={extrusionLayers}
-          >
+          <SquarePlunger variant={variant} isPressed={isPressed} extrusionLayers={extrusionLayers}>
             {children}
           </SquarePlunger>
         </Button>

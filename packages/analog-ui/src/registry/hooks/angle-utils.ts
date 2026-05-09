@@ -2,15 +2,6 @@ export function clampLightingInfluence(value: number) {
   return Math.min(1, Math.max(0, value));
 }
 
-export function smoothstep(min: number, max: number, value: number) {
-  if (max <= min) {
-    return value >= max ? 1 : 0;
-  }
-
-  const t = clampLightingInfluence((value - min) / (max - min));
-  return t * t * (3 - 2 * t);
-}
-
 function getWrappedAngleDelta(targetAngle: number, currentAngle: number) {
   let delta = (targetAngle - currentAngle) % 360;
 
@@ -71,7 +62,7 @@ function normalizeCartesian(x: number, y: number) {
   };
 }
 
-export function angleToLightingVector(angle: number) {
+function angleToLightingVector(angle: number) {
   const radians = (angle * Math.PI) / 180;
 
   return {
@@ -84,7 +75,7 @@ export function vectorToLightingAngle(x: number, y: number) {
   return (Math.atan2(x, -y) * 180) / Math.PI;
 }
 
-export function blendLightingVectors(
+function blendLightingVectors(
   current: { x: number; y: number },
   target: { x: number; y: number },
   weight: number,

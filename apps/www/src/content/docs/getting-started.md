@@ -17,8 +17,8 @@ Analog UI can be consumed in two ways:
 Import the shared stylesheet first so the analog tokens, materials, and lighting defaults are available:
 
 ```tsx
-import "analog-ui/styles.css";
-import { Dial, Gauge, Panel } from "analog-ui";
+import 'analog-ui/styles.css';
+import { Dial, Gauge, Panel } from 'analog-ui';
 ```
 
 That path is best when you want the library as a cohesive dependency and you are comfortable shipping its exported styles directly.

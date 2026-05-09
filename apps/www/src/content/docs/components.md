@@ -26,6 +26,7 @@ Browse the whole family in [Blocks / Inputs](/blocks/inputs).
 
 - [LCD Radial Gauge](/docs/components/gauge): circular LCD monitor with dial-face styling
 - [LCD Display](/docs/components/lcd-display): LCD readout with glowing glass, static texture, and an opt-in display font hook
+- [Analog Needle Gauge](/docs/components/needle-gauge): mechanical needle readout with printed scale markings and glass depth
 - [Audio Channel Monitor](/docs/components/meter): stereo output monitor with analog ballistics
 - [Faceted Jewel Lamp](/docs/components/indicator): jewel lamp with bloom and bezel variants
 

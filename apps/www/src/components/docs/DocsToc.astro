@@ -22,8 +22,8 @@ const visibleHeadings = headings.filter((heading) => heading.depth <= 3);
           <a
             href={`#${heading.slug}`}
             class:list={[
-              "block rounded-lg px-2 py-1 transition-colors duration-200 hover:bg-white/[0.04] hover:text-white",
-              heading.depth === 3 && "ml-3 text-[#8a8a8a]",
+              'block rounded-[var(--analog-radius-window)] px-2 py-1 transition-colors duration-200 hover:bg-white/[0.04] hover:text-white',
+              heading.depth === 3 && 'ml-3 text-[#8a8a8a]',
             ]}
           >
             {heading.text}

@@ -34,6 +34,18 @@
   --analog-fallback-font-mono:
     ui-monospace, SFMono-Regular, 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
   --analog-fallback-radius: 0.75rem;
+  --analog-radius-base: clamp(
+    0.3125rem,
+    calc(var(--radius, var(--analog-fallback-radius)) * 0.62),
+    0.5rem
+  );
+  --analog-radius-micro: calc(var(--analog-radius-base) * 0.45);
+  --analog-radius-window: calc(var(--analog-radius-base) * 0.7);
+  --analog-radius-recess: calc(var(--analog-radius-base) * 0.9);
+  --analog-radius-shell: var(--analog-radius-base);
+  --analog-radius-panel: calc(var(--analog-radius-base) * 1.15);
+  --analog-panel-screw-safe-inline: calc(var(--spacing) * 8);
+  --analog-panel-screw-safe-block: calc(var(--spacing) * 10);
   --analog-font-lcd: var(--font-mono, var(--analog-fallback-font-mono));
   --spacing: 0.25rem;
   --analog-surface-cavity: color-mix(
@@ -85,11 +97,7 @@
   --analog-material-hi: var(--analog-surface-metal-hi);
   --analog-material-mid: var(--analog-surface-metal-mid);
   --analog-material-lo: var(--analog-surface-metal-lo);
-  --analog-material-border: color-mix(
-    in oklch,
-    var(--analog-surface-metal-lo) 34%,
-    transparent
-  );
+  --analog-material-border: color-mix(in oklch, var(--analog-surface-metal-lo) 34%, transparent);
   --analog-material-border-strong: color-mix(
     in oklch,
     var(--analog-surface-metal-lo) 52%,
@@ -254,8 +262,8 @@
   --analog-wheel-step-height: calc(var(--spacing) * 10.5);
   --analog-wheel-ridge-height: calc(var(--spacing) * 3);
   --analog-wheel-ridge-inset-inline: calc(var(--spacing) * 2);
-  --analog-wheel-ridge-radius: calc((var(--radius, var(--analog-fallback-radius)) * 0.6) * 0.25);
-  --analog-wheel-slot-radius: calc(var(--radius, var(--analog-fallback-radius)) * 0.6);
+  --analog-wheel-ridge-radius: var(--analog-radius-micro);
+  --analog-wheel-slot-radius: var(--analog-radius-recess);
   --analog-wheel-readout-width: calc(
     var(--analog-wheel-cylinder-width) - (var(--analog-wheel-cylinder-inset-inline) * 2)
   );
@@ -340,11 +348,7 @@
   --analog-material-hi: var(--analog-surface-metal-hi);
   --analog-material-mid: var(--analog-surface-metal-mid);
   --analog-material-lo: var(--analog-surface-metal-lo);
-  --analog-material-border: color-mix(
-    in oklch,
-    var(--analog-surface-metal-lo) 34%,
-    transparent
-  );
+  --analog-material-border: color-mix(in oklch, var(--analog-surface-metal-lo) 34%, transparent);
   --analog-material-border-strong: color-mix(
     in oklch,
     var(--analog-surface-metal-lo) 52%,
@@ -355,23 +359,125 @@
     var(--analog-surface-metal-lo) 42%,
     var(--analog-control-foreground) 58%
   );
+  --analog-rocker-leading-tone-single: color-mix(
+    in oklch,
+    var(--analog-material-mid) 52%,
+    var(--analog-material-hi) 48%
+  );
+  --analog-rocker-leading-tone-dual: color-mix(
+    in oklch,
+    var(--analog-material-mid) 46%,
+    var(--analog-material-hi) 54%
+  );
+  --analog-rocker-center-tone-single: color-mix(in oklch, var(--analog-material-hi) 94%, white 6%);
+  --analog-rocker-center-tone-dual: color-mix(in oklch, var(--analog-material-hi) 96%, white 4%);
+  --analog-rocker-trailing-tone-single: color-mix(
+    in oklch,
+    var(--analog-material-lo) 56%,
+    var(--analog-material-mid) 44%
+  );
+  --analog-rocker-trailing-tone-dual: color-mix(
+    in oklch,
+    var(--analog-material-lo) 42%,
+    var(--analog-material-mid) 58%
+  );
+  --analog-rocker-drop-alpha-single: 0.32;
+  --analog-rocker-drop-alpha-dual: 0.2;
+  --analog-rocker-highlight-alpha: 1;
+  --analog-rocker-opposite-shadow-alpha-single: 0.1;
+  --analog-rocker-opposite-shadow-alpha-dual: 0.04;
+  --analog-rocker-top-highlight-alpha: 0.96;
+  --analog-rocker-ridge-opacity-single: 0.62;
+  --analog-rocker-ridge-opacity-dual: 0.54;
+  --analog-rocker-ridge-edge-tone: color-mix(
+    in oklch,
+    var(--analog-material-mid) 78%,
+    var(--analog-material-hi) 22%
+  );
+  --analog-rocker-ridge-center-tone: color-mix(in oklch, var(--analog-material-hi) 96%, white 4%);
+  --analog-rocker-ridge-highlight-alpha-single: 0.6;
+  --analog-rocker-ridge-highlight-alpha-dual: 0.48;
+  --analog-rocker-ridge-shadow-alpha-single: 0.08;
+  --analog-rocker-ridge-shadow-alpha-dual: 0.04;
+  --analog-rocker-foil-opacity-single: 0.22;
+  --analog-rocker-foil-opacity-dual: 0.14;
+  --analog-rocker-foil-blend: screen;
+  --analog-rocker-foil-filter: none;
+  --analog-rocker-glare-core-alpha-single: 0.64;
+  --analog-rocker-glare-core-alpha-dual: 0.48;
+  --analog-rocker-glare-mid-alpha-single: 0.26;
+  --analog-rocker-glare-mid-alpha-dual: 0.18;
+  --analog-rocker-glare-edge-alpha-single: 0.08;
+  --analog-rocker-glare-edge-alpha-dual: 0.04;
+  --analog-rocker-sheen-highlight-alpha-single: 0.22;
+  --analog-rocker-sheen-highlight-alpha-dual: 0.16;
+  --analog-rocker-sheen-shadow-alpha-single: 0.16;
+  --analog-rocker-sheen-shadow-alpha-dual: 0.1;
+  --analog-rocker-glare-blend: screen;
 }
 
 [data-analog-variant='black'] {
   --analog-material-hi: var(--analog-surface-onyx-hi);
   --analog-material-mid: var(--analog-surface-onyx-mid);
   --analog-material-lo: var(--analog-surface-onyx-lo);
-  --analog-material-border: color-mix(
-    in oklch,
-    var(--analog-control-border) 78%,
-    transparent
-  );
+  --analog-material-border: color-mix(in oklch, var(--analog-control-border) 78%, transparent);
   --analog-material-border-strong: var(--analog-control-border-strong);
-  --analog-material-foreground: color-mix(
+  --analog-material-foreground: color-mix(in oklch, var(--analog-surface-metal-hi) 72%, white 28%);
+  --analog-rocker-leading-tone-single: color-mix(
     in oklch,
-    var(--analog-surface-metal-hi) 72%,
-    white 28%
+    var(--analog-material-mid) 66%,
+    var(--analog-material-hi) 34%
   );
+  --analog-rocker-leading-tone-dual: color-mix(
+    in oklch,
+    var(--analog-material-mid) 66%,
+    var(--analog-material-hi) 34%
+  );
+  --analog-rocker-center-tone-single: color-mix(in oklch, var(--analog-material-hi) 76%, white 24%);
+  --analog-rocker-center-tone-dual: color-mix(in oklch, var(--analog-material-hi) 76%, white 24%);
+  --analog-rocker-trailing-tone-single: color-mix(
+    in oklch,
+    var(--analog-material-lo) 82%,
+    var(--analog-material-mid) 18%
+  );
+  --analog-rocker-trailing-tone-dual: color-mix(
+    in oklch,
+    var(--analog-material-lo) 82%,
+    var(--analog-material-mid) 18%
+  );
+  --analog-rocker-drop-alpha-single: 0.72;
+  --analog-rocker-drop-alpha-dual: 0.72;
+  --analog-rocker-highlight-alpha: 0.24;
+  --analog-rocker-opposite-shadow-alpha-single: 0.56;
+  --analog-rocker-opposite-shadow-alpha-dual: 0.56;
+  --analog-rocker-top-highlight-alpha: 0.18;
+  --analog-rocker-ridge-opacity-single: 0.68;
+  --analog-rocker-ridge-opacity-dual: 0.68;
+  --analog-rocker-ridge-edge-tone: color-mix(
+    in oklch,
+    var(--analog-material-mid) 72%,
+    var(--analog-material-lo) 28%
+  );
+  --analog-rocker-ridge-center-tone: color-mix(in oklch, var(--analog-material-hi) 72%, white 28%);
+  --analog-rocker-ridge-highlight-alpha-single: 0.42;
+  --analog-rocker-ridge-highlight-alpha-dual: 0.42;
+  --analog-rocker-ridge-shadow-alpha-single: 0.46;
+  --analog-rocker-ridge-shadow-alpha-dual: 0.46;
+  --analog-rocker-foil-opacity-single: 0.18;
+  --analog-rocker-foil-opacity-dual: 0.18;
+  --analog-rocker-foil-blend: soft-light;
+  --analog-rocker-foil-filter: grayscale(1) brightness(0.7) contrast(1.05);
+  --analog-rocker-glare-core-alpha-single: 0.18;
+  --analog-rocker-glare-core-alpha-dual: 0.12;
+  --analog-rocker-glare-mid-alpha-single: 0.07;
+  --analog-rocker-glare-mid-alpha-dual: 0.05;
+  --analog-rocker-glare-edge-alpha-single: 0;
+  --analog-rocker-glare-edge-alpha-dual: 0;
+  --analog-rocker-sheen-highlight-alpha-single: 0.06;
+  --analog-rocker-sheen-highlight-alpha-dual: 0.05;
+  --analog-rocker-sheen-shadow-alpha-single: 0.22;
+  --analog-rocker-sheen-shadow-alpha-dual: 0.22;
+  --analog-rocker-glare-blend: screen;
 }
 
 @theme inline {

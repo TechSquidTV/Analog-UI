@@ -1,7 +1,7 @@
 ---
-import BlockDemo from "../../components/blocks/BlockDemo";
-import SiteLayout from "../../layouts/SiteLayout.astro";
-import { getAllBlockNames, getBlockEntry } from "../../lib/blocks";
+import BlockDemo from '../../components/blocks/BlockDemo';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { getAllBlockNames, getBlockEntry } from '../../lib/blocks';
 
 export function getStaticPaths() {
   return getAllBlockNames().map((name) => ({
@@ -9,7 +9,7 @@ export function getStaticPaths() {
   }));
 }
 
-const entry = getBlockEntry(Astro.params.name ?? "");
+const entry = getBlockEntry(Astro.params.name ?? '');
 
 if (!entry) {
   throw new Error(`Missing block entry for "${Astro.params.name}".`);
@@ -26,15 +26,18 @@ if (!entry) {
     </a>
 
     <div class="mt-6 grid gap-8 lg:grid-cols-[320px_minmax(0,1fr)]">
-      <aside class="section-panel h-fit p-5">
+      <aside class="section-panel h-fit min-w-0 p-5">
         <div class="eyebrow mb-4">{entry.categoryLabel}</div>
         <h1 class="text-3xl font-semibold tracking-[-0.03em] text-white">{entry.title}</h1>
         <p class="mt-3 text-base leading-7 text-[#b0b0b0]">{entry.summary}</p>
         <p class="mt-4 text-sm leading-7 text-[#878787]">{entry.description}</p>
 
-        <div class="mt-6 rounded-2xl border border-white/10 bg-black/30 p-4">
+        <div
+          class="mt-6 rounded-[var(--analog-radius-shell)] border border-white/10 bg-black/30 p-4"
+        >
           <div class="micro-label">Install</div>
-          <pre class="mt-3 overflow-x-auto text-xs text-[#e0e0e0]"><code>{`pnpm dlx shadcn@latest add https://analogui.com/r/analog-foundation.json
+          <pre
+            class="mt-3 overflow-x-auto text-xs text-[#e0e0e0]"><code>{`pnpm dlx shadcn@latest add https://analogui.com/r/analog-foundation.json
 pnpm dlx shadcn@latest add https://analogui.com${entry.registryHref}`}</code></pre>
         </div>
 

@@ -1,7 +1,7 @@
 ---
-import DocsSidebar from "../components/docs/DocsSidebar.astro";
-import DocsToc from "../components/docs/DocsToc.astro";
-import SiteLayout from "./SiteLayout.astro";
+import DocsSidebar from '../components/docs/DocsSidebar.astro';
+import DocsToc from '../components/docs/DocsToc.astro';
+import SiteLayout from './SiteLayout.astro';
 
 interface Heading {
   depth: number;
@@ -42,7 +42,9 @@ const { title, description, currentPath, navigation, headings = [] } = Astro.pro
       </p>
     </div>
 
-    <div class="grid gap-8 lg:grid-cols-[250px_minmax(0,1fr)] xl:grid-cols-[250px_minmax(0,1fr)_220px]">
+    <div
+      class="grid gap-8 lg:grid-cols-[250px_minmax(0,1fr)] xl:grid-cols-[250px_minmax(0,1fr)_220px]"
+    >
       <DocsSidebar groups={navigation} currentPath={currentPath} />
       <div class="section-panel min-w-0 p-6 md:p-8">
         <article class="docs-prose">

@@ -119,7 +119,7 @@ export const AnalogToggle = React.forwardRef<HTMLDivElement, AnalogToggleProps>(
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         className={cn(
-          'analog-toggle group relative inline-flex min-w-0 shrink-0 items-center justify-center rounded-lg border-none outline-none select-none',
+          'analog-toggle group relative inline-flex min-w-0 shrink-0 items-center justify-center rounded-[var(--analog-radius-shell)] border-none outline-none select-none',
           isVertical ? 'h-[104px] w-12' : 'h-12 w-[104px]',
           className,
         )}
@@ -160,7 +160,7 @@ export const AnalogToggle = React.forwardRef<HTMLDivElement, AnalogToggleProps>(
 
         {/* Outer Bevel / Base Plate */}
         <div
-          className="absolute inset-0 rounded-lg pointer-events-none"
+          className="absolute inset-0 rounded-[var(--analog-radius-shell)] pointer-events-none"
           style={{
             background: basePlateBackground,
             boxShadow: isChrome
@@ -170,13 +170,13 @@ export const AnalogToggle = React.forwardRef<HTMLDivElement, AnalogToggleProps>(
         >
           {/* Inner Recess / Track */}
           <div
-            className="absolute inset-[var(--spacing-track-padding)] rounded-md analog-surface-recess"
+            className="absolute inset-[var(--spacing-track-padding)] rounded-[var(--analog-radius-recess)] analog-surface-recess"
             style={{ perspective: '800px' }}
           >
             {/* Rocker Pivot Container */}
             <RockerThumbSurface
               className={cn(
-                'absolute rounded-sm',
+                'absolute rounded-[var(--analog-radius-window)]',
                 isVertical ? 'inset-x-[2px] inset-y-[6px]' : 'inset-y-[2px] inset-x-[6px]',
               )}
               variant={resolvedVariant}

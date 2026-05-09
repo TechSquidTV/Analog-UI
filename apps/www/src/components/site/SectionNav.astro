@@ -12,7 +12,7 @@ interface Props {
 const { links, currentPath } = Astro.props;
 
 const isActive = (href: string) =>
-  href === "/blocks"
+  href === '/blocks'
     ? currentPath === href
     : currentPath === href || currentPath.startsWith(`${href}/`);
 ---
@@ -24,10 +24,10 @@ const isActive = (href: string) =>
         <a
           href={link.href}
           class:list={[
-            "rounded-full border px-4 py-2 text-sm transition-colors duration-200",
+            'rounded-full border px-4 py-2 text-sm transition-colors duration-200',
             isActive(link.href)
-              ? "border-white/14 bg-white/[0.08] text-white"
-              : "border-white/8 bg-white/[0.02] text-[#b5b5b5] hover:border-white/14 hover:bg-white/[0.06] hover:text-white",
+              ? 'border-white/14 bg-white/[0.08] text-white'
+              : 'border-white/8 bg-white/[0.02] text-[#b5b5b5] hover:border-white/14 hover:bg-white/[0.06] hover:text-white',
           ]}
         >
           {link.label}

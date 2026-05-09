@@ -18,6 +18,6 @@ export function useMergedRefs<T>(...refs: Array<React.Ref<T> | undefined>) {
         setRef(ref, value);
       }
     },
-    refs
+    refs,
   );
 }

@@ -166,32 +166,32 @@ export const AnalogWheelNumber = React.forwardRef<HTMLDivElement, AnalogWheelNum
         className={cn('flex w-full min-w-0 max-w-[8rem] flex-col items-stretch gap-4', className)}
       >
         <NumberField.Group
-          className="z-20 flex w-full min-w-0 items-center rounded-md border p-1"
+          className="z-20 flex w-full min-w-0 items-center rounded-[var(--analog-radius-recess)] border p-1"
           style={{
             borderColor: 'var(--analog-control-border)',
             backgroundColor: 'var(--analog-control-surface)',
             boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.8)',
           }}
         >
-          <NumberField.Decrement className="flex size-8 cursor-pointer items-center justify-center rounded-sm text-[var(--analog-control-foreground-muted)] transition-all outline-none hover:bg-[var(--analog-control-surface-strong)] hover:text-[var(--analog-control-foreground)] hover:shadow-[0_1px_2px_rgba(0,0,0,0.5)] active:bg-[var(--analog-surface-cavity-strong)] active:shadow-none">
+          <NumberField.Decrement className="flex size-8 cursor-pointer items-center justify-center rounded-[var(--analog-radius-micro)] text-[var(--analog-control-foreground-muted)] transition-all outline-none hover:bg-[var(--analog-control-surface-strong)] hover:text-[var(--analog-control-foreground)] hover:shadow-[0_1px_2px_rgba(0,0,0,0.5)] active:bg-[var(--analog-surface-cavity-strong)] active:shadow-none">
             <MinusIcon className="size-4 pointer-events-none" />
           </NumberField.Decrement>
           <NumberField.Input className="min-w-0 flex-1 bg-transparent px-2 text-center font-mono text-sm font-bold text-[var(--analog-control-foreground)] tabular-nums outline-none selection:bg-[var(--analog-control-selection)] selection:text-[var(--analog-control-foreground)]" />
-          <NumberField.Increment className="flex size-8 cursor-pointer items-center justify-center rounded-sm text-[var(--analog-control-foreground-muted)] transition-all outline-none hover:bg-[var(--analog-control-surface-strong)] hover:text-[var(--analog-control-foreground)] hover:shadow-[0_1px_2px_rgba(0,0,0,0.5)] active:bg-[var(--analog-surface-cavity-strong)] active:shadow-none">
+          <NumberField.Increment className="flex size-8 cursor-pointer items-center justify-center rounded-[var(--analog-radius-micro)] text-[var(--analog-control-foreground-muted)] transition-all outline-none hover:bg-[var(--analog-control-surface-strong)] hover:text-[var(--analog-control-foreground)] hover:shadow-[0_1px_2px_rgba(0,0,0,0.5)] active:bg-[var(--analog-surface-cavity-strong)] active:shadow-none">
             <PlusIcon className="size-4 pointer-events-none" />
           </NumberField.Increment>
         </NumberField.Group>
 
         <div
-          className="relative flex w-full min-w-0 overflow-hidden rounded-md p-[var(--spacing-track-padding)] analog-surface-recess"
+          className="relative flex w-full min-w-0 overflow-hidden rounded-[var(--analog-radius-recess)] p-[var(--spacing-track-padding)] analog-surface-recess"
           style={{ ...lightingStyle, ...wheelFaceStyle }}
         >
-          <div className="absolute inset-[2px] rounded-[4px] analog-track-slot" />
+          <div className="absolute inset-[2px] rounded-[var(--analog-wheel-slot-radius)] analog-track-slot" />
           <NumberField.ScrubArea
             ref={scrubAreaRef}
             direction="vertical"
             pixelSensitivity={3}
-            className="relative h-48 w-full min-w-0 cursor-ns-resize select-none overflow-hidden rounded-md analog-track-slot analog-track-slot-deep"
+            className="relative h-48 w-full min-w-0 cursor-ns-resize select-none overflow-hidden rounded-[var(--analog-wheel-slot-radius)] analog-track-slot analog-track-slot-deep"
             style={{
               perspective: 800,
             }}

@@ -23,6 +23,8 @@ import {
   PanelTitle,
   SquareButton,
   SquareToggle,
+  NeedleGauge,
+  type NeedleGaugeScalePreset,
   useMouseLumination,
 } from '../../../../../packages/analog-ui/src/index';
 import { cn } from '../../../../../packages/analog-ui/src/lib/utils';
@@ -31,7 +33,7 @@ import type { BlockName } from '../../data/block-catalog';
 
 type DemoMode = 'compact' | 'full';
 
-export interface BlockDemoProps {
+interface BlockDemoProps {
   name: BlockName;
   mode?: DemoMode;
 }
@@ -87,7 +89,7 @@ function useAudioMeter() {
 
 function FooterItem({ label, value }: { label: string; value: ReactNode }) {
   return (
-    <div className="min-w-[110px] flex-1 rounded-2xl border border-white/10 bg-black/30 px-3 py-2">
+    <div className="min-w-[110px] flex-1 rounded-[var(--analog-radius-shell)] border border-white/10 bg-black/30 px-3 py-2">
       <div className="text-[9px] font-semibold uppercase tracking-[0.26em] text-[#787878]">
         {label}
       </div>
@@ -142,12 +144,12 @@ function DemoStage({
       <div
         ref={surfaceRef}
         className={cn(
-          'section-panel rounded-[26px]',
+          'section-panel',
           mode === 'compact' ? 'min-h-[280px] p-5' : 'min-h-[430px] p-8',
         )}
       >
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_34%)]" />
-        <div className="pointer-events-none absolute inset-[1px] rounded-[24px] border border-white/4" />
+        <div className="pointer-events-none absolute inset-[1px] rounded-[var(--analog-radius-shell)] border border-white/4" />
         <div className="relative z-10 flex h-full flex-col gap-6">
           <div className="flex flex-1 items-center justify-center">{children}</div>
           {footer ? <div className="flex flex-wrap gap-3">{footer}</div> : null}
@@ -486,7 +488,7 @@ function GaugeDemo({ mode }: { mode: DemoMode }) {
       footer={
         <>
           <FooterItem label="Value" value={`${value}%`} />
-          <div className="flex min-w-[180px] flex-1 flex-wrap gap-2 rounded-2xl border border-white/10 bg-black/30 px-3 py-2">
+          <div className="flex min-w-[180px] flex-1 flex-wrap gap-2 rounded-[var(--analog-radius-shell)] border border-white/10 bg-black/30 px-3 py-2">
             <div className="w-full text-[9px] font-semibold uppercase tracking-[0.26em] text-[#787878]">
               Variant
             </div>
@@ -531,7 +533,7 @@ function LCDDisplayDemo({ mode }: { mode: DemoMode }) {
         <>
           <FooterItem label="Readout" value={current.value} />
           <FooterItem label="Preset" value={current.label} />
-          <div className="flex min-w-[220px] flex-1 flex-wrap gap-2 rounded-2xl border border-white/10 bg-black/30 px-3 py-2">
+          <div className="flex min-w-[220px] flex-1 flex-wrap gap-2 rounded-[var(--analog-radius-shell)] border border-white/10 bg-black/30 px-3 py-2">
             <div className="w-full text-[9px] font-semibold uppercase tracking-[0.26em] text-[#787878]">
               Variant
             </div>
@@ -579,6 +581,76 @@ function LCDDisplayDemo({ mode }: { mode: DemoMode }) {
           />
         ) : null}
       </div>
+    </DemoStage>
+  );
+}
+
+function NeedleGaugeDemo({ mode }: { mode: DemoMode }) {
+  const presets = {
+    vu: { value: -3, unit: 'VU', label: 'OUTPUT', points: [-14, -3, 2] },
+    dbfs: { value: -9, unit: 'dB', label: 'BUS', points: [-32, -9, 3] },
+    linear: { value: 64, unit: '%', label: 'LOAD', points: [18, 64, 94] },
+  } satisfies Record<
+    NeedleGaugeScalePreset,
+    { value: number; unit: string; label: string; points: [number, number, number] }
+  >;
+  const [scalePreset, setScalePreset] = useState<NeedleGaugeScalePreset>('vu');
+  const [value, setValue] = useState(presets.vu.value);
+  const [variant, setVariant] = useState<'chrome' | 'black'>('chrome');
+  const preset = presets[scalePreset];
+
+  const setPreset = (nextPreset: NeedleGaugeScalePreset) => {
+    setScalePreset(nextPreset);
+    setValue(presets[nextPreset].value);
+  };
+
+  return (
+    <DemoStage
+      mode={mode}
+      footer={
+        <>
+          <FooterItem label="Needle" value={`${value}${preset.unit}`} />
+          <div className="flex min-w-0 flex-1 basis-full flex-wrap gap-2 rounded-[var(--analog-radius-shell)] border border-white/10 bg-black/30 px-3 py-2 sm:min-w-[220px] sm:basis-auto">
+            <div className="w-full text-[9px] font-semibold uppercase tracking-[0.26em] text-[#787878]">
+              Range
+            </div>
+            <ControlButton isActive={scalePreset === 'vu'} onClick={() => setPreset('vu')}>
+              VU
+            </ControlButton>
+            <ControlButton isActive={scalePreset === 'dbfs'} onClick={() => setPreset('dbfs')}>
+              dBFS
+            </ControlButton>
+            <ControlButton isActive={scalePreset === 'linear'} onClick={() => setPreset('linear')}>
+              Load
+            </ControlButton>
+          </div>
+          {mode === 'full' ? (
+            <div className="flex min-w-0 flex-1 basis-full flex-wrap gap-2 rounded-[var(--analog-radius-shell)] border border-white/10 bg-black/30 px-3 py-2 sm:min-w-[260px] sm:basis-auto">
+              <div className="w-full text-[9px] font-semibold uppercase tracking-[0.26em] text-[#787878]">
+                Reading
+              </div>
+              <ControlButton onClick={() => setValue(preset.points[0])}>Low</ControlButton>
+              <ControlButton onClick={() => setValue(preset.points[1])}>Nom</ControlButton>
+              <ControlButton onClick={() => setValue(preset.points[2])}>Peak</ControlButton>
+              <ControlButton
+                isActive={variant === 'black'}
+                onClick={() => setVariant((current) => (current === 'chrome' ? 'black' : 'chrome'))}
+              >
+                Shell
+              </ControlButton>
+            </div>
+          ) : null}
+        </>
+      }
+    >
+      <NeedleGauge
+        value={value}
+        scalePreset={scalePreset}
+        unit={preset.unit}
+        label={preset.label}
+        variant={variant}
+        className={mode === 'compact' ? 'max-w-[17rem]' : 'max-w-full sm:max-w-[22rem]'}
+      />
     </DemoStage>
   );
 }
@@ -849,6 +921,8 @@ export default function BlockDemo({ name, mode = 'full' }: BlockDemoProps) {
       return <GaugeDemo mode={mode} />;
     case 'lcd-display':
       return <LCDDisplayDemo mode={mode} />;
+    case 'needle-gauge':
+      return <NeedleGaugeDemo mode={mode} />;
     case 'meter':
       return <MeterDemo mode={mode} />;
     case 'indicator':

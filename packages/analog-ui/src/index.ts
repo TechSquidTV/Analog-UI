@@ -9,6 +9,7 @@ export * from './registry/components/analog/Gauge';
 export * from './registry/components/analog/Indicator';
 export * from './registry/components/analog/LCDDisplay';
 export * from './registry/components/analog/Meter';
+export * from './registry/components/analog/NeedleGauge';
 export * from './registry/components/analog/Panel';
 export * from './registry/components/analog/Slider';
 export * from './registry/components/analog/Switch';

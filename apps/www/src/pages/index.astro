@@ -1,4 +1,6 @@
 ---
+import HomeLaunchPanel from '../components/home/HomeLaunchPanel';
+import HomeRouteCards from '../components/home/HomeRouteCards';
 import HomeVstSurface from '../components/home/HomeVstSurface';
 import { getFeaturedBlocks } from '../lib/blocks';
 import { getRegistryItems } from '../lib/registry';
@@ -33,70 +35,15 @@ const registryUiCount = getRegistryItems().filter((item) => item.type === 'regis
         </div>
       </div>
 
-      <div class="section-panel p-6">
-        <div class="eyebrow mb-4">Launch Surface</div>
-        <div class="grid gap-4 md:grid-cols-3">
-          <div class="rounded-2xl border border-white/10 bg-black/30 p-4">
-            <div class="micro-label">UI Items</div>
-            <div class="mt-2 text-3xl font-semibold text-white">{registryUiCount}</div>
-          </div>
-          <div class="rounded-2xl border border-white/10 bg-black/30 p-4">
-            <div class="micro-label">Featured Blocks</div>
-            <div class="mt-2 text-3xl font-semibold text-white">{featuredBlocks.length}</div>
-          </div>
-          <div class="rounded-2xl border border-white/10 bg-black/30 p-4">
-            <div class="micro-label">Registry Feed</div>
-            <div class="mt-2 text-3xl font-semibold text-white">/r</div>
-          </div>
-        </div>
-
-        <div class="mt-6 rounded-[24px] border border-white/10 bg-black/35 p-4">
-          <div class="micro-label">First Install</div>
-          <pre
-            class="mt-3 overflow-x-auto text-xs text-[#e6e6e6]"><code>{`pnpm dlx shadcn@latest add https://analogui.com/r/analog-foundation.json
-pnpm dlx shadcn@latest add https://analogui.com/r/dial.json`}</code></pre>
-        </div>
-      </div>
+      <HomeLaunchPanel
+        featuredBlocksCount={featuredBlocks.length}
+        registryUiCount={registryUiCount}
+      />
     </div>
   </section>
 
-  <section class="site-frame mt-8 grid gap-4 md:grid-cols-3">
-    <a href="/docs" class="section-panel p-5 transition-colors duration-200 hover:bg-white/[0.05]">
-      <div class="eyebrow">Get Started</div>
-      <h2 class="mt-3 text-2xl font-semibold text-white">
-        Install the foundation and wire the lighting model
-      </h2>
-      <p class="mt-3 text-sm leading-7 text-[#959595]">
-        Start with the docs flow people expect: introduction, installation, tokens, and registry
-        setup before you pull components into an app.
-      </p>
-    </a>
-
-    <a
-      href="/docs/components"
-      class="section-panel p-5 transition-colors duration-200 hover:bg-white/[0.05]"
-    >
-      <div class="eyebrow">Components</div>
-      <h2 class="mt-3 text-2xl font-semibold text-white">
-        Browse every public control in one place
-      </h2>
-      <p class="mt-3 text-sm leading-7 text-[#959595]">
-        Use the hub page and per-component docs routes for install commands, dependencies, previews,
-        and quick jumps into the examples.
-      </p>
-    </a>
-
-    <a
-      href="/blocks"
-      class="section-panel p-5 transition-colors duration-200 hover:bg-white/[0.05]"
-    >
-      <div class="eyebrow">Blocks</div>
-      <h2 class="mt-3 text-2xl font-semibold text-white">See the examples grouped by family</h2>
-      <p class="mt-3 text-sm leading-7 text-[#959595]">
-        `/blocks` remains the examples surface: category pages, broader demos, and install-adjacent
-        browsing for design review.
-      </p>
-    </a>
+  <section class="site-frame mt-8">
+    <HomeRouteCards />
   </section>
 
   <section class="site-frame mt-16">

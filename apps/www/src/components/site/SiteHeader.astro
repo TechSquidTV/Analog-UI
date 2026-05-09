@@ -6,9 +6,9 @@ interface Props {
 const { pathname } = Astro.props;
 
 const links = [
-  { href: "/docs", label: "Docs" },
-  { href: "/docs/components", label: "Components" },
-  { href: "/blocks", label: "Blocks" },
+  { href: '/docs', label: 'Docs' },
+  { href: '/docs/components', label: 'Components' },
+  { href: '/blocks', label: 'Blocks' },
 ];
 
 const activeHref = links
@@ -19,11 +19,13 @@ const activeHref = links
 <header class="sticky top-0 z-50 border-b border-white/8 bg-[#060606]/82 backdrop-blur-xl">
   <div class="site-frame flex flex-wrap items-center justify-between gap-4 py-4">
     <a href="/" class="flex items-center gap-4">
-      <span class="flex h-12 w-12 items-center justify-center rounded-[18px] border border-white/10 bg-white/[0.04] p-2 shadow-[0_16px_40px_rgba(0,0,0,0.32)]">
+      <span
+        class="flex h-12 w-12 items-center justify-center rounded-[var(--analog-radius-panel)] border border-white/10 bg-white/[0.04] p-2 shadow-[0_16px_40px_rgba(0,0,0,0.32)]"
+      >
         <img
           src="/img/logo/SVG/logo.svg"
           alt="Analog UI logo"
-          class="h-full w-full rounded-[14px] object-cover"
+          class="h-full w-full rounded-[var(--analog-radius-shell)] object-cover"
         />
       </span>
       <span class="min-w-0">
@@ -40,10 +42,10 @@ const activeHref = links
           <a
             href={link.href}
             class:list={[
-              "rounded-full border px-4 py-2 text-sm transition-colors duration-200",
+              'rounded-full border px-4 py-2 text-sm transition-colors duration-200',
               activeHref === link.href
-                ? "border-white/14 bg-white/[0.08] text-white"
-                : "border-white/8 bg-white/[0.02] text-[#b8b8b8] hover:border-white/14 hover:bg-white/[0.06] hover:text-white",
+                ? 'border-white/14 bg-white/[0.08] text-white'
+                : 'border-white/8 bg-white/[0.02] text-[#b8b8b8] hover:border-white/14 hover:bg-white/[0.06] hover:text-white',
             ]}
           >
             {link.label}

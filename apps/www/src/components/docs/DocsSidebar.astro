@@ -16,7 +16,7 @@ interface Props {
 
 const { groups, currentPath } = Astro.props;
 const isComponentsRoute =
-  currentPath === "/docs/components" || currentPath.startsWith("/docs/components/");
+  currentPath === '/docs/components' || currentPath.startsWith('/docs/components/');
 ---
 
 <aside class="docs-sidebar-shell h-fit lg:sticky lg:top-24">
@@ -25,20 +25,18 @@ const isComponentsRoute =
       <div class="mb-5 last:mb-0">
         <div class="docs-sidebar-heading">{group.section}</div>
         <div class="space-y-1">
-          {
-            (group.section === "Components" && !isComponentsRoute
-              ? group.items.slice(0, 1)
-              : group.items
-            ).map((item) => (
-              <a
-                href={item.href}
-                class="docs-sidebar-link"
-                data-active={item.href === currentPath || undefined}
-              >
-                {item.label}
-              </a>
-            ))
-          }
+          {(group.section === 'Components' && !isComponentsRoute
+            ? group.items.slice(0, 1)
+            : group.items
+          ).map((item) => (
+            <a
+              href={item.href}
+              class="docs-sidebar-link"
+              data-active={item.href === currentPath || undefined}
+            >
+              {item.label}
+            </a>
+          ))}
         </div>
       </div>
     ))

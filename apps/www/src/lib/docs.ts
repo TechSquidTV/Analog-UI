@@ -2,7 +2,7 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 
 import { getBlockEntries } from './blocks';
 
-export type DocEntry = CollectionEntry<'docs'>;
+type DocEntry = CollectionEntry<'docs'>;
 
 const sectionOrder = {
   introduction: 0,

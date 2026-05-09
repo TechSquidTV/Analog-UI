@@ -1,0 +1,57 @@
+import * as React from 'react';
+import {
+  AnalogLightingProvider,
+  Panel,
+  PanelHeader,
+  PanelContent,
+  PanelTitle,
+} from '../../../../../packages/analog-ui/src/index';
+
+interface HomeLaunchPanelProps {
+  registryUiCount: number;
+  featuredBlocksCount: number;
+}
+
+function MetricCard({ label, value }: { label: string; value: React.ReactNode }) {
+  return (
+    <Panel screws={false} variant="default">
+      <PanelContent className="relative z-10 p-4">
+        <div className="micro-label">{label}</div>
+        <PanelTitle className="mt-2 text-3xl font-semibold text-white">{value}</PanelTitle>
+      </PanelContent>
+    </Panel>
+  );
+}
+
+export default function HomeLaunchPanel({
+  registryUiCount,
+  featuredBlocksCount,
+}: HomeLaunchPanelProps) {
+  return (
+    <AnalogLightingProvider baseAngle={180} power={1}>
+      <Panel className="flex flex-col" screwHole="slot" variant="rack">
+        <PanelHeader className="gap-2 p-6 pb-0">
+          <div className="eyebrow mb-4">Launch Surface</div>
+        </PanelHeader>
+        <PanelContent className="grid gap-6 px-6 pb-6 pt-4">
+          <div className="grid gap-4 md:grid-cols-3">
+            <MetricCard label="UI Items" value={registryUiCount} />
+            <MetricCard label="Featured Blocks" value={featuredBlocksCount} />
+            <MetricCard label="Registry Feed" value="/r" />
+          </div>
+          <div className="mt-6">
+            <Panel screws={false} variant="default">
+              <PanelContent className="p-4">
+                <div className="micro-label">First Install</div>
+                <pre className="mt-3 overflow-x-auto font-mono text-xs leading-7 text-[#e6e6e6]">
+                  <code>{`pnpm dlx shadcn@latest add https://analogui.com/r/analog-foundation.json
+pnpm dlx shadcn@latest add https://analogui.com/r/dial.json`}</code>
+                </pre>
+              </PanelContent>
+            </Panel>
+          </div>
+        </PanelContent>
+      </Panel>
+    </AnalogLightingProvider>
+  );
+}

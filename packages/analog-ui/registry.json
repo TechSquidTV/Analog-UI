@@ -17,6 +17,14 @@
           "analog-grain-opacity": "0.36",
           "analog-foil-opacity": "0.3",
           "analog-bloom-strength": "0.7",
+          "analog-radius-base": "clamp(0.3125rem, calc(var(--radius, 0.75rem) * 0.62), 0.5rem)",
+          "analog-radius-micro": "calc(var(--analog-radius-base) * 0.45)",
+          "analog-radius-window": "calc(var(--analog-radius-base) * 0.7)",
+          "analog-radius-recess": "calc(var(--analog-radius-base) * 0.9)",
+          "analog-radius-shell": "var(--analog-radius-base)",
+          "analog-radius-panel": "calc(var(--analog-radius-base) * 1.15)",
+          "analog-panel-screw-safe-inline": "calc(var(--spacing) * 8)",
+          "analog-panel-screw-safe-block": "calc(var(--spacing) * 10)",
           "analog-track-padding": "calc(var(--spacing) * 1)",
           "analog-light-source": "180deg",
           "spacing-track-padding": "var(--analog-track-padding)",
@@ -91,8 +99,8 @@
           "analog-wheel-step-height": "calc(var(--spacing) * 10.5)",
           "analog-wheel-ridge-height": "calc(var(--spacing) * 3)",
           "analog-wheel-ridge-inset-inline": "calc(var(--spacing) * 2)",
-          "analog-wheel-ridge-radius": "calc((var(--radius) * 0.6) * 0.25)",
-          "analog-wheel-slot-radius": "calc(var(--radius) * 0.6)",
+          "analog-wheel-ridge-radius": "var(--analog-radius-micro)",
+          "analog-wheel-slot-radius": "var(--analog-radius-recess)",
           "analog-wheel-readout-width": "calc(var(--analog-wheel-cylinder-width) - (var(--analog-wheel-cylinder-inset-inline) * 2))",
           "analog-wheel-readout-height": "calc(var(--spacing) * 10)",
           "analog-wheel-label-min-width": "var(--analog-wheel-readout-width)",
@@ -320,6 +328,25 @@
       "files": [
         {
           "path": "src/registry/components/analog/LCDDisplay.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "needle-gauge",
+      "title": "Analog Needle Gauge",
+      "type": "registry:ui",
+      "description": "A mechanical readout gauge with printed scale markings, colored range zones, a glass lens, and a lit physical needle.",
+      "dependencies": ["@base-ui/react"],
+      "registryDependencies": [
+        "analog-foundation",
+        "use-analog-lighting",
+        "use-analog-material",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "src/registry/components/analog/NeedleGauge.tsx",
           "type": "registry:ui"
         }
       ]

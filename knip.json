@@ -2,10 +2,7 @@
   "$schema": "./node_modules/knip/schema.json",
   "workspaces": {
     "apps/www": {
-      "ignoreDependencies": ["analog-ui", "tailwindcss"]
-    },
-    "packages/analog-ui": {
-      "ignoreFiles": ["src/registry/components/hyper/Indicator.tsx"]
+      "ignoreDependencies": ["analog-ui", "geist", "tailwindcss"]
     }
   }
 }

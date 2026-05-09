@@ -1,7 +1,7 @@
-import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
-export interface RegistryItem {
+interface RegistryItem {
   name: string;
   title: string;
   type: string;
@@ -15,10 +15,10 @@ interface RegistryDocument {
 }
 
 const registryPath = fileURLToPath(
-  new URL("../../../../packages/analog-ui/registry.json", import.meta.url),
+  new URL('../../../../packages/analog-ui/registry.json', import.meta.url),
 );
 
-const registry = JSON.parse(readFileSync(registryPath, "utf8")) as RegistryDocument;
+const registry = JSON.parse(readFileSync(registryPath, 'utf8')) as RegistryDocument;
 const registryItemsByName = new Map(registry.items.map((item) => [item.name, item]));
 
 export function getRegistryItems() {

@@ -514,7 +514,7 @@ export const AnalogWheelSelect = React.forwardRef<HTMLDivElement, AnalogWheelSel
         {...props}
         ref={mergedRef}
         className={cn(
-          'relative flex min-w-0 items-center justify-center select-none touch-none overflow-visible rounded-md p-[var(--spacing-track-padding)] analog-surface-recess',
+          'relative flex min-w-0 items-center justify-center select-none touch-none overflow-visible rounded-[var(--analog-radius-recess)] p-[var(--spacing-track-padding)] analog-surface-recess',
           className,
         )}
         style={{
@@ -550,7 +550,7 @@ export const AnalogWheelSelect = React.forwardRef<HTMLDivElement, AnalogWheelSel
         <div className="relative flex size-full items-center justify-center">
           <div
             className={cn(
-              'relative h-full overflow-hidden rounded-md analog-track-slot analog-track-slot-deep',
+              'relative h-full overflow-hidden rounded-[var(--analog-wheel-slot-radius)] analog-track-slot analog-track-slot-deep',
             )}
             style={{
               width: 'var(--analog-wheel-cylinder-width)',
@@ -558,7 +558,7 @@ export const AnalogWheelSelect = React.forwardRef<HTMLDivElement, AnalogWheelSel
             }}
           >
             <div
-              className="pointer-events-none absolute inset-y-0 rounded-sm border"
+              className="pointer-events-none absolute inset-y-0 rounded-[var(--analog-radius-window)] border"
               style={{
                 insetInline: 'var(--analog-wheel-cylinder-inset-inline)',
                 borderColor:

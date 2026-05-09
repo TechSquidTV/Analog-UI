@@ -1,7 +1,12 @@
-import { blockCatalog, blockCategories, type BlockCategory, type BlockName } from "../data/block-catalog";
-import { getRegistryItem } from "./registry";
+import {
+  blockCatalog,
+  blockCategories,
+  type BlockCategory,
+  type BlockName,
+} from '../data/block-catalog';
+import { getRegistryItem } from './registry';
 
-export interface BlockEntry {
+interface BlockEntry {
   name: BlockName;
   category: BlockCategory;
   categoryLabel: string;
@@ -67,5 +72,5 @@ export function getBlockEntries(category?: BlockCategory) {
 
 export function getFeaturedBlocks(limit?: number) {
   const featured = getBlockEntries().filter((entry) => entry.featured);
-  return typeof limit === "number" ? featured.slice(0, limit) : featured;
+  return typeof limit === 'number' ? featured.slice(0, limit) : featured;
 }

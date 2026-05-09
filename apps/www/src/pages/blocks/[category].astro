@@ -1,10 +1,10 @@
 ---
-import BlockDemo from "../../components/blocks/BlockDemo";
-import BlockShowcase from "../../components/blocks/BlockShowcase.astro";
-import SectionNav from "../../components/site/SectionNav.astro";
-import { blockCategories, type BlockCategory } from "../../data/block-catalog";
-import SiteLayout from "../../layouts/SiteLayout.astro";
-import { getBlockEntries } from "../../lib/blocks";
+import BlockDemo from '../../components/blocks/BlockDemo';
+import BlockShowcase from '../../components/blocks/BlockShowcase.astro';
+import SectionNav from '../../components/site/SectionNav.astro';
+import { blockCategories, type BlockCategory } from '../../data/block-catalog';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { getBlockEntries } from '../../lib/blocks';
 
 export function getStaticPaths() {
   return Object.keys(blockCategories).map((category) => ({
@@ -17,7 +17,7 @@ const categoryMeta = blockCategories[category];
 const blocks = getBlockEntries(category);
 
 const navLinks = [
-  { href: "/blocks", label: "Featured" },
+  { href: '/blocks', label: 'Featured' },
   ...Object.entries(blockCategories).map(([slug, meta]) => ({
     href: `/blocks/${slug}`,
     label: meta.label,

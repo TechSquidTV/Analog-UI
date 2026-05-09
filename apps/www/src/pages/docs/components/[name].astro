@@ -1,24 +1,24 @@
 ---
-import BlockDemo from "../../../components/blocks/BlockDemo";
-import type { BlockName } from "../../../data/block-catalog";
-import DocsLayout from "../../../layouts/DocsLayout.astro";
-import { getBlockEntries, getBlockEntry } from "../../../lib/blocks";
-import { getComponentDocHref, getDocsNavigation } from "../../../lib/docs";
+import BlockDemo from '../../../components/blocks/BlockDemo';
+import type { BlockName } from '../../../data/block-catalog';
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import { getBlockEntries, getBlockEntry } from '../../../lib/blocks';
+import { getComponentDocHref, getDocsNavigation } from '../../../lib/docs';
 
 function toPascalCase(value: string) {
   return value
-    .split("-")
+    .split('-')
     .map((part) => `${part.slice(0, 1).toUpperCase()}${part.slice(1)}`)
-    .join("");
+    .join('');
 }
 
 function getPackageImportName(name: BlockName) {
-  if (name === "rocker-thumb-surface") {
+  if (name === 'rocker-thumb-surface') {
     return undefined;
   }
 
-  if (name === "lcd-display") {
-    return "LCDDisplay";
+  if (name === 'lcd-display') {
+    return 'LCDDisplay';
   }
 
   return toPascalCase(name);
@@ -30,7 +30,7 @@ export function getStaticPaths() {
   }));
 }
 
-const entry = getBlockEntry(Astro.params.name ?? "");
+const entry = getBlockEntry(Astro.params.name ?? '');
 
 if (!entry) {
   throw new Error(`Missing component docs entry for "${Astro.params.name}".`);
@@ -39,10 +39,10 @@ if (!entry) {
 const navigation = await getDocsNavigation();
 const packageImportName = getPackageImportName(entry.name);
 const headings = [
-  { depth: 2, slug: "overview", text: "Overview" },
-  { depth: 2, slug: "installation", text: "Installation" },
-  { depth: 2, slug: "preview-and-examples", text: "Preview and examples" },
-  { depth: 2, slug: "dependencies", text: "Dependencies" },
+  { depth: 2, slug: 'overview', text: 'Overview' },
+  { depth: 2, slug: 'installation', text: 'Installation' },
+  { depth: 2, slug: 'preview-and-examples', text: 'Preview and examples' },
+  { depth: 2, slug: 'dependencies', text: 'Dependencies' },
 ];
 const registryInstallSnippet = `pnpm dlx shadcn@latest add https://analogui.com/r/analog-foundation.json
 pnpm dlx shadcn@latest add https://analogui.com${entry.registryHref}`;
@@ -63,15 +63,15 @@ import { ${packageImportName} } from "analog-ui";`
   <p>{entry.summary}</p>
   <p>
     {entry.description}
-    {" "}
-    Use this page for install details and the isolated preview, then jump to{" "}
+    {' '}
+    Use this page for install details and the isolated preview, then jump to{' '}
     <a href={entry.href}>{entry.categoryLabel} blocks</a> when you want examples in context.
   </p>
 
   <div class="not-prose mt-6 grid gap-3 sm:grid-cols-3">
     <a
       href={entry.href}
-      class="rounded-[24px] border border-white/10 bg-black/30 p-4 transition-colors duration-200 hover:bg-white/[0.05]"
+      class="rounded-[var(--analog-radius-shell)] border border-white/10 bg-black/30 p-4 transition-colors duration-200 hover:bg-white/[0.05]"
     >
       <div class="micro-label">Block Family</div>
       <div class="mt-2 text-lg font-semibold text-white">{entry.categoryLabel}</div>
@@ -79,7 +79,7 @@ import { ${packageImportName} } from "analog-ui";`
     </a>
     <a
       href={entry.viewHref}
-      class="rounded-[24px] border border-white/10 bg-black/30 p-4 transition-colors duration-200 hover:bg-white/[0.05]"
+      class="rounded-[var(--analog-radius-shell)] border border-white/10 bg-black/30 p-4 transition-colors duration-200 hover:bg-white/[0.05]"
     >
       <div class="micro-label">Isolated Preview</div>
       <div class="mt-2 text-lg font-semibold text-white">{entry.viewHref}</div>
@@ -89,7 +89,7 @@ import { ${packageImportName} } from "analog-ui";`
     </a>
     <a
       href={entry.registryHref}
-      class="rounded-[24px] border border-white/10 bg-black/30 p-4 transition-colors duration-200 hover:bg-white/[0.05]"
+      class="rounded-[var(--analog-radius-shell)] border border-white/10 bg-black/30 p-4 transition-colors duration-200 hover:bg-white/[0.05]"
     >
       <div class="micro-label">Registry JSON</div>
       <div class="mt-2 text-lg font-semibold text-white">{entry.registryHref}</div>
@@ -116,7 +116,9 @@ import { ${packageImportName} } from "analog-ui";`
           If you are consuming the package directly, import the shared stylesheet once and then pull
           the component from the package barrel.
         </p>
-        <pre><code>{packageImportSnippet}</code></pre>
+        <pre>
+          <code>{packageImportSnippet}</code>
+        </pre>
       </>
     ) : (
       <blockquote>
@@ -132,7 +134,9 @@ import { ${packageImportName} } from "analog-ui";`
     Use both when you are evaluating fit, naming, and interaction quality.
   </p>
 
-  <div class="not-prose mt-6 rounded-[28px] border border-white/10 bg-black/35 p-4 md:p-6">
+  <div
+    class="not-prose mt-6 rounded-[var(--analog-radius-panel)] border border-white/10 bg-black/35 p-4 md:p-6"
+  >
     <BlockDemo name={entry.name} mode="full" client:load />
   </div>
 
@@ -140,9 +144,7 @@ import { ${packageImportName} } from "analog-ui";`
     <a class="pill-link" href={entry.href}>
       Browse {entry.categoryLabel} Blocks
     </a>
-    <a class="pill-link" href={entry.viewHref}>
-      Open Isolated Preview
-    </a>
+    <a class="pill-link" href={entry.viewHref}> Open Isolated Preview </a>
   </div>
 
   <h2 id="dependencies">Dependencies</h2>
@@ -152,7 +154,7 @@ import { ${packageImportName} } from "analog-ui";`
   </p>
 
   <div class="not-prose mt-6 grid gap-4 md:grid-cols-2">
-    <div class="rounded-[24px] border border-white/10 bg-black/30 p-4">
+    <div class="rounded-[var(--analog-radius-shell)] border border-white/10 bg-black/30 p-4">
       <div class="micro-label">Registry Dependencies</div>
       <div class="mt-4 flex flex-wrap gap-2">
         {
@@ -169,7 +171,7 @@ import { ${packageImportName} } from "analog-ui";`
       </div>
     </div>
 
-    <div class="rounded-[24px] border border-white/10 bg-black/30 p-4">
+    <div class="rounded-[var(--analog-radius-shell)] border border-white/10 bg-black/30 p-4">
       <div class="micro-label">Package Dependencies</div>
       <div class="mt-4 flex flex-wrap gap-2">
         {

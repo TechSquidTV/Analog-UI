@@ -556,7 +556,7 @@ export const AnalogMeterGroup = React.forwardRef<HTMLDivElement, AnalogMeterGrou
           role={role ?? 'group'}
           data-orientation={orientation}
           className={cn(
-            'relative inline-flex min-w-0 max-w-full rounded-xl border border-transparent p-[var(--spacing-track-padding)] text-[color:var(--analog-panel-foreground)]',
+            'relative inline-flex min-w-0 max-w-full rounded-[var(--analog-radius-panel)] border border-transparent p-[var(--spacing-track-padding)] text-[color:var(--analog-panel-foreground)]',
             orientation === 'horizontal' ? 'flex-row items-stretch' : 'flex-col items-stretch',
             className,
           )}
@@ -567,10 +567,10 @@ export const AnalogMeterGroup = React.forwardRef<HTMLDivElement, AnalogMeterGrou
           }}
           {...props}
         >
-          <div className="relative overflow-hidden rounded-lg analog-surface-recess p-[var(--spacing-track-padding)]">
+          <div className="relative overflow-hidden rounded-[var(--analog-radius-shell)] analog-surface-recess p-[var(--spacing-track-padding)]">
             <div
               className={cn(
-                'relative overflow-hidden rounded-[calc(var(--radius-lg)-5px)] analog-track-slot analog-track-slot-unlit',
+                'relative overflow-hidden rounded-[var(--analog-radius-recess)] analog-track-slot analog-track-slot-unlit',
                 orientation === 'horizontal' ? 'px-3 py-3' : 'px-3 py-3',
               )}
             >

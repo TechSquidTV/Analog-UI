@@ -54,8 +54,8 @@ const displaySizeStyles = {
   sm: {
     rootClass: 'p-[5px]',
     screenClass: 'px-3 py-2',
-    rootRadius: 'calc(var(--radius, 0.75rem) * 1.5)',
-    screenRadius: 'calc(var(--radius, 0.75rem) * 1.15)',
+    rootRadius: 'var(--analog-radius-shell)',
+    screenRadius: 'var(--analog-radius-window)',
     label: 'text-[8px] tracking-[0.34em]',
     units: 'text-[11px] tracking-[0.24em]',
     value: 'text-[24px] tracking-[0.12em]',
@@ -65,8 +65,8 @@ const displaySizeStyles = {
   md: {
     rootClass: 'p-[6px]',
     screenClass: 'px-4 py-3',
-    rootRadius: 'calc(var(--radius, 0.75rem) * 1.85)',
-    screenRadius: 'calc(var(--radius, 0.75rem) * 1.5)',
+    rootRadius: 'var(--analog-radius-panel)',
+    screenRadius: 'var(--analog-radius-recess)',
     label: 'text-[9px] tracking-[0.34em]',
     units: 'text-[13px] tracking-[0.24em]',
     value: 'text-[32px] tracking-[0.14em]',
@@ -76,8 +76,8 @@ const displaySizeStyles = {
   lg: {
     rootClass: 'p-[7px]',
     screenClass: 'px-5 py-4',
-    rootRadius: 'calc(var(--radius, 0.75rem) * 2.35)',
-    screenRadius: 'calc(var(--radius, 0.75rem) * 1.85)',
+    rootRadius: 'calc(var(--analog-radius-panel) + 2px)',
+    screenRadius: 'var(--analog-radius-shell)',
     label: 'text-[10px] tracking-[0.38em]',
     units: 'text-[15px] tracking-[0.24em]',
     value: 'text-[42px] tracking-[0.16em]',

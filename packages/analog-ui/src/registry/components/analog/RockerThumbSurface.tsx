@@ -1,12 +1,19 @@
 import * as React from 'react';
 import { cn } from '../../../lib/utils';
 import type { AnalogOrientation } from './orientation';
-import { useAnalogMaterialVariant, type AnalogMaterialVariant } from '../../hooks/use-analog-material';
+import {
+  useAnalogMaterialVariant,
+  type AnalogMaterialVariant,
+} from '../../hooks/use-analog-material';
 
 type RockerVariant = AnalogMaterialVariant;
 type RockerOrientation = AnalogOrientation;
 type RockerRaisedSide = 'start' | 'end' | 'both';
 type RockerSingleSide = Exclude<RockerRaisedSide, 'both'>;
+type RockerSurfaceMode = 'single' | 'dual';
+
+const cssVariableBlendMode = (value: `var(${string})`) =>
+  value as unknown as React.CSSProperties['mixBlendMode'];
 
 interface RockerThumbSurfaceProps {
   className?: string;
@@ -21,6 +28,11 @@ const axisGradientAngle = (orientation: RockerOrientation) =>
   orientation === 'horizontal'
     ? 'calc(var(--analog-light-angle-thumb, 180deg) - 90deg)'
     : 'var(--analog-light-angle-thumb, 180deg)';
+
+const crossAxisGradientAngle = (orientation: RockerOrientation) =>
+  orientation === 'horizontal'
+    ? 'calc(var(--analog-light-angle-thumb, 180deg) - 10deg)'
+    : 'calc(var(--analog-light-angle-thumb, 180deg) - 100deg)';
 
 const axisInset = (
   orientation: RockerOrientation,
@@ -47,21 +59,23 @@ const axisDrop = (
     : `${crossOffset}px ${direction === 'start' ? mainOffset : -mainOffset}px ${blur}px ${spread}px ${color}`;
 
 const singleFaceBackground = (
-  variant: RockerVariant,
   orientation: RockerOrientation,
   raisedSide: RockerSingleSide,
+  surfaceMode: RockerSurfaceMode,
 ) => {
   const angle = axisGradientAngle(orientation);
   const leadingTone =
-    variant === 'chrome'
-      ? 'color-mix(in oklch, var(--analog-surface-metal-mid) 68%, var(--analog-surface-metal-hi) 32%)'
-      : 'color-mix(in oklch, var(--analog-surface-onyx-mid) 74%, var(--analog-surface-onyx-hi) 26%)';
+    surfaceMode === 'dual'
+      ? 'var(--analog-rocker-leading-tone-dual)'
+      : 'var(--analog-rocker-leading-tone-single)';
   const centerTone =
-    variant === 'chrome'
-      ? 'color-mix(in oklch, var(--analog-surface-metal-hi) 88%, white 12%)'
-      : 'color-mix(in oklch, var(--analog-surface-onyx-hi) 60%, var(--analog-surface-metal-lo) 40%)';
+    surfaceMode === 'dual'
+      ? 'var(--analog-rocker-center-tone-dual)'
+      : 'var(--analog-rocker-center-tone-single)';
   const trailingTone =
-    variant === 'chrome' ? 'var(--analog-surface-metal-lo)' : 'var(--analog-surface-onyx-lo)';
+    surfaceMode === 'dual'
+      ? 'var(--analog-rocker-trailing-tone-dual)'
+      : 'var(--analog-rocker-trailing-tone-single)';
   const [startTone, endTone] =
     raisedSide === 'start' ? [leadingTone, trailingTone] : [trailingTone, leadingTone];
 
@@ -69,11 +83,18 @@ const singleFaceBackground = (
 };
 
 const singleFaceShadow = (
-  variant: RockerVariant,
   orientation: RockerOrientation,
   raisedSide: RockerSingleSide,
+  surfaceMode: RockerSurfaceMode,
 ) => {
-  const isChrome = variant === 'chrome';
+  const dropAlpha =
+    surfaceMode === 'dual'
+      ? 'var(--analog-rocker-drop-alpha-dual)'
+      : 'var(--analog-rocker-drop-alpha-single)';
+  const oppositeShadowAlpha =
+    surfaceMode === 'dual'
+      ? 'var(--analog-rocker-opposite-shadow-alpha-dual)'
+      : 'var(--analog-rocker-opposite-shadow-alpha-single)';
   const drop = axisDrop(
     orientation,
     raisedSide,
@@ -81,9 +102,7 @@ const singleFaceShadow = (
     6,
     15,
     -4,
-    isChrome
-      ? `rgba(0,0,0,calc(0.7 * var(--analog-light-power, 1)))`
-      : `rgba(0,0,0,calc(0.95 * var(--analog-light-power, 1)))`,
+    `rgba(0,0,0,calc(${dropAlpha} * var(--analog-light-power, 1)))`,
   );
 
   return [
@@ -92,25 +111,17 @@ const singleFaceShadow = (
       orientation,
       raisedSide,
       2,
-      isChrome ? 6 : 4,
-      isChrome
-        ? `rgba(255,255,255,calc(1 * var(--analog-light-power, 1)))`
-        : `rgba(255,255,255,calc(0.15 * var(--analog-light-power, 1)))`,
+      6,
+      `rgba(255,255,255,calc(var(--analog-rocker-highlight-alpha) * var(--analog-light-power, 1)))`,
     ),
     axisInset(
       orientation,
       raisedSide === 'start' ? 'end' : 'start',
       6,
       12,
-      isChrome
-        ? `rgba(0,0,0,calc(0.4 * var(--analog-light-power, 1)))`
-        : `rgba(0,0,0,calc(0.9 * var(--analog-light-power, 1)))`,
+      `rgba(0,0,0,calc(${oppositeShadowAlpha} * var(--analog-light-power, 1)))`,
     ),
-    `inset 0 1px ${isChrome ? 3 : 2}px ${
-      isChrome
-        ? `rgba(255,255,255,calc(0.9 * var(--analog-light-power, 1)))`
-        : `rgba(255,255,255,calc(0.1 * var(--analog-light-power, 1)))`
-    }`,
+    `inset 0 1px 3px rgba(255,255,255,calc(var(--analog-rocker-top-highlight-alpha) * var(--analog-light-power, 1)))`,
   ].join(', ');
 };
 
@@ -127,29 +138,42 @@ const getContainerTransform = (orientation: RockerOrientation, raisedSide: Rocke
 };
 
 const getSingleFaceStyle = (
-  variant: RockerVariant,
   orientation: RockerOrientation,
   raisedSide: RockerSingleSide,
+  surfaceMode: RockerSurfaceMode,
 ): React.CSSProperties => ({
-  background: singleFaceBackground(variant, orientation, raisedSide),
-  boxShadow: singleFaceShadow(variant, orientation, raisedSide),
+  background: singleFaceBackground(orientation, raisedSide, surfaceMode),
+  boxShadow: singleFaceShadow(orientation, raisedSide, surfaceMode),
 });
 
 const GripRidges = ({
-  isChrome,
   orientation,
   position,
+  surfaceMode,
 }: {
-  isChrome: boolean;
   orientation: RockerOrientation;
   position: 'start' | 'end';
+  surfaceMode: RockerSurfaceMode;
 }) => {
   const isHorizontal = orientation === 'horizontal';
+  const ridgeOpacity =
+    surfaceMode === 'dual'
+      ? 'var(--analog-rocker-ridge-opacity-dual)'
+      : 'var(--analog-rocker-ridge-opacity-single)';
+  const ridgeHighlightAlpha =
+    surfaceMode === 'dual'
+      ? 'var(--analog-rocker-ridge-highlight-alpha-dual)'
+      : 'var(--analog-rocker-ridge-highlight-alpha-single)';
+  const ridgeShadowAlpha =
+    surfaceMode === 'dual'
+      ? 'var(--analog-rocker-ridge-shadow-alpha-dual)'
+      : 'var(--analog-rocker-ridge-shadow-alpha-single)';
 
   return (
     <div
       className={cn(
-        'absolute pointer-events-none opacity-80 mix-blend-hard-light',
+        'absolute pointer-events-none',
+        'mix-blend-soft-light',
         isHorizontal
           ? 'top-1/2 -translate-y-1/2 flex h-[56%] gap-[4px] px-1'
           : 'left-1/2 -translate-x-1/2 flex w-[56%] flex-col gap-[4px] py-1',
@@ -161,32 +185,20 @@ const GripRidges = ({
             ? 'top-[18%]'
             : 'bottom-[18%]',
       )}
+      style={{ opacity: ridgeOpacity }}
     >
       {[...Array(4)].map((_, index) => (
         <div
           key={`${position}-ridge-${index}`}
-          className={cn(isHorizontal ? 'h-full w-[2px]' : 'h-[2px] w-full', 'rounded-sm')}
+          className={cn(
+            isHorizontal ? 'h-full w-[2px]' : 'h-[2px] w-full',
+            'rounded-[var(--analog-radius-micro)]',
+          )}
           style={{
-            background: `linear-gradient(${isHorizontal ? 'to right' : 'to bottom'}, ${
-              isChrome
-                ? 'color-mix(in oklch, var(--analog-surface-metal-mid) 72%, var(--analog-surface-metal-lo) 28%)'
-                : 'color-mix(in oklch, var(--analog-surface-onyx-mid) 78%, var(--analog-surface-onyx-lo) 22%)'
-            }, ${
-              isChrome
-                ? 'color-mix(in oklch, var(--analog-surface-metal-hi) 92%, white 8%)'
-                : 'color-mix(in oklch, var(--analog-surface-onyx-hi) 54%, var(--analog-surface-metal-lo) 46%)'
-            } 50%, ${
-              isChrome
-                ? 'color-mix(in oklch, var(--analog-surface-metal-mid) 72%, var(--analog-surface-metal-lo) 28%)'
-                : 'color-mix(in oklch, var(--analog-surface-onyx-mid) 78%, var(--analog-surface-onyx-lo) 22%)'
-            })`,
+            background: `linear-gradient(${isHorizontal ? 'to right' : 'to bottom'}, var(--analog-rocker-ridge-edge-tone), var(--analog-rocker-ridge-center-tone) 50%, var(--analog-rocker-ridge-edge-tone))`,
             boxShadow: isHorizontal
-              ? isChrome
-                ? `1px 0 1px rgba(255,255,255,calc(0.9 * var(--analog-light-power, 1))), -1px 0 1px rgba(0,0,0,calc(0.2 * var(--analog-light-power, 1)))`
-                : `1px 0 1px rgba(255,255,255,calc(0.3 * var(--analog-light-power, 1))), -1px 0 2px rgba(0,0,0,calc(0.8 * var(--analog-light-power, 1)))`
-              : isChrome
-                ? `0 1px 1px rgba(255,255,255,calc(0.9 * var(--analog-light-power, 1))), 0 -1px 1px rgba(0,0,0,calc(0.2 * var(--analog-light-power, 1)))`
-                : `0 1px 1px rgba(255,255,255,calc(0.3 * var(--analog-light-power, 1))), 0 -1px 2px rgba(0,0,0,calc(0.8 * var(--analog-light-power, 1)))`,
+              ? `1px 0 1px rgba(255,255,255,calc(${ridgeHighlightAlpha} * var(--analog-light-power, 1))), -1px 0 2px rgba(0,0,0,calc(${ridgeShadowAlpha} * var(--analog-light-power, 1)))`
+              : `0 1px 1px rgba(255,255,255,calc(${ridgeHighlightAlpha} * var(--analog-light-power, 1))), 0 -1px 2px rgba(0,0,0,calc(${ridgeShadowAlpha} * var(--analog-light-power, 1)))`,
           }}
         />
       ))}
@@ -195,34 +207,74 @@ const GripRidges = ({
 };
 
 function RockerOverlay({
-  variant,
   orientation,
   showCenterSeam = true,
   gripPositions = ['start', 'end'],
+  surfaceMode,
   children,
 }: {
-  variant: RockerVariant;
   orientation: RockerOrientation;
   showCenterSeam?: boolean;
   gripPositions?: Array<'start' | 'end'>;
+  surfaceMode: RockerSurfaceMode;
   children?: React.ReactNode;
 }) {
-  const isChrome = variant === 'chrome';
+  const foilOpacity =
+    surfaceMode === 'dual'
+      ? 'var(--analog-rocker-foil-opacity-dual)'
+      : 'var(--analog-rocker-foil-opacity-single)';
+  const glareCoreAlpha =
+    surfaceMode === 'dual'
+      ? 'var(--analog-rocker-glare-core-alpha-dual)'
+      : 'var(--analog-rocker-glare-core-alpha-single)';
+  const glareMidAlpha =
+    surfaceMode === 'dual'
+      ? 'var(--analog-rocker-glare-mid-alpha-dual)'
+      : 'var(--analog-rocker-glare-mid-alpha-single)';
+  const glareEdgeAlpha =
+    surfaceMode === 'dual'
+      ? 'var(--analog-rocker-glare-edge-alpha-dual)'
+      : 'var(--analog-rocker-glare-edge-alpha-single)';
+  const sheenHighlightAlpha =
+    surfaceMode === 'dual'
+      ? 'var(--analog-rocker-sheen-highlight-alpha-dual)'
+      : 'var(--analog-rocker-sheen-highlight-alpha-single)';
+  const sheenShadowAlpha =
+    surfaceMode === 'dual'
+      ? 'var(--analog-rocker-sheen-shadow-alpha-dual)'
+      : 'var(--analog-rocker-sheen-shadow-alpha-single)';
 
   return (
-    <div className="absolute inset-0 overflow-hidden rounded-sm">
+    <div className="absolute inset-0 overflow-hidden rounded-[var(--analog-radius-window)]">
       <div
-        className={cn(
-          'analog-foil z-[1]',
-          isChrome ? 'opacity-40' : 'opacity-30 filter grayscale brightness-50',
-        )}
-        style={{ backgroundSize: '250%' }}
+        className="analog-foil z-[1]"
+        style={{
+          backgroundSize: '250%',
+          opacity: foilOpacity,
+          mixBlendMode: cssVariableBlendMode('var(--analog-rocker-foil-blend)'),
+          filter: 'var(--analog-rocker-foil-filter)',
+        }}
+      />
+      <div
+        className="absolute inset-0 z-[2] pointer-events-none"
+        style={{
+          background: `linear-gradient(${axisGradientAngle(orientation)}, rgba(255,255,255,calc(${sheenHighlightAlpha} * var(--analog-light-power, 1))) 0%, rgba(255,255,255,0.02) 38%, rgba(255,255,255,0) 56%, rgba(0,0,0,calc(${sheenShadowAlpha} * var(--analog-light-power, 1))) 100%)`,
+        }}
+      />
+      <div
+        className="absolute inset-0 z-[3] pointer-events-none"
+        style={{
+          mixBlendMode: cssVariableBlendMode('var(--analog-rocker-glare-blend)'),
+          background: `linear-gradient(${crossAxisGradientAngle(orientation)}, transparent 4%, rgba(255,255,255,calc(${glareEdgeAlpha} * 0.85 * var(--analog-light-power, 1))) 24%, rgba(255,255,255,calc(${glareMidAlpha} * var(--analog-light-power, 1))) 40%, rgba(255,255,255,calc(${glareCoreAlpha} * 0.72 * var(--analog-light-power, 1))) 50%, rgba(255,255,255,calc(${glareMidAlpha} * var(--analog-light-power, 1))) 60%, rgba(255,255,255,calc(${glareEdgeAlpha} * 0.85 * var(--analog-light-power, 1))) 76%, transparent 96%), radial-gradient(110% 72% at 50% 24%, rgba(255,255,255,calc(${glareMidAlpha} * var(--analog-light-power, 1))) 0%, rgba(255,255,255,calc(${glareEdgeAlpha} * var(--analog-light-power, 1))) 42%, transparent 78%)`,
+          filter: 'blur(1.35px)',
+        }}
       />
 
       {showCenterSeam ? (
         <div
           className={cn(
-            'absolute bg-black/20 z-[2]',
+            'absolute z-[4]',
+            'bg-black/10',
             orientation === 'horizontal'
               ? 'top-0 bottom-0 left-1/2 -ml-[1px] w-[2px]'
               : 'left-0 right-0 top-1/2 -mt-[1px] h-[2px]',
@@ -230,20 +282,20 @@ function RockerOverlay({
           style={{
             boxShadow:
               orientation === 'horizontal'
-                ? `1px 0 0 rgba(255,255,255,calc(0.2 * var(--analog-light-power, 1)))`
-                : `0 1px 0 rgba(255,255,255,calc(0.2 * var(--analog-light-power, 1)))`,
+                ? `1px 0 0 rgba(255,255,255,calc(0.1 * var(--analog-light-power, 1)))`
+                : `0 1px 0 rgba(255,255,255,calc(0.1 * var(--analog-light-power, 1)))`,
           }}
         />
       ) : null}
 
-      {children ? <div className="absolute inset-0 z-[4]">{children}</div> : null}
+      {children ? <div className="absolute inset-0 z-[6]">{children}</div> : null}
 
-      <div className="absolute inset-0 z-[3]">
+      <div className="absolute inset-0 z-[5]">
         {gripPositions.includes('start') ? (
-          <GripRidges isChrome={isChrome} orientation={orientation} position="start" />
+          <GripRidges orientation={orientation} position="start" surfaceMode={surfaceMode} />
         ) : null}
         {gripPositions.includes('end') ? (
-          <GripRidges isChrome={isChrome} orientation={orientation} position="end" />
+          <GripRidges orientation={orientation} position="end" surfaceMode={surfaceMode} />
         ) : null}
       </div>
     </div>
@@ -253,29 +305,27 @@ function RockerOverlay({
 function RockerSegment({
   className,
   faceClassName,
-  variant,
   orientation,
   raisedSide,
   extrusionLayers,
+  surfaceMode,
   style,
   children,
 }: {
   className?: string;
   faceClassName?: string;
-  variant: RockerVariant;
   orientation: RockerOrientation;
   raisedSide: RockerSingleSide;
   extrusionLayers: number;
+  surfaceMode: RockerSurfaceMode;
   style?: React.CSSProperties;
   children?: React.ReactNode;
 }) {
-  const isChrome = variant === 'chrome';
-
   return (
     <div className={cn('pointer-events-none', className)} style={style}>
       <div className="relative size-full" style={{ perspective: '800px' }}>
         <div
-          className="absolute inset-0 rounded-sm"
+          className="absolute inset-0 rounded-[var(--analog-radius-window)]"
           style={{
             transformOrigin: 'center',
             transform: getContainerTransform(orientation, raisedSide),
@@ -286,15 +336,11 @@ function RockerSegment({
           {[...Array(extrusionLayers)].map((_, index) => (
             <div
               key={`extrusion-${raisedSide}-${index}`}
-              className="absolute inset-0 rounded-sm border"
+              className="absolute inset-0 rounded-[var(--analog-radius-window)] border"
               style={{
                 transform: `translateZ(-${index + 1}px)`,
-                backgroundColor: isChrome
-                  ? 'var(--analog-surface-metal-mid)'
-                  : 'var(--analog-surface-onyx-mid)',
-                borderColor: isChrome
-                  ? 'color-mix(in oklch, var(--analog-surface-metal-lo) 34%, transparent)'
-                  : 'color-mix(in oklch, var(--analog-control-border) 78%, transparent)',
+                backgroundColor: 'var(--analog-material-mid)',
+                borderColor: 'var(--analog-material-border)',
               }}
             />
           ))}
@@ -302,7 +348,7 @@ function RockerSegment({
           <div
             className={cn('absolute inset-0', faceClassName)}
             style={{
-              ...getSingleFaceStyle(variant, orientation, raisedSide),
+              ...getSingleFaceStyle(orientation, raisedSide, surfaceMode),
               transformStyle: 'preserve-3d',
               transition: 'all 0.3s cubic-bezier(1, 0, 1, 1)',
             }}
@@ -339,6 +385,7 @@ export function RockerThumbSurface({
 }: RockerThumbSurfaceProps) {
   const resolvedVariant = useAnalogMaterialVariant(variant);
   const isDual = raisedSide === 'both';
+  const surfaceMode: RockerSurfaceMode = isDual ? 'dual' : 'single';
 
   if (!isDual) {
     return (
@@ -348,13 +395,13 @@ export function RockerThumbSurface({
       >
         <RockerSegment
           className="absolute inset-0"
-          faceClassName="overflow-hidden rounded-sm"
-          variant={resolvedVariant}
+          faceClassName="overflow-hidden rounded-[var(--analog-radius-window)]"
           orientation={orientation}
           raisedSide={raisedSide}
           extrusionLayers={extrusionLayers}
+          surfaceMode={surfaceMode}
         >
-          <RockerOverlay variant={resolvedVariant} orientation={orientation}>
+          <RockerOverlay orientation={orientation} surfaceMode={surfaceMode}>
             {children}
           </RockerOverlay>
         </RockerSegment>
@@ -369,34 +416,34 @@ export function RockerThumbSurface({
     >
       <RockerSegment
         className="absolute inset-0"
-        faceClassName="overflow-hidden rounded-sm"
-        variant={resolvedVariant}
+        faceClassName="overflow-hidden rounded-[var(--analog-radius-window)]"
         orientation={orientation}
         raisedSide="end"
         extrusionLayers={extrusionLayers}
+        surfaceMode={surfaceMode}
         style={getDualClipStyle(orientation, 'start')}
       >
         <RockerOverlay
-          variant={resolvedVariant}
           orientation={orientation}
           showCenterSeam={false}
           gripPositions={['start']}
+          surfaceMode={surfaceMode}
         />
       </RockerSegment>
       <RockerSegment
         className="absolute inset-0"
-        faceClassName="overflow-hidden rounded-sm"
-        variant={resolvedVariant}
+        faceClassName="overflow-hidden rounded-[var(--analog-radius-window)]"
         orientation={orientation}
         raisedSide="start"
         extrusionLayers={extrusionLayers}
+        surfaceMode={surfaceMode}
         style={getDualClipStyle(orientation, 'end')}
       >
         <RockerOverlay
-          variant={resolvedVariant}
           orientation={orientation}
           showCenterSeam={false}
           gripPositions={['end']}
+          surfaceMode={surfaceMode}
         />
       </RockerSegment>
       {children ? (

@@ -134,13 +134,19 @@ const Panel = React.forwardRef<HTMLDivElement, PanelProps>(
       <div
         ref={ref}
         className={cn(
-          'relative overflow-hidden rounded-xl border text-[var(--analog-panel-foreground)]',
+          'relative overflow-hidden rounded-[var(--analog-radius-panel)] border text-[var(--analog-panel-foreground)]',
           variantStyles[variant],
           className,
         )}
         style={{
           ...lightingStyle,
           ...style,
+          ...(screws
+            ? {
+                paddingInline: 'var(--analog-panel-screw-safe-inline, calc(var(--spacing) * 8))',
+                paddingBlock: 'var(--analog-panel-screw-safe-block, calc(var(--spacing) * 8))',
+              }
+            : null),
           ...(variant === 'rack'
             ? {
                 background:

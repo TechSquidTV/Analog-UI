@@ -1,4 +1,4 @@
-import { getDocBySlug, getDocsEntries } from "../../lib/docs";
+import { getDocBySlug, getDocsEntries } from '../../lib/docs';
 
 export async function getStaticPaths() {
   const entries = await getDocsEntries();
@@ -12,12 +12,12 @@ export async function GET({ params }: { params: { slug?: string } }) {
   const entry = await getDocBySlug(params.slug);
 
   if (!entry) {
-    return new Response("Not found", { status: 404 });
+    return new Response('Not found', { status: 404 });
   }
 
   return new Response(entry.body, {
     headers: {
-      "Content-Type": "text/markdown; charset=utf-8",
+      'Content-Type': 'text/markdown; charset=utf-8',
     },
   });
 }

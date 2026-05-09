@@ -156,13 +156,13 @@ export const AnalogSlider = React.forwardRef<HTMLDivElement, AnalogSliderProps>(
               style={{ willChange: 'transform' }}
             >
               <RockerThumbSurface
-                className="absolute inset-0 rounded-sm"
+                className="absolute inset-0 rounded-[var(--analog-radius-window)]"
                 variant={resolvedVariant}
                 orientation={orientation}
                 raisedSide="both"
                 extrusionLayers={16}
               >
-                <div className="absolute inset-[4px] rounded-[6px] ring-2 ring-[var(--color-accent)] opacity-0 group-has-[[data-focus-visible]]:opacity-100 transition-opacity duration-300 pointer-events-none z-[4]" />
+                <div className="absolute inset-[4px] rounded-[var(--analog-radius-micro)] ring-2 ring-[var(--color-accent)] opacity-0 group-has-[[data-focus-visible]]:opacity-100 transition-opacity duration-300 pointer-events-none z-[4]" />
               </RockerThumbSurface>
             </Slider.Thumb>
           </Slider.Track>

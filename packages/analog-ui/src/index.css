@@ -328,8 +328,7 @@
     opacity: calc(0.95 * var(--analog-light-power, 1));
     background:
       radial-gradient(
-        circle at
-          calc(50% + sin(var(--analog-light-angle-thumb, 180deg)) * 22%)
+        circle at calc(50% + sin(var(--analog-light-angle-thumb, 180deg)) * 22%)
           calc(50% + cos(var(--analog-light-angle-thumb, 180deg)) * -22%),
         rgba(255, 255, 255, 0.92) 0%,
         rgba(255, 255, 255, 0.48) 18%,
@@ -351,8 +350,7 @@
     opacity: calc(0.58 * var(--analog-light-power, 1));
     background:
       radial-gradient(
-        circle at
-          calc(50% + sin(var(--analog-light-angle-thumb, 180deg)) * 18%)
+        circle at calc(50% + sin(var(--analog-light-angle-thumb, 180deg)) * 18%)
           calc(50% + cos(var(--analog-light-angle-thumb, 180deg)) * -18%),
         rgba(255, 255, 255, 0.42) 0%,
         rgba(255, 255, 255, 0.22) 18%,
