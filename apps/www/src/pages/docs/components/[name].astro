@@ -1,27 +1,17 @@
 ---
 import BlockDemo from '../../../components/blocks/BlockDemo';
-import type { BlockName } from '../../../data/block-catalog';
+import ComponentPreview from '../../../components/docs/ComponentPreview.astro';
+import DocsCodeBlock from '../../../components/docs/DocsCodeBlock.astro';
+import { getComponentPageDoc } from '../../../data/component-docs';
 import DocsLayout from '../../../layouts/DocsLayout.astro';
 import { getBlockEntries, getBlockEntry } from '../../../lib/blocks';
 import { getComponentDocHref, getDocsNavigation } from '../../../lib/docs';
 
-function toPascalCase(value: string) {
+function slugify(value: string) {
   return value
-    .split('-')
-    .map((part) => `${part.slice(0, 1).toUpperCase()}${part.slice(1)}`)
-    .join('');
-}
-
-function getPackageImportName(name: BlockName) {
-  if (name === 'rocker-thumb-surface') {
-    return undefined;
-  }
-
-  if (name === 'lcd-display') {
-    return 'LCDDisplay';
-  }
-
-  return toPascalCase(name);
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
 }
 
 export function getStaticPaths() {
@@ -37,19 +27,21 @@ if (!entry) {
 }
 
 const navigation = await getDocsNavigation();
-const packageImportName = getPackageImportName(entry.name);
+const componentDoc = getComponentPageDoc(entry.name);
 const headings = [
-  { depth: 2, slug: 'overview', text: 'Overview' },
+  { depth: 2, slug: 'example', text: 'Example' },
   { depth: 2, slug: 'installation', text: 'Installation' },
-  { depth: 2, slug: 'preview-and-examples', text: 'Preview and examples' },
-  { depth: 2, slug: 'dependencies', text: 'Dependencies' },
+  { depth: 2, slug: 'usage', text: 'Usage' },
+  { depth: 2, slug: 'api-reference', text: 'API Reference' },
+  ...componentDoc.api.map((section) => ({
+    depth: 3,
+    slug: slugify(section.title),
+    text: section.title,
+  })),
 ];
 const registryInstallSnippet = `pnpm dlx shadcn@latest add https://analogui.com/r/analog-foundation.json
 pnpm dlx shadcn@latest add https://analogui.com${entry.registryHref}`;
-const packageImportSnippet = packageImportName
-  ? `import "analog-ui/styles.css";
-import { ${packageImportName} } from "analog-ui";`
-  : undefined;
+const packageInstallSnippet = `pnpm add analog-ui`;
 ---
 
 <DocsLayout
@@ -59,98 +51,123 @@ import { ${packageImportName} } from "analog-ui";`
   navigation={navigation}
   headings={headings}
 >
-  <h2 id="overview">Overview</h2>
   <p>{entry.summary}</p>
   <p>
     {entry.description}
     {' '}
-    Use this page for install details and the isolated preview, then jump to{' '}
-    <a href={entry.href}>{entry.categoryLabel} blocks</a> when you want examples in context.
+    Use the example first, then keep going for install commands, copyable usage, and API notes.
   </p>
 
-  <div class="not-prose mt-6 grid gap-3 sm:grid-cols-3">
-    <a
-      href={entry.href}
-      class="rounded-[var(--analog-radius-shell)] border border-white/10 bg-black/30 p-4 transition-colors duration-200 hover:bg-white/[0.05]"
-    >
-      <div class="micro-label">Block Family</div>
-      <div class="mt-2 text-lg font-semibold text-white">{entry.categoryLabel}</div>
-      <p class="mt-2 text-sm leading-6 text-[#9f9f9f]">{entry.categoryDescription}</p>
-    </a>
-    <a
-      href={entry.viewHref}
-      class="rounded-[var(--analog-radius-shell)] border border-white/10 bg-black/30 p-4 transition-colors duration-200 hover:bg-white/[0.05]"
-    >
-      <div class="micro-label">Isolated Preview</div>
-      <div class="mt-2 text-lg font-semibold text-white">{entry.viewHref}</div>
-      <p class="mt-2 text-sm leading-6 text-[#9f9f9f]">
-        Open the focused route for screenshots, QA, and single-control review.
-      </p>
-    </a>
-    <a
-      href={entry.registryHref}
-      class="rounded-[var(--analog-radius-shell)] border border-white/10 bg-black/30 p-4 transition-colors duration-200 hover:bg-white/[0.05]"
-    >
-      <div class="micro-label">Registry JSON</div>
-      <div class="mt-2 text-lg font-semibold text-white">{entry.registryHref}</div>
-      <p class="mt-2 text-sm leading-6 text-[#9f9f9f]">
-        Pull the component source through the shadcn-compatible registry flow.
-      </p>
-    </a>
+  <h2 id="example">Example</h2>
+  <p>
+    The preview below renders the component in the Analog UI demo surface. Copy the source to start
+    from a smaller standalone example in your own app.
+  </p>
+
+  <ComponentPreview
+    code={componentDoc.exampleCode}
+    title={`${entry.title} Example`}
+    description="Interactive preview with copyable source."
+    codeLabel="Source"
+  >
+    <BlockDemo slot="preview" name={entry.name} mode="full" client:load />
+  </ComponentPreview>
+
+  <div class="not-prose mt-6 flex flex-wrap gap-3">
+    <a class="pill-link" href="/docs/components">All Components</a>
+    <a class="pill-link" href={entry.viewHref}> Open Isolated Preview </a>
   </div>
 
   <h2 id="installation">Installation</h2>
   <p>
-    Install the shared foundation first so the material tokens and analog lighting variables are
-    present, then add the component registry item you need.
+    Install the shared foundation first so the material tokens and analog lighting variables are in
+    place, then add this component from the shadcn-compatible registry.
   </p>
 
   <h3>Registry</h3>
-  <pre><code>{registryInstallSnippet}</code></pre>
+  <DocsCodeBlock code={registryInstallSnippet} label="Terminal" lang="bash" />
 
   {
-    packageImportSnippet ? (
+    componentDoc.packageImportCode ? (
       <>
         <h3>Package</h3>
         <p>
-          If you are consuming the package directly, import the shared stylesheet once and then pull
-          the component from the package barrel.
+          If you prefer the package instead of copied source, install the package and import the
+          shared stylesheet once in your app.
         </p>
-        <pre>
-          <code>{packageImportSnippet}</code>
-        </pre>
+        <DocsCodeBlock code={packageInstallSnippet} label="Terminal" lang="bash" />
       </>
     ) : (
       <blockquote>
-        This surface is documented through the registry flow and block examples. It is not currently
-        re-exported from the package entrypoint.
+        This surface is documented through the registry flow. It is intended as a compositional
+        primitive and is not currently re-exported from the package entrypoint.
       </blockquote>
     )
   }
 
-  <h2 id="preview-and-examples">Preview and examples</h2>
+  <h2 id="usage">Usage</h2>
+  <p>{componentDoc.usageIntro}</p>
+
+  <h3>Registry import</h3>
+  <DocsCodeBlock code={componentDoc.registryImportCode} label="Code" />
+
+  {
+    componentDoc.packageImportCode ? (
+      <>
+        <h3>Package import</h3>
+        <DocsCodeBlock code={componentDoc.packageImportCode} label="Code" />
+      </>
+    ) : null
+  }
+
+  <h3>Basic usage</h3>
+  <DocsCodeBlock code={componentDoc.usageCode} label="Code" />
+
+  <h2 id="api-reference">API Reference</h2>
   <p>
-    The docs page gives you the install path; the block and view routes give you the visual context.
-    Use both when you are evaluating fit, naming, and interaction quality.
+    These tables focus on Analog UI-specific props. Components that wrap Base UI primitives also
+    inherit the relevant native and Base UI props for that primitive.
   </p>
 
-  <div
-    class="not-prose mt-6 rounded-[var(--analog-radius-panel)] border border-white/10 bg-black/35 p-4 md:p-6"
-  >
-    <BlockDemo name={entry.name} mode="full" client:load />
-  </div>
+  {
+    componentDoc.api.map((section) => (
+      <>
+        <h3 id={slugify(section.title)}>{section.title}</h3>
+        <p>{section.description}</p>
+        <div class="not-prose mt-4 overflow-x-auto rounded-[var(--analog-radius-shell)] border border-white/10 bg-black/30">
+          <table class="w-full min-w-[720px] border-collapse text-left text-sm">
+            <thead>
+              <tr class="border-b border-white/10 text-[11px] uppercase tracking-[0.2em] text-[#8a8a8a]">
+                <th class="px-4 py-3 font-semibold">Prop</th>
+                <th class="px-4 py-3 font-semibold">Type</th>
+                <th class="px-4 py-3 font-semibold">Default</th>
+                <th class="px-4 py-3 font-semibold">Description</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-white/8">
+              {section.props.map((prop) => (
+                <tr>
+                  <td class="px-4 py-3 align-top font-mono text-[13px] text-white">{prop.name}</td>
+                  <td class="px-4 py-3 align-top font-mono text-[13px] text-[#d9d9d9]">
+                    {prop.type}
+                  </td>
+                  <td class="px-4 py-3 align-top font-mono text-[13px] text-[#a8a8a8]">
+                    {prop.defaultValue ?? '-'}
+                  </td>
+                  <td class="px-4 py-3 align-top text-[#b9b9b9]">{prop.description}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </>
+    ))
+  }
 
-  <div class="not-prose mt-6 flex flex-wrap gap-3">
-    <a class="pill-link" href={entry.href}>
-      Browse {entry.categoryLabel} Blocks
-    </a>
-    <a class="pill-link" href={entry.viewHref}> Open Isolated Preview </a>
-  </div>
-
-  <h2 id="dependencies">Dependencies</h2>
+  <h3 id="registry-metadata">Registry metadata</h3>
   <p>
-    The registry entry records both package dependencies and registry dependencies so installs stay
-    reproducible across host apps.
+    The registry item records package and registry dependencies so copied-source installs remain
+    reproducible.
   </p>
 
   <div class="not-prose mt-6 grid gap-4 md:grid-cols-2">
@@ -170,7 +187,6 @@ import { ${packageImportName} } from "analog-ui";`
         }
       </div>
     </div>
-
     <div class="rounded-[var(--analog-radius-shell)] border border-white/10 bg-black/30 p-4">
       <div class="micro-label">Package Dependencies</div>
       <div class="mt-4 flex flex-wrap gap-2">

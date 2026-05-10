@@ -32,7 +32,7 @@ const { title, description, currentPath, navigation, headings = [] } = Astro.pro
 
 <SiteLayout title={title} description={description}>
   <section class="site-frame pt-10 md:pt-12">
-    <div class="mb-8 max-w-3xl">
+    <div class="mb-8 min-w-0 max-w-[calc(100vw-2rem)] md:max-w-3xl">
       <div class="eyebrow mb-4">Documentation</div>
       <h1 class="max-w-3xl text-4xl font-semibold tracking-[-0.03em] text-white md:text-5xl">
         {title}
@@ -43,10 +43,10 @@ const { title, description, currentPath, navigation, headings = [] } = Astro.pro
     </div>
 
     <div
-      class="grid gap-8 lg:grid-cols-[250px_minmax(0,1fr)] xl:grid-cols-[250px_minmax(0,1fr)_220px]"
+      class="grid grid-cols-1 gap-8 lg:grid-cols-[250px_minmax(0,1fr)] xl:grid-cols-[250px_minmax(0,1fr)_220px]"
     >
       <DocsSidebar groups={navigation} currentPath={currentPath} />
-      <div class="section-panel min-w-0 p-6 md:p-8">
+      <div class="section-panel min-w-0 max-w-[calc(100vw-2rem)] p-6 md:max-w-none md:p-8">
         <article class="docs-prose">
           <slot />
         </article>

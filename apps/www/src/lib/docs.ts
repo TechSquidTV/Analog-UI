@@ -19,7 +19,7 @@ const sectionLabels = {
 } as const;
 
 export function getDocHref(entry: DocEntry) {
-  return entry.slug === 'index' ? '/docs' : `/docs/${entry.slug}`;
+  return entry.id === 'index' ? '/docs' : `/docs/${entry.id}`;
 }
 
 export function getComponentDocHref(name: string) {
@@ -44,17 +44,17 @@ export async function getDocsEntries() {
 export async function getDocBySlug(slug?: string) {
   const targetSlug = !slug || slug.length === 0 ? 'index' : slug;
   const entries = await getDocsEntries();
-  return entries.find((entry) => entry.slug === targetSlug);
+  return entries.find((entry) => entry.id === targetSlug);
 }
 
 export async function getDocsNavigation() {
   const entries = await getDocsEntries();
-  const entriesBySlug = new Map(entries.map((entry) => [entry.slug, entry]));
+  const entriesBySlug = new Map(entries.map((entry) => [entry.id, entry]));
 
   const guideGroups = (Object.keys(sectionOrder) as Array<keyof typeof sectionOrder>).flatMap(
     (section) => {
       const items = entries
-        .filter((entry) => entry.slug !== 'components' && entry.data.section === section)
+        .filter((entry) => entry.id !== 'components' && entry.data.section === section)
         .map((entry) => ({
           href: getDocHref(entry),
           label: entry.data.navTitle ?? entry.data.title,

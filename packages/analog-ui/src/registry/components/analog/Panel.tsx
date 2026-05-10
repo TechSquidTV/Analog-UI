@@ -60,8 +60,8 @@ const Screw = ({
         className="!p-0 w-full h-full min-h-[0px] min-w-[0px] flex items-center justify-center no-chamfer"
         style={{
           boxShadow:
-            'inset 0 1px 1px color-mix(in oklch, var(--analog-control-foreground) 40%, transparent), ' +
-            '0 1px 6px color-mix(in oklch, black 80%, transparent)',
+            `inset calc(sin(var(--analog-light-angle-screw, 180deg)) * 1px) calc(cos(var(--analog-light-angle-screw, 180deg)) * -1px) 1px color-mix(in oklch, var(--analog-control-foreground) 40%, transparent), ` +
+            `calc(sin(var(--analog-light-angle-screw, 180deg)) * 1px) calc(cos(var(--analog-light-angle-screw, 180deg)) * -1px) 6px color-mix(in oklch, black 80%, transparent)`,
         }}
       >
         {hole === 'slot' && (
@@ -156,7 +156,8 @@ const Panel = React.forwardRef<HTMLDivElement, PanelProps>(
                   `rgba(0,0,0,calc(0.22 * var(--analog-light-power, 1))))` +
                   `, var(--analog-surface-panel)`,
                 boxShadow:
-                  `inset 0 1px 1px rgba(255, 255, 255, calc(0.07 * var(--analog-light-power, 1))), ` +
+                  `inset calc(sin(var(--analog-light-angle-panel, 180deg)) * 1px) calc(cos(var(--analog-light-angle-panel, 180deg)) * -1px) 1px rgba(255, 255, 255, calc(0.07 * var(--analog-light-power, 1))), ` +
+                  `calc(sin(var(--analog-light-angle-panel, 180deg)) * 1px) calc(cos(var(--analog-light-angle-panel, 180deg)) * -1px) 0 rgba(255, 255, 255, calc(0.04 * var(--analog-light-power, 1))), ` +
                   `0 4px 12px rgba(0, 0, 0, 0.5)`,
               }
             : {

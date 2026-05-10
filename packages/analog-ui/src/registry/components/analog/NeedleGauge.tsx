@@ -52,7 +52,6 @@ export interface NeedleGaugeProps extends Omit<
   spring?: boolean | NeedleGaugeSpringConfig;
 }
 
-type NeedleGaugeTrackStyle = React.CSSProperties & Record<'--analog-light-angle-track', string>;
 type ResolvedNeedleGaugeSpringConfig = Required<NeedleGaugeSpringConfig>;
 
 const defaultNeedleGaugeSpring: ResolvedNeedleGaugeSpringConfig = {
@@ -68,6 +67,17 @@ const defaultScaleDomains: Record<NeedleGaugeScalePreset, { min: number; max: nu
   dbfs: { min: -60, max: 6 },
   vu: { min: -20, max: 3 },
 };
+
+const dialGeometry = {
+  centerX: 110,
+  centerY: 160,
+  radius: 108,
+  minorTickInnerRadius: 87,
+  minorTickOuterRadius: 97,
+  majorTickInnerRadius: 82,
+  majorTickOuterRadius: 99,
+  labelRadius: 67,
+} as const;
 
 const defaultScaleMarks: Record<Exclude<NeedleGaugeScalePreset, 'linear'>, NeedleGaugeMark[]> = {
   dbfs: [
@@ -94,6 +104,8 @@ const defaultScaleMarks: Record<Exclude<NeedleGaugeScalePreset, 'linear'>, Needl
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
+const roundSvgNumber = (value: number) => Number(value.toFixed(4));
+
 const normalizeRatio = (value: number, min: number, max: number) => {
   const range = max - min;
 
@@ -108,8 +120,8 @@ const polarPoint = (centerX: number, centerY: number, radius: number, angle: num
   const radians = (angle * Math.PI) / 180;
 
   return {
-    x: centerX + Math.cos(radians) * radius,
-    y: centerY + Math.sin(radians) * radius,
+    x: roundSvgNumber(centerX + Math.cos(radians) * radius),
+    y: roundSvgNumber(centerY + Math.sin(radians) * radius),
   };
 };
 
@@ -228,10 +240,11 @@ const getNeedleGaugeShellStyle = (variant: AnalogMaterialVariant): React.CSSProp
   if (variant === 'black') {
     return {
       borderColor: 'transparent',
-      background: `linear-gradient(calc(var(--analog-light-angle-panel, 180deg) - 90deg), var(--analog-surface-onyx-hi) 0%, var(--analog-surface-onyx-mid) 45%, var(--analog-surface-onyx-lo) 100%)`,
+      background: `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 90deg), var(--analog-surface-onyx-hi) 0%, var(--analog-surface-onyx-mid) 45%, var(--analog-surface-onyx-lo) 100%)`,
       boxShadow:
-        `inset 0 1px 1px rgba(255,255,255,calc(0.12 * var(--analog-light-power, 1))), ` +
-        `inset 0 -1px 2px rgba(0,0,0,calc(0.8 * var(--analog-light-power, 1))), ` +
+        `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * 1px) calc(cos(var(--analog-light-angle-bezel, 180deg)) * -1px) 1px rgba(255,255,255,calc(0.14 * var(--analog-light-power, 1))), ` +
+        `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * -1px) calc(cos(var(--analog-light-angle-bezel, 180deg)) * 1px) 2px rgba(0,0,0,calc(0.8 * var(--analog-light-power, 1))), ` +
+        `calc(sin(var(--analog-light-angle-bezel, 180deg)) * 1px) calc(cos(var(--analog-light-angle-bezel, 180deg)) * -1px) 0 rgba(255,255,255,calc(0.08 * var(--analog-light-power, 1))), ` +
         `0 2px 4px rgba(0,0,0,calc(0.9 * var(--analog-light-power, 1))), ` +
         `0 0 0 1px rgba(0,0,0,calc(0.6 * var(--analog-light-power, 1)))`,
     };
@@ -239,10 +252,11 @@ const getNeedleGaugeShellStyle = (variant: AnalogMaterialVariant): React.CSSProp
 
   return {
     borderColor: 'transparent',
-    background: `linear-gradient(calc(var(--analog-light-angle-panel, 180deg) - 90deg), color-mix(in oklch, var(--analog-surface-metal-hi) 82%, white 10%) 0%, var(--analog-surface-metal-hi) 18%, var(--analog-surface-metal-mid) 52%, var(--analog-surface-metal-lo) 100%)`,
+    background: `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 90deg), color-mix(in oklch, var(--analog-surface-metal-hi) 82%, white 10%) 0%, var(--analog-surface-metal-hi) 18%, var(--analog-surface-metal-mid) 52%, var(--analog-surface-metal-lo) 100%)`,
     boxShadow:
-      `inset 0 1px 1px rgba(255,255,255,calc(0.95 * var(--analog-light-power, 1))), ` +
-      `inset 0 -1px 2px rgba(0,0,0,calc(0.25 * var(--analog-light-power, 1))), ` +
+      `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * 1px) calc(cos(var(--analog-light-angle-bezel, 180deg)) * -1px) 1px rgba(255,255,255,calc(0.95 * var(--analog-light-power, 1))), ` +
+      `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * -1px) calc(cos(var(--analog-light-angle-bezel, 180deg)) * 1px) 2px rgba(0,0,0,calc(0.25 * var(--analog-light-power, 1))), ` +
+      `calc(sin(var(--analog-light-angle-bezel, 180deg)) * 1px) calc(cos(var(--analog-light-angle-bezel, 180deg)) * -1px) 0 rgba(255,255,255,calc(0.18 * var(--analog-light-power, 1))), ` +
       `0 2px 4px rgba(0,0,0,calc(0.5 * var(--analog-light-power, 1))), ` +
       `0 0 0 1px rgba(0,0,0,calc(0.1 * var(--analog-light-power, 1)))`,
   };
@@ -382,12 +396,11 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
     const resolvedZones = zones ?? getDefaultZones(resolvedMin, resolvedMax, scalePreset);
     const lightingStyle = useAnalogLighting(
       ['panel', 'bezel', 'track', 'lens', 'pointer', 'surface'],
-      lighting,
+      {
+        track: { travel: 1 },
+        ...lighting,
+      },
     );
-    const trackLightingStyle: NeedleGaugeTrackStyle = {
-      ...lightingStyle,
-      '--analog-light-angle-track': 'var(--analog-light-angle-panel)',
-    };
     const shellStyle = getNeedleGaugeShellStyle(resolvedVariant);
     const accessibilityValue =
       typeof formattedValue === 'string' || typeof formattedValue === 'number'
@@ -410,7 +423,7 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
           className,
         )}
         style={{
-          ...trackLightingStyle,
+          ...lightingStyle,
           ...shellStyle,
           ...style,
         }}
@@ -431,7 +444,9 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
               style={{
                 boxShadow:
                   `0 0 0 1px color-mix(in oklch, var(--analog-control-border-strong) 48%, transparent), ` +
-                  `inset 0 1px 0 rgba(255,255,255,calc(0.08 * var(--analog-light-power, 1))), ` +
+                  `inset calc(sin(var(--analog-light-angle-track, 180deg)) * 1px) calc(cos(var(--analog-light-angle-track, 180deg)) * -1px) 0 rgba(255,255,255,calc(0.12 * var(--analog-light-power, 1))), ` +
+                  `inset calc(sin(var(--analog-light-angle-track, 180deg)) * -2px) calc(cos(var(--analog-light-angle-track, 180deg)) * 2px) 5px rgba(0,0,0,calc(0.58 * var(--analog-light-power, 1))), ` +
+                  `calc(sin(var(--analog-light-angle-track, 180deg)) * 1px) calc(cos(var(--analog-light-angle-track, 180deg)) * -1px) 0 rgba(255,255,255,calc(0.1 * var(--analog-light-power, 1))), ` +
                   `0 6px 16px rgba(0,0,0,calc(0.52 * var(--analog-light-power, 1)))`,
               }}
             >
@@ -443,8 +458,8 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
                     `linear-gradient(var(--analog-light-angle-track, 180deg), rgba(255,255,255,calc(0.08 * var(--analog-light-power, 1))) 0%, rgba(255,255,255,0.02) 30%, rgba(0,0,0,calc(0.58 * var(--analog-light-power, 1))) 100%), ` +
                     `var(--analog-surface-cavity)`,
                   boxShadow:
-                    `inset 0 6px 18px rgba(0,0,0,calc(0.72 * var(--analog-light-power, 1))), ` +
-                    `inset 0 -1px 0 rgba(255,255,255,calc(0.08 * var(--analog-light-power, 1)))`,
+                    `inset calc(sin(var(--analog-light-angle-track, 180deg)) * -6px) calc(cos(var(--analog-light-angle-track, 180deg)) * 6px) 18px rgba(0,0,0,calc(0.72 * var(--analog-light-power, 1))), ` +
+                    `inset calc(sin(var(--analog-light-angle-track, 180deg)) * 1px) calc(cos(var(--analog-light-angle-track, 180deg)) * -1px) 0 rgba(255,255,255,calc(0.08 * var(--analog-light-power, 1)))`,
                 }}
               />
               <div
@@ -461,7 +476,13 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
                 aria-hidden="true"
               >
                 <path
-                  d={arcPath(110, 128, 86, startAngle, startAngle + resolvedSweepAngle)}
+                  d={arcPath(
+                    dialGeometry.centerX,
+                    dialGeometry.centerY,
+                    dialGeometry.radius,
+                    startAngle,
+                    startAngle + resolvedSweepAngle,
+                  )}
                   fill="none"
                   stroke="color-mix(in oklch, var(--analog-surface-raised) 48%, black 52%)"
                   strokeWidth="11"
@@ -481,7 +502,13 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
                   return (
                     <React.Fragment key={`${zoneStart}-${zoneEnd}-${zone.color}`}>
                       <path
-                        d={arcPath(110, 128, 86, zoneStart, zoneEnd)}
+                        d={arcPath(
+                          dialGeometry.centerX,
+                          dialGeometry.centerY,
+                          dialGeometry.radius,
+                          zoneStart,
+                          zoneEnd,
+                        )}
                         fill="none"
                         stroke={zone.glow ?? zone.color}
                         strokeWidth="9"
@@ -490,7 +517,13 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
                         style={{ filter: 'blur(4px)' }}
                       />
                       <path
-                        d={arcPath(110, 128, 86, zoneStart, zoneEnd)}
+                        d={arcPath(
+                          dialGeometry.centerX,
+                          dialGeometry.centerY,
+                          dialGeometry.radius,
+                          zoneStart,
+                          zoneEnd,
+                        )}
                         fill="none"
                         stroke={zone.color}
                         strokeWidth="3"
@@ -503,8 +536,18 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
 
                 {minorTicks.map((tickRatio) => {
                   const angle = startAngle + tickRatio * resolvedSweepAngle;
-                  const inner = polarPoint(110, 128, 69, angle);
-                  const outer = polarPoint(110, 128, 77, angle);
+                  const inner = polarPoint(
+                    dialGeometry.centerX,
+                    dialGeometry.centerY,
+                    dialGeometry.minorTickInnerRadius,
+                    angle,
+                  );
+                  const outer = polarPoint(
+                    dialGeometry.centerX,
+                    dialGeometry.centerY,
+                    dialGeometry.minorTickOuterRadius,
+                    angle,
+                  );
 
                   return (
                     <line
@@ -523,9 +566,24 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
 
                 {resolvedMarks.map((mark) => {
                   const angle = startAngle + mark.ratio * resolvedSweepAngle;
-                  const tickInner = polarPoint(110, 128, 65, angle);
-                  const tickOuter = polarPoint(110, 128, 79, angle);
-                  const labelPoint = polarPoint(110, 128, 53, angle);
+                  const tickInner = polarPoint(
+                    dialGeometry.centerX,
+                    dialGeometry.centerY,
+                    dialGeometry.majorTickInnerRadius,
+                    angle,
+                  );
+                  const tickOuter = polarPoint(
+                    dialGeometry.centerX,
+                    dialGeometry.centerY,
+                    dialGeometry.majorTickOuterRadius,
+                    angle,
+                  );
+                  const labelPoint = polarPoint(
+                    dialGeometry.centerX,
+                    dialGeometry.centerY,
+                    dialGeometry.labelRadius,
+                    angle,
+                  );
 
                   return (
                     <g key={`${mark.value}-${String(mark.label)}`}>
@@ -558,7 +616,7 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
 
               <div
                 data-slot="needle-gauge-needle"
-                className="absolute left-1/2 bottom-[20%] z-20 h-[55%] w-[0.42rem] origin-bottom -translate-x-1/2 rounded-full"
+                className="absolute left-1/2 bottom-0 z-20 h-[68%] w-[0.42rem] origin-bottom -translate-x-1/2 rounded-full"
                 style={{
                   transform: `translateX(-50%) rotate(${displayNeedleRotation}deg)`,
                   transition: needleTransition,
@@ -577,29 +635,10 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
                 }}
               />
 
-              <div className="pointer-events-none absolute left-1/2 top-[80%] z-30 aspect-square w-[17%] -translate-x-1/2 -translate-y-1/2 overflow-visible rounded-full">
-                <div
-                  className="absolute left-1/2 top-[50%] z-0 h-[46%] w-[108%] -translate-x-1/2 rounded-full blur-[4px]"
-                  style={{
-                    background: 'rgba(0,0,0,calc(0.62 * var(--analog-light-power, 1)))',
-                  }}
-                />
-                <div
-                  className="absolute inset-x-[4%] top-[8%] bottom-[-4%] z-[1] rounded-full"
-                  style={{
-                    background:
-                      `linear-gradient(calc(var(--analog-light-angle-surface, 180deg) - 90deg), ` +
-                      (isBlack
-                        ? `var(--analog-surface-onyx-mid) 0%, var(--analog-surface-onyx-lo) 58%, color-mix(in oklch, var(--analog-surface-onyx-lo) 70%, black 30%) 100%)`
-                        : `color-mix(in oklch, var(--analog-surface-metal-hi) 58%, white 8%) 0%, var(--analog-surface-metal-mid) 48%, color-mix(in oklch, var(--analog-surface-metal-lo) 78%, black 22%) 100%)`),
-                    boxShadow:
-                      `inset 0 -3px 7px rgba(0,0,0,calc(${isBlack ? 0.78 : 0.48} * var(--analog-light-power, 1))), ` +
-                      `0 5px 10px rgba(0,0,0,calc(0.7 * var(--analog-light-power, 1)))`,
-                  }}
-                />
+              <div className="pointer-events-none absolute left-1/2 bottom-0 z-30 aspect-square w-[17%] -translate-x-1/2 translate-y-1/2 overflow-hidden rounded-full">
                 <div
                   className={cn(
-                    'anisotropic-btn no-chamfer relative z-[2] h-full w-full overflow-hidden rounded-full',
+                    'anisotropic-btn no-chamfer relative h-full w-full overflow-hidden rounded-full',
                     isBlack ? 'variant-black' : 'variant-chrome',
                   )}
                   style={

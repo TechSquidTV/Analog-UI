@@ -32,7 +32,7 @@ function getWheelRidgeBackground(isMarked: boolean) {
 export interface AnalogWheelNumberProps extends React.ComponentPropsWithoutRef<
   typeof NumberField.Root
 > {
-  lighting?: AnalogLightingConfig<'track' | 'wheel'>;
+  lighting?: AnalogLightingConfig<'surface' | 'track' | 'wheel'>;
   /**
    * Which drag direction increases the numeric value.
    * @default 'down'
@@ -60,6 +60,7 @@ export const AnalogWheelNumber = React.forwardRef<HTMLDivElement, AnalogWheelNum
       largeStep = 10,
       grabDirection = 'down',
       scrollDirection = 'down',
+      style,
       ...props
     },
     ref,
@@ -70,7 +71,7 @@ export const AnalogWheelNumber = React.forwardRef<HTMLDivElement, AnalogWheelNum
     const rotation = useMotionValue(0);
     const scrubAreaRef = React.useRef<HTMLDivElement>(null);
     const scrollDirectionFactor = getWheelDirectionFactor(scrollDirection);
-    const wheelLighting: AnalogLightingConfig<'track' | 'wheel'> = {
+    const wheelLighting: AnalogLightingConfig<'surface' | 'track' | 'wheel'> = {
       track: { travel: 1 },
       wheel: { travel: 0.36 },
       ...lighting,
@@ -164,13 +165,19 @@ export const AnalogWheelNumber = React.forwardRef<HTMLDivElement, AnalogWheelNum
         largeStep={largeStep}
         {...props}
         className={cn('flex w-full min-w-0 max-w-[8rem] flex-col items-stretch gap-4', className)}
+        style={{
+          ...lightingStyle,
+          ...style,
+        }}
       >
         <NumberField.Group
           className="z-20 flex w-full min-w-0 items-center rounded-[var(--analog-radius-recess)] border p-1"
           style={{
             borderColor: 'var(--analog-control-border)',
             backgroundColor: 'var(--analog-control-surface)',
-            boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.8)',
+            boxShadow:
+              `inset calc(sin(var(--analog-light-angle-surface, 180deg)) * -1px) calc(cos(var(--analog-light-angle-surface, 180deg)) * 1px) 3px rgba(0,0,0,calc(0.8 * var(--analog-light-power, 1))), ` +
+              `calc(sin(var(--analog-light-angle-surface, 180deg)) * 1px) calc(cos(var(--analog-light-angle-surface, 180deg)) * -1px) 0 rgba(255,255,255,calc(0.04 * var(--analog-light-power, 1)))`,
           }}
         >
           <NumberField.Decrement className="flex size-8 cursor-pointer items-center justify-center rounded-[var(--analog-radius-micro)] text-[var(--analog-control-foreground-muted)] transition-all outline-none hover:bg-[var(--analog-control-surface-strong)] hover:text-[var(--analog-control-foreground)] hover:shadow-[0_1px_2px_rgba(0,0,0,0.5)] active:bg-[var(--analog-surface-cavity-strong)] active:shadow-none">

@@ -1,0 +1,110 @@
+---
+import { Code } from 'astro:components';
+
+type DocsCodeLang = 'tsx' | 'bash';
+type DocsCodeTheme = 'github-dark';
+
+interface Props {
+  code: string;
+  label?: string;
+  lang?: DocsCodeLang;
+  theme?: DocsCodeTheme;
+  framed?: boolean;
+  class?: string;
+}
+
+const {
+  code,
+  label = 'Code',
+  lang = 'tsx',
+  theme = 'github-dark',
+  framed = true,
+  class: className,
+} = Astro.props;
+---
+
+<div
+  class:list={[
+    'not-prose overflow-hidden bg-black/45',
+    framed && 'rounded-[var(--analog-radius-shell)] border border-white/10',
+    className,
+  ]}
+  data-docs-copy-root
+>
+  <div class="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-2">
+    <span class="micro-label">{label}</span>
+    <button
+      type="button"
+      class="rounded-[var(--analog-radius-window)] border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[11px] font-medium text-[#d8d8d8] transition-colors duration-200 hover:border-white/18 hover:bg-white/[0.08] hover:text-white"
+      data-docs-copy
+    >
+      Copy
+    </button>
+  </div>
+  <div class="docs-code-body" data-docs-code>
+    <Code code={code} lang={lang} theme={theme} />
+  </div>
+</div>
+
+<style is:global>
+  [data-docs-copy-root] .astro-code {
+    margin: 0;
+    overflow-x: auto;
+    background: transparent !important;
+    border-radius: 0 !important;
+    padding: 1rem;
+    font-size: 0.875rem;
+    line-height: 1.65;
+  }
+
+  [data-docs-copy-root] .astro-code code {
+    border: 0;
+    background: transparent;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  [data-docs-copy-root] .astro-code span {
+    background: transparent !important;
+  }
+</style>
+
+<script>
+  function bindDocsCopyButtons() {
+    document.querySelectorAll<HTMLButtonElement>('[data-docs-copy]').forEach((button) => {
+      if (button.dataset.docsCopyBound === 'true') return;
+
+      button.dataset.docsCopyBound = 'true';
+      const initialLabel = button.textContent || 'Copy';
+
+      button.addEventListener('click', async () => {
+        const root = button.closest('[data-docs-copy-root]');
+        const code = root?.querySelector<HTMLElement>('[data-docs-code]');
+        const text = code?.textContent?.trimEnd() ?? '';
+
+        if (!navigator.clipboard) {
+          button.textContent = 'Unavailable';
+          window.setTimeout(() => {
+            button.textContent = initialLabel;
+          }, 1400);
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(text);
+          button.textContent = 'Copied';
+        } catch {
+          button.textContent = 'Failed';
+        }
+
+        window.setTimeout(() => {
+          button.textContent = initialLabel;
+        }, 1400);
+      });
+    });
+  }
+
+  bindDocsCopyButtons();
+  document.addEventListener('astro:page-load', bindDocsCopyButtons);
+</script>

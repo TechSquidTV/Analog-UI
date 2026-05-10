@@ -8,9 +8,9 @@ export async function getStaticPaths() {
   const entries = await getDocsEntries();
 
   return entries
-    .filter((entry) => entry.slug !== 'index')
+    .filter((entry) => entry.id !== 'index')
     .map((entry) => ({
-      params: { slug: entry.slug },
+      params: { slug: entry.id },
     }));
 }
 

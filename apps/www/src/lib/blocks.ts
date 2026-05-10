@@ -10,8 +10,6 @@ interface BlockEntry {
   name: BlockName;
   category: BlockCategory;
   categoryLabel: string;
-  categoryDescription: string;
-  featured: boolean;
   order: number;
   title: string;
   description: string;
@@ -35,7 +33,6 @@ function toBlockEntry(name: BlockName): BlockEntry {
   return {
     name,
     category: catalogItem.category,
-    featured: catalogItem.featured,
     order: catalogItem.order,
     summary: catalogItem.summary,
     title: registryItem.title,
@@ -44,8 +41,7 @@ function toBlockEntry(name: BlockName): BlockEntry {
     dependencies: registryItem.dependencies ?? [],
     registryDependencies: registryItem.registryDependencies ?? [],
     categoryLabel: blockCategories[catalogItem.category].label,
-    categoryDescription: blockCategories[catalogItem.category].description,
-    href: `/blocks/${catalogItem.category}`,
+    href: `/docs/components/${name}`,
     viewHref: `/view/${name}`,
     registryHref: `/r/${name}.json`,
   };
@@ -68,9 +64,4 @@ export function getBlockEntries(category?: BlockCategory) {
     .map((name) => toBlockEntry(name))
     .filter((entry) => (category ? entry.category === category : true))
     .sort((left, right) => left.order - right.order);
-}
-
-export function getFeaturedBlocks(limit?: number) {
-  const featured = getBlockEntries().filter((entry) => entry.featured);
-  return typeof limit === 'number' ? featured.slice(0, limit) : featured;
 }

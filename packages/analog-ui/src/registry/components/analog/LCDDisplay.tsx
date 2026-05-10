@@ -14,7 +14,7 @@ export interface LCDDisplayProps extends React.HTMLAttributes<HTMLDivElement> {
   size?: LCDDisplaySize;
   digits?: number;
   align?: LCDDisplayAlign;
-  lighting?: AnalogLightingConfig<'surface' | 'lens'>;
+  lighting?: AnalogLightingConfig<'surface' | 'track' | 'lens'>;
   screenClassName?: string;
   valueClassName?: string;
 }
@@ -141,7 +141,10 @@ export const LCDDisplay = React.forwardRef<HTMLDivElement, LCDDisplayProps>(
     },
     ref,
   ) => {
-    const lightingStyle = useAnalogLighting(['surface', 'lens'], lighting);
+    const lightingStyle = useAnalogLighting(['surface', 'track', 'lens'], {
+      track: { travel: 1 },
+      ...lighting,
+    });
     const palette = displayPalettes[variant];
     const sizeStyle = displaySizeStyles[size];
     const formattedValue = React.useMemo(
@@ -171,10 +174,11 @@ export const LCDDisplay = React.forwardRef<HTMLDivElement, LCDDisplayProps>(
               `rgba(255,255,255,0.02) 20%, ` +
               `rgba(0,0,0,0.18) 58%, ` +
               `rgba(0,0,0,calc(0.42 * var(--analog-light-power, 1))) 100%), ` +
-              `linear-gradient(180deg, var(--analog-surface-raised) 0%, var(--analog-surface-panel) 48%, var(--analog-surface-cavity) 100%)`,
+              `linear-gradient(calc(var(--analog-light-angle-surface, 180deg) - 90deg), var(--analog-surface-raised) 0%, var(--analog-surface-panel) 48%, var(--analog-surface-cavity) 100%)`,
             boxShadow:
-              `inset 0 1px 1px rgba(255,255,255,calc(0.14 * var(--analog-light-power, 1))), ` +
-              `inset 0 -2px 3px rgba(0,0,0,calc(0.72 * var(--analog-light-power, 1))), ` +
+              `inset calc(sin(var(--analog-light-angle-surface, 180deg)) * 1px) calc(cos(var(--analog-light-angle-surface, 180deg)) * -1px) 1px rgba(255,255,255,calc(0.14 * var(--analog-light-power, 1))), ` +
+              `inset calc(sin(var(--analog-light-angle-surface, 180deg)) * -2px) calc(cos(var(--analog-light-angle-surface, 180deg)) * 2px) 3px rgba(0,0,0,calc(0.72 * var(--analog-light-power, 1))), ` +
+              `calc(sin(var(--analog-light-angle-surface, 180deg)) * 1px) calc(cos(var(--analog-light-angle-surface, 180deg)) * -1px) 0 rgba(255,255,255,calc(0.08 * var(--analog-light-power, 1))), ` +
               `0 10px 22px rgba(0,0,0,0.42), ` +
               `0 0 0 1px rgba(0,0,0,0.55)`,
           }}
@@ -184,7 +188,8 @@ export const LCDDisplay = React.forwardRef<HTMLDivElement, LCDDisplayProps>(
             style={{
               border:
                 '1px solid color-mix(in oklch, var(--analog-control-foreground) 3.5%, transparent)',
-              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.03), inset 0 -8px 16px rgba(0,0,0,0.18)',
+              boxShadow:
+                'inset calc(sin(var(--analog-light-angle-surface, 180deg)) * 1px) calc(cos(var(--analog-light-angle-surface, 180deg)) * -1px) 0 rgba(255,255,255,0.03), inset calc(sin(var(--analog-light-angle-surface, 180deg)) * -8px) calc(cos(var(--analog-light-angle-surface, 180deg)) * 8px) 16px rgba(0,0,0,0.18)',
             }}
           />
 
@@ -204,7 +209,6 @@ export const LCDDisplay = React.forwardRef<HTMLDivElement, LCDDisplayProps>(
               className="absolute inset-0 z-10 overflow-hidden rounded-[inherit] border analog-surface-recess"
               style={
                 {
-                  '--analog-light-angle-track': 'var(--analog-light-angle-lens)',
                   borderColor:
                     'color-mix(in oklch, var(--analog-control-border-strong) 76%, black 24%)',
                 } as React.CSSProperties

@@ -632,11 +632,18 @@ function NeedleGaugeDemo({ mode }: { mode: DemoMode }) {
               <ControlButton onClick={() => setValue(preset.points[0])}>Low</ControlButton>
               <ControlButton onClick={() => setValue(preset.points[1])}>Nom</ControlButton>
               <ControlButton onClick={() => setValue(preset.points[2])}>Peak</ControlButton>
-              <ControlButton
-                isActive={variant === 'black'}
-                onClick={() => setVariant((current) => (current === 'chrome' ? 'black' : 'chrome'))}
-              >
+            </div>
+          ) : null}
+          {mode === 'full' ? (
+            <div className="flex min-w-[180px] flex-none flex-wrap gap-2 rounded-[var(--analog-radius-shell)] border border-white/10 bg-black/30 px-3 py-2">
+              <div className="w-full text-[9px] font-semibold uppercase tracking-[0.26em] text-[#787878]">
                 Shell
+              </div>
+              <ControlButton isActive={variant === 'chrome'} onClick={() => setVariant('chrome')}>
+                Chrome
+              </ControlButton>
+              <ControlButton isActive={variant === 'black'} onClick={() => setVariant('black')}>
+                Black
               </ControlButton>
             </div>
           ) : null}

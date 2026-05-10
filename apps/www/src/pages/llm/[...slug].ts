@@ -4,7 +4,7 @@ export async function getStaticPaths() {
   const entries = await getDocsEntries();
 
   return entries.map((entry) => ({
-    params: { slug: entry.slug },
+    params: { slug: entry.id },
   }));
 }
 

@@ -315,6 +315,7 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
     const pointerHighlight = isBlack
       ? 'color-mix(in oklch, var(--analog-surface-metal-mid) 72%, var(--analog-surface-metal-hi) 28%)'
       : 'color-mix(in oklch, var(--analog-surface-metal-hi) 88%, white 12%)';
+    const pointerBevelAngle = `calc(var(--analog-light-angle-pointer, 180deg) - ${pointerRotation}deg)`;
 
     return (
       <div
@@ -372,8 +373,8 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
                 borderColor: pointerBorderColor,
                 background: pointerBackground,
                 boxShadow: isBlack
-                  ? `inset 0 1px 1px rgba(255,255,255,calc(0.2 * var(--analog-light-power, 1))), inset 0 -1px 2px rgba(0,0,0,calc(0.8 * var(--analog-light-power, 1))), 0 2px 4px rgba(0,0,0,calc(0.9 * var(--analog-light-power, 1)))`
-                  : `inset 0 1px 2px rgba(255,255,255,calc(0.6 * var(--analog-light-power, 1))), inset 0 -1px 2px rgba(0,0,0,calc(0.5 * var(--analog-light-power, 1))), 0 2px 4px rgba(0,0,0,calc(0.6 * var(--analog-light-power, 1)))`,
+                  ? `inset calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 1px rgba(255,255,255,calc(0.2 * var(--analog-light-power, 1))), inset calc(sin(${pointerBevelAngle}) * -1px) calc(cos(${pointerBevelAngle}) * 1px) 2px rgba(0,0,0,calc(0.8 * var(--analog-light-power, 1))), calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 4px rgba(0,0,0,calc(0.9 * var(--analog-light-power, 1)))`
+                  : `inset calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 2px rgba(255,255,255,calc(0.6 * var(--analog-light-power, 1))), inset calc(sin(${pointerBevelAngle}) * -1px) calc(cos(${pointerBevelAngle}) * 1px) 2px rgba(0,0,0,calc(0.5 * var(--analog-light-power, 1))), calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 4px rgba(0,0,0,calc(0.6 * var(--analog-light-power, 1)))`,
               }}
             >
               <div

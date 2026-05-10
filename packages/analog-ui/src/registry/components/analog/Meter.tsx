@@ -35,7 +35,7 @@ export interface AnalogMeterProps extends React.ComponentPropsWithoutRef<typeof 
   peakValue?: number | null;
   variant?: AnalogMeterVariant;
   segments?: number;
-  lighting?: AnalogLightingConfig<'surface' | 'lens'>;
+  lighting?: AnalogLightingConfig<'surface' | 'track' | 'lens'>;
   scalePreset?: AnalogMeterScalePreset;
   marks?: readonly AnalogMeterMark[];
   showScale?: boolean;
@@ -47,7 +47,7 @@ export interface AnalogMeterProps extends React.ComponentPropsWithoutRef<typeof 
 export interface AnalogMeterGroupProps extends React.HTMLAttributes<HTMLDivElement> {
   orientation?: AnalogMeterGroupOrientation;
   variant?: AnalogMeterGroupVariant;
-  lighting?: AnalogLightingConfig<'panel' | 'track' | 'lens'>;
+  lighting?: AnalogLightingConfig<'panel' | 'bezel' | 'track' | 'lens'>;
 }
 
 export interface AnalogMeterGroupChannelProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -210,20 +210,22 @@ const getMeterGroupShellStyle = (variant: AnalogMeterGroupVariant): React.CSSPro
     case 'chrome':
       return {
         borderColor: 'transparent',
-        background: `linear-gradient(calc(var(--analog-light-angle-panel, 180deg) - 90deg), color-mix(in oklch, var(--analog-surface-metal-hi) 82%, white 10%) 0%, var(--analog-surface-metal-hi) 18%, var(--analog-surface-metal-mid) 52%, var(--analog-surface-metal-lo) 100%)`,
+        background: `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 90deg), color-mix(in oklch, var(--analog-surface-metal-hi) 82%, white 10%) 0%, var(--analog-surface-metal-hi) 18%, var(--analog-surface-metal-mid) 52%, var(--analog-surface-metal-lo) 100%)`,
         boxShadow:
-          `inset 0 1px 1px rgba(255,255,255,calc(0.95 * var(--analog-light-power, 1))), ` +
-          `inset 0 -1px 2px rgba(0,0,0,calc(0.25 * var(--analog-light-power, 1))), ` +
+          `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * 1px) calc(cos(var(--analog-light-angle-bezel, 180deg)) * -1px) 1px rgba(255,255,255,calc(0.95 * var(--analog-light-power, 1))), ` +
+          `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * -1px) calc(cos(var(--analog-light-angle-bezel, 180deg)) * 1px) 2px rgba(0,0,0,calc(0.25 * var(--analog-light-power, 1))), ` +
+          `calc(sin(var(--analog-light-angle-bezel, 180deg)) * 1px) calc(cos(var(--analog-light-angle-bezel, 180deg)) * -1px) 0 rgba(255,255,255,calc(0.18 * var(--analog-light-power, 1))), ` +
           `0 2px 4px rgba(0,0,0,calc(0.5 * var(--analog-light-power, 1))), ` +
           `0 0 0 1px rgba(0,0,0,calc(0.1 * var(--analog-light-power, 1)))`,
       };
     case 'black':
       return {
         borderColor: 'transparent',
-        background: `linear-gradient(calc(var(--analog-light-angle-panel, 180deg) - 90deg), var(--analog-surface-onyx-hi) 0%, var(--analog-surface-onyx-mid) 45%, var(--analog-surface-onyx-lo) 100%)`,
+        background: `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 90deg), var(--analog-surface-onyx-hi) 0%, var(--analog-surface-onyx-mid) 45%, var(--analog-surface-onyx-lo) 100%)`,
         boxShadow:
-          `inset 0 1px 1px rgba(255,255,255,calc(0.12 * var(--analog-light-power, 1))), ` +
-          `inset 0 -1px 2px rgba(0,0,0,calc(0.8 * var(--analog-light-power, 1))), ` +
+          `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * 1px) calc(cos(var(--analog-light-angle-bezel, 180deg)) * -1px) 1px rgba(255,255,255,calc(0.14 * var(--analog-light-power, 1))), ` +
+          `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * -1px) calc(cos(var(--analog-light-angle-bezel, 180deg)) * 1px) 2px rgba(0,0,0,calc(0.8 * var(--analog-light-power, 1))), ` +
+          `calc(sin(var(--analog-light-angle-bezel, 180deg)) * 1px) calc(cos(var(--analog-light-angle-bezel, 180deg)) * -1px) 0 rgba(255,255,255,calc(0.08 * var(--analog-light-power, 1))), ` +
           `0 2px 4px rgba(0,0,0,calc(0.9 * var(--analog-light-power, 1))), ` +
           `0 0 0 1px rgba(0,0,0,calc(0.6 * var(--analog-light-power, 1)))`,
       };
@@ -233,7 +235,8 @@ const getMeterGroupShellStyle = (variant: AnalogMeterGroupVariant): React.CSSPro
         borderColor: 'transparent',
         background: `linear-gradient(calc(var(--analog-light-angle-panel, 180deg) - 90deg), rgba(255,255,255,calc(0.03 * var(--analog-light-power, 1))) 0%, rgba(255,255,255,0) 45%, rgba(0,0,0,calc(0.22 * var(--analog-light-power, 1))) 100%), var(--analog-surface-panel)`,
         boxShadow:
-          `inset 0 1px 1px rgba(255, 255, 255, calc(0.07 * var(--analog-light-power, 1))), ` +
+          `inset calc(sin(var(--analog-light-angle-panel, 180deg)) * 1px) calc(cos(var(--analog-light-angle-panel, 180deg)) * -1px) 1px rgba(255, 255, 255, calc(0.07 * var(--analog-light-power, 1))), ` +
+          `calc(sin(var(--analog-light-angle-panel, 180deg)) * 1px) calc(cos(var(--analog-light-angle-panel, 180deg)) * -1px) 0 rgba(255,255,255,calc(0.04 * var(--analog-light-power, 1))), ` +
           `0 4px 12px rgba(0, 0, 0, 0.5), ` +
           `0 0 0 1px color-mix(in oklch, var(--analog-surface-raised) 38%, transparent)`,
       };
@@ -382,11 +385,10 @@ export const AnalogMeter = React.forwardRef<HTMLDivElement, AnalogMeterProps>(
       variant === 'metered' && resolvedZones?.length
         ? buildZoneGradient(resolvedZones, resolvedMin, resolvedMax, isVertical, 'glow')
         : colors.glow;
-    const lightingStyle = useAnalogLighting(['surface', 'lens'], lighting);
-    const trackLightingStyle = {
-      ...lightingStyle,
-      '--analog-light-angle-track': 'var(--analog-light-angle-surface)',
-    } as React.CSSProperties;
+    const trackLightingStyle = useAnalogLighting(['surface', 'track', 'lens'], {
+      track: { travel: 1 },
+      ...lighting,
+    });
 
     return (
       <Meter.Root
@@ -546,7 +548,7 @@ export const AnalogMeterGroup = React.forwardRef<HTMLDivElement, AnalogMeterGrou
     },
     ref,
   ) => {
-    const lightingStyle = useAnalogLighting(['panel', 'track', 'lens'], lighting);
+    const lightingStyle = useAnalogLighting(['panel', 'bezel', 'track', 'lens'], lighting);
     const shellStyle = getMeterGroupShellStyle(variant);
 
     return (

@@ -1,13 +1,13 @@
 ---
 title: Components
-description: A hub for the current public control surface, with direct links into the per-component docs pages and the broader example catalog.
+description: A hub for the current public control surface, with direct links into the per-component docs pages and isolated previews.
 section: reference
 order: 30
 navTitle: All Components
 draft: false
 ---
 
-The current public surface is organized into inputs, readouts, and surfaces. Use this page as the hub for component docs, then switch over to [`/blocks`](/blocks) when you want broader example-driven browsing.
+The current public surface is organized into inputs, readouts, and surfaces. Use this page as the hub for component docs, install commands, usage examples, and isolated previews.
 
 ## Inputs
 
@@ -20,8 +20,6 @@ The current public surface is organized into inputs, readouts, and surfaces. Use
 - [Tactile Trim Wheel](/docs/components/wheel-select): stepped trim wheel for option navigation
 - [Tactile Trim Wheel (Numeric)](/docs/components/wheel-number): numeric trim wheel for precise scrubbing
 
-Browse the whole family in [Blocks / Inputs](/blocks/inputs).
-
 ## Readouts
 
 - [LCD Radial Gauge](/docs/components/gauge): circular LCD monitor with dial-face styling
@@ -30,19 +28,15 @@ Browse the whole family in [Blocks / Inputs](/blocks/inputs).
 - [Audio Channel Monitor](/docs/components/meter): stereo output monitor with analog ballistics
 - [Faceted Jewel Lamp](/docs/components/indicator): jewel lamp with bloom and bezel variants
 
-Browse the whole family in [Blocks / Readouts](/blocks/readouts).
-
 ## Surfaces
 
 - [Equipment Panel](/docs/components/panel): rack-style housing for dense control groupings
 - [Rocker Thumb Surface](/docs/components/rocker-thumb-surface): reusable thumb shell used by sliders and switches
 
-Browse the whole family in [Blocks / Surfaces](/blocks/surfaces).
-
 ## Examples And Previews
 
-Each component page links back to the surrounding example surfaces:
+Each component page keeps the working preview, copyable source, install path, and API notes together:
 
-- [`/blocks`](/blocks) for grouped examples
+- [`/docs/components/dial`](/docs/components/dial) and the other component docs routes for full reference pages
 - [`/view/dial`](/view/dial) and the other `/view/*` routes for isolated previews
 - [`/docs/registry`](/docs/registry) for the machine-readable install surface

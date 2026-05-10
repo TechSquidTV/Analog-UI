@@ -1,0 +1,63 @@
+---
+import DocsCodeBlock from './DocsCodeBlock.astro';
+
+interface Props {
+  code: string;
+  title?: string;
+  description?: string;
+  codeLabel?: string;
+  align?: 'center' | 'start' | 'end';
+  hideCode?: boolean;
+  previewClass?: string;
+  class?: string;
+}
+
+const {
+  code,
+  title = 'Example',
+  description,
+  codeLabel = 'Example',
+  align = 'center',
+  hideCode = false,
+  previewClass,
+  class: className,
+} = Astro.props;
+
+const alignClass = {
+  center: 'items-center',
+  start: 'items-start',
+  end: 'items-end',
+}[align];
+---
+
+<div
+  class:list={[
+    'not-prose mt-4 mb-12 overflow-hidden rounded-[var(--analog-radius-panel)] border border-white/10 bg-[#0d0d0d]',
+    className,
+  ]}
+>
+  <div class="flex flex-col gap-1 border-b border-white/10 px-4 py-3 md:px-5">
+    <div class="text-sm font-semibold text-white">{title}</div>
+    {description ? <p class="max-w-2xl text-sm leading-6 text-[#9d9d9d]">{description}</p> : null}
+  </div>
+  <div
+    data-align={align}
+    class:list={[
+      'relative flex min-h-[26rem] w-full justify-center overflow-hidden p-4 md:p-6',
+      alignClass,
+      previewClass,
+    ]}
+  >
+    <slot name="preview" />
+  </div>
+  {
+    !hideCode ? (
+      <DocsCodeBlock
+        code={code}
+        label={codeLabel}
+        framed={false}
+        class="border-t border-white/10"
+      />
+    ) : null
+  }
+</div>

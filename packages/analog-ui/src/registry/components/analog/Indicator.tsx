@@ -144,8 +144,8 @@ export const AnalogIndicator = React.forwardRef<HTMLDivElement, AnalogIndicatorP
                 ? `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 90deg), var(--analog-surface-metal-hi), var(--analog-surface-metal-mid) 40%, var(--analog-surface-metal-hi) 60%, var(--analog-surface-metal-lo))`
                 : `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 90deg), var(--analog-surface-onyx-hi), var(--analog-surface-onyx-lo) 40%, var(--analog-surface-onyx-mid) 60%, color-mix(in oklch, var(--analog-surface-onyx-lo) 82%, black))`,
               boxShadow: isChrome
-                ? `inset 0 2px 3px rgba(255,255,255,calc(1.2 * var(--analog-light-power, 1))), inset 0 -3px 4px rgba(0,0,0,calc(0.4 * var(--analog-light-power, 1))), 0 4px 6px rgba(0,0,0,calc(0.6 * var(--analog-light-power, 1))), 0 0 0 1px rgba(0,0,0,calc(0.15 * var(--analog-light-power, 1)))`
-                : `inset 0 1px 2px rgba(255,255,255,calc(0.15 * var(--analog-light-power, 1))), inset 0 -2px 3px rgba(0,0,0,calc(0.8 * var(--analog-light-power, 1))), 0 3px 5px rgba(0,0,0,calc(0.9 * var(--analog-light-power, 1))), 0 0 0 1px rgba(0,0,0,calc(0.6 * var(--analog-light-power, 1)))`,
+                ? `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * 2px) calc(cos(var(--analog-light-angle-bezel, 180deg)) * -2px) 3px rgba(255,255,255,calc(1.2 * var(--analog-light-power, 1))), inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * -3px) calc(cos(var(--analog-light-angle-bezel, 180deg)) * 3px) 4px rgba(0,0,0,calc(0.4 * var(--analog-light-power, 1))), calc(sin(var(--analog-light-angle-bezel, 180deg)) * 1px) calc(cos(var(--analog-light-angle-bezel, 180deg)) * -1px) 0 rgba(255,255,255,calc(0.18 * var(--analog-light-power, 1))), 0 4px 6px rgba(0,0,0,calc(0.6 * var(--analog-light-power, 1))), 0 0 0 1px rgba(0,0,0,calc(0.15 * var(--analog-light-power, 1)))`
+                : `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * 1px) calc(cos(var(--analog-light-angle-bezel, 180deg)) * -1px) 2px rgba(255,255,255,calc(0.15 * var(--analog-light-power, 1))), inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * -2px) calc(cos(var(--analog-light-angle-bezel, 180deg)) * 2px) 3px rgba(0,0,0,calc(0.8 * var(--analog-light-power, 1))), calc(sin(var(--analog-light-angle-bezel, 180deg)) * 1px) calc(cos(var(--analog-light-angle-bezel, 180deg)) * -1px) 0 rgba(255,255,255,calc(0.08 * var(--analog-light-power, 1))), 0 3px 5px rgba(0,0,0,calc(0.9 * var(--analog-light-power, 1))), 0 0 0 1px rgba(0,0,0,calc(0.6 * var(--analog-light-power, 1)))`,
             }}
           />
         )}
@@ -160,9 +160,9 @@ export const AnalogIndicator = React.forwardRef<HTMLDivElement, AnalogIndicatorP
             backgroundColor: palette.bg,
             boxShadow: hasBezel
               ? `
-              inset 0 4px 8px rgba(0,0,0,calc(0.9 * var(--analog-light-power, 1))),
-              inset 0 1px 2px rgba(0,0,0,calc(1 * var(--analog-light-power, 1))),
-              0 1px 0 rgba(255,255,255,calc(${isChrome ? 0.6 : 0.2} * var(--analog-light-power, 1)))
+              inset calc(sin(var(--analog-light-angle-lens, 180deg)) * -4px) calc(cos(var(--analog-light-angle-lens, 180deg)) * 4px) 8px rgba(0,0,0,calc(0.9 * var(--analog-light-power, 1))),
+              inset calc(sin(var(--analog-light-angle-lens, 180deg)) * -1px) calc(cos(var(--analog-light-angle-lens, 180deg)) * 1px) 2px rgba(0,0,0,calc(1 * var(--analog-light-power, 1))),
+              calc(sin(var(--analog-light-angle-lens, 180deg)) * 1px) calc(cos(var(--analog-light-angle-lens, 180deg)) * -1px) 0 rgba(255,255,255,calc(${isChrome ? 0.6 : 0.2} * var(--analog-light-power, 1)))
             `
               : undefined,
           }}

@@ -2,7 +2,6 @@ import { useEffect, useRef, useState, type ComponentPropsWithoutRef, type RefObj
 
 import {
   AnalogIndicator,
-  AnalogLightingProvider,
   AnalogMeter,
   AnalogMeterGroup,
   AnalogMeterGroupChannel,
@@ -23,7 +22,6 @@ import {
   PanelTitle,
   SquareButton,
   SquareToggle,
-  useMouseLumination,
 } from '../../../../../packages/analog-ui/src/index';
 
 const algorithms = ['TAPE', 'VALVE', 'BUS', 'WIDE', 'PUNCH'];
@@ -128,6 +126,10 @@ interface MasterOutPanelProps {
   energy: number;
   onClipChange: (clip: boolean) => void;
   suspendRef?: RefObject<boolean>;
+}
+
+interface HomeVstSurfaceProps {
+  onScrubbingChange?: (isScrubbing: boolean) => void;
 }
 
 interface DemoSliderProps extends Omit<
@@ -239,18 +241,11 @@ function MasterOutPanel({
   );
 }
 
-export default function HomeVstSurface() {
+export default function HomeVstSurface({ onScrubbingChange }: HomeVstSurfaceProps = {}) {
   const surfaceRef = useRef<HTMLDivElement>(null);
   const isScrubbingRef = useRef(false);
   const isSurfaceVisible = useElementVisibility(surfaceRef, '160px 0px');
   const [meterClip, setMeterClip] = useState(false);
-  const sourceAngle = useMouseLumination({
-    baseAngle: 180,
-    influence: 0.34,
-    enabled: isSurfaceVisible,
-    suspendRef: isScrubbingRef,
-    targetRef: surfaceRef,
-  });
 
   const [preset, setPreset] = useState(7);
   const [algorithm, setAlgorithm] = useState(algorithms[2]);
@@ -290,6 +285,7 @@ export default function HomeVstSurface() {
   const isMeterActive = power && isSurfaceVisible;
   const handleScrubbingChange = (isScrubbing: boolean) => {
     isScrubbingRef.current = isScrubbing;
+    onScrubbingChange?.(isScrubbing);
   };
 
   useEffect(() => {
@@ -299,325 +295,308 @@ export default function HomeVstSurface() {
   }, [isMeterActive]);
 
   return (
-    <AnalogLightingProvider baseAngle={180} sourceAngle={sourceAngle} power={1}>
-      <Panel ref={surfaceRef} variant="rack" screws screwHole="slot" className="w-full">
-        <PanelHeader className="gap-4 p-6 md:p-8">
-          <div className="text-[10px] font-semibold uppercase tracking-[0.34em] text-[#7f7f7f]">
-            Featured Surface
+    <Panel ref={surfaceRef} variant="rack" screws screwHole="slot" className="w-full">
+      <PanelHeader className="gap-4 p-6 md:p-8">
+        <div className="text-[10px] font-semibold uppercase tracking-[0.34em] text-[#7f7f7f]">
+          Featured Surface
+        </div>
+
+        <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+          <div className="max-w-3xl">
+            <PanelTitle className="text-3xl uppercase tracking-[0.18em] md:text-4xl">
+              Helios Channel
+            </PanelTitle>
+            <PanelDescription className="mt-3 text-base leading-7 text-[#9b9b9b]">
+              A fake VST channel built exclusively from Analog UI components and panel primitives.
+            </PanelDescription>
           </div>
 
-          <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
-            <div className="max-w-3xl">
-              <PanelTitle className="text-3xl uppercase tracking-[0.18em] md:text-4xl">
-                Helios Channel
-              </PanelTitle>
-              <PanelDescription className="mt-3 text-base leading-7 text-[#9b9b9b]">
-                A fake VST channel built exclusively from Analog UI components and panel primitives.
-              </PanelDescription>
+          <PanelAction className="flex flex-wrap items-center gap-5">
+            <div className="flex items-center gap-2">
+              <AnalogIndicator isOn={power} color="green" size="xs" />
+              <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#9f9f9f]">
+                Power
+              </span>
             </div>
-
-            <PanelAction className="flex flex-wrap items-center gap-5">
-              <div className="flex items-center gap-2">
-                <AnalogIndicator isOn={power} color="green" size="xs" />
-                <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#9f9f9f]">
-                  Power
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <AnalogIndicator isOn={clip} color="red" size="xs" />
-                <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#9f9f9f]">
-                  Clip
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <AnalogIndicator isOn={sync} color="blue" size="xs" />
-                <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#9f9f9f]">
-                  Link
-                </span>
-              </div>
-            </PanelAction>
-          </div>
-        </PanelHeader>
-
-        <PanelContent className="grid gap-5 px-4 pb-4 md:px-6 md:pb-6 xl:grid-cols-2">
-          <Panel variant="rack" screws={false} className="h-full">
-            <PanelHeader className="gap-2 p-5 pb-3">
-              <PanelTitle className="text-xl uppercase tracking-[0.14em]">
-                Program Matrix
-              </PanelTitle>
-              <PanelDescription>Preset, circuit, and utility controls.</PanelDescription>
-            </PanelHeader>
-
-            <PanelContent className="grid gap-6 px-5 pb-5">
-              <div className="grid gap-6 lg:grid-cols-2">
-                <div className="flex flex-col items-center gap-3">
-                  <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#818181]">
-                    Preset P-{preset.toString().padStart(2, '0')}
-                  </span>
-                  <AnalogWheelNumber
-                    value={preset}
-                    onValueChange={(next) => setPreset(next ?? 0)}
-                  />
-                </div>
-
-                <div className="flex flex-col items-center gap-3">
-                  <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#818181]">
-                    Circuit {algorithm}
-                  </span>
-                  <AnalogWheelSelect
-                    options={algorithms}
-                    value={algorithm}
-                    onValueChange={setAlgorithm}
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-                <div className="flex flex-col items-center gap-3">
-                  <SquareToggle pressed={power} onPressedChange={setPower} indicatorColor="green">
-                    PWR
-                  </SquareToggle>
-                  <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#777]">
-                    {power ? 'Online' : 'Muted'}
-                  </span>
-                </div>
-
-                <div className="flex flex-col items-center gap-3">
-                  <SquareToggle
-                    variant="black"
-                    pressed={sync}
-                    onPressedChange={setSync}
-                    indicatorColor="blue"
-                  >
-                    SYNC
-                  </SquareToggle>
-                  <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#777]">
-                    {sync ? 'Linked' : 'Free'}
-                  </span>
-                </div>
-
-                <div className="flex flex-col items-center gap-3">
-                  <SquareButton>PUSH</SquareButton>
-                  <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#777]">
-                    Momentary
-                  </span>
-                </div>
-
-                <div className="flex flex-col items-center gap-3">
-                  <SquareButton variant="black">EXEC</SquareButton>
-                  <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#777]">
-                    Black
-                  </span>
-                </div>
-              </div>
-            </PanelContent>
-
-            <PanelFooter className="flex flex-wrap gap-5 px-5 pb-5">
-              <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#878787]">
-                Program P-{preset.toString().padStart(2, '0')}
+            <div className="flex items-center gap-2">
+              <AnalogIndicator isOn={clip} color="red" size="xs" />
+              <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#9f9f9f]">
+                Clip
               </span>
-              <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#878787]">
-                Algorithm {algorithm}
+            </div>
+            <div className="flex items-center gap-2">
+              <AnalogIndicator isOn={sync} color="blue" size="xs" />
+              <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#9f9f9f]">
+                Link
               </span>
-              <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#878787]">
-                Engine {power ? 'Online' : 'Muted'}
-              </span>
-            </PanelFooter>
-          </Panel>
+            </div>
+          </PanelAction>
+        </div>
+      </PanelHeader>
 
-          <Panel variant="rack" screws={false} className="h-full">
-            <PanelHeader className="gap-2 p-5 pb-3">
-              <PanelTitle className="text-xl uppercase tracking-[0.14em]">Tone Stack</PanelTitle>
-              <PanelDescription>Drive, tone, field, and stereo behavior.</PanelDescription>
-            </PanelHeader>
+      <PanelContent className="grid gap-5 px-4 pb-4 md:px-6 md:pb-6 xl:grid-cols-2">
+        <Panel variant="rack" screws={false} className="h-full">
+          <PanelHeader className="gap-2 p-5 pb-3">
+            <PanelTitle className="text-xl uppercase tracking-[0.14em]">Program Matrix</PanelTitle>
+            <PanelDescription>Preset, circuit, and utility controls.</PanelDescription>
+          </PanelHeader>
 
-            <PanelContent className="grid gap-6 px-5 pb-5">
-              <div className="flex flex-wrap items-start justify-center gap-6">
-                <div className="flex flex-col items-center gap-3">
-                  <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#818181]">
-                    Drive
-                  </span>
-                  <Dial
-                    value={drive}
-                    onChange={(next) => setDrive(next)}
-                    className="w-24 md:w-28"
-                  />
-                </div>
-
-                <div className="flex flex-col items-center gap-3">
-                  <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#818181]">
-                    Tone
-                  </span>
-                  <Dial
-                    variant="black"
-                    value={tone}
-                    onChange={(next) => setTone(next)}
-                    className="w-24 md:w-28"
-                  />
-                </div>
-
-                <div className="flex flex-col items-center gap-3">
-                  <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#818181]">
-                    Width
-                  </span>
-                  <Dial
-                    value={width}
-                    onChange={(next) => setWidth(next)}
-                    className="w-24 md:w-28"
-                  />
-                </div>
+          <PanelContent className="grid gap-6 px-5 pb-5">
+            <div className="grid gap-6 lg:grid-cols-2">
+              <div className="flex flex-col items-center gap-3">
+                <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#818181]">
+                  Preset P-{preset.toString().padStart(2, '0')}
+                </span>
+                <AnalogWheelNumber value={preset} onValueChange={(next) => setPreset(next ?? 0)} />
               </div>
 
-              <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_120px]">
-                <div className="flex items-center justify-between gap-6">
-                  <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#818181]">
-                    Field {stereoMode}
-                  </span>
-                  <AnalogToggle
-                    value={fieldMode}
-                    onValueChange={setFieldMode}
-                    leftLed="amber"
-                    rightLed="green"
-                    className="w-[108px]"
-                  />
-                </div>
-
-                <div className="flex items-center justify-between gap-4">
-                  <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#818181]">
-                    OS {oversample ? '4x' : '1x'}
-                  </span>
-                  <AnalogSwitch checked={oversample} onCheckedChange={setOversample} />
-                </div>
-              </div>
-
-              <div className="min-w-0 pt-3">
-                <DemoSlider
-                  orientation="horizontal"
-                  variant="black"
-                  min={-40}
-                  max={10}
-                  value={mix}
-                  onValueChange={(next) => setMix(next as number)}
-                  onScrubbingChange={handleScrubbingChange}
-                  className="w-full min-w-0"
+              <div className="flex flex-col items-center gap-3">
+                <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#818181]">
+                  Circuit {algorithm}
+                </span>
+                <AnalogWheelSelect
+                  options={algorithms}
+                  value={algorithm}
+                  onValueChange={setAlgorithm}
                 />
               </div>
-            </PanelContent>
+            </div>
 
-            <PanelFooter className="flex flex-wrap gap-5 px-5 pb-5">
-              <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#878787]">
-                Drive {Math.round(drive)} deg
-              </span>
-              <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#878787]">
-                Tone {Math.round(tone)} deg
-              </span>
-              <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#878787]">
-                Mix {mix} dB
-              </span>
-            </PanelFooter>
-          </Panel>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+              <div className="flex flex-col items-center gap-3">
+                <SquareToggle pressed={power} onPressedChange={setPower} indicatorColor="green">
+                  PWR
+                </SquareToggle>
+                <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#777]">
+                  {power ? 'Online' : 'Muted'}
+                </span>
+              </div>
 
-          <Panel variant="rack" screws={false} className="h-full">
-            <PanelHeader className="gap-2 p-5 pb-3">
-              <PanelTitle className="text-xl uppercase tracking-[0.14em]">
-                Focus and Gain
-              </PanelTitle>
-              <PanelDescription>Flux display with input and output trim.</PanelDescription>
-            </PanelHeader>
+              <div className="flex flex-col items-center gap-3">
+                <SquareToggle
+                  variant="black"
+                  pressed={sync}
+                  onPressedChange={setSync}
+                  indicatorColor="blue"
+                >
+                  SYNC
+                </SquareToggle>
+                <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#777]">
+                  {sync ? 'Linked' : 'Free'}
+                </span>
+              </div>
 
-            <PanelContent className="grid gap-6 px-5 pb-5">
-              <div className="flex flex-wrap items-end justify-center gap-8">
-                <div className="flex flex-col items-center gap-3">
+              <div className="flex flex-col items-center gap-3">
+                <SquareButton>PUSH</SquareButton>
+                <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#777]">
+                  Momentary
+                </span>
+              </div>
+
+              <div className="flex flex-col items-center gap-3">
+                <SquareButton variant="black">EXEC</SquareButton>
+                <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#777]">
+                  Black
+                </span>
+              </div>
+            </div>
+          </PanelContent>
+
+          <PanelFooter className="flex flex-wrap gap-5 px-5 pb-5">
+            <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#878787]">
+              Program P-{preset.toString().padStart(2, '0')}
+            </span>
+            <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#878787]">
+              Algorithm {algorithm}
+            </span>
+            <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#878787]">
+              Engine {power ? 'Online' : 'Muted'}
+            </span>
+          </PanelFooter>
+        </Panel>
+
+        <Panel variant="rack" screws={false} className="h-full">
+          <PanelHeader className="gap-2 p-5 pb-3">
+            <PanelTitle className="text-xl uppercase tracking-[0.14em]">Tone Stack</PanelTitle>
+            <PanelDescription>Drive, tone, field, and stereo behavior.</PanelDescription>
+          </PanelHeader>
+
+          <PanelContent className="grid gap-6 px-5 pb-5">
+            <div className="flex flex-wrap items-start justify-center gap-6">
+              <div className="flex flex-col items-center gap-3">
+                <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#818181]">
+                  Drive
+                </span>
+                <Dial value={drive} onChange={(next) => setDrive(next)} className="w-24 md:w-28" />
+              </div>
+
+              <div className="flex flex-col items-center gap-3">
+                <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#818181]">
+                  Tone
+                </span>
+                <Dial
+                  variant="black"
+                  value={tone}
+                  onChange={(next) => setTone(next)}
+                  className="w-24 md:w-28"
+                />
+              </div>
+
+              <div className="flex flex-col items-center gap-3">
+                <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#818181]">
+                  Width
+                </span>
+                <Dial value={width} onChange={(next) => setWidth(next)} className="w-24 md:w-28" />
+              </div>
+            </div>
+
+            <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_120px]">
+              <div className="flex items-center justify-between gap-6">
+                <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#818181]">
+                  Field {stereoMode}
+                </span>
+                <AnalogToggle
+                  value={fieldMode}
+                  onValueChange={setFieldMode}
+                  leftLed="amber"
+                  rightLed="green"
+                  className="w-[108px]"
+                />
+              </div>
+
+              <div className="flex items-center justify-between gap-4">
+                <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#818181]">
+                  OS {oversample ? '4x' : '1x'}
+                </span>
+                <AnalogSwitch checked={oversample} onCheckedChange={setOversample} />
+              </div>
+            </div>
+
+            <div className="min-w-0 pt-3">
+              <DemoSlider
+                orientation="horizontal"
+                variant="black"
+                min={-40}
+                max={10}
+                value={mix}
+                onValueChange={(next) => setMix(next as number)}
+                onScrubbingChange={handleScrubbingChange}
+                className="w-full min-w-0"
+              />
+            </div>
+          </PanelContent>
+
+          <PanelFooter className="flex flex-wrap gap-5 px-5 pb-5">
+            <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#878787]">
+              Drive {Math.round(drive)} deg
+            </span>
+            <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#878787]">
+              Tone {Math.round(tone)} deg
+            </span>
+            <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#878787]">
+              Mix {mix} dB
+            </span>
+          </PanelFooter>
+        </Panel>
+
+        <Panel variant="rack" screws={false} className="h-full">
+          <PanelHeader className="gap-2 p-5 pb-3">
+            <PanelTitle className="text-xl uppercase tracking-[0.14em]">Focus and Gain</PanelTitle>
+            <PanelDescription>Flux display with input and output trim.</PanelDescription>
+          </PanelHeader>
+
+          <PanelContent className="grid gap-6 px-5 pb-5">
+            <div className="flex flex-wrap items-end justify-center gap-8">
+              <div className="flex flex-col items-center gap-3">
+                <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#818181]">
+                  Flux {Math.round(focus)}%
+                </span>
+                <Gauge
+                  className="h-36 w-36 md:h-40 md:w-40"
+                  value={focus}
+                  onValueChange={(next) => setFocus(next as number)}
+                  variant={gaugeVariant}
+                />
+              </div>
+
+              <div className="flex gap-8">
+                <div className="flex flex-col items-center gap-4">
                   <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#818181]">
-                    Flux {Math.round(focus)}%
+                    Input
                   </span>
-                  <Gauge
-                    className="h-36 w-36 md:h-40 md:w-40"
-                    value={focus}
-                    onValueChange={(next) => setFocus(next as number)}
-                    variant={gaugeVariant}
+                  <DemoSlider
+                    orientation="vertical"
+                    min={-40}
+                    max={10}
+                    value={inputTrim}
+                    onValueChange={(next) => setInputTrim(next as number)}
+                    onScrubbingChange={handleScrubbingChange}
                   />
+                  <div className="flex items-center gap-2">
+                    <AnalogIndicator isOn={power} color="white" size="xs" />
+                    <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#777]">
+                      Line
+                    </span>
+                  </div>
                 </div>
 
-                <div className="flex gap-8">
-                  <div className="flex flex-col items-center gap-4">
-                    <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#818181]">
-                      Input
+                <div className="flex flex-col items-center gap-4">
+                  <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#818181]">
+                    Output
+                  </span>
+                  <DemoSlider
+                    orientation="vertical"
+                    variant="black"
+                    min={-40}
+                    max={10}
+                    value={outputTrim}
+                    onValueChange={(next) => setOutputTrim(next as number)}
+                    onScrubbingChange={handleScrubbingChange}
+                  />
+                  <div className="flex items-center gap-2">
+                    <AnalogIndicator isOn={power} color="amber" size="xs" />
+                    <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#777]">
+                      Lift
                     </span>
-                    <DemoSlider
-                      orientation="vertical"
-                      min={-40}
-                      max={10}
-                      value={inputTrim}
-                      onValueChange={(next) => setInputTrim(next as number)}
-                      onScrubbingChange={handleScrubbingChange}
-                    />
-                    <div className="flex items-center gap-2">
-                      <AnalogIndicator isOn={power} color="white" size="xs" />
-                      <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#777]">
-                        Line
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col items-center gap-4">
-                    <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#818181]">
-                      Output
-                    </span>
-                    <DemoSlider
-                      orientation="vertical"
-                      variant="black"
-                      min={-40}
-                      max={10}
-                      value={outputTrim}
-                      onValueChange={(next) => setOutputTrim(next as number)}
-                      onScrubbingChange={handleScrubbingChange}
-                    />
-                    <div className="flex items-center gap-2">
-                      <AnalogIndicator isOn={power} color="amber" size="xs" />
-                      <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#777]">
-                        Lift
-                      </span>
-                    </div>
                   </div>
                 </div>
               </div>
-            </PanelContent>
+            </div>
+          </PanelContent>
 
-            <PanelFooter className="flex flex-wrap gap-5 px-5 pb-5">
-              <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#878787]">
-                Input {inputTrim} dB
-              </span>
-              <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#878787]">
-                Output {outputTrim} dB
-              </span>
-              <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#878787]">
-                Display {gaugeVariant.replace('lcd-', '')}
-              </span>
-            </PanelFooter>
-          </Panel>
+          <PanelFooter className="flex flex-wrap gap-5 px-5 pb-5">
+            <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#878787]">
+              Input {inputTrim} dB
+            </span>
+            <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#878787]">
+              Output {outputTrim} dB
+            </span>
+            <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#878787]">
+              Display {gaugeVariant.replace('lcd-', '')}
+            </span>
+          </PanelFooter>
+        </Panel>
 
-          <MasterOutPanel
-            active={isMeterActive}
-            driveHot={driveHot}
-            energy={energy}
-            onClipChange={setMeterClip}
-            suspendRef={isScrubbingRef}
-          />
-        </PanelContent>
+        <MasterOutPanel
+          active={isMeterActive}
+          driveHot={driveHot}
+          energy={energy}
+          onClipChange={setMeterClip}
+          suspendRef={isScrubbingRef}
+        />
+      </PanelContent>
 
-        <PanelFooter className="flex flex-wrap gap-5 px-4 pb-4 pt-0 md:px-6 md:pb-6">
-          <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#878787]">
-            Character {algorithm}
-          </span>
-          <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#878787]">
-            Field {stereoMode}
-          </span>
-          <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#878787]">
-            Sync {sync ? 'Linked' : 'Free'}
-          </span>
-        </PanelFooter>
-      </Panel>
-    </AnalogLightingProvider>
+      <PanelFooter className="flex flex-wrap gap-5 px-4 pb-4 pt-0 md:px-6 md:pb-6">
+        <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#878787]">
+          Character {algorithm}
+        </span>
+        <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#878787]">
+          Field {stereoMode}
+        </span>
+        <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#878787]">
+          Sync {sync ? 'Linked' : 'Free'}
+        </span>
+      </PanelFooter>
+    </Panel>
   );
 }

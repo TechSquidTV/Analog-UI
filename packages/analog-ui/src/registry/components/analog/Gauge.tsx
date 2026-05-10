@@ -86,6 +86,7 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
           const fillEndRatio = fillMode === 'center' ? Math.max(ratio, centerRatio) : ratio;
           const fillStart = fillStartRatio * resolvedSweepAngle;
           const fillLength = Math.max(0, (fillEndRatio - fillStartRatio) * resolvedSweepAngle);
+          const pointerBevelAngle = `calc(var(--analog-light-angle-pointer, 180deg) - ${rotationAngle}deg)`;
           const resolvedMarks = showMarks
             ? (marks ?? []).map((mark) => ({
                 ...mark,
@@ -278,7 +279,7 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
                           `color-mix(in oklch, var(--analog-surface-metal-hi) 78%, white 22%) 0%, ` +
                           `var(--analog-surface-metal-mid) 40%, ` +
                           `var(--analog-surface-metal-lo) 100%)`,
-                        boxShadow: `inset 0 1px 2px rgba(255,255,255,calc(0.6 * var(--analog-light-power, 1))), inset 0 -1px 2px rgba(0,0,0,calc(0.5 * var(--analog-light-power, 1))), 0 2px 4px rgba(0,0,0,calc(0.6 * var(--analog-light-power, 1)))`,
+                        boxShadow: `inset calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 2px rgba(255,255,255,calc(0.6 * var(--analog-light-power, 1))), inset calc(sin(${pointerBevelAngle}) * -1px) calc(cos(${pointerBevelAngle}) * 1px) 2px rgba(0,0,0,calc(0.5 * var(--analog-light-power, 1))), calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 4px rgba(0,0,0,calc(0.6 * var(--analog-light-power, 1)))`,
                       }}
                     >
                       <div
