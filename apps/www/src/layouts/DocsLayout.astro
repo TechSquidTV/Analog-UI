@@ -55,3 +55,42 @@ const { title, description, currentPath, navigation, headings = [] } = Astro.pro
     </div>
   </section>
 </SiteLayout>
+
+<script>
+  function bindDocsCopyButtons() {
+    document.querySelectorAll<HTMLButtonElement>('[data-docs-copy]').forEach((button) => {
+      if (button.dataset.docsCopyBound === 'true') return;
+
+      button.dataset.docsCopyBound = 'true';
+      const initialLabel = button.textContent || 'Copy';
+
+      button.addEventListener('click', async () => {
+        const root = button.closest('[data-docs-copy-root]');
+        const code = root?.querySelector<HTMLElement>('[data-docs-code]');
+        const text = code?.textContent?.trimEnd() ?? '';
+
+        if (!navigator.clipboard) {
+          button.textContent = 'Unavailable';
+          window.setTimeout(() => {
+            button.textContent = initialLabel;
+          }, 1400);
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(text);
+          button.textContent = 'Copied';
+        } catch {
+          button.textContent = 'Failed';
+        }
+
+        window.setTimeout(() => {
+          button.textContent = initialLabel;
+        }, 1400);
+      });
+    });
+  }
+
+  bindDocsCopyButtons();
+  document.addEventListener('astro:page-load', bindDocsCopyButtons);
+</script>

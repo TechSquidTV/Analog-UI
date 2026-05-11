@@ -147,6 +147,73 @@ a {
     @apply border-none bg-transparent p-0 text-inherit;
   }
 
+  .docs-prose table {
+    @apply mt-4 block w-full max-w-full overflow-x-auto rounded-[var(--analog-radius-shell)] border border-white/10 bg-black/25 text-left text-sm;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .docs-prose th {
+    @apply border-b border-white/10 px-4 py-3 text-[11px] font-semibold tracking-[0.2em] text-[#8a8a8a] uppercase;
+  }
+
+  .docs-prose td {
+    @apply border-b border-white/8 px-4 py-3 align-top text-[#b9b9b9];
+  }
+
+  .docs-prose tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .docs-code-block {
+    @apply max-w-full overflow-hidden bg-black/45;
+  }
+
+  .docs-code-block--framed {
+    @apply rounded-[var(--analog-radius-shell)] border border-white/10;
+  }
+
+  .docs-code-block--markdown {
+    @apply mt-4;
+  }
+
+  .docs-code-header {
+    @apply flex items-center justify-between gap-3 border-b border-white/10 px-4 py-2;
+  }
+
+  .docs-code-copy {
+    @apply rounded-[var(--analog-radius-window)] border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[11px] font-medium text-[#d8d8d8] transition-colors duration-200 hover:border-white/18 hover:bg-white/[0.08] hover:text-white;
+  }
+
+  .docs-code-body {
+    @apply min-w-0 max-w-full;
+  }
+
+  [data-docs-copy-root] pre {
+    margin: 0;
+    max-width: 100%;
+    overflow-x: auto;
+    border: 0;
+    background: transparent !important;
+    border-radius: 0 !important;
+    padding: 1rem;
+    color: #e2e2e2;
+    font-size: 0.875rem;
+    line-height: 1.65;
+  }
+
+  [data-docs-copy-root] pre code {
+    border: 0;
+    background: transparent;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  [data-docs-copy-root] pre span {
+    background: transparent !important;
+  }
+
   .docs-prose ul,
   .docs-prose ol {
     @apply pl-5;

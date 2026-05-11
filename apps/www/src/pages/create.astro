@@ -1,0 +1,11 @@
+---
+import CreateThemePage from '../components/create/CreateThemePage';
+import SiteLayout from '../layouts/SiteLayout.astro';
+---
+
+<SiteLayout
+  title="Create Theme"
+  description="A live Analog UI theme editor for host tokens, material recipes, emissive colors, and exportable CSS."
+>
+  <CreateThemePage client:load />
+</SiteLayout>

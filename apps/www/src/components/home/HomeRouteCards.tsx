@@ -8,6 +8,12 @@ import {
 
 const cards = [
   {
+    href: '/create',
+    eyebrow: 'Create',
+    title: 'Tune a theme live',
+    body: 'Adjust host tokens, material surfaces, LED colors, and finish recipes against a live Analog UI preview.',
+  },
+  {
     href: '/docs',
     eyebrow: 'Get Started',
     title: 'Install the foundation',
@@ -29,7 +35,7 @@ const cards = [
 
 export default function HomeRouteCards() {
   return (
-    <div className="grid gap-4 md:grid-cols-3">
+    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
       {cards.map((card) => (
         <a key={card.href} href={card.href} className="group block h-full">
           <Panel
