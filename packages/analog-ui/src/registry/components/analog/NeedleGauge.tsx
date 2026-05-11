@@ -666,7 +666,7 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
                 </div>
               </div>
 
-              <div className="pointer-events-none absolute inset-x-0 bottom-[13%] z-20 flex flex-col items-center gap-1 px-8 text-center">
+              <div className="pointer-events-none absolute inset-x-0 bottom-[15%] z-20 flex flex-col items-center gap-1 px-8 text-center">
                 <div className="text-[9px] font-bold tracking-[0.32em] text-[color:var(--analog-telemetry-label)] uppercase">
                   {label}
                 </div>
