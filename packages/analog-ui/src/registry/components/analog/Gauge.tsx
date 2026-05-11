@@ -252,7 +252,10 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
               </div>
 
               {/* Central dial surface */}
-              <div className="absolute inset-6 pointer-events-none">
+              <div
+                className="absolute pointer-events-none"
+                style={{ inset: 'var(--analog-gauge-center-inset, 1.5rem)' }}
+              >
                 <SurfaceButton
                   rotation={rotationAngle}
                   containerClassName="w-full h-full pointer-events-none"

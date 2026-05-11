@@ -389,6 +389,10 @@ function isHexColor(value: string) {
   return /^#[0-9a-f]{6}$/i.test(value);
 }
 
+function clampNumber(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
+
 function TokenField({
   control,
   value,
@@ -541,11 +545,18 @@ function RackPreview() {
   const [mix, setMix] = useState(-6);
   const [power, setPower] = useState(true);
   const [mode, setMode] = useState<'left' | 'right'>('right');
-  const energy = power
-    ? Math.min(100, 18 + drive * 0.55 + focus * 0.18 + (mode === 'right' ? 8 : 0))
-    : 0;
-  const rightEnergy = power ? Math.max(0, energy - 9 + tone * 0.12) : 0;
+  const [signalTrim, setSignalTrim] = useState(0);
+  const baseEnergy = power ? 18 + drive * 0.55 + focus * 0.18 + (mode === 'right' ? 8 : 0) : 0;
+  const energy = power ? clampNumber(baseEnergy + signalTrim, 0, 100) : 0;
+  const rightEnergy = power ? clampNumber(energy - 9 + tone * 0.12, 0, 100) : 0;
   const isHot = power && energy > 72;
+  const handleSignalChange = (nextValue: number | number[]) => {
+    const nextSignal = Array.isArray(nextValue) ? nextValue[0] : nextValue;
+
+    if (typeof nextSignal !== 'number') return;
+
+    setSignalTrim(clampNumber(nextSignal, 0, 100) - baseEnergy);
+  };
 
   return (
     <Panel variant="rack" screwHole="slot" className="min-h-[620px]">
@@ -647,36 +658,35 @@ function RackPreview() {
               <PanelContent className="px-5 pb-5">
                 <Panel variant="default" surface="subtle" screws={false}>
                   <PanelContent className="p-4">
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <div className="text-sm font-semibold">Total Signal</div>
-                        <div className="mt-1 text-3xl font-semibold tracking-tight">
-                          {Math.round(energy)}%
-                        </div>
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="text-sm font-semibold">Total Signal</div>
+                      <div className="flex items-center gap-2">
+                        <Indicator isOn={power} color="red" size="xs" />
+                        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--muted-foreground)]">
+                          LIVE
+                        </span>
                       </div>
-                      <span className="rounded-full border border-[var(--border)] bg-[color-mix(in_oklch,var(--accent)_18%,transparent)] px-3 py-1 text-xs font-semibold text-[var(--accent)]">
-                        Live
-                      </span>
                     </div>
-                    <div className="mt-5 grid grid-cols-[5.5rem_minmax(0,1fr)] items-center gap-4">
+                    <div className="mt-5 grid grid-cols-[4.75rem_minmax(0,1fr)] items-center gap-3">
                       <Gauge
                         aria-label="Total signal gauge"
-                        className="max-w-[5.5rem] p-1"
-                        disabled
+                        className="max-w-[4.75rem] p-1 [--analog-gauge-center-inset:0.75rem]"
                         max={100}
                         min={0}
+                        onValueChange={handleSignalChange}
                         showMarks={false}
                         value={energy}
                         variant={isHot ? 'lcd-amber' : 'lcd-green'}
                       />
                       <LCDDisplay
-                        className="min-w-0"
+                        className="w-full min-w-0 [&>div]:w-full"
                         label="HDRM"
                         value={Math.round(100 - energy)}
                         units="%"
                         variant={isHot ? 'lcd-amber' : 'lcd-green'}
                         size="sm"
-                        valueClassName="text-[20px]"
+                        screenClassName="px-2 py-1.5"
+                        valueClassName="text-[18px] tracking-[0.08em]"
                       />
                     </div>
                   </PanelContent>
@@ -689,8 +699,9 @@ function RackPreview() {
                 <PanelTitle className="text-lg uppercase tracking-[0.16em]">Readout</PanelTitle>
                 <PanelDescription>Patch telemetry.</PanelDescription>
               </PanelHeader>
-              <PanelContent className="grid justify-items-start gap-5 px-5 pb-5">
+              <PanelContent className="grid justify-items-stretch gap-5 px-5 pb-5">
                 <LCDDisplay
+                  className="w-full min-w-0 [&>div]:w-full"
                   label="Output"
                   value={Math.round(energy + mix)}
                   units="dB"
@@ -814,7 +825,14 @@ function CardsPreview() {
                   value={74}
                   variant="lcd-blue"
                 />
-                <LCDDisplay label="Accent" value={74} units="%" variant="lcd-blue" size="sm" />
+                <LCDDisplay
+                  className="w-full min-w-0 [&>div]:w-full"
+                  label="Accent"
+                  value={74}
+                  units="%"
+                  variant="lcd-blue"
+                  size="sm"
+                />
               </div>
             </PanelContent>
           </Panel>
