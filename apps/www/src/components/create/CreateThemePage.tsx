@@ -25,7 +25,7 @@ import {
   PanelHeader,
   PanelTitle,
   Slider,
-  SquareButton,
+  PushButton,
   Switch,
   Toggle,
   usePointerLighting,
@@ -481,7 +481,7 @@ function ThemeWorkbench({
       <PanelContent className="px-5 pb-5">
         <div className="grid grid-cols-2 gap-2">
           {tokenGroups.map((group) => (
-            <SquareButton
+            <PushButton
               key={group.id}
               type="button"
               width="100%"
@@ -490,7 +490,7 @@ function ThemeWorkbench({
               onClick={() => onGroupChange(group.id)}
             >
               {group.label}
-            </SquareButton>
+            </PushButton>
           ))}
         </div>
 
@@ -506,7 +506,7 @@ function ThemeWorkbench({
         </div>
       </PanelContent>
       <PanelFooter className="grid grid-cols-2 gap-3 px-5 pb-5">
-        <SquareButton
+        <PushButton
           type="button"
           width="100%"
           height="2.75rem"
@@ -514,10 +514,10 @@ function ThemeWorkbench({
           onClick={() => setValues(initialThemeValues)}
         >
           Reset
-        </SquareButton>
-        <SquareButton type="button" width="100%" height="2.75rem" onClick={onExport}>
+        </PushButton>
+        <PushButton type="button" width="100%" height="2.75rem" onClick={onExport}>
           Export
-        </SquareButton>
+        </PushButton>
       </PanelFooter>
     </Panel>
   );
@@ -799,12 +799,12 @@ function CardsPreview() {
           <Panel variant="default" surface="subtle" screws={false}>
             <PanelContent className="p-5">
               <div className="flex flex-wrap items-center gap-3">
-                <SquareButton type="button" width="8rem" height="2.75rem">
+                <PushButton type="button" width="8rem" height="2.75rem">
                   Primary
-                </SquareButton>
-                <SquareButton type="button" width="8rem" height="2.75rem" variant="black">
+                </PushButton>
+                <PushButton type="button" width="8rem" height="2.75rem" variant="black">
                   Secondary
-                </SquareButton>
+                </PushButton>
               </div>
               <div className="mt-6 grid grid-cols-[7rem_minmax(0,1fr)] items-center gap-4">
                 <Gauge
@@ -845,7 +845,7 @@ function PreviewStage({
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap gap-2">
           {previewTabs.map((tab) => (
-            <SquareButton
+            <PushButton
               key={tab}
               type="button"
               width="5.75rem"
@@ -854,12 +854,12 @@ function PreviewStage({
               onClick={() => setActiveTab(tab)}
             >
               {tab}
-            </SquareButton>
+            </PushButton>
           ))}
         </div>
-        <SquareButton href="/docs/design/tokens" width="8.75rem" height="2.5rem" variant="black">
+        <PushButton href="/docs/design/tokens" width="8.75rem" height="2.5rem" variant="black">
           tokens.md
-        </SquareButton>
+        </PushButton>
       </div>
 
       {activeTab === 'Rack' ? <RackPreview /> : null}
@@ -913,9 +913,9 @@ export default function CreateThemePage() {
             <span className="rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 font-mono text-xs uppercase tracking-[0.2em] text-[#a9a9a2]">
               {exportMessage}
             </span>
-            <SquareButton type="button" width="10rem" onClick={handleExport}>
+            <PushButton type="button" width="10rem" onClick={handleExport}>
               Export Theme
-            </SquareButton>
+            </PushButton>
           </div>
         </div>
 

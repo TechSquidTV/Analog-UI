@@ -23,8 +23,8 @@ import {
   PanelTitle,
   RockerSwitchGroup,
   RockerSwitchGroupItem,
-  SquareButton,
-  SquareToggle,
+  PushButton,
+  PushToggle,
   ToggleButtonGroup,
   ToggleButtonGroupItem,
   NeedleGauge,
@@ -133,7 +133,7 @@ function ControlButton({
   children: ReactNode;
 }) {
   return (
-    <SquareButton
+    <PushButton
       type="button"
       width="5.5rem"
       height="2.5rem"
@@ -142,7 +142,7 @@ function ControlButton({
       onClick={onClick}
     >
       {children}
-    </SquareButton>
+    </PushButton>
   );
 }
 
@@ -373,7 +373,7 @@ function RockerSwitchGroupDemo({ mode }: { mode: DemoMode }) {
   );
 }
 
-function SquareButtonDemo({ mode }: { mode: DemoMode }) {
+function PushButtonDemo({ mode }: { mode: DemoMode }) {
   const [lastAction, setLastAction] = useState('Idle');
 
   return (
@@ -390,11 +390,11 @@ function SquareButtonDemo({ mode }: { mode: DemoMode }) {
       <div className="flex flex-wrap items-center justify-center gap-12">
         <div className="flex flex-col items-center gap-6">
           <div className="flex gap-8">
-            <SquareButton onClick={() => setLastAction('Push')}>PUSH</SquareButton>
+            <PushButton onClick={() => setLastAction('Push')}>PUSH</PushButton>
             {mode === 'full' ? (
-              <SquareButton variant="black" onClick={() => setLastAction('Exec')}>
+              <PushButton variant="black" onClick={() => setLastAction('Exec')}>
                 EXEC
-              </SquareButton>
+              </PushButton>
             ) : null}
           </div>
           <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#555]">
@@ -406,7 +406,7 @@ function SquareButtonDemo({ mode }: { mode: DemoMode }) {
   );
 }
 
-function SquareToggleDemo({ mode }: { mode: DemoMode }) {
+function PushToggleDemo({ mode }: { mode: DemoMode }) {
   const [mainToggle, setMainToggle] = useState(true);
   const [auxToggle, setAuxToggle] = useState(false);
 
@@ -429,21 +429,17 @@ function SquareToggleDemo({ mode }: { mode: DemoMode }) {
       >
         <div className="flex flex-col items-center gap-6">
           <div className="flex gap-8">
-            <SquareToggle
-              pressed={mainToggle}
-              onPressedChange={setMainToggle}
-              indicatorColor="green"
-            >
+            <PushToggle pressed={mainToggle} onPressedChange={setMainToggle} indicatorColor="green">
               PWR
-            </SquareToggle>
-            <SquareToggle
+            </PushToggle>
+            <PushToggle
               variant="black"
               pressed={auxToggle}
               onPressedChange={setAuxToggle}
               indicatorColor="red"
             >
               ARM
-            </SquareToggle>
+            </PushToggle>
           </div>
           <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#555]">
             Latching (LED)
@@ -841,7 +837,7 @@ function IndicatorDemo({ mode }: { mode: DemoMode }) {
           <FooterItem
             label="State"
             value={
-              <SquareToggle
+              <PushToggle
                 className="h-10 w-24"
                 indicatorColor={color}
                 pressed={isOn}
@@ -849,13 +845,13 @@ function IndicatorDemo({ mode }: { mode: DemoMode }) {
                 onPressedChange={setIsOn}
               >
                 {isOn ? 'Powered' : 'Dark'}
-              </SquareToggle>
+              </PushToggle>
             }
           />
           <FooterItem
             label="Color"
             value={
-              <SquareButton
+              <PushButton
                 type="button"
                 width="5.5rem"
                 height="2.5rem"
@@ -864,7 +860,7 @@ function IndicatorDemo({ mode }: { mode: DemoMode }) {
                 onClick={() => setColorIndex((current) => (current + 1) % colors.length)}
               >
                 {color}
-              </SquareButton>
+              </PushButton>
             }
           />
         </>
@@ -969,7 +965,7 @@ function PanelDemo({ mode }: { mode: DemoMode }) {
             </div>
           </PanelContent>
           <PanelFooter>
-            <SquareToggle
+            <PushToggle
               className="w-full"
               indicatorColor="amber"
               pressed={bypass}
@@ -977,7 +973,7 @@ function PanelDemo({ mode }: { mode: DemoMode }) {
               onPressedChange={setBypass}
             >
               Bypass
-            </SquareToggle>
+            </PushToggle>
           </PanelFooter>
         </Panel>
       </div>
@@ -1038,10 +1034,10 @@ export default function BlockDemo({ name, mode = 'full' }: BlockDemoProps) {
       return <ToggleDemo mode={mode} />;
     case 'rocker-switch-group':
       return <RockerSwitchGroupDemo mode={mode} />;
-    case 'square-button':
-      return <SquareButtonDemo mode={mode} />;
-    case 'square-toggle':
-      return <SquareToggleDemo mode={mode} />;
+    case 'push-button':
+      return <PushButtonDemo mode={mode} />;
+    case 'push-toggle':
+      return <PushToggleDemo mode={mode} />;
     case 'toggle-button-group':
       return <ToggleButtonGroupDemo mode={mode} />;
     case 'switch':

@@ -8,8 +8,8 @@ import { usePointerLighting } from './registry/hooks/use-pointer-lighting';
 import { AnalogLightingProvider } from './registry/hooks/use-analog-lighting';
 import { Dial } from './registry/components/analog/Dial';
 import { Toggle } from './registry/components/analog/Toggle';
-import { SquareButton } from './registry/components/analog/SquareButton';
-import { SquareToggle } from './registry/components/analog/SquareToggle';
+import { PushButton } from './registry/components/analog/PushButton';
+import { PushToggle } from './registry/components/analog/PushToggle';
 import { Switch } from './registry/components/analog/Switch';
 import { Slider } from './registry/components/analog/Slider';
 import {
@@ -123,7 +123,7 @@ export default function App() {
   const [indicatorShape, setIndicatorShape] = useState<IndicatorShape>('round');
   const [indicatorHasBezel, setIndicatorHasBezel] = useState(true);
 
-  // Square Button / Toggle States
+  // Push Button / Toggle States
   const [sqToggle1, setSqToggle1] = useState(true);
   const [sqToggle2, setSqToggle2] = useState(false);
 
@@ -312,8 +312,8 @@ export default function App() {
         </ComponentShowcase>
 
         <ComponentShowcase
-          title="Square Button & Toggle"
-          description="Skeuomorphic square controls with realistic 3D extrusion, machined finishes, and dynamic lighting. The toggle variant includes an optional LED indicator for state feedback."
+          title="Push Button & Toggle"
+          description="Skeuomorphic push controls with realistic 3D extrusion, machined finishes, and dynamic lighting. The toggle variant includes an optional LED indicator for state feedback."
           specs={[
             { label: 'Toggle 1', value: sqToggle1 ? 'ON' : 'OFF' },
             { label: 'Toggle 2', value: sqToggle2 ? 'ON' : 'OFF' },
@@ -322,10 +322,10 @@ export default function App() {
           <div className="flex flex-wrap gap-12 items-center justify-center py-8">
             <div className="flex flex-col items-center gap-6">
               <div className="flex gap-8">
-                <SquareButton onClick={() => console.log('Click')}>PUSH</SquareButton>
-                <SquareButton variant="black" onClick={() => console.log('Click')}>
+                <PushButton onClick={() => console.log('Click')}>PUSH</PushButton>
+                <PushButton variant="black" onClick={() => console.log('Click')}>
                   EXEC
-                </SquareButton>
+                </PushButton>
               </div>
               <span className="font-mono text-[10px] text-[#555] uppercase tracking-widest font-bold">
                 Momentary
@@ -334,21 +334,21 @@ export default function App() {
 
             <div className="flex flex-col items-center gap-6">
               <div className="flex gap-8">
-                <SquareToggle
+                <PushToggle
                   pressed={sqToggle1}
                   onPressedChange={setSqToggle1}
                   indicatorColor="green"
                 >
                   PWR
-                </SquareToggle>
-                <SquareToggle
+                </PushToggle>
+                <PushToggle
                   variant="black"
                   pressed={sqToggle2}
                   onPressedChange={setSqToggle2}
                   indicatorColor="red"
                 >
                   ARM
-                </SquareToggle>
+                </PushToggle>
               </div>
               <span className="font-mono text-[10px] text-[#555] uppercase tracking-widest font-bold">
                 Latching (LED)
@@ -1007,7 +1007,7 @@ export default function App() {
                 </div>
               </PanelContent>
               <PanelFooter>
-                <SquareToggle
+                <PushToggle
                   className="w-full"
                   indicatorColor="amber"
                   pressed={bypass}
@@ -1015,7 +1015,7 @@ export default function App() {
                   onPressedChange={setBypass}
                 >
                   Bypass
-                </SquareToggle>
+                </PushToggle>
               </PanelFooter>
             </Panel>
           </div>

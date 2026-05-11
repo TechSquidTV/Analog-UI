@@ -20,6 +20,9 @@ type ToggleButtonGroupItemRenderProps = React.HTMLAttributes<HTMLElement> & {
 type ToggleIndicatorState = 'auto' | 'always' | 'never';
 type ToggleButtonVariant = 'chrome' | 'black';
 
+const itemSizingClassName =
+  'pointer-events-none invisible flex h-full min-h-0 min-w-11 items-center justify-center px-5 py-1 text-center text-[10px] font-bold tracking-[0.25em] whitespace-nowrap uppercase';
+
 interface ToggleButtonGroupContextValue {
   variant?: ToggleButtonVariant;
   indicatorColor: IndicatorColor;
@@ -168,6 +171,7 @@ export const ToggleButtonGroupItem = React.forwardRef<
     const resolvedIndicatorActive = indicatorActive ?? context?.indicatorActive ?? 'auto';
     const resolvedExtrusionLayers = extrusionLayers ?? context?.extrusionLayers ?? 32;
     const resolvedHeight = height ?? context?.itemHeight ?? '3.5rem';
+    const shouldRenderSizer = width === undefined;
 
     const renderItem = React.useCallback(
       (renderProps: ToggleButtonGroupItemRenderProps, state: BaseToggle.State) => {
@@ -265,7 +269,10 @@ export const ToggleButtonGroupItem = React.forwardRef<
 
     return (
       <div
-        className={cn('relative inline-flex shrink-0 items-center justify-center p-0', className)}
+        className={cn(
+          'relative inline-flex min-w-14 shrink-0 items-center justify-center p-0',
+          className,
+        )}
         style={{
           ...lightingStyle,
           width,
@@ -273,8 +280,14 @@ export const ToggleButtonGroupItem = React.forwardRef<
           perspective: '2400px',
         }}
       >
+        {shouldRenderSizer ? (
+          <span aria-hidden="true" className={itemSizingClassName}>
+            {children}
+          </span>
+        ) : null}
         <BaseToggle
           ref={mergedRef as React.Ref<HTMLButtonElement>}
+          className="absolute inset-0"
           value={value}
           nativeButton={nativeButton ?? !href}
           disabled={disabled}

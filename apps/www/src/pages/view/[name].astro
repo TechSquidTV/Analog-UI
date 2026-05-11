@@ -4,7 +4,7 @@ import ComponentDependencyCards from '../../components/docs/ComponentDependencyC
 import ComponentInstallCode from '../../components/docs/ComponentInstallCode.astro';
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import { getAllBlockNames, getBlockEntry } from '../../lib/blocks';
-import { SquareButton } from '../../../../../packages/analog-ui/src/index';
+import { PushButton } from '../../../../../packages/analog-ui/src/index';
 
 export function getStaticPaths() {
   return getAllBlockNames().map((name) => ({
@@ -21,9 +21,9 @@ if (!entry) {
 
 <SiteLayout title={`${entry.title} Preview`} description={entry.description}>
   <section class="site-frame pt-10 md:pt-12">
-    <SquareButton href={entry.href} width="16rem" height="2.5rem" variant="black">
+    <PushButton href={entry.href} height="2.5rem" variant="black">
       Back to component docs
-    </SquareButton>
+    </PushButton>
 
     <div class="mt-6 grid gap-8 lg:grid-cols-[320px_minmax(0,1fr)]">
       <aside class="section-panel h-fit min-w-0 p-5">

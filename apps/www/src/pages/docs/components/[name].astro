@@ -9,7 +9,7 @@ import DocsLayout from '../../../layouts/DocsLayout.astro';
 import { getBlockEntries, getBlockEntry } from '../../../lib/blocks';
 import { getComponentDocHref, getDocsNavigation } from '../../../lib/docs';
 import { getEntry } from 'astro:content';
-import { SquareButton } from '../../../../../../packages/analog-ui/src/index';
+import { PushButton } from '../../../../../../packages/analog-ui/src/index';
 
 function slugify(value: string) {
   return value
@@ -79,12 +79,12 @@ const headings = [
   </ComponentPreview>
 
   <div class="not-prose mt-6 flex flex-wrap gap-3">
-    <SquareButton href="/docs/components" width="9.75rem" height="2.5rem" variant="black">
+    <PushButton href="/docs/components" height="2.5rem" variant="black">
       All Components
-    </SquareButton>
-    <SquareButton href={entry.viewHref} width="12rem" height="2.5rem" variant="black">
+    </PushButton>
+    <PushButton href={entry.viewHref} height="2.5rem" variant="black">
       Open Isolated Preview
-    </SquareButton>
+    </PushButton>
   </div>
 
   <h2 id="installation">Installation</h2>

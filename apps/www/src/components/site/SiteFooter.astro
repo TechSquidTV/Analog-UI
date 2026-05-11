@@ -1,5 +1,5 @@
 ---
-import { SquareButton } from '../../../../../packages/analog-ui/src/index';
+import { PushButton } from '../../../../../packages/analog-ui/src/index';
 ---
 
 <footer class="border-t border-white/8">
@@ -14,15 +14,11 @@ import { SquareButton } from '../../../../../packages/analog-ui/src/index';
     </div>
 
     <div class="flex flex-wrap items-center gap-3">
-      <SquareButton href="/docs" width="10rem" height="2.5rem" variant="black">
-        Read the docs
-      </SquareButton>
-      <SquareButton href="/docs/components" width="7.75rem" height="2.5rem" variant="black">
-        Components
-      </SquareButton>
-      <SquareButton href="/r/registry.json" width="8.5rem" height="2.5rem" variant="black">
+      <PushButton href="/docs" height="2.5rem" variant="black"> Read the docs </PushButton>
+      <PushButton href="/docs/components" height="2.5rem" variant="black"> Components </PushButton>
+      <PushButton href="/r/registry.json" height="2.5rem" variant="black">
         Registry JSON
-      </SquareButton>
+      </PushButton>
     </div>
   </div>
 </footer>

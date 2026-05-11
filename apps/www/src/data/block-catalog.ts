@@ -44,24 +44,23 @@ export const blockCatalog = {
     order: 32,
     summary: 'A recessed switch bank for arranging rocker toggles with shared lighting.',
   },
-  'square-button': {
-    name: 'square-button',
+  'push-button': {
+    name: 'push-button',
     category: 'inputs',
     order: 35,
-    summary:
-      'A 3D plunger-style button with deep travel, machined edges, and dense square hardware.',
+    summary: 'A 3D push button with deep travel, responsive text sizing, and machined edges.',
   },
-  'square-toggle': {
-    name: 'square-toggle',
+  'push-toggle': {
+    name: 'push-toggle',
     category: 'inputs',
     order: 36,
-    summary: 'A latching square toggle that pairs plunger depth with compact LED state feedback.',
+    summary: 'A latching push toggle that pairs plunger depth with compact LED state feedback.',
   },
   'toggle-button-group': {
     name: 'toggle-button-group',
     category: 'inputs',
     order: 37,
-    summary: 'A selection group of square plunger toggle buttons with active LED feedback.',
+    summary: 'A selection group of push toggles with active LED feedback.',
   },
   switch: {
     name: 'switch',

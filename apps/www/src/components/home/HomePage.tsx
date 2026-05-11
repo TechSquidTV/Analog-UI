@@ -2,7 +2,7 @@ import { useRef } from 'react';
 
 import {
   AnalogLightingProvider,
-  SquareButton,
+  PushButton,
   usePointerLighting,
 } from '../../../../../packages/analog-ui/src/index';
 import HomeLaunchPanel from './HomeLaunchPanel';
@@ -46,15 +46,15 @@ export default function HomePage({ registryUiCount, registryItemCount }: HomePag
               </p>
 
               <div className="mt-8 flex flex-wrap gap-3">
-                <SquareButton href="/docs" width="7.5rem" height="2.5rem">
+                <PushButton href="/docs" width="7.5rem" height="2.5rem">
                   Get Started
-                </SquareButton>
-                <SquareButton href="/docs/components" width="10rem" height="2.5rem" variant="black">
+                </PushButton>
+                <PushButton href="/docs/components" width="10rem" height="2.5rem" variant="black">
                   View Components
-                </SquareButton>
-                <SquareButton href="/docs/registry" width="9rem" height="2.5rem" variant="black">
+                </PushButton>
+                <PushButton href="/docs/registry" width="9rem" height="2.5rem" variant="black">
                   Registry Guide
-                </SquareButton>
+                </PushButton>
               </div>
             </div>
 

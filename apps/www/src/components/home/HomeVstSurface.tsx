@@ -20,8 +20,8 @@ import {
   PanelFooter,
   PanelHeader,
   PanelTitle,
-  SquareButton,
-  SquareToggle,
+  PushButton,
+  PushToggle,
 } from '../../../../../packages/analog-ui/src/index';
 
 const algorithms = ['TAPE', 'VALVE', 'BUS', 'WIDE', 'PUNCH'];
@@ -361,37 +361,37 @@ export default function HomeVstSurface({ onScrubbingChange }: HomeVstSurfaceProp
 
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
               <div className="flex flex-col items-center gap-3">
-                <SquareToggle pressed={power} onPressedChange={setPower} indicatorColor="green">
+                <PushToggle pressed={power} onPressedChange={setPower} indicatorColor="green">
                   PWR
-                </SquareToggle>
+                </PushToggle>
                 <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#777]">
                   {power ? 'Online' : 'Muted'}
                 </span>
               </div>
 
               <div className="flex flex-col items-center gap-3">
-                <SquareToggle
+                <PushToggle
                   variant="black"
                   pressed={sync}
                   onPressedChange={setSync}
                   indicatorColor="blue"
                 >
                   SYNC
-                </SquareToggle>
+                </PushToggle>
                 <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#777]">
                   {sync ? 'Linked' : 'Free'}
                 </span>
               </div>
 
               <div className="flex flex-col items-center gap-3">
-                <SquareButton>PUSH</SquareButton>
+                <PushButton>PUSH</PushButton>
                 <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#777]">
                   Momentary
                 </span>
               </div>
 
               <div className="flex flex-col items-center gap-3">
-                <SquareButton variant="black">EXEC</SquareButton>
+                <PushButton variant="black">EXEC</PushButton>
                 <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#777]">
                   Black
                 </span>

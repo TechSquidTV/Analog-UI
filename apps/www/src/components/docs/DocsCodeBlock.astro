@@ -1,6 +1,6 @@
 ---
 import { Code } from 'astro:components';
-import { SquareButton } from '../../../../../packages/analog-ui/src/index';
+import { PushButton } from '../../../../../packages/analog-ui/src/index';
 
 type DocsCodeLang = 'tsx' | 'bash';
 type DocsCodeTheme = 'github-dark';
@@ -37,9 +37,9 @@ const {
 >
   <div class="docs-code-header">
     <span class="micro-label">{label}</span>
-    <SquareButton type="button" width="5.5rem" height="2.25rem" variant="black" data-docs-copy>
+    <PushButton type="button" height="2.25rem" variant="black" data-docs-copy>
       <span data-docs-copy-label>Copy</span>
-    </SquareButton>
+    </PushButton>
   </div>
   <div class="docs-code-body" data-docs-code>
     <Code code={code} lang={lang} theme={theme} />

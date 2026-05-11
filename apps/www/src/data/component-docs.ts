@@ -380,24 +380,24 @@ export function RockerSwitchGroupExample() {
       },
     ],
   },
-  'square-button': {
-    usageIntro: 'Use SquareButton for a momentary action with physical plunger travel.',
-    registryImportCode: registryImport(['SquareButton'], 'SquareButton'),
-    packageImportCode: packageImport(['SquareButton']),
-    usageCode: `<SquareButton onClick={() => console.log("Run")}>RUN</SquareButton>`,
-    exampleCode: `import { SquareButton } from "@/registry/components/analog/SquareButton"
+  'push-button': {
+    usageIntro: 'Use PushButton for a momentary action with physical plunger travel.',
+    registryImportCode: registryImport(['PushButton'], 'PushButton'),
+    packageImportCode: packageImport(['PushButton']),
+    usageCode: `<PushButton onClick={() => console.log("Run")}>RUN</PushButton>`,
+    exampleCode: `import { PushButton } from "@/registry/components/analog/PushButton"
 
-export function SquareButtonExample() {
+export function PushButtonExample() {
   return (
-    <SquareButton onClick={() => console.log("Run")}>
+    <PushButton onClick={() => console.log("Run")}>
       RUN
-    </SquareButton>
+    </PushButton>
   )
 }`,
     api: [
       {
-        title: 'SquareButton',
-        description: 'A Base UI button wrapped in a 3D square plunger surface.',
+        title: 'PushButton',
+        description: 'A Base UI button wrapped in a 3D plunger surface.',
         props: [
           {
             name: 'variant',
@@ -408,16 +408,15 @@ export function SquareButtonExample() {
           {
             name: 'width',
             type: 'React.CSSProperties["width"]',
-            defaultValue: '"3.5rem"',
+            defaultValue: 'content width',
             description:
-              'Sets the plunger footprint width. Omit it to keep the default square button.',
+              'Sets the plunger footprint width. Omit it to size from the label with built-in padding.',
           },
           {
             name: 'height',
             type: 'React.CSSProperties["height"]',
             defaultValue: '"3.5rem"',
-            description:
-              'Sets the plunger footprint height. Omit it to keep the default square button.',
+            description: 'Sets the plunger footprint height.',
           },
           {
             name: 'extrusionLayers',
@@ -436,33 +435,33 @@ export function SquareButtonExample() {
       },
     ],
   },
-  'square-toggle': {
-    usageIntro: 'Use SquareToggle for a latching square plunger with optional LED state feedback.',
-    registryImportCode: registryImport(['SquareToggle'], 'SquareToggle'),
-    packageImportCode: packageImport(['SquareToggle']),
-    usageCode: `<SquareToggle defaultPressed indicatorColor="green">ARM</SquareToggle>`,
+  'push-toggle': {
+    usageIntro: 'Use PushToggle for a latching push control with optional LED state feedback.',
+    registryImportCode: registryImport(['PushToggle'], 'PushToggle'),
+    packageImportCode: packageImport(['PushToggle']),
+    usageCode: `<PushToggle defaultPressed indicatorColor="green">ARM</PushToggle>`,
     exampleCode: `"use client"
 
 import * as React from "react"
-import { SquareToggle } from "@/registry/components/analog/SquareToggle"
+import { PushToggle } from "@/registry/components/analog/PushToggle"
 
-export function SquareToggleExample() {
+export function PushToggleExample() {
   const [pressed, setPressed] = React.useState(true)
 
   return (
-    <SquareToggle
+    <PushToggle
       pressed={pressed}
       onPressedChange={setPressed}
       indicatorColor="green"
     >
       ARM
-    </SquareToggle>
+    </PushToggle>
   )
 }`,
     api: [
       {
-        title: 'SquareToggle',
-        description: 'A Base UI toggle wrapped in a 3D square plunger surface.',
+        title: 'PushToggle',
+        description: 'A Base UI toggle wrapped in a 3D plunger surface.',
         props: [
           { name: 'pressed', type: 'boolean', description: 'Controlled pressed state.' },
           {
@@ -488,6 +487,19 @@ export function SquareToggleExample() {
             description: 'Sets the plunger material finish.',
           },
           {
+            name: 'width',
+            type: 'React.CSSProperties["width"]',
+            defaultValue: 'content width',
+            description:
+              'Sets the plunger footprint width. Omit it to size from the label with built-in padding.',
+          },
+          {
+            name: 'height',
+            type: 'React.CSSProperties["height"]',
+            defaultValue: '"3.5rem"',
+            description: 'Sets the plunger footprint height.',
+          },
+          {
             name: 'extrusionLayers',
             type: 'number',
             defaultValue: '32',
@@ -501,7 +513,7 @@ export function SquareToggleExample() {
   },
   'toggle-button-group': {
     usageIntro:
-      'Use ToggleButtonGroup for mutually exclusive square plunger toggles with LED state feedback.',
+      'Use ToggleButtonGroup for mutually exclusive push toggles with LED state feedback.',
     registryImportCode: registryImport(
       ['ToggleButtonGroup', 'ToggleButtonGroupItem'],
       'ToggleButtonGroup',
@@ -598,7 +610,7 @@ export function ToggleButtonGroupExample() {
       },
       {
         title: 'ToggleButtonGroupItem',
-        description: 'A square plunger toggle item with optional link behavior.',
+        description: 'A push toggle item with optional link behavior.',
         props: [
           {
             name: 'value',
@@ -613,7 +625,8 @@ export function ToggleButtonGroupExample() {
           {
             name: 'width / height',
             type: 'React.CSSProperties',
-            description: 'Sets the item footprint.',
+            description:
+              'Sets the item footprint. Omit width to size from the label with built-in padding.',
           },
           {
             name: 'variant',
@@ -1245,7 +1258,7 @@ import {
   PanelHeader,
   PanelTitle,
 } from "@/registry/components/analog/Panel"
-import { SquareToggle } from "@/registry/components/analog/SquareToggle"
+import { PushToggle } from "@/registry/components/analog/PushToggle"
 
 export function PanelExample() {
   const [bypass, setBypass] = React.useState(false)
@@ -1262,14 +1275,14 @@ export function PanelExample() {
         </div>
       </PanelContent>
       <PanelFooter>
-        <SquareToggle
+        <PushToggle
           className="w-full"
           indicatorColor="amber"
           pressed={bypass}
           onPressedChange={setBypass}
         >
           Bypass
-        </SquareToggle>
+        </PushToggle>
       </PanelFooter>
     </Panel>
   )

@@ -757,10 +757,10 @@
       ]
     },
     {
-      "name": "square-button",
-      "title": "Square Button",
+      "name": "push-button",
+      "title": "Push Button",
       "type": "registry:ui",
-      "description": "A skeuomorphic square button with 3D extrusion, machined finish, and dynamic analog lighting.",
+      "description": "A skeuomorphic push button with responsive text sizing, 3D extrusion, machined finish, and dynamic analog lighting.",
       "dependencies": ["@base-ui/react", "motion"],
       "registryDependencies": [
         "analog-foundation",
@@ -771,16 +771,16 @@
       ],
       "files": [
         {
-          "path": "src/registry/components/analog/SquareButton.tsx",
+          "path": "src/registry/components/analog/PushButton.tsx",
           "type": "registry:ui"
         }
       ]
     },
     {
-      "name": "square-toggle",
-      "title": "Square Toggle",
+      "name": "push-toggle",
+      "title": "Push Toggle",
       "type": "registry:ui",
-      "description": "A skeuomorphic square toggle with 3D extrusion, optional LED indicator, and state-aware analog lighting.",
+      "description": "A latching push toggle with responsive text sizing, 3D extrusion, optional LED indicator, and state-aware analog lighting.",
       "dependencies": ["@base-ui/react", "motion"],
       "registryDependencies": [
         "analog-foundation",
@@ -792,7 +792,7 @@
       ],
       "files": [
         {
-          "path": "src/registry/components/analog/SquareToggle.tsx",
+          "path": "src/registry/components/analog/PushToggle.tsx",
           "type": "registry:ui"
         }
       ]
@@ -801,7 +801,7 @@
       "name": "toggle-button-group",
       "title": "Toggle Button Group",
       "type": "registry:ui",
-      "description": "A Base UI selection group for square plunger toggle buttons with shared recessed hardware and LED state feedback.",
+      "description": "A Base UI selection group for push toggles with shared recessed hardware and LED state feedback.",
       "dependencies": ["@base-ui/react", "motion"],
       "registryDependencies": [
         "analog-foundation",

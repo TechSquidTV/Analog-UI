@@ -5,14 +5,14 @@ import { useMergedRefs } from '@/lib/refs';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 import { SquarePlunger } from './SquarePlunger';
 
-type SquareButtonElement = HTMLButtonElement | HTMLAnchorElement;
+type PushButtonElement = HTMLButtonElement | HTMLAnchorElement;
 type NativeButtonProps = Omit<
   React.ButtonHTMLAttributes<HTMLButtonElement>,
   'height' | 'width' | 'onMouseDown' | 'onMouseUp' | 'onMouseLeave'
 >;
-type SquareButtonMouseHandler = React.MouseEventHandler<SquareButtonElement>;
+type PushButtonMouseHandler = React.MouseEventHandler<PushButtonElement>;
 
-export interface SquareButtonProps extends NativeButtonProps {
+export interface PushButtonProps extends NativeButtonProps {
   variant?: 'chrome' | 'black';
   width?: React.CSSProperties['width'];
   height?: React.CSSProperties['height'];
@@ -20,14 +20,17 @@ export interface SquareButtonProps extends NativeButtonProps {
   rel?: string;
   target?: React.HTMLAttributeAnchorTarget;
   download?: React.AnchorHTMLAttributes<HTMLAnchorElement>['download'];
-  onMouseDown?: SquareButtonMouseHandler;
-  onMouseUp?: SquareButtonMouseHandler;
-  onMouseLeave?: SquareButtonMouseHandler;
+  onMouseDown?: PushButtonMouseHandler;
+  onMouseUp?: PushButtonMouseHandler;
+  onMouseLeave?: PushButtonMouseHandler;
   lighting?: AnalogLightingConfig<'surface' | 'track' | 'thumb'>;
   extrusionLayers?: number;
 }
 
-export const SquareButton = React.forwardRef<SquareButtonElement, SquareButtonProps>(
+const sizingClassName =
+  'pointer-events-none invisible flex h-full min-h-0 min-w-11 items-center justify-center px-5 py-1 text-center text-[10px] font-bold tracking-[0.25em] whitespace-nowrap uppercase';
+
+export const PushButton = React.forwardRef<PushButtonElement, PushButtonProps>(
   (
     {
       className,
@@ -51,20 +54,22 @@ export const SquareButton = React.forwardRef<SquareButtonElement, SquareButtonPr
     const internalRef = React.useRef<HTMLElement>(null);
     const mergedRef = useMergedRefs(ref, internalRef);
     const lightingStyle = useAnalogLighting(['surface', 'track', 'thumb'], lighting);
+    const resolvedHeight = height ?? '3.5rem';
+    const shouldRenderSizer = width === undefined;
 
     const [isPressed, setIsPressed] = React.useState(false);
 
-    const handleMouseDown: SquareButtonMouseHandler = (e) => {
+    const handleMouseDown: PushButtonMouseHandler = (e) => {
       setIsPressed(true);
       onMouseDown?.(e);
     };
 
-    const handleMouseUp: SquareButtonMouseHandler = (e) => {
+    const handleMouseUp: PushButtonMouseHandler = (e) => {
       setIsPressed(false);
       onMouseUp?.(e);
     };
 
-    const handleMouseLeave: SquareButtonMouseHandler = (e) => {
+    const handleMouseLeave: PushButtonMouseHandler = (e) => {
       setIsPressed(false);
       onMouseLeave?.(e);
     };
@@ -75,16 +80,21 @@ export const SquareButton = React.forwardRef<SquareButtonElement, SquareButtonPr
     return (
       <div
         className={cn(
-          'relative inline-flex h-14 w-14 shrink-0 items-center justify-center analog-surface-recess p-1.5',
+          'relative inline-flex min-w-14 shrink-0 items-center justify-center analog-surface-recess p-1.5',
           className,
         )}
         style={{
           ...lightingStyle,
           width,
-          height,
+          height: resolvedHeight,
           perspective: '2400px',
         }}
       >
+        {shouldRenderSizer ? (
+          <span aria-hidden="true" className={sizingClassName}>
+            {children}
+          </span>
+        ) : null}
         {href ? (
           <a
             ref={mergedRef as React.Ref<HTMLAnchorElement>}
@@ -95,7 +105,7 @@ export const SquareButton = React.forwardRef<SquareButtonElement, SquareButtonPr
             onMouseDown={handleMouseDown as React.MouseEventHandler<HTMLAnchorElement>}
             onMouseUp={handleMouseUp as React.MouseEventHandler<HTMLAnchorElement>}
             onMouseLeave={handleMouseLeave as React.MouseEventHandler<HTMLAnchorElement>}
-            className="relative size-full appearance-none border-none bg-transparent p-0 outline-none select-none"
+            className="absolute inset-1.5 appearance-none border-none bg-transparent p-0 outline-none select-none"
             style={{ transformStyle: 'preserve-3d' }}
             {...linkProps}
           >
@@ -117,7 +127,7 @@ export const SquareButton = React.forwardRef<SquareButtonElement, SquareButtonPr
             onMouseLeave={
               handleMouseLeave as React.ComponentPropsWithoutRef<typeof Button>['onMouseLeave']
             }
-            className="relative size-full appearance-none border-none bg-transparent p-0 outline-none select-none"
+            className="absolute inset-1.5 appearance-none border-none bg-transparent p-0 outline-none select-none"
             style={{ transformStyle: 'preserve-3d' }}
             {...buttonProps}
           >
@@ -135,4 +145,4 @@ export const SquareButton = React.forwardRef<SquareButtonElement, SquareButtonPr
   },
 );
 
-SquareButton.displayName = 'SquareButton';
+PushButton.displayName = 'PushButton';
