@@ -6,7 +6,6 @@ import {
   usePointerLighting,
 } from '../../../../../packages/analog-ui/src/index';
 import HomeLaunchPanel from './HomeLaunchPanel';
-import HomeRouteCards from './HomeRouteCards';
 import HomeVstSurface from './HomeVstSurface';
 
 interface HomePageProps {
@@ -63,10 +62,6 @@ export default function HomePage({ registryUiCount, registryItemCount }: HomePag
               registryUiCount={registryUiCount}
             />
           </div>
-        </section>
-
-        <section className="site-frame mt-8">
-          <HomeRouteCards />
         </section>
 
         <section className="site-frame mt-16">
