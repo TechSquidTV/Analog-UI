@@ -28,6 +28,7 @@ import {
   ToggleButtonGroup,
   ToggleButtonGroupItem,
   NeedleGauge,
+  type AnalogTone,
   type NeedleGaugeScalePreset,
   usePointerLighting,
 } from '../../../../../packages/analog-ui/src/index';
@@ -267,7 +268,7 @@ function ToggleDemo({ mode }: { mode: DemoMode }) {
         <>
           <FooterItem label="Main Bus" value={mainValue === 'right' ? 'On' : 'Off'} />
           <FooterItem label="Aux Bus" value={auxValue === 'right' ? 'On' : 'Off'} />
-          <FooterItem label="Lighting" value="LED aware" />
+          <FooterItem label="Lighting" value="Tone aware" />
         </>
       }
     >
@@ -285,8 +286,8 @@ function ToggleDemo({ mode }: { mode: DemoMode }) {
             <Toggle
               value={mainValue}
               onValueChange={setMainValue}
-              leftLed="amber"
-              rightLed="green"
+              leftIndicatorTone="warning"
+              rightIndicatorTone="success"
             />
           </div>
           <div className="flex items-center gap-5">
@@ -297,8 +298,8 @@ function ToggleDemo({ mode }: { mode: DemoMode }) {
               variant="black"
               value={auxValue}
               onValueChange={setAuxValue}
-              leftLed="red"
-              rightLed="green"
+              leftIndicatorTone="destructive"
+              rightIndicatorTone="success"
             />
           </div>
         </div>
@@ -312,8 +313,8 @@ function ToggleDemo({ mode }: { mode: DemoMode }) {
               orientation="vertical"
               value={verticalValue}
               onValueChange={setVerticalValue}
-              leftLed="amber"
-              rightLed="green"
+              leftIndicatorTone="warning"
+              rightIndicatorTone="success"
             />
           </div>
         ) : null}
@@ -346,7 +347,7 @@ function RockerSwitchGroupDemo({ mode }: { mode: DemoMode }) {
             value={auxValue}
             onValueChange={setAuxValue}
             variant="black"
-            leftLed="red"
+            leftIndicatorTone="destructive"
           />
           {mode === 'full' ? (
             <RockerSwitchGroupItem label="Bus" value={busValue} onValueChange={setBusValue} />
@@ -417,7 +418,7 @@ function PushToggleDemo({ mode }: { mode: DemoMode }) {
         <>
           <FooterItem label="Power" value={mainToggle ? 'On' : 'Off'} />
           <FooterItem label="Arm" value={auxToggle ? 'On' : 'Off'} />
-          <FooterItem label="Behavior" value="Latching LED" />
+          <FooterItem label="Behavior" value="Latching tone" />
         </>
       }
     >
@@ -429,20 +430,24 @@ function PushToggleDemo({ mode }: { mode: DemoMode }) {
       >
         <div className="flex flex-col items-center gap-6">
           <div className="flex gap-8">
-            <PushToggle pressed={mainToggle} onPressedChange={setMainToggle} indicatorColor="green">
+            <PushToggle
+              pressed={mainToggle}
+              onPressedChange={setMainToggle}
+              indicatorTone="success"
+            >
               PWR
             </PushToggle>
             <PushToggle
               variant="black"
               pressed={auxToggle}
               onPressedChange={setAuxToggle}
-              indicatorColor="red"
+              indicatorTone="destructive"
             >
               ARM
             </PushToggle>
           </div>
           <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#555]">
-            Latching (LED)
+            Latching (Tone)
           </span>
         </div>
       </div>
@@ -460,7 +465,7 @@ function ToggleButtonGroupDemo({ mode }: { mode: DemoMode }) {
         <>
           <FooterItem label="Selected" value={selected.toUpperCase()} />
           <FooterItem label="Behavior" value="Exclusive group" />
-          <FooterItem label="Indicator" value="Active LED" />
+          <FooterItem label="Indicator" value="Active tone" />
         </>
       }
     >
@@ -477,11 +482,11 @@ function ToggleButtonGroupDemo({ mode }: { mode: DemoMode }) {
           <ToggleButtonGroupItem value="solo" width="4.75rem" variant="black">
             Solo
           </ToggleButtonGroupItem>
-          <ToggleButtonGroupItem value="mute" width="4.75rem" indicatorColor="red">
+          <ToggleButtonGroupItem value="mute" width="4.75rem" indicatorTone="destructive">
             Mute
           </ToggleButtonGroupItem>
           {mode === 'full' ? (
-            <ToggleButtonGroupItem value="cue" width="4.75rem" indicatorColor="amber">
+            <ToggleButtonGroupItem value="cue" width="4.75rem" indicatorTone="warning">
               Cue
             </ToggleButtonGroupItem>
           ) : null}
@@ -591,7 +596,7 @@ function WheelNumberDemo({ mode }: { mode: DemoMode }) {
 
 function GaugeDemo({ mode }: { mode: DemoMode }) {
   const [value, setValue] = useState(42);
-  const [variant, setVariant] = useState<'lcd-green' | 'lcd-amber' | 'lcd-blue'>('lcd-green');
+  const [tone, setTone] = useState<Extract<AnalogTone, 'success' | 'warning' | 'info'>>('success');
 
   return (
     <DemoStage
@@ -601,28 +606,22 @@ function GaugeDemo({ mode }: { mode: DemoMode }) {
           <FooterItem label="Value" value={`${value}%`} />
           <FooterPanel className="min-w-[180px]" contentClassName="flex flex-wrap gap-2">
             <div className="w-full text-[9px] font-semibold uppercase tracking-[0.26em] text-[#787878]">
-              Variant
+              Tone
             </div>
-            <ControlButton
-              isActive={variant === 'lcd-green'}
-              onClick={() => setVariant('lcd-green')}
-            >
-              Green
+            <ControlButton isActive={tone === 'success'} onClick={() => setTone('success')}>
+              Success
             </ControlButton>
-            <ControlButton
-              isActive={variant === 'lcd-amber'}
-              onClick={() => setVariant('lcd-amber')}
-            >
-              Amber
+            <ControlButton isActive={tone === 'warning'} onClick={() => setTone('warning')}>
+              Warning
             </ControlButton>
-            <ControlButton isActive={variant === 'lcd-blue'} onClick={() => setVariant('lcd-blue')}>
-              Blue
+            <ControlButton isActive={tone === 'info'} onClick={() => setTone('info')}>
+              Info
             </ControlButton>
           </FooterPanel>
         </>
       }
     >
-      <Gauge value={value} onValueChange={(next) => setValue(next as number)} variant={variant} />
+      <Gauge value={value} onValueChange={(next) => setValue(next as number)} tone={tone} />
     </DemoStage>
   );
 }
@@ -633,7 +632,7 @@ function LCDDisplayDemo({ mode }: { mode: DemoMode }) {
     { label: 'Output Trim', value: '-12.8', units: 'DB' },
     { label: 'Delay Time', value: '88:12', units: 'MS' },
   ] as const;
-  const [variant, setVariant] = useState<'lcd-green' | 'lcd-amber' | 'lcd-blue'>('lcd-green');
+  const [tone, setTone] = useState<Extract<AnalogTone, 'success' | 'warning' | 'info'>>('success');
   const [programIndex, setProgramIndex] = useState(0);
   const current = programs[programIndex];
 
@@ -646,22 +645,16 @@ function LCDDisplayDemo({ mode }: { mode: DemoMode }) {
           <FooterItem label="Preset" value={current.label} />
           <FooterPanel className="min-w-[220px]" contentClassName="flex flex-wrap gap-2">
             <div className="w-full text-[9px] font-semibold uppercase tracking-[0.26em] text-[#787878]">
-              Variant
+              Tone
             </div>
-            <ControlButton
-              isActive={variant === 'lcd-green'}
-              onClick={() => setVariant('lcd-green')}
-            >
-              Green
+            <ControlButton isActive={tone === 'success'} onClick={() => setTone('success')}>
+              Success
             </ControlButton>
-            <ControlButton
-              isActive={variant === 'lcd-amber'}
-              onClick={() => setVariant('lcd-amber')}
-            >
-              Amber
+            <ControlButton isActive={tone === 'warning'} onClick={() => setTone('warning')}>
+              Warning
             </ControlButton>
-            <ControlButton isActive={variant === 'lcd-blue'} onClick={() => setVariant('lcd-blue')}>
-              Blue
+            <ControlButton isActive={tone === 'info'} onClick={() => setTone('info')}>
+              Info
             </ControlButton>
             <ControlButton
               onClick={() => setProgramIndex((index) => (index + 1) % programs.length)}
@@ -677,7 +670,7 @@ function LCDDisplayDemo({ mode }: { mode: DemoMode }) {
           label={current.label}
           value={current.value}
           units={current.units}
-          variant={variant}
+          tone={tone}
           size={mode === 'compact' ? 'md' : 'lg'}
           digits={6}
         />
@@ -686,7 +679,7 @@ function LCDDisplayDemo({ mode }: { mode: DemoMode }) {
             label="Peak Hold"
             value="-03.2"
             units="DB"
-            variant="lcd-amber"
+            tone="warning"
             size="sm"
             digits={5}
           />
@@ -824,10 +817,10 @@ function MeterDemo({ mode }: { mode: DemoMode }) {
 }
 
 function IndicatorDemo({ mode }: { mode: DemoMode }) {
-  const colors = ['red', 'amber', 'green', 'blue', 'white'] as const;
+  const tones = ['destructive', 'warning', 'success', 'info', 'neutral'] as const;
   const [isOn, setIsOn] = useState(true);
-  const [colorIndex, setColorIndex] = useState(1);
-  const color = colors[colorIndex];
+  const [toneIndex, setToneIndex] = useState(1);
+  const tone = tones[toneIndex];
 
   return (
     <DemoStage
@@ -839,7 +832,7 @@ function IndicatorDemo({ mode }: { mode: DemoMode }) {
             value={
               <PushToggle
                 className="h-10 w-24"
-                indicatorColor={color}
+                indicatorTone={tone}
                 pressed={isOn}
                 variant={isOn ? 'chrome' : 'black'}
                 onPressedChange={setIsOn}
@@ -849,7 +842,7 @@ function IndicatorDemo({ mode }: { mode: DemoMode }) {
             }
           />
           <FooterItem
-            label="Color"
+            label="Tone"
             value={
               <PushButton
                 type="button"
@@ -857,9 +850,9 @@ function IndicatorDemo({ mode }: { mode: DemoMode }) {
                 height="2.5rem"
                 extrusionLayers={18}
                 variant="black"
-                onClick={() => setColorIndex((current) => (current + 1) % colors.length)}
+                onClick={() => setToneIndex((current) => (current + 1) % tones.length)}
               >
-                {color}
+                {tone}
               </PushButton>
             }
           />
@@ -868,13 +861,13 @@ function IndicatorDemo({ mode }: { mode: DemoMode }) {
     >
       <div className="flex flex-wrap items-center justify-center gap-12">
         <div className="flex flex-col items-center gap-4">
-          <Indicator isOn={isOn} color={color} size="lg" variant="chrome" />
+          <Indicator isOn={isOn} tone={tone} size="lg" variant="chrome" />
           <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#686868]">
             Chrome
           </span>
         </div>
         <div className="flex flex-col items-center gap-4">
-          <Indicator isOn={isOn} color={color} size="lg" variant="black" />
+          <Indicator isOn={isOn} tone={tone} size="lg" variant="black" />
           <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#686868]">
             Black
           </span>
@@ -967,7 +960,7 @@ function PanelDemo({ mode }: { mode: DemoMode }) {
           <PanelFooter>
             <PushToggle
               className="w-full"
-              indicatorColor="amber"
+              indicatorTone="warning"
               pressed={bypass}
               variant={bypass ? 'chrome' : 'black'}
               onPressedChange={setBypass}

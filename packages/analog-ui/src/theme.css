@@ -2,43 +2,45 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --analog-fallback-background: oklch(0.145 0 0);
-  --analog-fallback-foreground: oklch(0.985 0 0);
-  --analog-fallback-card: oklch(0.205 0 0);
-  --analog-fallback-card-foreground: oklch(0.985 0 0);
-  --analog-fallback-popover: oklch(0.205 0 0);
-  --analog-fallback-popover-foreground: oklch(0.985 0 0);
-  --analog-fallback-primary: oklch(0.556 0 0);
-  --analog-fallback-primary-foreground: oklch(0.985 0 0);
-  --analog-fallback-secondary: oklch(0.269 0 0);
-  --analog-fallback-secondary-foreground: oklch(0.985 0 0);
-  --analog-fallback-muted: oklch(0.269 0 0);
-  --analog-fallback-muted-foreground: oklch(0.708 0 0);
-  --analog-fallback-accent: oklch(0.372 0 0);
-  --analog-fallback-accent-foreground: oklch(0.985 0 0);
-  --analog-fallback-destructive: oklch(0.704 0.191 22.216);
-  --analog-fallback-destructive-foreground: oklch(0.268 0 0);
-  --analog-fallback-border: oklch(1 0 0 / 10%);
-  --analog-fallback-input: oklch(1 0 0 / 15%);
-  --analog-fallback-ring: oklch(0.556 0 0);
-  --analog-fallback-sidebar: oklch(0.205 0 0);
-  --analog-fallback-sidebar-foreground: oklch(0.985 0 0);
-  --analog-fallback-sidebar-primary: oklch(0.985 0 0);
-  --analog-fallback-sidebar-primary-foreground: oklch(0.205 0 0);
-  --analog-fallback-sidebar-accent: oklch(0.269 0 0);
-  --analog-fallback-sidebar-accent-foreground: oklch(0.985 0 0);
-  --analog-fallback-sidebar-border: oklch(1 0 0 / 10%);
-  --analog-fallback-sidebar-ring: oklch(0.556 0 0);
-  --analog-fallback-font-sans: 'Helvetica Neue', Arial, sans-serif;
-  --analog-fallback-font-serif: 'Helvetica Neue', Arial, sans-serif;
-  --analog-fallback-font-mono:
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.78 0 0);
+  --primary-foreground: oklch(0.145 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.69 0.16 142);
+  --accent-foreground: oklch(0.145 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.145 0 0);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.69 0.16 142);
+  --chart-1: oklch(0.69 0.16 142);
+  --chart-2: oklch(0.63 0.15 250);
+  --chart-3: oklch(0.704 0.191 22.216);
+  --chart-4: oklch(0.74 0.14 72);
+  --chart-5: oklch(0.86 0 0);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.985 0 0);
+  --sidebar-primary-foreground: oklch(0.205 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.69 0.16 142);
+  --font-sans: 'Helvetica Neue', Arial, sans-serif;
+  --font-serif: 'Helvetica Neue', Arial, sans-serif;
+  --font-mono:
     ui-monospace, SFMono-Regular, 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
-  --analog-fallback-radius: 0.75rem;
-  --analog-radius-base: clamp(
-    0.3125rem,
-    calc(var(--radius, var(--analog-fallback-radius)) * 0.62),
-    0.5rem
-  );
+  --radius: 0.75rem;
+  --spacing: 0.25rem;
+  --analog-radius-base: clamp(0.3125rem, calc(var(--radius) * 0.62), 0.5rem);
   --analog-radius-micro: calc(var(--analog-radius-base) * 0.45);
   --analog-radius-window: calc(var(--analog-radius-base) * 0.7);
   --analog-radius-recess: calc(var(--analog-radius-base) * 0.9);
@@ -46,54 +48,17 @@
   --analog-radius-panel: calc(var(--analog-radius-base) * 1.15);
   --analog-panel-screw-safe-inline: calc(var(--spacing) * 8);
   --analog-panel-screw-safe-block: calc(var(--spacing) * 10);
-  --analog-font-lcd: var(--font-mono, var(--analog-fallback-font-mono));
-  --spacing: 0.25rem;
-  --analog-surface-cavity: color-mix(
-    in oklch,
-    var(--background, var(--analog-fallback-background)) 84%,
-    black
-  );
-  --analog-surface-cavity-strong: color-mix(
-    in oklch,
-    var(--card, var(--analog-fallback-card)) 70%,
-    black
-  );
-  --analog-surface-panel: color-mix(in oklch, var(--card, var(--analog-fallback-card)) 88%, black);
-  --analog-surface-raised: color-mix(
-    in oklch,
-    var(--card, var(--analog-fallback-card)) 82%,
-    white 6%
-  );
-  --analog-surface-metal-hi: color-mix(
-    in oklch,
-    var(--secondary, var(--analog-fallback-secondary)) 78%,
-    white
-  );
-  --analog-surface-metal-mid: color-mix(
-    in oklch,
-    var(--secondary, var(--analog-fallback-secondary)) 58%,
-    var(--foreground, var(--analog-fallback-foreground))
-  );
-  --analog-surface-metal-lo: color-mix(
-    in oklch,
-    var(--muted-foreground, var(--analog-fallback-muted-foreground)) 42%,
-    black
-  );
-  --analog-surface-onyx-hi: color-mix(
-    in oklch,
-    var(--card, var(--analog-fallback-card)) 88%,
-    white 8%
-  );
-  --analog-surface-onyx-mid: color-mix(
-    in oklch,
-    var(--card, var(--analog-fallback-card)) 76%,
-    black 12%
-  );
-  --analog-surface-onyx-lo: color-mix(
-    in oklch,
-    var(--background, var(--analog-fallback-background)) 90%,
-    black 10%
-  );
+  --analog-font-lcd: var(--font-mono);
+  --analog-surface-cavity: color-mix(in oklch, var(--background) 84%, black);
+  --analog-surface-cavity-strong: color-mix(in oklch, var(--card) 70%, black);
+  --analog-surface-panel: color-mix(in oklch, var(--card) 88%, black);
+  --analog-surface-raised: color-mix(in oklch, var(--card) 82%, white 6%);
+  --analog-surface-metal-hi: color-mix(in oklch, var(--secondary) 78%, white);
+  --analog-surface-metal-mid: color-mix(in oklch, var(--secondary) 58%, var(--foreground));
+  --analog-surface-metal-lo: color-mix(in oklch, var(--muted-foreground) 42%, black);
+  --analog-surface-onyx-hi: color-mix(in oklch, var(--card) 88%, white 8%);
+  --analog-surface-onyx-mid: color-mix(in oklch, var(--card) 76%, black 12%);
+  --analog-surface-onyx-lo: color-mix(in oklch, var(--background) 90%, black 10%);
   --analog-material-hi: var(--analog-surface-metal-hi);
   --analog-material-mid: var(--analog-surface-metal-mid);
   --analog-material-lo: var(--analog-surface-metal-lo);
@@ -108,139 +73,74 @@
     var(--analog-surface-metal-lo) 42%,
     var(--analog-control-foreground) 58%
   );
-  --analog-annotation: color-mix(
-    in oklch,
-    var(--foreground, var(--analog-fallback-foreground)) 62%,
-    var(--muted-foreground, var(--analog-fallback-muted-foreground))
-  );
-  --analog-legend: color-mix(
-    in oklch,
-    var(--foreground, var(--analog-fallback-foreground)) 48%,
-    var(--muted-foreground, var(--analog-fallback-muted-foreground))
-  );
-  --analog-telemetry-label: color-mix(
-    in oklch,
-    var(--foreground, var(--analog-fallback-foreground)) 34%,
-    var(--muted-foreground, var(--analog-fallback-muted-foreground))
-  );
-  --analog-telemetry-value: color-mix(
-    in oklch,
-    var(--accent, var(--analog-fallback-accent)) 62%,
-    var(--foreground, var(--analog-fallback-foreground))
-  );
-  --analog-control-surface: color-mix(
-    in oklch,
-    var(--card, var(--analog-fallback-card)) 84%,
-    var(--foreground, var(--analog-fallback-foreground)) 16%
-  );
-  --analog-control-surface-strong: color-mix(
-    in oklch,
-    var(--card, var(--analog-fallback-card)) 72%,
-    var(--foreground, var(--analog-fallback-foreground)) 28%
-  );
-  --analog-control-border: color-mix(
-    in oklch,
-    var(--border, var(--analog-fallback-border)) 70%,
-    var(--foreground, var(--analog-fallback-foreground)) 30%
-  );
-  --analog-control-border-strong: color-mix(
-    in oklch,
-    var(--border, var(--analog-fallback-border)) 52%,
-    var(--foreground, var(--analog-fallback-foreground)) 48%
-  );
-  --analog-control-foreground: var(--foreground, var(--analog-fallback-foreground));
+  --analog-annotation: color-mix(in oklch, var(--foreground) 62%, var(--muted-foreground));
+  --analog-legend: color-mix(in oklch, var(--foreground) 48%, var(--muted-foreground));
+  --analog-telemetry-label: color-mix(in oklch, var(--foreground) 34%, var(--muted-foreground));
+  --analog-telemetry-value: color-mix(in oklch, var(--accent) 62%, var(--foreground));
+  --analog-control-surface: color-mix(in oklch, var(--card) 84%, var(--foreground) 16%);
+  --analog-control-surface-strong: color-mix(in oklch, var(--card) 72%, var(--foreground) 28%);
+  --analog-control-border: color-mix(in oklch, var(--border) 70%, var(--foreground) 30%);
+  --analog-control-border-strong: color-mix(in oklch, var(--border) 52%, var(--foreground) 48%);
+  --analog-control-foreground: var(--foreground);
   --analog-control-foreground-muted: color-mix(
     in oklch,
-    var(--muted-foreground, var(--analog-fallback-muted-foreground)) 88%,
-    var(--foreground, var(--analog-fallback-foreground)) 12%
+    var(--muted-foreground) 88%,
+    var(--foreground) 12%
   );
   --analog-control-foreground-subtle: color-mix(
     in oklch,
-    var(--muted-foreground, var(--analog-fallback-muted-foreground)) 72%,
-    var(--foreground, var(--analog-fallback-foreground)) 28%
+    var(--muted-foreground) 72%,
+    var(--foreground) 28%
   );
-  --analog-control-selection: color-mix(
-    in oklch,
-    var(--accent, var(--analog-fallback-accent)) 78%,
-    var(--foreground, var(--analog-fallback-foreground)) 22%
-  );
-  --analog-control-glass: color-mix(
-    in oklch,
-    var(--foreground, var(--analog-fallback-foreground)) 5%,
-    transparent
-  );
-  --analog-control-glass-border: color-mix(
-    in oklch,
-    var(--border, var(--analog-fallback-border)) 68%,
-    transparent
-  );
-  --analog-panel-border: color-mix(
-    in oklch,
-    var(--border, var(--analog-fallback-border)) 62%,
-    var(--analog-surface-raised) 38%
-  );
-  --analog-panel-foreground: var(
-    --card-foreground,
-    var(--foreground, var(--analog-fallback-foreground))
-  );
-  --analog-panel-muted: color-mix(
-    in oklch,
-    var(--muted-foreground, var(--analog-fallback-muted-foreground)) 82%,
-    var(--foreground, var(--analog-fallback-foreground)) 18%
-  );
+  --analog-control-selection: color-mix(in oklch, var(--accent) 78%, var(--foreground) 22%);
+  --analog-control-glass: color-mix(in oklch, var(--foreground) 5%, transparent);
+  --analog-control-glass-border: color-mix(in oklch, var(--border) 68%, transparent);
+  --analog-panel-border: color-mix(in oklch, var(--border) 62%, var(--analog-surface-raised) 38%);
+  --analog-panel-foreground: var(--card-foreground);
+  --analog-panel-muted: color-mix(in oklch, var(--muted-foreground) 82%, var(--foreground) 18%);
   --analog-screw-hole: color-mix(in oklch, var(--analog-surface-cavity-strong) 72%, black 28%);
-  --analog-led-red-base: oklch(0.583 0.239 28.477);
-  --analog-led-red-core: oklch(0.84 0.09 24);
-  --analog-led-red-glow: color-mix(in oklch, var(--analog-led-red-base) 82%, white);
-  --analog-led-red-surface: color-mix(in oklch, var(--analog-led-red-base) 34%, black 66%);
-  --analog-led-red-edge: color-mix(in oklch, var(--analog-led-red-base) 62%, black 38%);
-  --analog-led-amber-base: oklch(0.74 0.14 72);
-  --analog-led-amber-core: oklch(0.95 0.05 96);
-  --analog-led-amber-glow: color-mix(in oklch, var(--analog-led-amber-base) 78%, white);
-  --analog-led-amber-surface: color-mix(in oklch, var(--analog-led-amber-base) 34%, black 66%);
-  --analog-led-amber-edge: color-mix(in oklch, var(--analog-led-amber-base) 62%, black 38%);
-  --analog-led-green-base: oklch(0.69 0.16 142);
-  --analog-led-green-core: oklch(0.91 0.05 150);
-  --analog-led-green-glow: color-mix(in oklch, var(--analog-led-green-base) 76%, white);
-  --analog-led-green-surface: color-mix(in oklch, var(--analog-led-green-base) 34%, black 66%);
-  --analog-led-green-edge: color-mix(in oklch, var(--analog-led-green-base) 62%, black 38%);
-  --analog-led-blue-base: oklch(0.63 0.15 250);
-  --analog-led-blue-core: oklch(0.9 0.04 245);
-  --analog-led-blue-glow: color-mix(in oklch, var(--analog-led-blue-base) 78%, white);
-  --analog-led-blue-surface: color-mix(in oklch, var(--analog-led-blue-base) 34%, black 66%);
-  --analog-led-blue-edge: color-mix(in oklch, var(--analog-led-blue-base) 62%, black 38%);
-  --analog-led-white-base: color-mix(
+  --analog-tone-primary: var(--primary);
+  --analog-tone-secondary: color-mix(in oklch, var(--secondary) 65%, var(--foreground) 35%);
+  --analog-tone-accent: var(--accent);
+  --analog-tone-destructive: var(--destructive);
+  --analog-tone-success: var(--chart-1);
+  --analog-tone-warning: var(--chart-4);
+  --analog-tone-info: var(--chart-2);
+  --analog-tone-neutral: var(--chart-5);
+  --analog-tone-chart-1: var(--chart-1);
+  --analog-tone-chart-2: var(--chart-2);
+  --analog-tone-chart-3: var(--chart-3);
+  --analog-tone-chart-4: var(--chart-4);
+  --analog-tone-chart-5: var(--chart-5);
+  --analog-tone-current: var(--analog-tone-accent);
+  --analog-emissive-base: var(--analog-tone-current);
+  --analog-emissive-core: color-mix(in oklch, var(--analog-tone-current) 36%, white 64%);
+  --analog-emissive-glow: color-mix(in oklch, var(--analog-tone-current) 78%, white);
+  --analog-emissive-surface: color-mix(in oklch, var(--analog-tone-current) 34%, black 66%);
+  --analog-emissive-edge: color-mix(in oklch, var(--analog-tone-current) 62%, black 38%);
+  --analog-display-glow: var(--analog-tone-current);
+  --analog-display-fill: color-mix(in oklch, var(--analog-tone-current) 84%, white 16%);
+  --analog-display-ink: color-mix(in oklch, var(--analog-tone-current) 18%, black 82%);
+  --analog-display-legend: color-mix(in oklch, var(--analog-tone-current) 30%, black 70%);
+  --analog-meter-zone-success: var(--analog-tone-success);
+  --analog-meter-zone-success-glow: color-mix(
     in oklch,
-    var(--foreground, var(--analog-fallback-foreground)) 92%,
-    var(--secondary, var(--analog-fallback-secondary))
+    var(--analog-meter-zone-success) 76%,
+    white
   );
-  --analog-led-white-core: white;
-  --analog-led-white-glow: color-mix(
+  --analog-meter-zone-warning: var(--analog-tone-warning);
+  --analog-meter-zone-warning-glow: color-mix(
     in oklch,
-    white 84%,
-    var(--foreground, var(--analog-fallback-foreground))
+    var(--analog-meter-zone-warning) 78%,
+    white
   );
-  --analog-led-white-surface: color-mix(in oklch, var(--analog-led-white-base) 34%, black 66%);
-  --analog-led-white-edge: color-mix(in oklch, var(--analog-led-white-base) 62%, black 38%);
-  --analog-lcd-green-glow: var(--analog-led-green-base);
-  --analog-lcd-green-fill: color-mix(in oklch, var(--analog-led-green-base) 84%, white 16%);
-  --analog-lcd-green-ink: color-mix(in oklch, var(--analog-led-green-base) 18%, black 82%);
-  --analog-lcd-green-legend: color-mix(in oklch, var(--analog-led-green-base) 30%, black 70%);
-  --analog-lcd-amber-glow: var(--analog-led-amber-base);
-  --analog-lcd-amber-fill: color-mix(in oklch, var(--analog-led-amber-base) 84%, white 16%);
-  --analog-lcd-amber-ink: color-mix(in oklch, var(--analog-led-amber-base) 18%, black 82%);
-  --analog-lcd-amber-legend: color-mix(in oklch, var(--analog-led-amber-base) 30%, black 70%);
-  --analog-lcd-blue-glow: var(--analog-led-blue-base);
-  --analog-lcd-blue-fill: color-mix(in oklch, var(--analog-led-blue-base) 84%, white 16%);
-  --analog-lcd-blue-ink: color-mix(in oklch, var(--analog-led-blue-base) 18%, black 82%);
-  --analog-lcd-blue-legend: color-mix(in oklch, var(--analog-led-blue-base) 30%, black 70%);
-  --analog-meter-zone-green: var(--analog-led-green-base);
-  --analog-meter-zone-green-glow: var(--analog-led-green-glow);
-  --analog-meter-zone-amber: var(--analog-led-amber-base);
-  --analog-meter-zone-amber-glow: var(--analog-led-amber-glow);
-  --analog-meter-zone-red: var(--analog-led-red-base);
-  --analog-meter-zone-red-glow: var(--analog-led-red-glow);
-  --analog-meter-peak-marker: color-mix(in oklch, var(--analog-led-amber-core) 76%, white 24%);
+  --analog-meter-zone-destructive: var(--analog-tone-destructive);
+  --analog-meter-zone-destructive-glow: color-mix(
+    in oklch,
+    var(--analog-meter-zone-destructive) 82%,
+    white
+  );
+  --analog-meter-peak-marker: color-mix(in oklch, var(--analog-tone-warning) 34%, white 66%);
   --analog-meter-segment-divider: color-mix(
     in oklch,
     var(--analog-surface-cavity-strong) 74%,
@@ -282,66 +182,107 @@
   --analog-wheel-label-letter-spacing: 0.05em;
   --analog-light-source: 180deg;
   --spacing-track-padding: var(--analog-track-padding);
-  --color-surface-1: var(--analog-surface-panel);
-  --color-surface-2: var(--analog-surface-raised);
-  --color-surface-3: var(--analog-surface-metal-hi);
-  --color-amber-bg: var(--analog-led-amber-base);
-  --color-amber-glow: var(--analog-led-amber-glow);
-  --color-green-bg: var(--analog-led-green-base);
-  --color-green-glow: var(--analog-led-green-glow);
 }
 
 .dark {
-  --analog-surface-cavity: color-mix(
-    in oklch,
-    var(--background, var(--analog-fallback-background)) 90%,
-    black
-  );
-  --analog-surface-cavity-strong: color-mix(
-    in oklch,
-    var(--card, var(--analog-fallback-card)) 76%,
-    black
-  );
-  --analog-surface-panel: color-mix(in oklch, var(--card, var(--analog-fallback-card)) 84%, black);
-  --analog-surface-raised: color-mix(
-    in oklch,
-    var(--card, var(--analog-fallback-card)) 76%,
-    white 4%
-  );
-  --analog-surface-metal-hi: color-mix(
-    in oklch,
-    var(--secondary, var(--analog-fallback-secondary)) 56%,
-    white
-  );
-  --analog-surface-metal-mid: color-mix(
-    in oklch,
-    var(--secondary, var(--analog-fallback-secondary)) 74%,
-    var(--foreground, var(--analog-fallback-foreground))
-  );
-  --analog-surface-metal-lo: color-mix(
-    in oklch,
-    var(--muted-foreground, var(--analog-fallback-muted-foreground)) 50%,
-    black
-  );
-  --analog-surface-onyx-hi: color-mix(
-    in oklch,
-    var(--card, var(--analog-fallback-card)) 92%,
-    white 6%
-  );
-  --analog-surface-onyx-mid: color-mix(
-    in oklch,
-    var(--card, var(--analog-fallback-card)) 82%,
-    black 10%
-  );
-  --analog-surface-onyx-lo: color-mix(
-    in oklch,
-    var(--background, var(--analog-fallback-background)) 94%,
-    black 8%
-  );
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.78 0 0);
+  --primary-foreground: oklch(0.145 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.69 0.16 142);
+  --accent-foreground: oklch(0.145 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.145 0 0);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.69 0.16 142);
+  --chart-1: oklch(0.69 0.16 142);
+  --chart-2: oklch(0.63 0.15 250);
+  --chart-3: oklch(0.704 0.191 22.216);
+  --chart-4: oklch(0.74 0.14 72);
+  --chart-5: oklch(0.86 0 0);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.985 0 0);
+  --sidebar-primary-foreground: oklch(0.205 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.69 0.16 142);
+  --analog-surface-cavity: color-mix(in oklch, var(--background) 90%, black);
+  --analog-surface-cavity-strong: color-mix(in oklch, var(--card) 76%, black);
+  --analog-surface-panel: color-mix(in oklch, var(--card) 84%, black);
+  --analog-surface-raised: color-mix(in oklch, var(--card) 76%, white 4%);
+  --analog-surface-metal-hi: color-mix(in oklch, var(--secondary) 56%, white);
+  --analog-surface-metal-mid: color-mix(in oklch, var(--secondary) 74%, var(--foreground));
+  --analog-surface-metal-lo: color-mix(in oklch, var(--muted-foreground) 50%, black);
+  --analog-surface-onyx-hi: color-mix(in oklch, var(--card) 92%, white 6%);
+  --analog-surface-onyx-mid: color-mix(in oklch, var(--card) 82%, black 10%);
+  --analog-surface-onyx-lo: color-mix(in oklch, var(--background) 94%, black 8%);
   --analog-shadow-depth: 1.05;
   --analog-grain-opacity: 0.28;
   --analog-foil-opacity: 0.22;
   --analog-bloom-strength: 0.62;
+}
+
+[data-analog-tone='primary'] {
+  --analog-tone-current: var(--analog-tone-primary);
+}
+
+[data-analog-tone='secondary'] {
+  --analog-tone-current: var(--analog-tone-secondary);
+}
+
+[data-analog-tone='accent'] {
+  --analog-tone-current: var(--analog-tone-accent);
+}
+
+[data-analog-tone='destructive'] {
+  --analog-tone-current: var(--analog-tone-destructive);
+}
+
+[data-analog-tone='success'] {
+  --analog-tone-current: var(--analog-tone-success);
+}
+
+[data-analog-tone='warning'] {
+  --analog-tone-current: var(--analog-tone-warning);
+}
+
+[data-analog-tone='info'] {
+  --analog-tone-current: var(--analog-tone-info);
+}
+
+[data-analog-tone='neutral'] {
+  --analog-tone-current: var(--analog-tone-neutral);
+}
+
+[data-analog-tone='chart-1'] {
+  --analog-tone-current: var(--analog-tone-chart-1);
+}
+
+[data-analog-tone='chart-2'] {
+  --analog-tone-current: var(--analog-tone-chart-2);
+}
+
+[data-analog-tone='chart-3'] {
+  --analog-tone-current: var(--analog-tone-chart-3);
+}
+
+[data-analog-tone='chart-4'] {
+  --analog-tone-current: var(--analog-tone-chart-4);
+}
+
+[data-analog-tone='chart-5'] {
+  --analog-tone-current: var(--analog-tone-chart-5);
 }
 
 :where(:root, [data-analog-variant='chrome']) {
@@ -481,67 +422,64 @@
 }
 
 @theme inline {
-  --color-background: var(--background, var(--analog-fallback-background));
-  --color-foreground: var(--foreground, var(--analog-fallback-foreground));
-  --color-card: var(--card, var(--analog-fallback-card));
-  --color-card-foreground: var(--card-foreground, var(--analog-fallback-card-foreground));
-  --color-popover: var(--popover, var(--analog-fallback-popover));
-  --color-popover-foreground: var(--popover-foreground, var(--analog-fallback-popover-foreground));
-  --color-primary: var(--primary, var(--analog-fallback-primary));
-  --color-primary-foreground: var(--primary-foreground, var(--analog-fallback-primary-foreground));
-  --color-secondary: var(--secondary, var(--analog-fallback-secondary));
-  --color-secondary-foreground: var(
-    --secondary-foreground,
-    var(--analog-fallback-secondary-foreground)
-  );
-  --color-muted: var(--muted, var(--analog-fallback-muted));
-  --color-muted-foreground: var(--muted-foreground, var(--analog-fallback-muted-foreground));
-  --color-accent: var(--accent, var(--analog-fallback-accent));
-  --color-accent-foreground: var(--accent-foreground, var(--analog-fallback-accent-foreground));
-  --color-destructive: var(--destructive, var(--analog-fallback-destructive));
-  --color-destructive-foreground: var(
-    --destructive-foreground,
-    var(--analog-fallback-destructive-foreground)
-  );
-  --color-border: var(--border, var(--analog-fallback-border));
-  --color-input: var(--input, var(--analog-fallback-input));
-  --color-ring: var(--ring, var(--analog-fallback-ring));
-  --color-chart-1: var(--chart-1, var(--analog-fallback-primary));
-  --color-chart-2: var(--chart-2, var(--analog-fallback-primary));
-  --color-chart-3: var(--chart-3, var(--analog-fallback-primary));
-  --color-chart-4: var(--chart-4, var(--analog-fallback-primary));
-  --color-chart-5: var(--chart-5, var(--analog-fallback-primary));
-  --color-sidebar: var(--sidebar, var(--analog-fallback-sidebar));
-  --color-sidebar-foreground: var(--sidebar-foreground, var(--analog-fallback-sidebar-foreground));
-  --color-sidebar-primary: var(--sidebar-primary, var(--analog-fallback-sidebar-primary));
-  --color-sidebar-primary-foreground: var(
-    --sidebar-primary-foreground,
-    var(--analog-fallback-sidebar-primary-foreground)
-  );
-  --color-sidebar-accent: var(--sidebar-accent, var(--analog-fallback-sidebar-accent));
-  --color-sidebar-accent-foreground: var(
-    --sidebar-accent-foreground,
-    var(--analog-fallback-sidebar-accent-foreground)
-  );
-  --color-sidebar-border: var(--sidebar-border, var(--analog-fallback-sidebar-border));
-  --color-sidebar-ring: var(--sidebar-ring, var(--analog-fallback-sidebar-ring));
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
   --color-analog-surface-cavity: var(--analog-surface-cavity);
   --color-analog-surface-panel: var(--analog-surface-panel);
   --color-analog-surface-metal-hi: var(--analog-surface-metal-hi);
   --color-analog-surface-metal-mid: var(--analog-surface-metal-mid);
   --color-analog-surface-metal-lo: var(--analog-surface-metal-lo);
-  --color-analog-led-amber-base: var(--analog-led-amber-base);
-  --color-analog-led-amber-glow: var(--analog-led-amber-glow);
-  --color-analog-led-green-base: var(--analog-led-green-base);
-  --color-analog-led-green-glow: var(--analog-led-green-glow);
-  --font-sans: var(--font-sans, var(--analog-fallback-font-sans));
-  --font-mono: var(--font-mono, var(--analog-fallback-font-mono));
+  --color-analog-tone-primary: var(--analog-tone-primary);
+  --color-analog-tone-secondary: var(--analog-tone-secondary);
+  --color-analog-tone-accent: var(--analog-tone-accent);
+  --color-analog-tone-destructive: var(--analog-tone-destructive);
+  --color-analog-tone-success: var(--analog-tone-success);
+  --color-analog-tone-warning: var(--analog-tone-warning);
+  --color-analog-tone-info: var(--analog-tone-info);
+  --color-analog-tone-neutral: var(--analog-tone-neutral);
+  --color-analog-tone-chart-1: var(--analog-tone-chart-1);
+  --color-analog-tone-chart-2: var(--analog-tone-chart-2);
+  --color-analog-tone-chart-3: var(--analog-tone-chart-3);
+  --color-analog-tone-chart-4: var(--analog-tone-chart-4);
+  --color-analog-tone-chart-5: var(--analog-tone-chart-5);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
   --font-lcd: var(--analog-font-lcd);
-  --font-serif: var(--font-serif, var(--analog-fallback-font-serif));
-  --radius-sm: calc(var(--radius, var(--analog-fallback-radius)) * 0.6);
-  --radius-md: calc(var(--radius, var(--analog-fallback-radius)) * 0.8);
-  --radius-lg: var(--radius, var(--analog-fallback-radius));
-  --radius-xl: calc(var(--radius, var(--analog-fallback-radius)) * 1.4);
+  --font-serif: var(--font-serif);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
 }
 
 @layer base {

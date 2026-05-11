@@ -3,11 +3,12 @@ import { ToggleGroup as BaseToggleGroup } from '@base-ui/react/toggle-group';
 import { Toggle as BaseToggle } from '@base-ui/react/toggle';
 import { cn } from '@/lib/utils';
 import { useMergedRefs } from '@/lib/refs';
-import { Indicator, type IndicatorColor } from './Indicator';
+import { Indicator } from './Indicator';
 import { RockerThumbSurface } from './RockerThumbSurface';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 import { useAnalogMaterialVariant } from '../../hooks/analog-material-scope';
 import type { AnalogOrientation } from './orientation';
+import type { AnalogTone } from './tone';
 
 type ToggleValue = 'left' | 'right';
 
@@ -17,10 +18,10 @@ export interface ToggleProps extends Omit<
 > {
   variant?: 'chrome' | 'black';
   orientation?: AnalogOrientation;
-  leftLed?: IndicatorColor;
-  rightLed?: IndicatorColor;
-  leftLedActive?: 'auto' | 'always' | 'never';
-  rightLedActive?: 'auto' | 'always' | 'never';
+  leftIndicatorTone?: AnalogTone;
+  rightIndicatorTone?: AnalogTone;
+  leftIndicatorActive?: 'auto' | 'always' | 'never';
+  rightIndicatorActive?: 'auto' | 'always' | 'never';
   value?: ToggleValue;
   onValueChange?: (val: ToggleValue) => void;
   lighting?: AnalogLightingConfig<'track' | 'thumb' | 'lens' | 'surface'>;
@@ -34,7 +35,7 @@ type ToggleGroupMouseLeaveEvent = Parameters<
   NonNullable<React.ComponentPropsWithoutRef<typeof BaseToggleGroup>['onMouseLeave']>
 >[0];
 
-const getLedPositionStyle = (
+const getIndicatorPositionStyle = (
   orientation: AnalogOrientation,
   side: ToggleValue,
 ): React.CSSProperties =>
@@ -56,10 +57,10 @@ export const Toggle = React.forwardRef<HTMLDivElement, ToggleProps>(
       className,
       variant,
       orientation = 'horizontal',
-      leftLed = 'none',
-      rightLed = 'none',
-      leftLedActive = 'auto',
-      rightLedActive = 'auto',
+      leftIndicatorTone,
+      rightIndicatorTone,
+      leftIndicatorActive = 'auto',
+      rightIndicatorActive = 'auto',
       value = 'left',
       onValueChange,
       lighting,
@@ -185,39 +186,43 @@ export const Toggle = React.forwardRef<HTMLDivElement, ToggleProps>(
             >
               <div
                 className="absolute pointer-events-none"
-                style={getLedPositionStyle(orientation, 'left')}
+                style={getIndicatorPositionStyle(orientation, 'left')}
               >
-                <Indicator
-                  size="xs"
-                  disableBezel
-                  shape="round"
-                  color={leftLed}
-                  isOn={
-                    leftLedActive === 'always'
-                      ? true
-                      : leftLedActive === 'never'
-                        ? false
-                        : value === 'left'
-                  }
-                />
+                {leftIndicatorTone ? (
+                  <Indicator
+                    size="xs"
+                    disableBezel
+                    shape="round"
+                    tone={leftIndicatorTone}
+                    isOn={
+                      leftIndicatorActive === 'always'
+                        ? true
+                        : leftIndicatorActive === 'never'
+                          ? false
+                          : value === 'left'
+                    }
+                  />
+                ) : null}
               </div>
               <div
                 className="absolute pointer-events-none"
-                style={getLedPositionStyle(orientation, 'right')}
+                style={getIndicatorPositionStyle(orientation, 'right')}
               >
-                <Indicator
-                  size="xs"
-                  disableBezel
-                  shape="round"
-                  color={rightLed}
-                  isOn={
-                    rightLedActive === 'always'
-                      ? true
-                      : rightLedActive === 'never'
-                        ? false
-                        : value === 'right'
-                  }
-                />
+                {rightIndicatorTone ? (
+                  <Indicator
+                    size="xs"
+                    disableBezel
+                    shape="round"
+                    tone={rightIndicatorTone}
+                    isOn={
+                      rightIndicatorActive === 'always'
+                        ? true
+                        : rightIndicatorActive === 'never'
+                          ? false
+                          : value === 'right'
+                    }
+                  />
+                ) : null}
               </div>
             </RockerThumbSurface>
           </div>

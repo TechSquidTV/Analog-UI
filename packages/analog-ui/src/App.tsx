@@ -23,11 +23,11 @@ import { WheelSelect } from './registry/components/analog/WheelSelect';
 import { WheelNumber } from './registry/components/analog/WheelNumber';
 import {
   Indicator,
-  type IndicatorColor,
   type IndicatorShape,
   type IndicatorSize,
 } from './registry/components/analog/Indicator';
 import { Gauge } from './registry/components/analog/Gauge';
+import type { AnalogTone } from './registry/components/analog/tone';
 import {
   Panel,
   PanelHeader,
@@ -101,9 +101,9 @@ export default function App() {
   const [verticalToggle1, setVerticalToggle1] = useState<'left' | 'right'>('right');
   const [verticalToggle2, setVerticalToggle2] = useState<'left' | 'right'>('left');
 
-  // LED Config for Toggles
-  const [togglesLeftLed, setTogglesLeftLed] = useState<IndicatorColor>('none');
-  const [togglesRightLed, setTogglesRightLed] = useState<IndicatorColor>('none');
+  // Indicator tone config for toggles
+  const [togglesLeftTone, setTogglesLeftTone] = useState<AnalogTone | ''>('');
+  const [togglesRightTone, setTogglesRightTone] = useState<AnalogTone | ''>('');
   const [togglesLeftActive, setTogglesLeftActive] = useState<'auto' | 'always' | 'never'>('auto');
   const [togglesRightActive, setTogglesRightActive] = useState<'auto' | 'always' | 'never'>('auto');
 
@@ -118,7 +118,7 @@ export default function App() {
   const [fader2, setFader2] = useState(0);
 
   const [indicatorOn, setIndicatorOn] = useState(false);
-  const [indicatorColor, setIndicatorColor] = useState<Exclude<IndicatorColor, 'none'>>('red');
+  const [indicatorTone, setIndicatorTone] = useState<AnalogTone>('destructive');
   const [indicatorSize, setIndicatorSize] = useState<Exclude<IndicatorSize, 'xs'>>('lg');
   const [indicatorShape, setIndicatorShape] = useState<IndicatorShape>('round');
   const [indicatorHasBezel, setIndicatorHasBezel] = useState(true);
@@ -132,15 +132,12 @@ export default function App() {
   const [isMeterAnimated, setIsMeterAnimated] = useState(true);
   const [staticMeterL, setStaticMeterL] = useState(-12);
   const [staticMeterR, setStaticMeterR] = useState(-18);
-  const [meterVariant, setMeterVariant] = useState<
-    'metered' | 'lcd-green' | 'lcd-amber' | 'lcd-blue'
-  >('metered');
+  const [meterVariant, setMeterVariant] = useState<'metered' | 'display'>('metered');
+  const [meterTone, setMeterTone] = useState<AnalogTone>('success');
   const [meterGroupVariant, setMeterGroupVariant] = useState<MeterGroupVariant>('chrome');
   const [isSegmented, setIsSegmented] = useState(true);
   const [gaugeValue, setGaugeValue] = useState(0);
-  const [gaugeVariant, setGaugeVariant] = useState<'lcd-green' | 'lcd-amber' | 'lcd-blue'>(
-    'lcd-green',
-  );
+  const [gaugeTone, setGaugeTone] = useState<AnalogTone>('success');
   const [wheelValue, setWheelValue] = useState('SPEED');
   const [wheelNum, setWheelNum] = useState(0);
 
@@ -267,7 +264,7 @@ export default function App() {
             <p>
               Analog UI is a component library and custom registry built on top of shadcn/ui to help
               you build highly tactile web experiences faster. It provides pre-built "studio
-              hyper-skeuomorphism" components for physical inputs, LED displays, sliders, and more.
+              hyper-skeuomorphism" components for physical inputs, tone displays, sliders, and more.
             </p>
             <p>
               Components are available via the{' '}
@@ -313,7 +310,7 @@ export default function App() {
 
         <ComponentShowcase
           title="Push Button & Toggle"
-          description="Skeuomorphic push controls with realistic 3D extrusion, machined finishes, and dynamic lighting. The toggle variant includes an optional LED indicator for state feedback."
+          description="Skeuomorphic push controls with realistic 3D extrusion, machined finishes, and dynamic lighting. The toggle variant includes an optional tone indicator for state feedback."
           specs={[
             { label: 'Toggle 1', value: sqToggle1 ? 'ON' : 'OFF' },
             { label: 'Toggle 2', value: sqToggle2 ? 'ON' : 'OFF' },
@@ -337,7 +334,7 @@ export default function App() {
                 <PushToggle
                   pressed={sqToggle1}
                   onPressedChange={setSqToggle1}
-                  indicatorColor="green"
+                  indicatorTone="success"
                 >
                   PWR
                 </PushToggle>
@@ -345,13 +342,13 @@ export default function App() {
                   variant="black"
                   pressed={sqToggle2}
                   onPressedChange={setSqToggle2}
-                  indicatorColor="red"
+                  indicatorTone="destructive"
                 >
                   ARM
                 </PushToggle>
               </div>
               <span className="font-mono text-[10px] text-[#555] uppercase tracking-widest font-bold">
-                Latching (LED)
+                Latching (Tone)
               </span>
             </div>
           </div>
@@ -359,41 +356,41 @@ export default function App() {
 
         <ComponentShowcase
           title="Toggle"
-          description="A heavy-duty rocker switch modeled with physical depth. Features textured grip ridges, an anodized baseplate, and configurable LED status indicators."
+          description="A heavy-duty rocker switch modeled with physical depth. Features textured grip ridges, an anodized baseplate, and configurable tone status indicators."
           specs={[
             { label: 'State (Chrome)', value: toggle1 === 'right' ? 'ON' : 'OFF' },
             { label: 'State (Black)', value: toggle2 === 'right' ? 'ON' : 'OFF' },
             {
-              label: 'Left LED',
+              label: 'Left Tone',
               value: (
                 <select
                   className="bg-transparent text-right outline-none text-[var(--color-accent)] font-mono border-none"
-                  value={togglesLeftLed}
-                  onChange={(e) => setTogglesLeftLed(e.target.value as any)}
+                  value={togglesLeftTone}
+                  onChange={(e) => setTogglesLeftTone(e.target.value as any)}
                 >
-                  <option value="none">None</option>
-                  <option value="red">Red</option>
-                  <option value="green">Green</option>
-                  <option value="amber">Amber</option>
-                  <option value="blue">Blue</option>
-                  <option value="white">White</option>
+                  <option value="">None</option>
+                  <option value="destructive">Destructive</option>
+                  <option value="success">Success</option>
+                  <option value="warning">Warning</option>
+                  <option value="info">Info</option>
+                  <option value="neutral">Neutral</option>
                 </select>
               ),
             },
             {
-              label: 'Right LED',
+              label: 'Right Tone',
               value: (
                 <select
                   className="bg-transparent text-right outline-none text-[var(--color-accent)] font-mono border-none"
-                  value={togglesRightLed}
-                  onChange={(e) => setTogglesRightLed(e.target.value as any)}
+                  value={togglesRightTone}
+                  onChange={(e) => setTogglesRightTone(e.target.value as any)}
                 >
-                  <option value="none">None</option>
-                  <option value="red">Red</option>
-                  <option value="green">Green</option>
-                  <option value="amber">Amber</option>
-                  <option value="blue">Blue</option>
-                  <option value="white">White</option>
+                  <option value="">None</option>
+                  <option value="destructive">Destructive</option>
+                  <option value="success">Success</option>
+                  <option value="warning">Warning</option>
+                  <option value="info">Info</option>
+                  <option value="neutral">Neutral</option>
                 </select>
               ),
             },
@@ -434,10 +431,10 @@ export default function App() {
                   Sys Pwr
                 </span>
                 <Toggle
-                  leftLed={togglesLeftLed}
-                  rightLed={togglesRightLed}
-                  leftLedActive={togglesLeftActive}
-                  rightLedActive={togglesRightActive}
+                  leftIndicatorTone={togglesLeftTone || undefined}
+                  rightIndicatorTone={togglesRightTone || undefined}
+                  leftIndicatorActive={togglesLeftActive}
+                  rightIndicatorActive={togglesRightActive}
                   value={toggle1 as 'left' | 'right'}
                   onValueChange={setToggle1 as any}
                 />
@@ -448,10 +445,10 @@ export default function App() {
                 </span>
                 <Toggle
                   variant="black"
-                  leftLed={togglesLeftLed}
-                  rightLed={togglesRightLed}
-                  leftLedActive={togglesLeftActive}
-                  rightLedActive={togglesRightActive}
+                  leftIndicatorTone={togglesLeftTone || undefined}
+                  rightIndicatorTone={togglesRightTone || undefined}
+                  leftIndicatorActive={togglesLeftActive}
+                  rightIndicatorActive={togglesRightActive}
                   value={toggle2 as 'left' | 'right'}
                   onValueChange={setToggle2 as any}
                 />
@@ -468,10 +465,10 @@ export default function App() {
                 </span>
                 <Toggle
                   orientation="vertical"
-                  leftLed={togglesLeftLed}
-                  rightLed={togglesRightLed}
-                  leftLedActive={togglesLeftActive}
-                  rightLedActive={togglesRightActive}
+                  leftIndicatorTone={togglesLeftTone || undefined}
+                  rightIndicatorTone={togglesRightTone || undefined}
+                  leftIndicatorActive={togglesLeftActive}
+                  rightIndicatorActive={togglesRightActive}
                   value={verticalToggle1}
                   onValueChange={setVerticalToggle1}
                 />
@@ -490,10 +487,10 @@ export default function App() {
                 <Toggle
                   variant="black"
                   orientation="vertical"
-                  leftLed={togglesLeftLed}
-                  rightLed={togglesRightLed}
-                  leftLedActive={togglesLeftActive}
-                  rightLedActive={togglesRightActive}
+                  leftIndicatorTone={togglesLeftTone || undefined}
+                  rightIndicatorTone={togglesRightTone || undefined}
+                  leftIndicatorActive={togglesLeftActive}
+                  rightIndicatorActive={togglesRightActive}
                   value={verticalToggle2}
                   onValueChange={setVerticalToggle2}
                 />
@@ -598,7 +595,7 @@ export default function App() {
 
         <ComponentShowcase
           title="Meter"
-          description="A calibrated stereo level meter with optional display ballistics, dbFS scale marks, and segmented or continuous LED arrays."
+          description="A calibrated stereo level meter with optional display ballistics, dbFS scale marks, and segmented or continuous tone arrays."
           specs={[
             {
               label: 'Animated',
@@ -647,9 +644,22 @@ export default function App() {
                   onChange={(e) => setMeterVariant(e.target.value as any)}
                 >
                   <option value="metered">Metered</option>
-                  <option value="lcd-green">LCD Green</option>
-                  <option value="lcd-amber">LCD Amber</option>
-                  <option value="lcd-blue">LCD Blue</option>
+                  <option value="display">Display</option>
+                </select>
+              ),
+            },
+            {
+              label: 'Tone',
+              value: (
+                <select
+                  className="bg-[#111] text-[#888] border border-[#333] rounded px-2 py-1 text-xs outline-none"
+                  value={meterTone}
+                  onChange={(e) => setMeterTone(e.target.value as any)}
+                >
+                  <option value="success">Success</option>
+                  <option value="warning">Warning</option>
+                  <option value="info">Info</option>
+                  <option value="accent">Accent</option>
                 </select>
               ),
             },
@@ -681,6 +691,7 @@ export default function App() {
                   value={isMeterAnimated ? meter.l : staticMeterL}
                   peakValue={meter.lPeak}
                   variant={meterVariant}
+                  tone={meterTone}
                   scalePreset="dbfs"
                   showScale
                   ballistics="ppm"
@@ -694,6 +705,7 @@ export default function App() {
                   value={isMeterAnimated ? meter.r : staticMeterR}
                   peakValue={meter.rPeak}
                   variant={meterVariant}
+                  tone={meterTone}
                   scalePreset="dbfs"
                   showScale
                   ballistics="ppm"
@@ -724,16 +736,17 @@ export default function App() {
               ),
             },
             {
-              label: 'Variant',
+              label: 'Tone',
               value: (
                 <select
                   className="bg-[#111] text-[#888] border border-[#333] rounded px-2 py-1 text-xs outline-none"
-                  value={gaugeVariant}
-                  onChange={(e) => setGaugeVariant(e.target.value as any)}
+                  value={gaugeTone}
+                  onChange={(e) => setGaugeTone(e.target.value as any)}
                 >
-                  <option value="lcd-green">LCD Green</option>
-                  <option value="lcd-amber">LCD Amber</option>
-                  <option value="lcd-blue">LCD Blue</option>
+                  <option value="success">Success</option>
+                  <option value="warning">Warning</option>
+                  <option value="info">Info</option>
+                  <option value="accent">Accent</option>
                 </select>
               ),
             },
@@ -746,7 +759,7 @@ export default function App() {
               max={100}
               value={gaugeValue}
               onValueChange={(val) => setGaugeValue(val as number)}
-              variant={gaugeVariant}
+              tone={gaugeTone}
               fillMode="center"
               centerValue={0}
               marks={panGaugeMarks}
@@ -793,18 +806,18 @@ export default function App() {
               value: <Switch checked={indicatorOn} onCheckedChange={setIndicatorOn} />,
             },
             {
-              label: 'Color',
+              label: 'Tone',
               value: (
                 <select
                   className="bg-[#111] text-[#888] border border-[#333] rounded px-2 py-1 text-xs outline-none"
-                  value={indicatorColor}
-                  onChange={(e) => setIndicatorColor(e.target.value as any)}
+                  value={indicatorTone}
+                  onChange={(e) => setIndicatorTone(e.target.value as any)}
                 >
-                  <option value="red">Red</option>
-                  <option value="green">Green</option>
-                  <option value="amber">Amber</option>
-                  <option value="blue">Blue</option>
-                  <option value="white">White</option>
+                  <option value="destructive">Destructive</option>
+                  <option value="success">Success</option>
+                  <option value="warning">Warning</option>
+                  <option value="info">Info</option>
+                  <option value="neutral">Neutral</option>
                 </select>
               ),
             },
@@ -846,7 +859,7 @@ export default function App() {
             <div className="flex flex-col gap-4 items-center">
               <Indicator
                 isOn={indicatorOn}
-                color={indicatorColor}
+                tone={indicatorTone}
                 size={indicatorSize}
                 shape={indicatorShape}
                 variant="chrome"
@@ -859,7 +872,7 @@ export default function App() {
             <div className="flex flex-col gap-4 items-center">
               <Indicator
                 isOn={indicatorOn}
-                color={indicatorColor}
+                tone={indicatorTone}
                 size={indicatorSize}
                 shape={indicatorShape}
                 variant="black"
@@ -984,6 +997,7 @@ export default function App() {
                         value={isMeterAnimated ? meter.l : staticMeterL}
                         peakValue={meter.lPeak}
                         variant={meterVariant}
+                        tone={meterTone}
                         scalePreset="dbfs"
                         showScale
                         ballistics="ppm"
@@ -997,6 +1011,7 @@ export default function App() {
                         value={isMeterAnimated ? meter.r : staticMeterR}
                         peakValue={meter.rPeak}
                         variant={meterVariant}
+                        tone={meterTone}
                         scalePreset="dbfs"
                         showScale
                         ballistics="ppm"
@@ -1009,7 +1024,7 @@ export default function App() {
               <PanelFooter>
                 <PushToggle
                   className="w-full"
-                  indicatorColor="amber"
+                  indicatorTone="warning"
                   pressed={bypass}
                   variant={bypass ? 'chrome' : 'black'}
                   onPressedChange={setBypass}

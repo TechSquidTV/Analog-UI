@@ -6,62 +6,28 @@ import {
   type AnalogLightingConfig,
 } from '../../hooks/use-analog-lighting';
 import { useAnalogMaterialVariant } from '../../hooks/analog-material-scope';
+import type { AnalogTone } from './tone';
 
-export type IndicatorColor = 'red' | 'green' | 'amber' | 'blue' | 'white' | 'none';
 export type IndicatorSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 export type IndicatorVariant = 'chrome' | 'black';
 export type IndicatorShape = 'round' | 'square';
 
 export interface IndicatorProps extends React.HTMLAttributes<HTMLDivElement> {
   isOn?: boolean;
-  color?: IndicatorColor;
+  tone?: AnalogTone;
   size?: IndicatorSize;
-  /**
-   * Bezel material when the bezel is visible.
-   * `variant="none"` is deprecated; use `disableBezel` instead.
-   */
-  variant?: IndicatorVariant | 'none';
+  variant?: IndicatorVariant;
   disableBezel?: boolean;
   shape?: IndicatorShape;
   lighting?: AnalogLightingConfig<'bezel' | 'lens'>;
 }
 
-const colorMaps = {
-  red: {
-    bg: 'var(--analog-led-red-surface)',
-    core: 'var(--analog-led-red-core)',
-    mid: 'var(--analog-led-red-base)',
-    edge: 'var(--analog-led-red-edge)',
-    bloom: 'var(--analog-led-red-glow)',
-  },
-  green: {
-    bg: 'var(--analog-led-green-surface)',
-    core: 'var(--analog-led-green-core)',
-    mid: 'var(--analog-led-green-base)',
-    edge: 'var(--analog-led-green-edge)',
-    bloom: 'var(--analog-led-green-glow)',
-  },
-  amber: {
-    bg: 'var(--analog-led-amber-surface)',
-    core: 'var(--analog-led-amber-core)',
-    mid: 'var(--analog-led-amber-base)',
-    edge: 'var(--analog-led-amber-edge)',
-    bloom: 'var(--analog-led-amber-glow)',
-  },
-  blue: {
-    bg: 'var(--analog-led-blue-surface)',
-    core: 'var(--analog-led-blue-core)',
-    mid: 'var(--analog-led-blue-base)',
-    edge: 'var(--analog-led-blue-edge)',
-    bloom: 'var(--analog-led-blue-glow)',
-  },
-  white: {
-    bg: 'var(--analog-led-white-surface)',
-    core: 'var(--analog-led-white-core)',
-    mid: 'var(--analog-led-white-base)',
-    edge: 'var(--analog-led-white-edge)',
-    bloom: 'var(--analog-led-white-glow)',
-  },
+const palette = {
+  bg: 'var(--analog-emissive-surface)',
+  core: 'var(--analog-emissive-core)',
+  mid: 'var(--analog-emissive-base)',
+  edge: 'var(--analog-emissive-edge)',
+  bloom: 'var(--analog-emissive-glow)',
 };
 
 const sizeMaps = {
@@ -109,22 +75,21 @@ export const Indicator = React.forwardRef<HTMLDivElement, IndicatorProps>(
     {
       className,
       isOn = false,
-      color = 'red',
+      tone = 'accent',
       size = 'md',
       variant,
       disableBezel = false,
       shape = 'round',
       lighting,
+      style,
       ...props
     },
     ref,
   ) => {
-    const resolvedColor = color === 'none' ? 'red' : color;
-    const palette = colorMaps[resolvedColor];
     const glow = glowMaps[size];
-    const resolvedVariant = useAnalogMaterialVariant(variant === 'none' ? undefined : variant);
+    const resolvedVariant = useAnalogMaterialVariant(variant);
     const isChrome = resolvedVariant === 'chrome';
-    const hasBezel = !disableBezel && variant !== 'none';
+    const hasBezel = !disableBezel;
     const radius = shape === 'square' ? '15%' : '50%';
     const lightingStyle = useAnalogLighting(['bezel', 'lens'], lighting);
     const lensLightAngle = useAnalogLightAngle('lens', {}, lighting?.lens);
@@ -142,8 +107,6 @@ export const Indicator = React.forwardRef<HTMLDivElement, IndicatorProps>(
       };
     }, [lensLightAngle]);
 
-    if (color === 'none') return null;
-
     return (
       <div
         ref={ref}
@@ -153,7 +116,8 @@ export const Indicator = React.forwardRef<HTMLDivElement, IndicatorProps>(
           className,
         )}
         data-analog-variant={resolvedVariant}
-        style={{ ...lightingStyle, borderRadius: radius }}
+        data-analog-tone={tone}
+        style={{ ...lightingStyle, borderRadius: radius, ...style }}
         {...props}
       >
         {/* Bezel Base */}

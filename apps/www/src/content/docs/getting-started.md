@@ -41,7 +41,35 @@ Repeat the second command for any other item, such as `slider`, `meter`, or `pan
 
 ## Tailwind and Theme Assumptions
 
-Analog UI is designed for Tailwind CSS v4 and shadcn-compatible semantic tokens. The component recipes expect host tokens such as `background`, `card`, `secondary`, `accent`, and `border` to exist.
+Analog UI is designed for Tailwind CSS v4 and the standard shadcn/tweakcn semantic token contract. The component recipes expect your host theme to define:
+
+- `--background`, `--foreground`
+- `--card`, `--card-foreground`
+- `--popover`, `--popover-foreground`
+- `--primary`, `--primary-foreground`
+- `--secondary`, `--secondary-foreground`
+- `--muted`, `--muted-foreground`
+- `--accent`, `--accent-foreground`
+- `--destructive`, `--destructive-foreground`
+- `--border`, `--input`, `--ring`
+- `--chart-1` through `--chart-5`
+- `--radius`, `--font-mono`
+
+The Analog foundation maps those values into material surfaces, display glass, meter zones, and semantic tone roles. Components that emit or highlight color expose a `tone` prop, so product color changes happen through tokens:
+
+```css
+:root {
+  --analog-tone-success: var(--chart-1);
+  --analog-tone-warning: var(--chart-4);
+  --analog-tone-info: var(--chart-2);
+}
+```
+
+```tsx
+<Indicator isOn tone="success" />
+<Gauge defaultValue={72} tone="warning" />
+<Meter variant="display" tone="info" />
+```
 
 ## First Controls To Try
 

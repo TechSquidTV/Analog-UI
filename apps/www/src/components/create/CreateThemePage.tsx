@@ -191,36 +191,43 @@ const tokenGroups: TokenGroup[] = [
   },
   {
     id: 'emissive',
-    label: 'Emissive',
-    eyebrow: 'LED / LCD',
+    label: 'Tone',
+    eyebrow: 'Analog Tones',
     controls: [
       {
-        id: 'ledGreen',
-        cssVar: '--analog-led-green-base',
-        label: 'Green',
+        id: 'toneSuccess',
+        cssVar: '--analog-tone-success',
+        label: 'Success',
         kind: 'color',
         defaultValue: '#35d36b',
       },
       {
-        id: 'ledAmber',
-        cssVar: '--analog-led-amber-base',
-        label: 'Amber',
+        id: 'toneWarning',
+        cssVar: '--analog-tone-warning',
+        label: 'Warning',
         kind: 'color',
         defaultValue: '#f1b53f',
       },
       {
-        id: 'ledRed',
-        cssVar: '--analog-led-red-base',
-        label: 'Red',
+        id: 'toneDestructive',
+        cssVar: '--analog-tone-destructive',
+        label: 'Destructive',
         kind: 'color',
         defaultValue: '#f25b4b',
       },
       {
-        id: 'ledBlue',
-        cssVar: '--analog-led-blue-base',
-        label: 'Blue',
+        id: 'toneInfo',
+        cssVar: '--analog-tone-info',
+        label: 'Info',
         kind: 'color',
         defaultValue: '#55a8ff',
+      },
+      {
+        id: 'toneAccent',
+        cssVar: '--analog-tone-accent',
+        label: 'Accent',
+        kind: 'color',
+        defaultValue: '#78e6a5',
       },
       {
         id: 'peakMarker',
@@ -312,7 +319,7 @@ const derivedVars = [
   ['--secondary-foreground', 'var(--foreground)'],
   ['--muted', 'color-mix(in oklch, var(--card) 82%, var(--background))'],
   ['--accent-foreground', 'var(--background)'],
-  ['--destructive', 'var(--analog-led-red-base)'],
+  ['--destructive', 'var(--analog-tone-destructive)'],
   ['--destructive-foreground', 'var(--background)'],
   ['--input', 'var(--border)'],
   ['--font-mono', "ui-monospace, SFMono-Regular, 'SF Mono', Consolas, monospace"],
@@ -375,7 +382,7 @@ function getThemeCss(values: ThemeValues) {
 
   lines.push(
     '',
-    '  /* shadcn-compatible aliases */',
+    '  /* shadcn-compatible derived tokens */',
     ...derivedVars
       .filter(([name]) => !name.startsWith('--color-'))
       .map(([name, value]) => `  ${name}: ${value};`),
@@ -572,7 +579,7 @@ function RackPreview() {
           </div>
           <PanelAction className="flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-2">
-              <Indicator isOn={power} color="green" size="xs" />
+              <Indicator isOn={power} tone="success" size="xs" />
               <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#a2a29a]">
                 Power
               </span>
@@ -641,7 +648,12 @@ function RackPreview() {
 
                 <div className="grid justify-items-center gap-3">
                   <ControlLabel label="Circuit" value={mode === 'right' ? 'Wide' : 'Tight'} />
-                  <Toggle value={mode} leftLed="amber" rightLed="green" onValueChange={setMode} />
+                  <Toggle
+                    value={mode}
+                    leftIndicatorTone="warning"
+                    rightIndicatorTone="success"
+                    onValueChange={setMode}
+                  />
                 </div>
               </div>
             </PanelContent>
@@ -661,7 +673,7 @@ function RackPreview() {
                     <div className="flex items-center justify-between gap-4">
                       <div className="text-sm font-semibold">Total Signal</div>
                       <div className="flex items-center gap-2">
-                        <Indicator isOn={power} color="red" size="xs" />
+                        <Indicator isOn={power} tone="destructive" size="xs" />
                         <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--muted-foreground)]">
                           LIVE
                         </span>
@@ -676,14 +688,14 @@ function RackPreview() {
                         onValueChange={handleSignalChange}
                         showMarks={false}
                         value={energy}
-                        variant={isHot ? 'lcd-amber' : 'lcd-green'}
+                        tone={isHot ? 'warning' : 'success'}
                       />
                       <LCDDisplay
                         className="w-full min-w-0 [&>div]:w-full"
                         label="HDRM"
                         value={Math.round(100 - energy)}
                         units="%"
-                        variant={isHot ? 'lcd-amber' : 'lcd-green'}
+                        tone={isHot ? 'warning' : 'success'}
                         size="sm"
                         screenClassName="px-2 py-1.5"
                         valueClassName="text-[18px] tracking-[0.08em]"
@@ -705,13 +717,13 @@ function RackPreview() {
                   label="Output"
                   value={Math.round(energy + mix)}
                   units="dB"
-                  variant={mode === 'right' ? 'lcd-green' : 'lcd-amber'}
+                  tone={mode === 'right' ? 'success' : 'warning'}
                   size="md"
                 />
                 <div className="flex flex-wrap items-center gap-4">
-                  <Indicator isOn={power} color="blue" size="sm" />
-                  <Indicator isOn={isHot} color="red" size="sm" />
-                  <Indicator isOn={power && !isHot} color="amber" size="sm" />
+                  <Indicator isOn={power} tone="info" size="sm" />
+                  <Indicator isOn={isHot} tone="destructive" size="sm" />
+                  <Indicator isOn={power && !isHot} tone="warning" size="sm" />
                 </div>
               </PanelContent>
             </Panel>
@@ -759,20 +771,20 @@ function RackPreview() {
 
 function CardsPreview() {
   const rows = [
-    ['Registry', '24 items', 'green'],
-    ['Token tiers', '3 layers', 'amber'],
-    ['Finish recipes', 'Live', 'blue'],
+    ['Registry', '24 items', 'success'],
+    ['Token tiers', '3 layers', 'warning'],
+    ['Finish recipes', 'Live', 'info'],
   ] as const;
 
   return (
     <div className="grid gap-5">
       <div className="grid gap-4 md:grid-cols-3">
-        {rows.map(([label, value, color]) => (
+        {rows.map(([label, value, tone]) => (
           <Panel key={label} variant="default" surface="subtle" screws={false}>
             <PanelContent className="p-5">
               <div className="flex items-center justify-between gap-4">
                 <span className="text-sm text-[var(--muted-foreground)]">{label}</span>
-                <Indicator isOn color={color} size="xs" disableBezel />
+                <Indicator isOn tone={tone} size="xs" disableBezel />
               </div>
               <div className="mt-5 text-3xl font-semibold tracking-tight">{value}</div>
             </PanelContent>
@@ -823,14 +835,14 @@ function CardsPreview() {
                   className="max-w-[7rem] p-1"
                   disabled
                   value={74}
-                  variant="lcd-blue"
+                  tone="info"
                 />
                 <LCDDisplay
                   className="w-full min-w-0 [&>div]:w-full"
                   label="Accent"
                   value={74}
                   units="%"
-                  variant="lcd-blue"
+                  tone="info"
                   size="sm"
                 />
               </div>

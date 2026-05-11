@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
+import type { AnalogTone } from './tone';
 
-export type LCDDisplayVariant = 'lcd-green' | 'lcd-amber' | 'lcd-blue';
 export type LCDDisplaySize = 'sm' | 'md' | 'lg';
 export type LCDDisplayAlign = 'left' | 'center' | 'right';
 
@@ -10,7 +10,7 @@ export interface LCDDisplayProps extends React.HTMLAttributes<HTMLDivElement> {
   value?: string | number;
   label?: React.ReactNode;
   units?: React.ReactNode;
-  variant?: LCDDisplayVariant;
+  tone?: AnalogTone;
   size?: LCDDisplaySize;
   digits?: number;
   align?: LCDDisplayAlign;
@@ -19,35 +19,14 @@ export interface LCDDisplayProps extends React.HTMLAttributes<HTMLDivElement> {
   valueClassName?: string;
 }
 
-interface LCDPalette {
-  glow: string;
-  fill: string;
-  ink: string;
-  legend: string;
-}
-
 const NOISE_TEXTURE =
   "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='discrete' tableValues='0 0 0 1 1'/%3E%3CfeFuncG type='discrete' tableValues='0 0 0 1 1'/%3E%3CfeFuncB type='discrete' tableValues='0 0 0 1 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")";
 
-const displayPalettes: Record<LCDDisplayVariant, LCDPalette> = {
-  'lcd-green': {
-    glow: 'var(--analog-lcd-green-glow)',
-    fill: 'var(--analog-lcd-green-fill)',
-    ink: 'var(--analog-lcd-green-ink)',
-    legend: 'var(--analog-lcd-green-legend)',
-  },
-  'lcd-amber': {
-    glow: 'var(--analog-lcd-amber-glow)',
-    fill: 'var(--analog-lcd-amber-fill)',
-    ink: 'var(--analog-lcd-amber-ink)',
-    legend: 'var(--analog-lcd-amber-legend)',
-  },
-  'lcd-blue': {
-    glow: 'var(--analog-lcd-blue-glow)',
-    fill: 'var(--analog-lcd-blue-fill)',
-    ink: 'var(--analog-lcd-blue-ink)',
-    legend: 'var(--analog-lcd-blue-legend)',
-  },
+const palette = {
+  glow: 'var(--analog-display-glow)',
+  fill: 'var(--analog-display-fill)',
+  ink: 'var(--analog-display-ink)',
+  legend: 'var(--analog-display-legend)',
 };
 
 const displaySizeStyles = {
@@ -128,7 +107,7 @@ export const LCDDisplay = React.forwardRef<HTMLDivElement, LCDDisplayProps>(
       value = '88.8',
       label,
       units,
-      variant = 'lcd-green',
+      tone = 'success',
       size = 'md',
       digits,
       align = 'right',
@@ -145,7 +124,6 @@ export const LCDDisplay = React.forwardRef<HTMLDivElement, LCDDisplayProps>(
       track: { travel: 1 },
       ...lighting,
     });
-    const palette = displayPalettes[variant];
     const sizeStyle = displaySizeStyles[size];
     const formattedValue = React.useMemo(
       () => formatDisplayValue(value, digits, align),
@@ -157,6 +135,7 @@ export const LCDDisplay = React.forwardRef<HTMLDivElement, LCDDisplayProps>(
       <div
         ref={ref}
         className={cn('relative inline-flex max-w-full', className)}
+        data-analog-tone={tone}
         style={{
           ...lightingStyle,
           ...style,

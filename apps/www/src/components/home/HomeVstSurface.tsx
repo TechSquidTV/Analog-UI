@@ -22,6 +22,7 @@ import {
   PanelTitle,
   PushButton,
   PushToggle,
+  type AnalogTone,
 } from '../../../../../packages/analog-ui/src/index';
 
 const algorithms = ['TAPE', 'VALVE', 'BUS', 'WIDE', 'PUNCH'];
@@ -273,12 +274,12 @@ export default function HomeVstSurface({ onScrubbingChange }: HomeVstSurfaceProp
           (oversample ? 0.03 : 0),
       )
     : 0;
-  const gaugeVariant =
+  const gaugeTone: Extract<AnalogTone, 'success' | 'warning' | 'info'> =
     algorithm === 'TAPE' || algorithm === 'VALVE'
-      ? 'lcd-amber'
+      ? 'warning'
       : algorithm === 'WIDE'
-        ? 'lcd-blue'
-        : 'lcd-green';
+        ? 'info'
+        : 'success';
   const driveHot = power && drive > 230;
   const clip = driveHot || meterClip;
   const stereoMode = fieldMode === 'right' ? 'Wide' : 'Mid';
@@ -314,19 +315,19 @@ export default function HomeVstSurface({ onScrubbingChange }: HomeVstSurfaceProp
 
           <PanelAction className="flex flex-wrap items-center gap-5">
             <div className="flex items-center gap-2">
-              <Indicator isOn={power} color="green" size="xs" />
+              <Indicator isOn={power} tone="success" size="xs" />
               <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#9f9f9f]">
                 Power
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <Indicator isOn={clip} color="red" size="xs" />
+              <Indicator isOn={clip} tone="destructive" size="xs" />
               <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#9f9f9f]">
                 Clip
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <Indicator isOn={sync} color="blue" size="xs" />
+              <Indicator isOn={sync} tone="info" size="xs" />
               <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#9f9f9f]">
                 Link
               </span>
@@ -361,7 +362,7 @@ export default function HomeVstSurface({ onScrubbingChange }: HomeVstSurfaceProp
 
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
               <div className="flex flex-col items-center gap-3">
-                <PushToggle pressed={power} onPressedChange={setPower} indicatorColor="green">
+                <PushToggle pressed={power} onPressedChange={setPower} indicatorTone="success">
                   PWR
                 </PushToggle>
                 <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#777]">
@@ -374,7 +375,7 @@ export default function HomeVstSurface({ onScrubbingChange }: HomeVstSurfaceProp
                   variant="black"
                   pressed={sync}
                   onPressedChange={setSync}
-                  indicatorColor="blue"
+                  indicatorTone="info"
                 >
                   SYNC
                 </PushToggle>
@@ -455,8 +456,8 @@ export default function HomeVstSurface({ onScrubbingChange }: HomeVstSurfaceProp
                 <Toggle
                   value={fieldMode}
                   onValueChange={setFieldMode}
-                  leftLed="amber"
-                  rightLed="green"
+                  leftIndicatorTone="warning"
+                  rightIndicatorTone="success"
                   className="w-[108px]"
                 />
               </div>
@@ -512,7 +513,7 @@ export default function HomeVstSurface({ onScrubbingChange }: HomeVstSurfaceProp
                   className="h-36 w-36 md:h-40 md:w-40"
                   value={focus}
                   onValueChange={(next) => setFocus(next as number)}
-                  variant={gaugeVariant}
+                  tone={gaugeTone}
                 />
               </div>
 
@@ -530,7 +531,7 @@ export default function HomeVstSurface({ onScrubbingChange }: HomeVstSurfaceProp
                     onScrubbingChange={handleScrubbingChange}
                   />
                   <div className="flex items-center gap-2">
-                    <Indicator isOn={power} color="white" size="xs" />
+                    <Indicator isOn={power} tone="neutral" size="xs" />
                     <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#777]">
                       Line
                     </span>
@@ -551,7 +552,7 @@ export default function HomeVstSurface({ onScrubbingChange }: HomeVstSurfaceProp
                     onScrubbingChange={handleScrubbingChange}
                   />
                   <div className="flex items-center gap-2">
-                    <Indicator isOn={power} color="amber" size="xs" />
+                    <Indicator isOn={power} tone="warning" size="xs" />
                     <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#777]">
                       Lift
                     </span>
@@ -569,7 +570,7 @@ export default function HomeVstSurface({ onScrubbingChange }: HomeVstSurfaceProp
               Output {outputTrim} dB
             </span>
             <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#878787]">
-              Display {gaugeVariant.replace('lcd-', '')}
+              Display {gaugeTone}
             </span>
           </PanelFooter>
         </Panel>

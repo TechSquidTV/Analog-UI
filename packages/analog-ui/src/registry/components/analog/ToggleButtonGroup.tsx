@@ -4,9 +4,10 @@ import { ToggleGroup as BaseToggleGroup } from '@base-ui/react/toggle-group';
 import { cn } from '@/lib/utils';
 import { useMergedRefs } from '@/lib/refs';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
-import { Indicator, type IndicatorColor } from './Indicator';
+import { Indicator } from './Indicator';
 import type { AnalogOrientation } from './orientation';
 import { SquarePlunger } from './SquarePlunger';
+import type { AnalogTone } from './tone';
 
 type ToggleButtonGroupValueChangeHandler = NonNullable<
   React.ComponentPropsWithoutRef<typeof BaseToggleGroup>['onValueChange']
@@ -25,7 +26,7 @@ const itemSizingClassName =
 
 interface ToggleButtonGroupContextValue {
   variant?: ToggleButtonVariant;
-  indicatorColor: IndicatorColor;
+  indicatorTone?: AnalogTone;
   indicatorActive: ToggleIndicatorState;
   extrusionLayers: number;
   itemHeight: React.CSSProperties['height'];
@@ -45,7 +46,7 @@ export interface ToggleButtonGroupProps extends Omit<
   onValueChange?: (value: string, details: ToggleButtonGroupChangeDetails) => void;
   orientation?: AnalogOrientation;
   variant?: ToggleButtonVariant;
-  indicatorColor?: IndicatorColor;
+  indicatorTone?: AnalogTone;
   indicatorActive?: ToggleIndicatorState;
   allowEmpty?: boolean;
   extrusionLayers?: number;
@@ -66,7 +67,7 @@ export interface ToggleButtonGroupItemProps extends Omit<
   width?: React.CSSProperties['width'];
   height?: React.CSSProperties['height'];
   variant?: ToggleButtonVariant;
-  indicatorColor?: IndicatorColor;
+  indicatorTone?: AnalogTone;
   indicatorActive?: ToggleIndicatorState;
   extrusionLayers?: number;
   lighting?: AnalogLightingConfig<'surface' | 'thumb' | 'lens'>;
@@ -83,7 +84,7 @@ export const ToggleButtonGroup = React.forwardRef<HTMLDivElement, ToggleButtonGr
       onValueChange,
       orientation = 'horizontal',
       variant,
-      indicatorColor = 'green',
+      indicatorTone,
       indicatorActive = 'auto',
       allowEmpty = false,
       extrusionLayers = 32,
@@ -98,12 +99,12 @@ export const ToggleButtonGroup = React.forwardRef<HTMLDivElement, ToggleButtonGr
     const contextValue = React.useMemo<ToggleButtonGroupContextValue>(
       () => ({
         variant,
-        indicatorColor,
+        indicatorTone,
         indicatorActive,
         extrusionLayers,
         itemHeight,
       }),
-      [extrusionLayers, indicatorActive, indicatorColor, itemHeight, variant],
+      [extrusionLayers, indicatorActive, indicatorTone, itemHeight, variant],
     );
 
     return (
@@ -150,7 +151,7 @@ export const ToggleButtonGroupItem = React.forwardRef<
       width,
       height,
       variant,
-      indicatorColor,
+      indicatorTone,
       indicatorActive,
       extrusionLayers,
       lighting,
@@ -167,7 +168,7 @@ export const ToggleButtonGroupItem = React.forwardRef<
     const mergedRef = useMergedRefs(ref, internalRef);
     const lightingStyle = useAnalogLighting(['surface', 'thumb', 'lens'], lighting);
     const resolvedVariant = variant ?? context?.variant;
-    const resolvedIndicatorColor = indicatorColor ?? context?.indicatorColor ?? 'green';
+    const resolvedIndicatorTone = indicatorTone ?? context?.indicatorTone;
     const resolvedIndicatorActive = indicatorActive ?? context?.indicatorActive ?? 'auto';
     const resolvedExtrusionLayers = extrusionLayers ?? context?.extrusionLayers ?? 32;
     const resolvedHeight = height ?? context?.itemHeight ?? '3.5rem';
@@ -178,17 +179,11 @@ export const ToggleButtonGroupItem = React.forwardRef<
         const isIndicatorOn =
           resolvedIndicatorActive === 'always' ||
           (resolvedIndicatorActive === 'auto' && state.pressed);
-        const indicator =
-          resolvedIndicatorColor !== 'none' ? (
-            <div className="absolute right-0.5 top-[-3px]">
-              <Indicator
-                size="xs"
-                color={resolvedIndicatorColor}
-                isOn={isIndicatorOn}
-                disableBezel
-              />
-            </div>
-          ) : null;
+        const indicator = resolvedIndicatorTone ? (
+          <div className="absolute right-0.5 top-[-3px]">
+            <Indicator size="xs" tone={resolvedIndicatorTone} isOn={isIndicatorOn} disableBezel />
+          </div>
+        ) : null;
         const sharedClassName = cn(
           'relative size-full appearance-none border-none bg-transparent p-0 outline-none select-none',
           renderProps.className,
@@ -260,7 +255,7 @@ export const ToggleButtonGroupItem = React.forwardRef<
         rel,
         resolvedExtrusionLayers,
         resolvedIndicatorActive,
-        resolvedIndicatorColor,
+        resolvedIndicatorTone,
         resolvedVariant,
         target,
         type,

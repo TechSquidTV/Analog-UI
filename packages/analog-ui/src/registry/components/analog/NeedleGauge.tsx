@@ -6,9 +6,10 @@ import {
   useAnalogMaterialVariant,
   type AnalogMaterialVariant,
 } from '../../hooks/analog-material-scope';
+import type { AnalogTone } from './tone';
 
 export type NeedleGaugeScalePreset = 'linear' | 'dbfs' | 'vu';
-export type NeedleGaugeNeedleVariant = 'red' | 'chrome';
+export type NeedleGaugeNeedleVariant = 'tone' | 'chrome';
 
 export interface NeedleGaugeMark {
   value: number;
@@ -37,6 +38,7 @@ export interface NeedleGaugeProps extends Omit<
 > {
   variant?: AnalogMaterialVariant;
   needleVariant?: NeedleGaugeNeedleVariant;
+  needleTone?: AnalogTone;
   lighting?: AnalogLightingConfig<'panel' | 'bezel' | 'track' | 'lens' | 'pointer' | 'surface'>;
   startAngle?: number;
   sweepAngle?: number;
@@ -160,20 +162,20 @@ function getDefaultZones(
       {
         from: min,
         to: -6,
-        color: 'var(--analog-meter-zone-green)',
-        glow: 'var(--analog-meter-zone-green-glow)',
+        color: 'var(--analog-meter-zone-success)',
+        glow: 'var(--analog-meter-zone-success-glow)',
       },
       {
         from: -6,
         to: 0,
-        color: 'var(--analog-meter-zone-amber)',
-        glow: 'var(--analog-meter-zone-amber-glow)',
+        color: 'var(--analog-meter-zone-warning)',
+        glow: 'var(--analog-meter-zone-warning-glow)',
       },
       {
         from: 0,
         to: max,
-        color: 'var(--analog-meter-zone-red)',
-        glow: 'var(--analog-meter-zone-red-glow)',
+        color: 'var(--analog-meter-zone-destructive)',
+        glow: 'var(--analog-meter-zone-destructive-glow)',
       },
     ];
   }
@@ -183,14 +185,14 @@ function getDefaultZones(
       {
         from: min,
         to: 0,
-        color: 'var(--analog-meter-zone-green)',
-        glow: 'var(--analog-meter-zone-green-glow)',
+        color: 'var(--analog-meter-zone-success)',
+        glow: 'var(--analog-meter-zone-success-glow)',
       },
       {
         from: 0,
         to: max,
-        color: 'var(--analog-meter-zone-amber)',
-        glow: 'var(--analog-meter-zone-amber-glow)',
+        color: 'var(--analog-meter-zone-warning)',
+        glow: 'var(--analog-meter-zone-warning-glow)',
       },
     ];
   }
@@ -201,20 +203,20 @@ function getDefaultZones(
     {
       from: min,
       to: min + range * 0.72,
-      color: 'var(--analog-meter-zone-green)',
-      glow: 'var(--analog-meter-zone-green-glow)',
+      color: 'var(--analog-meter-zone-success)',
+      glow: 'var(--analog-meter-zone-success-glow)',
     },
     {
       from: min + range * 0.72,
       to: min + range * 0.9,
-      color: 'var(--analog-meter-zone-amber)',
-      glow: 'var(--analog-meter-zone-amber-glow)',
+      color: 'var(--analog-meter-zone-warning)',
+      glow: 'var(--analog-meter-zone-warning-glow)',
     },
     {
       from: min + range * 0.9,
       to: max,
-      color: 'var(--analog-meter-zone-red)',
-      glow: 'var(--analog-meter-zone-red-glow)',
+      color: 'var(--analog-meter-zone-destructive)',
+      glow: 'var(--analog-meter-zone-destructive-glow)',
     },
   ];
 }
@@ -271,7 +273,8 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
       min,
       max,
       variant,
-      needleVariant = 'red',
+      needleVariant = 'tone',
+      needleTone = 'destructive',
       lighting,
       startAngle = 195,
       sweepAngle = 150,
@@ -418,6 +421,7 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
         min={resolvedMin}
         max={resolvedMax}
         data-analog-variant={resolvedVariant}
+        data-analog-tone={needleTone}
         className={cn(
           'relative inline-flex aspect-[11/7] w-full max-w-[19rem] min-w-0 shrink-0 items-center justify-center rounded-[var(--analog-radius-panel)] border border-transparent p-[var(--spacing-track-padding)] text-[var(--analog-control-foreground)]',
           className,
@@ -604,7 +608,7 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
                         y={labelPoint.y}
                         fill="var(--analog-legend)"
                         fontSize="8"
-                        fontFamily="var(--font-mono, ui-monospace, monospace)"
+                        fontFamily="var(--font-mono)"
                         fontWeight="700"
                         textAnchor="middle"
                         dominantBaseline="central"
@@ -627,11 +631,11 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
                   background:
                     needleVariant === 'chrome'
                       ? `linear-gradient(calc(var(--analog-light-angle-pointer, 180deg) - ${displayNeedleAngle}deg - 90deg), color-mix(in oklch, var(--analog-surface-metal-hi) 82%, white 18%) 0%, var(--analog-surface-metal-mid) 42%, var(--analog-surface-metal-lo) 100%)`
-                      : `linear-gradient(calc(var(--analog-light-angle-pointer, 180deg) - ${displayNeedleAngle}deg - 90deg), var(--analog-led-red-core) 0%, var(--analog-led-red-base) 42%, color-mix(in oklch, var(--analog-led-red-base) 56%, black 44%) 100%)`,
+                      : `linear-gradient(calc(var(--analog-light-angle-pointer, 180deg) - ${displayNeedleAngle}deg - 90deg), var(--analog-emissive-core) 0%, var(--analog-emissive-base) 42%, color-mix(in oklch, var(--analog-emissive-base) 56%, black 44%) 100%)`,
                   boxShadow:
                     needleVariant === 'chrome'
                       ? `inset 1px 0 1px rgba(255,255,255,calc(0.56 * var(--analog-light-power, 1))), inset -1px 0 1px rgba(0,0,0,calc(0.38 * var(--analog-light-power, 1)))`
-                      : `inset 1px 0 1px rgba(255,255,255,calc(0.42 * var(--analog-light-power, 1))), inset -1px 0 1px rgba(0,0,0,calc(0.46 * var(--analog-light-power, 1))), 0 0 10px color-mix(in oklch, var(--analog-led-red-glow) 28%, transparent)`,
+                      : `inset 1px 0 1px rgba(255,255,255,calc(0.42 * var(--analog-light-power, 1))), inset -1px 0 1px rgba(0,0,0,calc(0.46 * var(--analog-light-power, 1))), 0 0 10px color-mix(in oklch, var(--analog-emissive-glow) 28%, transparent)`,
                   filter:
                     'drop-shadow(calc(sin(var(--analog-light-angle-pointer, 180deg)) * var(--analog-bevel-width, 4px) * 0.5) calc(cos(var(--analog-light-angle-pointer, 180deg)) * var(--analog-bevel-width, 4px) * -0.5) calc(var(--analog-bevel-width, 4px) * 0.75) rgba(0,0,0,calc(0.72 * var(--analog-shadow-depth, 1))))',
                 }}

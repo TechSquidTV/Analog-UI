@@ -11,7 +11,7 @@ const cards = [
     href: '/create',
     eyebrow: 'Create',
     title: 'Tune a theme live',
-    body: 'Adjust host tokens, material surfaces, LED colors, and finish recipes against a live Analog UI preview.',
+    body: 'Adjust host tokens, material surfaces, tone colors, and finish recipes against a live Analog UI preview.',
   },
   {
     href: '/docs',

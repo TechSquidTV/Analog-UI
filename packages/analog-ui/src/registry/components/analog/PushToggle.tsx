@@ -3,15 +3,16 @@ import { Toggle } from '@base-ui/react/toggle';
 import { cn } from '@/lib/utils';
 import { useMergedRefs } from '@/lib/refs';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
-import { Indicator, type IndicatorColor } from './Indicator';
+import { Indicator } from './Indicator';
 import { SquarePlunger } from './SquarePlunger';
+import type { AnalogTone } from './tone';
 
 export interface PushToggleProps extends Omit<
   React.ComponentPropsWithoutRef<typeof Toggle>,
   'height' | 'width'
 > {
   variant?: 'chrome' | 'black';
-  indicatorColor?: IndicatorColor;
+  indicatorTone?: AnalogTone;
   lighting?: AnalogLightingConfig<'surface' | 'track' | 'thumb' | 'lens'>;
   extrusionLayers?: number;
   width?: React.CSSProperties['width'];
@@ -30,7 +31,7 @@ export const PushToggle = React.forwardRef<HTMLButtonElement, PushToggleProps>(
     {
       className,
       variant,
-      indicatorColor = 'none',
+      indicatorTone,
       lighting,
       extrusionLayers = 32,
       width,
@@ -94,11 +95,11 @@ export const PushToggle = React.forwardRef<HTMLButtonElement, PushToggleProps>(
             isPressed={isPressed}
             extrusionLayers={extrusionLayers}
             indicator={
-              indicatorColor !== 'none' && (
+              indicatorTone ? (
                 <div className="absolute right-0.5 top-[-3px]">
-                  <Indicator size="xs" color={indicatorColor} isOn={isPressed} disableBezel />
+                  <Indicator size="xs" tone={indicatorTone} isOn={isPressed} disableBezel />
                 </div>
-              )
+              ) : null
             }
           >
             {children}

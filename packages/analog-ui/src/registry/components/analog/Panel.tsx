@@ -19,7 +19,7 @@ const surfaceStyles = {
   default: {
     '--analog-panel-hotspot-mix': '72%',
     '--analog-panel-hotspot-stop': '72%',
-    '--analog-panel-edge-surface': 'var(--background, var(--analog-fallback-background))',
+    '--analog-panel-edge-surface': 'var(--background)',
   },
   subtle: {
     '--analog-panel-hotspot-mix': '20%',
@@ -186,7 +186,7 @@ const Panel = React.forwardRef<HTMLDivElement, PanelProps>(
                 background:
                   `radial-gradient(circle at center, ` +
                   `color-mix(in oklch, var(--analog-control-surface-strong) var(--analog-panel-hotspot-mix, 72%), var(--analog-surface-panel)) 0%, ` +
-                  `var(--analog-panel-edge-surface, var(--background, var(--analog-fallback-background))) var(--analog-panel-hotspot-stop, 72%))`,
+                  `var(--analog-panel-edge-surface) var(--analog-panel-hotspot-stop, 72%))`,
                 boxShadow: `0 calc(var(--analog-bevel-width, 4px) * 0.5) calc(var(--analog-bevel-width, 4px) * 1.5) rgba(0, 0, 0, calc(0.28 * var(--analog-shadow-depth, 1)))`,
               }),
         }}

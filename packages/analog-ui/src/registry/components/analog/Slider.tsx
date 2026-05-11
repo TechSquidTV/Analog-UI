@@ -144,8 +144,8 @@ export const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
           </div>
 
           <BaseSlider.Track className="relative data-[orientation=vertical]:h-full data-[orientation=vertical]:w-0 data-[orientation=horizontal]:w-full data-[orientation=horizontal]:h-0 flex items-center justify-center">
-            {/* 
-              Slider Indicator could go here if we wanted an LED strip next to the track.
+            {/*
+              Slider indicator could go here if we wanted a tone strip next to the track.
               For a pure pro-audio fader, we usually just have a plastic/metal thumb.
             */}
 

@@ -3,8 +3,7 @@ import { Slider } from '@base-ui/react/slider';
 import { cn } from '@/lib/utils';
 import { SurfaceButton } from './SurfaceButton';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
-
-export type GaugeVariant = 'lcd-green' | 'lcd-amber' | 'lcd-blue';
+import type { AnalogTone } from './tone';
 
 export interface GaugeMark {
   value: number;
@@ -13,7 +12,7 @@ export interface GaugeMark {
 }
 
 export interface GaugeProps extends React.ComponentPropsWithoutRef<typeof Slider.Root> {
-  variant?: GaugeVariant;
+  tone?: AnalogTone;
   lighting?: AnalogLightingConfig<'surface' | 'pointer' | 'lens'>;
   startAngle?: number;
   sweepAngle?: number;
@@ -30,7 +29,7 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
       value,
       min = 0,
       max = 100,
-      variant = 'lcd-green',
+      tone = 'success',
       lighting,
       startAngle = -135,
       sweepAngle = 270,
@@ -42,28 +41,10 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
     },
     ref,
   ) => {
-    const getVariantColors = (v: GaugeVariant) => {
-      switch (v) {
-        case 'lcd-amber':
-          return {
-            glow: 'var(--analog-lcd-amber-glow)',
-            bg: 'var(--analog-lcd-amber-fill)',
-          };
-        case 'lcd-blue':
-          return {
-            glow: 'var(--analog-lcd-blue-glow)',
-            bg: 'var(--analog-lcd-blue-fill)',
-          };
-        case 'lcd-green':
-        default:
-          return {
-            glow: 'var(--analog-lcd-green-glow)',
-            bg: 'var(--analog-lcd-green-fill)',
-          };
-      }
+    const colors = {
+      glow: 'var(--analog-display-glow)',
+      bg: 'var(--analog-display-fill)',
     };
-
-    const colors = getVariantColors(variant as GaugeVariant);
     const lightingStyle = useAnalogLighting(['surface', 'pointer', 'lens'], lighting);
 
     return (
@@ -106,7 +87,11 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
                 'relative mx-auto flex aspect-square w-full min-w-0 max-w-[12rem] items-center justify-center p-4',
                 className,
               )}
-              style={lightingStyle}
+              data-analog-tone={tone}
+              style={{
+                ...lightingStyle,
+                ...rootProps.style,
+              }}
             >
               {/* Invisible Linear Slider Control overlaying everything for interaction */}
               <Slider.Control className="absolute inset-4 z-40 touch-none cursor-ew-resize">
@@ -239,7 +224,7 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
                           y={labelY}
                           fill="var(--analog-legend)"
                           fontSize="4"
-                          fontFamily="var(--font-mono, ui-monospace, monospace)"
+                          fontFamily="var(--font-mono)"
                           textAnchor="middle"
                           dominantBaseline="central"
                         >

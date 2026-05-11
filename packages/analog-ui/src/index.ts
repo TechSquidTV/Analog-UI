@@ -3,6 +3,7 @@ export * from './registry/hooks/use-analog-lighting';
 export * from './registry/hooks/analog-material-scope';
 export * from './registry/hooks/use-pointer-lighting';
 export * from './registry/hooks/use-wheel-input';
+export * from './registry/components/analog/tone';
 export * from './registry/components/analog/orientation';
 export * from './registry/components/analog/SurfaceButton';
 export * from './registry/components/analog/Dial';

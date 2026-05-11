@@ -12,6 +12,7 @@ Analog UI publishes shadcn-compatible registry files for the shared foundation a
 
 - [`/r/registry.json`](/r/registry.json) lists every installable item
 - [`/r/analog-foundation.json`](/r/analog-foundation.json) provides the shared token and finish layer
+- [`/r/analog-tone.json`](/r/analog-tone.json) provides the shared semantic tone type
 - item files such as [`/r/dial.json`](/r/dial.json) or [`/r/panel.json`](/r/panel.json) install individual controls
 
 ## Install Pattern
@@ -32,6 +33,9 @@ The registry includes:
 - **Style:** `analog-foundation`
 - **Lib:** `utils`, `refs`, `angle-utils`, `wheel-interaction`
 - **Hooks:** `use-analog-lighting`, `analog-material-scope`, `use-pointer-lighting`, `use-wheel-input`
-- **Components and UI:** dials, meters, switches, wheels, panels, buttons, toggles, and thumb surfaces
+- **Component helpers:** `analog-tone`
+- **Components and UI:** dials, meters, switches, wheels, panels, buttons, toggles, indicators, readouts, and thumb surfaces
 
 Controls that support inherited material finishes pull in `analog-material-scope` automatically through their registry dependencies, so you only need to install it directly when composing your own subtree scopes.
+
+Controls that expose `tone` pull in `analog-tone` automatically. Install it directly only when you are composing your own component around the same semantic color roles.

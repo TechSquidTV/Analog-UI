@@ -17,7 +17,7 @@
           "analog-grain-opacity": "0.36",
           "analog-foil-opacity": "0.3",
           "analog-bloom-strength": "0.7",
-          "analog-radius-base": "clamp(0.3125rem, calc(var(--radius, 0.75rem) * 0.62), 0.5rem)",
+          "analog-radius-base": "clamp(0.3125rem, calc(var(--radius) * 0.62), 0.5rem)",
           "analog-radius-micro": "calc(var(--analog-radius-base) * 0.45)",
           "analog-radius-window": "calc(var(--analog-radius-base) * 0.7)",
           "analog-radius-recess": "calc(var(--analog-radius-base) * 0.9)",
@@ -43,53 +43,39 @@
           "analog-control-glass": "color-mix(in oklch, var(--foreground) 5%, transparent)",
           "analog-control-glass-border": "color-mix(in oklch, var(--border) 68%, transparent)",
           "analog-panel-border": "color-mix(in oklch, var(--border) 62%, var(--analog-surface-raised) 38%)",
-          "analog-panel-foreground": "var(--card-foreground, var(--foreground))",
+          "analog-panel-foreground": "var(--card-foreground)",
           "analog-panel-muted": "color-mix(in oklch, var(--muted-foreground) 82%, var(--foreground) 18%)",
           "analog-screw-hole": "color-mix(in oklch, var(--analog-surface-cavity-strong) 72%, black 28%)",
-          "analog-led-red-base": "oklch(0.583 0.239 28.477)",
-          "analog-led-red-core": "oklch(0.84 0.09 24)",
-          "analog-led-red-glow": "color-mix(in oklch, var(--analog-led-red-base) 82%, white)",
-          "analog-led-red-surface": "color-mix(in oklch, var(--analog-led-red-base) 34%, black 66%)",
-          "analog-led-red-edge": "color-mix(in oklch, var(--analog-led-red-base) 62%, black 38%)",
-          "analog-led-amber-base": "oklch(0.74 0.14 72)",
-          "analog-led-amber-core": "oklch(0.95 0.05 96)",
-          "analog-led-amber-glow": "color-mix(in oklch, var(--analog-led-amber-base) 78%, white)",
-          "analog-led-amber-surface": "color-mix(in oklch, var(--analog-led-amber-base) 34%, black 66%)",
-          "analog-led-amber-edge": "color-mix(in oklch, var(--analog-led-amber-base) 62%, black 38%)",
-          "analog-led-green-base": "oklch(0.69 0.16 142)",
-          "analog-led-green-core": "oklch(0.91 0.05 150)",
-          "analog-led-green-glow": "color-mix(in oklch, var(--analog-led-green-base) 76%, white)",
-          "analog-led-green-surface": "color-mix(in oklch, var(--analog-led-green-base) 34%, black 66%)",
-          "analog-led-green-edge": "color-mix(in oklch, var(--analog-led-green-base) 62%, black 38%)",
-          "analog-led-blue-base": "oklch(0.63 0.15 250)",
-          "analog-led-blue-core": "oklch(0.9 0.04 245)",
-          "analog-led-blue-glow": "color-mix(in oklch, var(--analog-led-blue-base) 78%, white)",
-          "analog-led-blue-surface": "color-mix(in oklch, var(--analog-led-blue-base) 34%, black 66%)",
-          "analog-led-blue-edge": "color-mix(in oklch, var(--analog-led-blue-base) 62%, black 38%)",
-          "analog-led-white-base": "color-mix(in oklch, var(--foreground) 92%, var(--secondary))",
-          "analog-led-white-core": "white",
-          "analog-led-white-glow": "color-mix(in oklch, white 84%, var(--foreground))",
-          "analog-led-white-surface": "color-mix(in oklch, var(--analog-led-white-base) 34%, black 66%)",
-          "analog-led-white-edge": "color-mix(in oklch, var(--analog-led-white-base) 62%, black 38%)",
-          "analog-lcd-green-glow": "var(--analog-led-green-base)",
-          "analog-lcd-green-fill": "color-mix(in oklch, var(--analog-led-green-base) 84%, white 16%)",
-          "analog-lcd-green-ink": "color-mix(in oklch, var(--analog-led-green-base) 18%, black 82%)",
-          "analog-lcd-green-legend": "color-mix(in oklch, var(--analog-led-green-base) 30%, black 70%)",
-          "analog-lcd-amber-glow": "var(--analog-led-amber-base)",
-          "analog-lcd-amber-fill": "color-mix(in oklch, var(--analog-led-amber-base) 84%, white 16%)",
-          "analog-lcd-amber-ink": "color-mix(in oklch, var(--analog-led-amber-base) 18%, black 82%)",
-          "analog-lcd-amber-legend": "color-mix(in oklch, var(--analog-led-amber-base) 30%, black 70%)",
-          "analog-lcd-blue-glow": "var(--analog-led-blue-base)",
-          "analog-lcd-blue-fill": "color-mix(in oklch, var(--analog-led-blue-base) 84%, white 16%)",
-          "analog-lcd-blue-ink": "color-mix(in oklch, var(--analog-led-blue-base) 18%, black 82%)",
-          "analog-lcd-blue-legend": "color-mix(in oklch, var(--analog-led-blue-base) 30%, black 70%)",
-          "analog-meter-zone-green": "var(--analog-led-green-base)",
-          "analog-meter-zone-green-glow": "var(--analog-led-green-glow)",
-          "analog-meter-zone-amber": "var(--analog-led-amber-base)",
-          "analog-meter-zone-amber-glow": "var(--analog-led-amber-glow)",
-          "analog-meter-zone-red": "var(--analog-led-red-base)",
-          "analog-meter-zone-red-glow": "var(--analog-led-red-glow)",
-          "analog-meter-peak-marker": "color-mix(in oklch, var(--analog-led-amber-core) 76%, white 24%)",
+          "analog-tone-primary": "var(--primary)",
+          "analog-tone-secondary": "color-mix(in oklch, var(--secondary) 65%, var(--foreground) 35%)",
+          "analog-tone-accent": "var(--accent)",
+          "analog-tone-destructive": "var(--destructive)",
+          "analog-tone-success": "var(--chart-1)",
+          "analog-tone-warning": "var(--chart-4)",
+          "analog-tone-info": "var(--chart-2)",
+          "analog-tone-neutral": "var(--chart-5)",
+          "analog-tone-chart-1": "var(--chart-1)",
+          "analog-tone-chart-2": "var(--chart-2)",
+          "analog-tone-chart-3": "var(--chart-3)",
+          "analog-tone-chart-4": "var(--chart-4)",
+          "analog-tone-chart-5": "var(--chart-5)",
+          "analog-tone-current": "var(--analog-tone-accent)",
+          "analog-emissive-base": "var(--analog-tone-current)",
+          "analog-emissive-core": "color-mix(in oklch, var(--analog-tone-current) 36%, white 64%)",
+          "analog-emissive-glow": "color-mix(in oklch, var(--analog-tone-current) 78%, white)",
+          "analog-emissive-surface": "color-mix(in oklch, var(--analog-tone-current) 34%, black 66%)",
+          "analog-emissive-edge": "color-mix(in oklch, var(--analog-tone-current) 62%, black 38%)",
+          "analog-display-glow": "var(--analog-tone-current)",
+          "analog-display-fill": "color-mix(in oklch, var(--analog-tone-current) 84%, white 16%)",
+          "analog-display-ink": "color-mix(in oklch, var(--analog-tone-current) 18%, black 82%)",
+          "analog-display-legend": "color-mix(in oklch, var(--analog-tone-current) 30%, black 70%)",
+          "analog-meter-zone-success": "var(--analog-tone-success)",
+          "analog-meter-zone-success-glow": "color-mix(in oklch, var(--analog-meter-zone-success) 76%, white)",
+          "analog-meter-zone-warning": "var(--analog-tone-warning)",
+          "analog-meter-zone-warning-glow": "color-mix(in oklch, var(--analog-meter-zone-warning) 78%, white)",
+          "analog-meter-zone-destructive": "var(--analog-tone-destructive)",
+          "analog-meter-zone-destructive-glow": "color-mix(in oklch, var(--analog-meter-zone-destructive) 82%, white)",
+          "analog-meter-peak-marker": "color-mix(in oklch, var(--analog-tone-warning) 34%, white 66%)",
           "analog-meter-segment-divider": "color-mix(in oklch, var(--analog-surface-cavity-strong) 74%, black 26%)",
           "analog-wheel-control-height": "calc(var(--spacing) * 48)",
           "analog-wheel-control-width": "calc(var(--analog-wheel-cylinder-width) + (var(--analog-track-padding) * 2))",
@@ -146,6 +132,47 @@
         }
       },
       "css": {
+        "@layer base": {
+          "[data-analog-tone=\"primary\"]": {
+            "--analog-tone-current": "var(--analog-tone-primary)"
+          },
+          "[data-analog-tone=\"secondary\"]": {
+            "--analog-tone-current": "var(--analog-tone-secondary)"
+          },
+          "[data-analog-tone=\"accent\"]": {
+            "--analog-tone-current": "var(--analog-tone-accent)"
+          },
+          "[data-analog-tone=\"destructive\"]": {
+            "--analog-tone-current": "var(--analog-tone-destructive)"
+          },
+          "[data-analog-tone=\"success\"]": {
+            "--analog-tone-current": "var(--analog-tone-success)"
+          },
+          "[data-analog-tone=\"warning\"]": {
+            "--analog-tone-current": "var(--analog-tone-warning)"
+          },
+          "[data-analog-tone=\"info\"]": {
+            "--analog-tone-current": "var(--analog-tone-info)"
+          },
+          "[data-analog-tone=\"neutral\"]": {
+            "--analog-tone-current": "var(--analog-tone-neutral)"
+          },
+          "[data-analog-tone=\"chart-1\"]": {
+            "--analog-tone-current": "var(--analog-tone-chart-1)"
+          },
+          "[data-analog-tone=\"chart-2\"]": {
+            "--analog-tone-current": "var(--analog-tone-chart-2)"
+          },
+          "[data-analog-tone=\"chart-3\"]": {
+            "--analog-tone-current": "var(--analog-tone-chart-3)"
+          },
+          "[data-analog-tone=\"chart-4\"]": {
+            "--analog-tone-current": "var(--analog-tone-chart-4)"
+          },
+          "[data-analog-tone=\"chart-5\"]": {
+            "--analog-tone-current": "var(--analog-tone-chart-5)"
+          }
+        },
         "@layer components": {
           ".analog-surface-recess": {
             "--recess-depth": "4px",
@@ -472,6 +499,18 @@
       ]
     },
     {
+      "name": "analog-tone",
+      "title": "Analog Tone",
+      "type": "registry:ui",
+      "description": "Shared semantic tone names for Analog UI color roles.",
+      "files": [
+        {
+          "path": "src/registry/components/analog/tone.ts",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "rocker-thumb-surface",
       "title": "Rocker Thumb Surface",
       "type": "registry:ui",
@@ -533,10 +572,11 @@
       "name": "gauge",
       "title": "Gauge",
       "type": "registry:ui",
-      "description": "A configurable radial gauge with custom sweep geometry, caller-defined marks, and optional center-fill behavior.",
+      "description": "A configurable radial gauge with custom sweep geometry, caller-defined marks, semantic tone control, and optional center-fill behavior.",
       "dependencies": ["@base-ui/react"],
       "registryDependencies": [
         "analog-foundation",
+        "analog-tone",
         "surface-button",
         "use-analog-lighting",
         "utils"
@@ -552,8 +592,8 @@
       "name": "lcd-display",
       "title": "LCD Display",
       "type": "registry:ui",
-      "description": "A seven-segment readout with tinted lens glow, static screen texture, and shadowed vintage LCD numerals.",
-      "registryDependencies": ["analog-foundation", "use-analog-lighting", "utils"],
+      "description": "A seven-segment readout with tone-driven lens glow, static screen texture, and shadowed vintage numerals.",
+      "registryDependencies": ["analog-foundation", "analog-tone", "use-analog-lighting", "utils"],
       "files": [
         {
           "path": "src/registry/components/analog/LCDDisplay.tsx",
@@ -565,10 +605,11 @@
       "name": "needle-gauge",
       "title": "Needle Gauge",
       "type": "registry:ui",
-      "description": "A mechanical readout gauge with printed scale markings, colored range zones, a glass lens, and a lit physical needle.",
+      "description": "A mechanical readout gauge with printed scale markings, colored range zones, a glass lens, and a tone-driven physical needle.",
       "dependencies": ["@base-ui/react"],
       "registryDependencies": [
         "analog-foundation",
+        "analog-tone",
         "use-analog-lighting",
         "analog-material-scope",
         "utils"
@@ -584,9 +625,15 @@
       "name": "meter",
       "title": "Meter",
       "type": "registry:ui",
-      "description": "A calibrated level meter display with optional scale presets, display ballistics, and configurable LED styling.",
+      "description": "A calibrated level meter display with optional scale presets, display ballistics, and configurable tone styling.",
       "dependencies": ["@base-ui/react"],
-      "registryDependencies": ["analog-foundation", "use-analog-lighting", "utils", "orientation"],
+      "registryDependencies": [
+        "analog-foundation",
+        "analog-tone",
+        "use-analog-lighting",
+        "utils",
+        "orientation"
+      ],
       "files": [
         {
           "path": "src/registry/components/analog/Meter.tsx",
@@ -643,6 +690,7 @@
       "description": "A hyper-skeuomorphic status indicator with faceted glass textures, bloom, and a machined bezel.",
       "registryDependencies": [
         "analog-foundation",
+        "analog-tone",
         "use-analog-lighting",
         "analog-material-scope",
         "utils"
@@ -658,10 +706,11 @@
       "name": "toggle",
       "title": "Toggle",
       "type": "registry:ui",
-      "description": "A heavy-duty rocker switch with textured grip ridges, an anodized baseplate, and optional LED states.",
+      "description": "A heavy-duty rocker switch with textured grip ridges, an anodized baseplate, and optional tone indicators.",
       "dependencies": ["@base-ui/react"],
       "registryDependencies": [
         "analog-foundation",
+        "analog-tone",
         "indicator",
         "refs",
         "rocker-thumb-surface",
@@ -685,6 +734,7 @@
       "dependencies": ["@base-ui/react"],
       "registryDependencies": [
         "analog-foundation",
+        "analog-tone",
         "indicator",
         "refs",
         "rocker-thumb-surface",
@@ -780,10 +830,11 @@
       "name": "push-toggle",
       "title": "Push Toggle",
       "type": "registry:ui",
-      "description": "A latching push toggle with responsive text sizing, 3D extrusion, optional LED indicator, and state-aware analog lighting.",
+      "description": "A latching push toggle with responsive text sizing, 3D extrusion, optional tone indicator, and state-aware analog lighting.",
       "dependencies": ["@base-ui/react", "motion"],
       "registryDependencies": [
         "analog-foundation",
+        "analog-tone",
         "indicator",
         "refs",
         "use-analog-lighting",
@@ -801,10 +852,11 @@
       "name": "toggle-button-group",
       "title": "Toggle Button Group",
       "type": "registry:ui",
-      "description": "A Base UI selection group for push toggles with shared recessed hardware and LED state feedback.",
+      "description": "A Base UI selection group for push toggles with shared recessed hardware and tone state feedback.",
       "dependencies": ["@base-ui/react", "motion"],
       "registryDependencies": [
         "analog-foundation",
+        "analog-tone",
         "indicator",
         "refs",
         "use-analog-lighting",

@@ -7,28 +7,34 @@ navTitle: Tokens
 draft: false
 ---
 
-Analog UI gets its physical weight from layered CSS variables. Your app keeps control of the core theme, while Analog UI adds material recipes for chassis surfaces, metal, glass, LEDs, LCDs, shadows, bevels, and texture.
+Analog UI gets its physical weight from layered CSS variables. Your app keeps control of the core theme, while Analog UI adds material recipes for chassis surfaces, metal, glass, tone-driven indicators, display glass, shadows, bevels, and texture.
 
 ## Theme Contract
 
-Analog UI is designed for Tailwind CSS v4 and shadcn-compatible semantic tokens. It works best when your app defines these host values:
+Analog UI is designed for Tailwind CSS v4 and the standard shadcn/tweakcn semantic token contract. It works best when your app defines these host values:
 
 - `--background`, `--foreground`
 - `--card`, `--card-foreground`
-- `--secondary`, `--accent`
-- `--muted-foreground`
-- `--border`, `--ring`
+- `--popover`, `--popover-foreground`
+- `--primary`, `--primary-foreground`
+- `--secondary`, `--secondary-foreground`
+- `--muted`, `--muted-foreground`
+- `--accent`, `--accent-foreground`
+- `--destructive`, `--destructive-foreground`
+- `--border`, `--input`, `--ring`
+- `--chart-1` through `--chart-5`
 - `--radius`
 - `--font-mono`
 
-Analog UI ships fallback values so components can render on their own, but host tokens make the controls feel native to your product theme.
+Analog UI defines canonical defaults for these tokens in its theme entry. In app code, host shadcn or tweakcn variables are the source of truth. A tweakcn export that declares `:root`, `.dark`, and `@theme inline` color mappings can sit underneath Analog UI without adding an Analog-specific palette first.
 
 ## Token Tiers
 
 Think in three layers when you theme the system:
 
 - **Host semantic tokens** define the product palette and typography baseline.
-- **Analog material tokens** turn that palette into tactile surfaces, metal, onyx, glass, LED, LCD, and meter recipes.
+- **Analog material tokens** turn that palette into tactile surfaces, metal, onyx, and glass recipes.
+- **Analog tone tokens** map semantic color roles into emissive indicators, displays, and measured ranges.
 - **Analog recipe tokens** control geometry, finish intensity, grain, bloom, bevel depth, and other physical details.
 
 Runtime lighting variables such as `--analog-light-angle-*` and `--analog-light-power` are covered in [Lighting](/docs/design/lighting). Treat them as live rendering state, not static theme tokens.
@@ -44,15 +50,41 @@ The surface ramp provides the neutral hardware vocabulary:
 
 The public `chrome` variant resolves through the metal ramp. The public `black` variant resolves through the onyx ramp. They are material finishes, not separate app themes.
 
-## Emissive Tokens
+## Tone Tokens
 
 Saturated color should mostly appear when something emits light, reports state, or marks a measured range.
 
-- `--analog-led-red-*`, `--analog-led-amber-*`, `--analog-led-green-*`, `--analog-led-blue-*`, and `--analog-led-white-*` define lamp bodies, bright cores, glow, surfaces, and edges.
-- `--analog-lcd-green-*`, `--analog-lcd-amber-*`, and `--analog-lcd-blue-*` define display fill, ink, legend, and glow.
-- `--analog-meter-zone-*` and `--analog-meter-peak-marker` define meter ranges and peak indicators.
+- `--analog-tone-primary`, `--analog-tone-secondary`, `--analog-tone-accent`, and `--analog-tone-destructive` derive from shadcn semantic tokens.
+- `--analog-tone-success`, `--analog-tone-warning`, `--analog-tone-info`, and `--analog-tone-neutral` provide app-level state roles for controls that need more than the base shadcn set.
+- `--analog-tone-chart-1` through `--analog-tone-chart-5` mirror the shadcn chart tokens for dense telemetry and range displays.
+- `--analog-tone-current` is set by `data-analog-tone` on each component instance.
 
-Keep most of the interface in neutral materials. Let LEDs, LCD arcs, active states, and meters carry color.
+Components expose `tone` props instead of physical hue props. Use `tone="success"`, `tone="warning"`, `tone="info"`, or another semantic role; override the corresponding CSS variable when a product theme needs different color.
+
+```tsx
+<Indicator isOn tone="success" />
+<Gauge defaultValue={72} tone="warning" />
+<Meter variant="display" tone="info" />
+```
+
+```css
+:root {
+  --analog-tone-success: var(--chart-1);
+  --analog-tone-warning: var(--chart-4);
+  --analog-tone-info: var(--chart-2);
+}
+```
+
+## Optical Slots
+
+Tone values feed optical slots that describe how color becomes hardware:
+
+- `--analog-emissive-base`, `--analog-emissive-core`, `--analog-emissive-glow`, `--analog-emissive-surface`, and `--analog-emissive-edge` define indicator bodies, bright cores, glow, surfaces, and edges.
+- `--analog-display-glow`, `--analog-display-fill`, `--analog-display-ink`, and `--analog-display-legend` define display glass, text, and legend treatment.
+- `--analog-meter-zone-success`, `--analog-meter-zone-warning`, `--analog-meter-zone-destructive`, and their `*-glow` companions define range-meter colors.
+- `--analog-meter-peak-marker` defines peak indicators.
+
+Keep most of the interface in neutral materials. Let indicators, display arcs, active states, and meters carry color.
 
 ## Recipe Tokens
 
@@ -98,7 +130,7 @@ Avoid setting `--analog-light-angle-*` globally unless you are intentionally rep
 
 ## Tailwind Utilities
 
-Analog UI keeps most finish controls as plain CSS variables. Export `--color-analog-*` aliases only when you want a token to be available as a Tailwind color utility.
+Analog UI keeps most finish controls as plain CSS variables. Export `--color-analog-*` mappings only when you want a token to be available as a Tailwind color utility.
 
 For component styling, prefer `var(--analog-...)` tokens for material recipes. Reserve literal color ramps for one-off prototypes or small internal details that are not part of the public system.
 
@@ -107,5 +139,5 @@ For component styling, prefer `var(--analog-...)` tokens for material recipes. R
 - Derive new surface colors from host semantic tokens when possible.
 - Add material and finish values under the `--analog-*` namespace.
 - Keep geometry and finish controls as CSS variables unless they need Tailwind color utilities.
-- Use LED and LCD tokens only for active, emissive, or measured states.
+- Use tone tokens and optical slots only for active, emissive, or measured states.
 - Keep `chrome` and `black` as material variants that can sit inside any compatible app theme.

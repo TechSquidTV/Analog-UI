@@ -56,7 +56,7 @@ a {
   }
 
   .analog-docs-lcd-pixel {
-    --analog-font-lcd: 'Geist Pixel Square', var(--analog-fallback-font-mono);
+    --analog-font-lcd: 'Geist Pixel Square', var(--font-mono);
     font-synthesis-weight: none;
   }
 

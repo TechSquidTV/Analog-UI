@@ -18,16 +18,14 @@ colors:
   legend: '#888888'
   telemetry-label: '#555555'
   telemetry-value: '#5B5B5B'
-  led-red: '#D44040'
-  led-red-core: '#FC8888'
-  led-amber: '#D19324'
-  led-amber-core: '#FCEFC7'
-  led-green: '#5CA34D'
-  led-green-core: '#BDF2C3'
-  led-blue: '#3B86E0'
-  led-blue-core: '#C5E2FF'
-  led-white: '#F4F4F4'
-  led-white-core: '#FFFFFF'
+  tone-primary: '#D8D8D8'
+  tone-secondary: '#5B5B5B'
+  tone-accent: '#8C8C8C'
+  tone-destructive: '#D44040'
+  tone-success: '#5CA34D'
+  tone-warning: '#D19324'
+  tone-info: '#3B86E0'
+  tone-neutral: '#F4F4F4'
 typography:
   headline-display:
     fontFamily: Helvetica Neue
@@ -133,20 +131,20 @@ components:
   wheel-cylinder:
     backgroundColor: '{colors.black-mid}'
     rounded: '{rounded.md}'
-  indicator-red:
-    backgroundColor: '{colors.led-red}'
+  indicator-primary:
+    backgroundColor: '{colors.tone-primary}'
     rounded: '{rounded.full}'
-  indicator-amber:
-    backgroundColor: '{colors.led-amber}'
+  indicator-accent:
+    backgroundColor: '{colors.tone-accent}'
     rounded: '{rounded.full}'
-  indicator-green:
-    backgroundColor: '{colors.led-green}'
+  indicator-success:
+    backgroundColor: '{colors.tone-success}'
     rounded: '{rounded.full}'
-  indicator-blue:
-    backgroundColor: '{colors.led-blue}'
+  indicator-warning:
+    backgroundColor: '{colors.tone-warning}'
     rounded: '{rounded.full}'
-  indicator-white:
-    backgroundColor: '{colors.led-white}'
+  indicator-info:
+    backgroundColor: '{colors.tone-info}'
     rounded: '{rounded.full}'
 ---
 
@@ -156,7 +154,7 @@ components:
 
 Analog UI uses **Studio Hyper-Skeuomorphism**: dark rack panels, machined knobs, dense cavities, foil reflections, and jewel-like indicators that feel lifted from studio hardware rather than flat app chrome. The interface should feel tactile, engineered, and premium, with physical mass implied through bevels, layered shadows, and material-specific lighting response.
 
-The brand voice is technical and cinematic rather than playful. Most of the screen should stay in deep neutrals and textured metals. Saturated color belongs almost exclusively to lit states, meter fills, and LED indicators.
+The brand voice is technical and cinematic rather than playful. Most of the screen should stay in deep neutrals and textured metals. Saturated color belongs almost exclusively to lit states, meter fills, display glass, and indicator optics.
 
 ## Colors
 
@@ -168,37 +166,76 @@ The palette is anchored in black chassis surfaces, gunmetal mid-tones, and brigh
 - **Chrome (`#E5E5E5`, `#B5B5B5`, `#8A8A8A`)** is reserved for machined faces, dials, and premium hardware.
 - **Black material (`#3A3A3A`, `#242424`, `#151515`)** is for stealth variants and heavy-duty controls.
 - **Annotation and legend grays** stay split by role: `legend` for printed markings, `annotation` for supporting copy, `telemetry-label` for scale ticks, and `telemetry-value` for live readouts.
-- **LED colors** should feel emissive and concentrated, with brighter cores than housings.
+- **Tone colors** should feel emissive and concentrated when they pass through optics, with brighter cores than housings.
 
 ## Token Architecture
 
-Analog UI should layer its tactile tokens on top of the host theme rather than replace it.
+Analog UI layers tactile hardware tokens on top of the host theme without inventing a competing app color system. The public contract is shadcn/tweakcn-compatible CSS variables plus a small Analog namespace for physical materials and optical tone roles.
 
-- Use the standard shadcn and tweakcn semantic tokens as the source of truth: `background`, `foreground`, `card`, `secondary`, `accent`, `border`, `ring`, and related `-foreground` pairs.
-- Add Analog UI material and finish tokens in the `analog` namespace so the library stays cohesive with its existing lighting API.
-- Derive Analog UI tokens from the host semantics whenever possible instead of hardcoding separate root colors for every surface.
-- Export `--color-analog-*` aliases only for custom color utilities that should be available through Tailwind.
+- Use the standard shadcn and tweakcn semantic tokens as the source of truth for app chrome: `background`, `foreground`, `card`, `popover`, `primary`, `secondary`, `muted`, `accent`, `destructive`, `border`, `input`, `ring`, `chart-1` through `chart-5`, and their foreground pairs.
+- Add Analog UI material, finish, and optical tokens in the `analog` namespace so tactile recipes stay cohesive with the lighting API.
+- Declare Analog defaults in `:root` and `.dark`, but express them directly through the public token contract. This is a breaking system: do not ship compatibility aliases, legacy physical hue names, or CSS fallback chains for removed tokens.
+- Export `--color-analog-*` theme mappings only for canonical Analog tokens that should be addressable through Tailwind utilities.
 - Keep non-color recipe tokens as plain CSS variables so they can drive gradients, bevels, texture, and lighting response without polluting Tailwind's utility namespace.
 
 Recommended token tiers:
 
-- **Host semantic tokens:** `--background`, `--foreground`, `--card`, `--accent`, `--border`, `--ring`.
-- **Analog design tokens:** `--analog-surface-*`, `--analog-led-*`, `--analog-shadow-*`, `--analog-grain-*`, `--analog-track-*`, `--analog-bevel-*`.
+- **Host semantic tokens:** `--background`, `--foreground`, `--card`, `--primary`, `--secondary`, `--accent`, `--destructive`, `--border`, `--input`, `--ring`, `--chart-*`.
+- **Analog material tokens:** `--analog-surface-*`, `--analog-shadow-*`, `--analog-grain-*`, `--analog-track-*`, `--analog-bevel-*`.
+- **Analog tone tokens:** `--analog-tone-primary`, `--analog-tone-secondary`, `--analog-tone-accent`, `--analog-tone-destructive`, `--analog-tone-success`, `--analog-tone-warning`, `--analog-tone-info`, `--analog-tone-neutral`, and `--analog-tone-chart-1` through `--analog-tone-chart-5`.
+- **Analog optical slot tokens:** `--analog-tone-current`, `--analog-emissive-base`, `--analog-emissive-core`, `--analog-emissive-glow`, `--analog-emissive-surface`, `--analog-emissive-edge`, `--analog-display-fill`, `--analog-display-ink`, and `--analog-display-legend`.
 - **Runtime lighting tokens:** `--analog-light-power` and `--analog-light-angle-*`.
 
 Recommended naming rules:
 
 - **Surfaces and materials:** `--analog-surface-cavity`, `--analog-surface-panel`, `--analog-surface-metal-hi`, `--analog-surface-onyx-lo`.
-- **Emissive states:** `--analog-led-base`, `--analog-led-glow`, plus scoped variants such as `--analog-led-amber-base`.
+- **Component color control:** use a `tone` prop for color role. Keep `variant` for visual structure, material recipe, or interaction style.
+- **Optical states:** components set `data-analog-tone="<tone>"` and read the optical slot tokens. They should not encode physical hue names in props or CSS variables.
 - **Finish controls:** `--analog-shadow-depth`, `--analog-bevel-width`, `--analog-grain-opacity`, `--analog-foil-opacity`, `--analog-bloom-strength`.
 - **Geometry and spacing:** `--analog-track-padding`.
 - **Lighting defaults:** `--analog-light-source`.
 
 Implementation rules:
 
-- `@theme inline` should map host semantic tokens first, then optional `--color-analog-*` aliases for custom Analog UI colors.
-- `:root` and `.dark` should define Analog UI defaults so the package demo works out of the box, but those defaults must still be expressed through semantic shadcn-compatible tokens.
+- `@theme inline` should map host semantic tokens first, then canonical `--color-analog-*` mappings for current Analog tokens.
+- `:root` and `.dark` should define Analog UI defaults so the package demo works out of the box, and those defaults must be expressed through semantic shadcn-compatible tokens.
 - Component code should prefer `var(--analog-...)` tokens for material recipes and reserve literal color ramps for one-off prototypes only.
+- Removed names are removed completely. Do not keep aliases for `lcd-*`, old physical hue names, or old zone color tokens.
+
+### Component Tone API
+
+Use `tone` when the consumer chooses a color role. This separates semantic color from visual construction:
+
+- `variant` describes the component recipe, such as `chrome`, `black`, `metered`, or `display`.
+- `tone` describes the role of the emitted or highlighted color, such as `primary`, `accent`, `success`, `warning`, `destructive`, or `chart-1`.
+- `material` or existing finish props describe physical finish where needed.
+
+Required public tone names:
+
+- `primary`
+- `secondary`
+- `accent`
+- `destructive`
+- `success`
+- `warning`
+- `info`
+- `neutral`
+- `chart-1`
+- `chart-2`
+- `chart-3`
+- `chart-4`
+- `chart-5`
+
+Consumer customization should happen by overriding CSS variables, either globally in `:root` / `.dark` or locally on a wrapper:
+
+```css
+.studio-critical {
+  --analog-tone-accent: oklch(0.72 0.22 32);
+  --analog-tone-success: oklch(0.78 0.18 142);
+}
+```
+
+This keeps the library compatible with shadcn and tweakcn exports while giving Analog components their own tactile optical vocabulary.
 
 ## Typography
 
@@ -266,7 +303,7 @@ Treat the material channels as the shared vocabulary for lit parts:
 - Move directional gradients, specular streaks, bevel catches, foil glare, and cast-shadow direction with the resolved material angle.
 - Keep base pigment, cavity darkness, engraved geometry, and most ambient occlusion stable so the object still feels solid when the light moves.
 - Printed legends, ticks, numerals, and icons should stay readable and mostly neutral. They can inherit subtle contrast from the host surface, but they should not rotate their own dramatic light gradients.
-- LED emission stays centered in the optic. The lens glint, bezel, and recess reflections respond to the light; the emissive core should not appear to orbit around the housing.
+- Indicator emission stays centered in the optic. The lens glint, bezel, and recess reflections respond to the light; the emissive core should not appear to orbit around the housing.
 - Separate nested materials instead of flattening them. A toggle can use `track` for the cavity, `thumb` for the rocker, and `lens` for the pilot light at the same time.
 - Avoid one-off hover-light systems for a single component. If a surface needs a special optic, derive it from an existing material channel and a constrained effect angle.
 
@@ -303,14 +340,14 @@ Buttons, dials, sliders, wheels, toggles, switches, meters, and panels should al
 
 ### Edge-Mounted Indicators
 
-For precision toggles and latching buttons, place LED indicators in the **Top-Right corner**, potentially "breaking" the top boundary of the face to simulate a top-bevel mounting.
+For precision toggles and latching buttons, place tone indicators in the **Top-Right corner**, potentially "breaking" the top boundary of the face to simulate a top-bevel mounting.
 
 Implementation guidance:
 
 - Public components should expose typed lighting props scoped to their visible materials.
 - Internals should consume resolved per-material variables such as `--analog-light-angle-track`, `--analog-light-angle-wheel`, or `--analog-light-angle-panel`.
 - New components should not read legacy pre-provider lighting variables directly.
-- Material lighting should be numeric-first, with presets as convenience aliases.
+- Material lighting should be numeric-first, with presets as named configuration options.
 - Materials should react immediately; shape their response with `travel`, `offset`, and optional arc constraints instead of per-material easing lag.
 - Mouse-driven light hooks should measure from the active surface bounds whenever a control lives inside a smaller lit panel.
 - Use derived effect angles for special cases such as wheel glare or lens glints when an optic needs to stay within a believable visible arc.
@@ -331,7 +368,7 @@ Rules for interactive controls and demos:
 
 ## Do's and Don'ts
 
-- Do reserve saturated color for LEDs, live signals, and status states.
+- Do reserve saturated color for indicators, live signals, and status states.
 - Do keep labels, legends, and telemetry visually distinct instead of collapsing them into one gray.
 - Do make chrome, black plastic, lenses, and panels feel like different materials.
 - Do keep track and wheel lighting independently tunable.

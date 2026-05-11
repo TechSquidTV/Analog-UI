@@ -3,8 +3,9 @@ import { Meter as BaseMeter } from '@base-ui/react/meter';
 import { cn } from '@/lib/utils';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 import type { AnalogOrientation } from './orientation';
+import type { AnalogTone } from './tone';
 
-export type MeterVariant = 'metered' | 'lcd-green' | 'lcd-amber' | 'lcd-blue';
+export type MeterVariant = 'metered' | 'display';
 export type MeterScalePreset = 'linear' | 'dbfs' | 'vu';
 type MeterGroupOrientation = AnalogOrientation;
 type MeterGroupLabelPosition = 'top' | 'bottom' | 'left' | 'right';
@@ -34,6 +35,7 @@ export interface MeterProps extends React.ComponentPropsWithoutRef<typeof BaseMe
   orientation?: AnalogOrientation;
   peakValue?: number | null;
   variant?: MeterVariant;
+  tone?: AnalogTone;
   segments?: number;
   lighting?: AnalogLightingConfig<'surface' | 'track' | 'lens'>;
   scalePreset?: MeterScalePreset;
@@ -125,34 +127,34 @@ const defaultScaleZones: Record<Exclude<MeterScalePreset, 'linear'>, MeterZone[]
     {
       from: -60,
       to: -6,
-      color: 'var(--analog-meter-zone-green)',
-      glow: 'var(--analog-meter-zone-green-glow)',
+      color: 'var(--analog-meter-zone-success)',
+      glow: 'var(--analog-meter-zone-success-glow)',
     },
     {
       from: -6,
       to: 0,
-      color: 'var(--analog-meter-zone-amber)',
-      glow: 'var(--analog-meter-zone-amber-glow)',
+      color: 'var(--analog-meter-zone-warning)',
+      glow: 'var(--analog-meter-zone-warning-glow)',
     },
     {
       from: 0,
       to: 6,
-      color: 'var(--analog-meter-zone-red)',
-      glow: 'var(--analog-meter-zone-red-glow)',
+      color: 'var(--analog-meter-zone-destructive)',
+      glow: 'var(--analog-meter-zone-destructive-glow)',
     },
   ],
   vu: [
     {
       from: -20,
       to: 0,
-      color: 'var(--analog-meter-zone-green)',
-      glow: 'var(--analog-meter-zone-green-glow)',
+      color: 'var(--analog-meter-zone-success)',
+      glow: 'var(--analog-meter-zone-success-glow)',
     },
     {
       from: 0,
       to: 3,
-      color: 'var(--analog-meter-zone-amber)',
-      glow: 'var(--analog-meter-zone-amber-glow)',
+      color: 'var(--analog-meter-zone-warning)',
+      glow: 'var(--analog-meter-zone-warning-glow)',
     },
   ],
 };
@@ -251,6 +253,7 @@ export const Meter = React.forwardRef<HTMLDivElement, MeterProps>(
       min,
       max,
       variant = 'metered',
+      tone = 'success',
       segments,
       lighting,
       scalePreset = 'linear',
@@ -336,38 +339,22 @@ export const Meter = React.forwardRef<HTMLDivElement, MeterProps>(
     const getVariantColors = (v: MeterVariant, isVert: boolean) => {
       const dir = isVert ? 'to top' : 'to right';
       switch (v) {
-        case 'lcd-green':
+        case 'display':
           return {
-            glow: 'var(--analog-lcd-green-glow)',
-            bg: 'var(--analog-lcd-green-fill)',
-            peak: 'color-mix(in oklch, var(--analog-led-green-core) 74%, white 26%)',
-            peakGlow: 'color-mix(in oklch, var(--analog-led-green-glow) 72%, transparent)',
-            isLcd: true,
-          };
-        case 'lcd-amber':
-          return {
-            glow: 'var(--analog-lcd-amber-glow)',
-            bg: 'var(--analog-lcd-amber-fill)',
-            peak: 'color-mix(in oklch, var(--analog-led-amber-core) 74%, white 26%)',
-            peakGlow: 'color-mix(in oklch, var(--analog-led-amber-glow) 72%, transparent)',
-            isLcd: true,
-          };
-        case 'lcd-blue':
-          return {
-            glow: 'var(--analog-lcd-blue-glow)',
-            bg: 'var(--analog-lcd-blue-fill)',
-            peak: 'color-mix(in oklch, var(--analog-led-blue-core) 74%, white 26%)',
-            peakGlow: 'color-mix(in oklch, var(--analog-led-blue-glow) 72%, transparent)',
-            isLcd: true,
+            glow: 'var(--analog-display-glow)',
+            bg: 'var(--analog-display-fill)',
+            peak: 'var(--analog-emissive-core)',
+            peakGlow: 'color-mix(in oklch, var(--analog-emissive-glow) 72%, transparent)',
+            isDisplay: true,
           };
         case 'metered':
         default:
           return {
-            bg: `linear-gradient(${dir}, var(--analog-meter-zone-green) 60%, var(--analog-meter-zone-amber) 80%, var(--analog-meter-zone-red) 95%)`,
-            glow: `linear-gradient(${dir}, var(--analog-meter-zone-green-glow) 60%, var(--analog-meter-zone-amber-glow) 80%, var(--analog-meter-zone-red-glow) 95%)`,
+            bg: `linear-gradient(${dir}, var(--analog-meter-zone-success) 60%, var(--analog-meter-zone-warning) 80%, var(--analog-meter-zone-destructive) 95%)`,
+            glow: `linear-gradient(${dir}, var(--analog-meter-zone-success-glow) 60%, var(--analog-meter-zone-warning-glow) 80%, var(--analog-meter-zone-destructive-glow) 95%)`,
             peak: 'var(--analog-meter-peak-marker)',
             peakGlow: 'color-mix(in oklch, var(--analog-meter-peak-marker) 78%, transparent)',
-            isLcd: false,
+            isDisplay: false,
           };
       }
     };
@@ -400,6 +387,7 @@ export const Meter = React.forwardRef<HTMLDivElement, MeterProps>(
           className,
         )}
         data-orientation={orientation}
+        data-analog-tone={tone}
         {...props}
       >
         {showScale ? (
@@ -463,7 +451,7 @@ export const Meter = React.forwardRef<HTMLDivElement, MeterProps>(
             />
           </div>
 
-          {/* LED Indicator layer */}
+          {/* Meter indicator layer */}
           <BaseMeter.Indicator
             className="absolute inset-0 pointer-events-none !w-full !h-full z-10"
             style={{
@@ -471,12 +459,12 @@ export const Meter = React.forwardRef<HTMLDivElement, MeterProps>(
               transition: `clip-path ${transitionMs}ms ease-out`,
             }}
           >
-            {/* Lit LEDs */}
+            {/* Lit segments */}
             <div
               className="absolute inset-0"
               style={{
                 background: zoneBackground,
-                boxShadow: colors.isLcd
+                boxShadow: colors.isDisplay
                   ? 'none'
                   : '0 0 4px color-mix(in oklch, var(--analog-control-foreground) 18%, transparent) inset',
               }}
@@ -521,8 +509,8 @@ export const Meter = React.forwardRef<HTMLDivElement, MeterProps>(
             className="absolute inset-0 pointer-events-none z-30"
             style={{
               background: `linear-gradient(var(--analog-light-angle-lens, 180deg), rgba(255,255,255,calc(0.15 * var(--analog-light-power, 1))) 0%, transparent 50%, rgba(0,0,0,calc(0.5 * var(--analog-light-power, 1))) 100%)`,
-              mixBlendMode: colors.isLcd ? 'soft-light' : 'overlay',
-              opacity: colors.isLcd ? 0.3 : 1,
+              mixBlendMode: colors.isDisplay ? 'soft-light' : 'overlay',
+              opacity: colors.isDisplay ? 0.3 : 1,
             }}
           />
         </BaseMeter.Track>

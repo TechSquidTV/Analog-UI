@@ -21,17 +21,17 @@ Use these pages in order:
 
 ## Design Model
 
-Analog UI uses **Studio Hyper-Skeuomorphism**: dark panels, beveled controls, metal finishes, glass, LEDs, and LCD readouts. The goal is clarity through physical weight, not decoration.
+Analog UI uses **Studio Hyper-Skeuomorphism**: dark panels, beveled controls, metal finishes, glass, tone indicators, and segmented readouts. The goal is clarity through physical weight, not decoration.
 
 Keep the style grounded:
 
 - Use depth before decoration.
 - Let materials respond to light.
-- Reserve saturated color for active states, meters, LCDs, and indicators.
+- Reserve saturated color for active states, meters, displays, and indicators.
 - Use technical labels and mono readouts where the interface feels instrumented.
 
 ## Component Families
 
 - **Inputs:** dials, sliders, toggles, switches, and trim wheels.
-- **Readouts:** gauges, meters, LCD displays, and jewel indicators.
+- **Readouts:** gauges, meters, segmented displays, and jewel indicators.
 - **Surfaces:** panels, buttons, and reusable control hardware.

@@ -33,7 +33,7 @@ export default function SiteNavToggleGroup({ links, activeHref }: SiteNavToggleG
           value={activeHref}
           aria-label="Primary navigation"
           itemHeight="2.5rem"
-          indicatorColor="green"
+          indicatorTone="success"
         >
           {links.map((link) => {
             const isActive = activeHref === link.href;

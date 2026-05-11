@@ -3,15 +3,15 @@ import { cn } from '@/lib/utils';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 import type { AnalogOrientation } from './orientation';
 import { Toggle, type ToggleProps } from './Toggle';
-import type { IndicatorColor } from './Indicator';
+import type { AnalogTone } from './tone';
 
 type RockerSwitchVariant = 'chrome' | 'black';
 
 interface RockerSwitchGroupContextValue {
   variant?: RockerSwitchVariant;
   switchOrientation: AnalogOrientation;
-  leftLed: IndicatorColor;
-  rightLed: IndicatorColor;
+  leftIndicatorTone?: AnalogTone;
+  rightIndicatorTone?: AnalogTone;
 }
 
 const RockerSwitchGroupContext = React.createContext<RockerSwitchGroupContextValue | undefined>(
@@ -22,8 +22,8 @@ export interface RockerSwitchGroupProps extends React.HTMLAttributes<HTMLDivElem
   layout?: AnalogOrientation;
   switchOrientation?: AnalogOrientation;
   variant?: RockerSwitchVariant;
-  leftLed?: IndicatorColor;
-  rightLed?: IndicatorColor;
+  leftIndicatorTone?: AnalogTone;
+  rightIndicatorTone?: AnalogTone;
   lighting?: AnalogLightingConfig<'track' | 'surface' | 'thumb' | 'lens'>;
 }
 
@@ -41,8 +41,8 @@ export const RockerSwitchGroup = React.forwardRef<HTMLDivElement, RockerSwitchGr
       layout = 'horizontal',
       switchOrientation = 'horizontal',
       variant,
-      leftLed = 'amber',
-      rightLed = 'green',
+      leftIndicatorTone = 'warning',
+      rightIndicatorTone = 'success',
       lighting,
       style,
       ...props
@@ -54,10 +54,10 @@ export const RockerSwitchGroup = React.forwardRef<HTMLDivElement, RockerSwitchGr
       () => ({
         variant,
         switchOrientation,
-        leftLed,
-        rightLed,
+        leftIndicatorTone,
+        rightIndicatorTone,
       }),
-      [leftLed, rightLed, switchOrientation, variant],
+      [leftIndicatorTone, rightIndicatorTone, switchOrientation, variant],
     );
 
     return (
@@ -89,8 +89,8 @@ export const RockerSwitchGroupItem = React.forwardRef<HTMLDivElement, RockerSwit
       labelPosition = 'top',
       orientation,
       variant,
-      leftLed,
-      rightLed,
+      leftIndicatorTone,
+      rightIndicatorTone,
       ...props
     },
     ref,
@@ -98,8 +98,9 @@ export const RockerSwitchGroupItem = React.forwardRef<HTMLDivElement, RockerSwit
     const context = React.useContext(RockerSwitchGroupContext);
     const resolvedOrientation = orientation ?? context?.switchOrientation ?? 'horizontal';
     const resolvedVariant = variant ?? context?.variant;
-    const resolvedLeftLed = leftLed ?? context?.leftLed ?? 'amber';
-    const resolvedRightLed = rightLed ?? context?.rightLed ?? 'green';
+    const resolvedLeftIndicatorTone = leftIndicatorTone ?? context?.leftIndicatorTone ?? 'warning';
+    const resolvedRightIndicatorTone =
+      rightIndicatorTone ?? context?.rightIndicatorTone ?? 'success';
     const isLabelInline = labelPosition === 'start' || labelPosition === 'end';
     const shouldLabelRenderFirst = labelPosition === 'start' || labelPosition === 'top';
 
@@ -113,8 +114,8 @@ export const RockerSwitchGroupItem = React.forwardRef<HTMLDivElement, RockerSwit
         className={toggleClassName}
         orientation={resolvedOrientation}
         variant={resolvedVariant}
-        leftLed={resolvedLeftLed}
-        rightLed={resolvedRightLed}
+        leftIndicatorTone={resolvedLeftIndicatorTone}
+        rightIndicatorTone={resolvedRightIndicatorTone}
         {...props}
       />
     );

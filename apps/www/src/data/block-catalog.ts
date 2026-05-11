@@ -36,7 +36,8 @@ export const blockCatalog = {
     name: 'toggle',
     category: 'inputs',
     order: 30,
-    summary: 'A heavy-duty rocker with optional LED states and enough depth to feel mechanical.',
+    summary:
+      'A heavy-duty rocker with optional tone indicators and enough depth to feel mechanical.',
   },
   'rocker-switch-group': {
     name: 'rocker-switch-group',
@@ -54,13 +55,13 @@ export const blockCatalog = {
     name: 'push-toggle',
     category: 'inputs',
     order: 36,
-    summary: 'A latching push toggle that pairs plunger depth with compact LED state feedback.',
+    summary: 'A latching push toggle that pairs plunger depth with compact tone feedback.',
   },
   'toggle-button-group': {
     name: 'toggle-button-group',
     category: 'inputs',
     order: 37,
-    summary: 'A selection group of push toggles with active LED feedback.',
+    summary: 'A selection group of push toggles with active tone feedback.',
   },
   switch: {
     name: 'switch',
@@ -85,14 +86,15 @@ export const blockCatalog = {
     name: 'gauge',
     category: 'readouts',
     order: 70,
-    summary: 'A circular monitor that layers LCD arc feedback over a machined control face.',
+    summary:
+      'A circular monitor that layers tone-driven arc feedback over a machined control face.',
   },
   'lcd-display': {
     name: 'lcd-display',
     category: 'readouts',
     order: 75,
     summary:
-      'An LCD readout with shadowed glyphs, static texture, glowing glass, and an opt-in display font slot.',
+      'A segmented display readout with shadowed glyphs, static texture, glowing glass, and an opt-in display font slot.',
   },
   'needle-gauge': {
     name: 'needle-gauge',

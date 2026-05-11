@@ -19,7 +19,7 @@ interface ComponentPageDoc {
   packageImportCode?: string;
   usageCode: string;
   exampleCode: string;
-  /** Editorial fallback for generated API docs; source prop names, types, and defaults come from component-api-loader. */
+  /** Editorial descriptions for generated API docs; source prop names, types, and defaults come from component-api-loader. */
   api: ComponentApiSection[];
 }
 
@@ -216,7 +216,7 @@ export function SliderExample() {
     usageIntro: 'Use Toggle when a two-position choice should read like a heavy rocker.',
     registryImportCode: registryImport(['Toggle'], 'Toggle'),
     packageImportCode: packageImport(['Toggle']),
-    usageCode: `<Toggle value="right" leftLed="amber" rightLed="green" />`,
+    usageCode: `<Toggle value="right" leftIndicatorTone="warning" rightIndicatorTone="success" />`,
     exampleCode: `"use client"
 
 import * as React from "react"
@@ -229,8 +229,8 @@ export function ToggleExample() {
     <Toggle
       value={value}
       onValueChange={setValue}
-      leftLed="amber"
-      rightLed="green"
+      leftIndicatorTone="warning"
+      rightIndicatorTone="success"
     />
   )
 }`,
@@ -263,16 +263,16 @@ export function ToggleExample() {
             description: 'Sets the rocker material finish.',
           },
           {
-            name: 'leftLed / rightLed',
-            type: 'IndicatorColor',
-            defaultValue: '"none"',
-            description: 'Adds optional LED indicators on either side.',
+            name: 'leftIndicatorTone / rightIndicatorTone',
+            type: 'AnalogTone',
+            defaultValue: 'undefined',
+            description: 'Adds optional tone-driven indicators on either side.',
           },
           {
-            name: 'leftLedActive / rightLedActive',
+            name: 'leftIndicatorActive / rightIndicatorActive',
             type: '"auto" | "always" | "never"',
             defaultValue: '"auto"',
-            description: 'Controls when each LED is lit.',
+            description: 'Controls when each indicator is lit.',
           },
           lightingProp,
           classNameProp,
@@ -312,7 +312,7 @@ export function RockerSwitchGroupExample() {
         value={aux}
         onValueChange={setAux}
         variant="black"
-        leftLed="red"
+        leftIndicatorTone="destructive"
       />
     </RockerSwitchGroup>
   )
@@ -341,10 +341,10 @@ export function RockerSwitchGroupExample() {
             description: 'Default material finish for child rockers.',
           },
           {
-            name: 'leftLed / rightLed',
-            type: 'IndicatorColor',
-            defaultValue: '"amber" / "green"',
-            description: 'Default LED colors for child rockers.',
+            name: 'leftIndicatorTone / rightIndicatorTone',
+            type: 'AnalogTone',
+            defaultValue: '"warning" / "success"',
+            description: 'Default indicator tones for child rockers.',
           },
           lightingProp,
           classNameProp,
@@ -436,10 +436,10 @@ export function PushButtonExample() {
     ],
   },
   'push-toggle': {
-    usageIntro: 'Use PushToggle for a latching push control with optional LED state feedback.',
+    usageIntro: 'Use PushToggle for a latching push control with optional tone state feedback.',
     registryImportCode: registryImport(['PushToggle'], 'PushToggle'),
     packageImportCode: packageImport(['PushToggle']),
-    usageCode: `<PushToggle defaultPressed indicatorColor="green">ARM</PushToggle>`,
+    usageCode: `<PushToggle defaultPressed indicatorTone="success">ARM</PushToggle>`,
     exampleCode: `"use client"
 
 import * as React from "react"
@@ -452,7 +452,7 @@ export function PushToggleExample() {
     <PushToggle
       pressed={pressed}
       onPressedChange={setPressed}
-      indicatorColor="green"
+      indicatorTone="success"
     >
       ARM
     </PushToggle>
@@ -475,10 +475,10 @@ export function PushToggleExample() {
             description: 'Receives pressed state changes.',
           },
           {
-            name: 'indicatorColor',
-            type: 'IndicatorColor',
-            defaultValue: '"none"',
-            description: 'Optional LED color on the plunger face.',
+            name: 'indicatorTone',
+            type: 'AnalogTone',
+            defaultValue: 'undefined',
+            description: 'Optional indicator tone on the plunger face.',
           },
           {
             name: 'variant',
@@ -513,7 +513,7 @@ export function PushToggleExample() {
   },
   'toggle-button-group': {
     usageIntro:
-      'Use ToggleButtonGroup for mutually exclusive push toggles with LED state feedback.',
+      'Use ToggleButtonGroup for mutually exclusive push toggles with tone state feedback.',
     registryImportCode: registryImport(
       ['ToggleButtonGroup', 'ToggleButtonGroupItem'],
       'ToggleButtonGroup',
@@ -542,7 +542,7 @@ export function ToggleButtonGroupExample() {
       <ToggleButtonGroupItem value="solo" width="4.75rem" variant="black">
         Solo
       </ToggleButtonGroupItem>
-      <ToggleButtonGroupItem value="mute" width="4.75rem" indicatorColor="red">
+      <ToggleButtonGroupItem value="mute" width="4.75rem" indicatorTone="destructive">
         Mute
       </ToggleButtonGroupItem>
     </ToggleButtonGroup>
@@ -581,16 +581,16 @@ export function ToggleButtonGroupExample() {
             description: 'Default plunger material finish for child items.',
           },
           {
-            name: 'indicatorColor',
-            type: 'IndicatorColor',
-            defaultValue: '"green"',
-            description: 'Default LED color for child items.',
+            name: 'indicatorTone',
+            type: 'AnalogTone',
+            defaultValue: 'undefined',
+            description: 'Default indicator tone for child items.',
           },
           {
             name: 'indicatorActive',
             type: '"auto" | "always" | "never"',
             defaultValue: '"auto"',
-            description: 'Controls when child item LEDs light.',
+            description: 'Controls when child item indicators light.',
           },
           {
             name: 'allowEmpty',
@@ -635,16 +635,16 @@ export function ToggleButtonGroupExample() {
             description: 'Overrides the item material finish.',
           },
           {
-            name: 'indicatorColor',
-            type: 'IndicatorColor',
+            name: 'indicatorTone',
+            type: 'AnalogTone',
             defaultValue: 'group default',
-            description: 'Overrides the item LED color.',
+            description: 'Overrides the item indicator tone.',
           },
           {
             name: 'indicatorActive',
             type: '"auto" | "always" | "never"',
             defaultValue: 'group default',
-            description: 'Controls when this item LED lights.',
+            description: 'Controls when this item indicator lights.',
           },
           {
             name: 'extrusionLayers',
@@ -837,10 +837,10 @@ export function WheelNumberExample() {
   },
   gauge: {
     usageIntro:
-      'Use Gauge for radial LCD-style feedback with optional marks, sweep geometry, and slider input.',
+      'Use Gauge for radial segmented-display feedback with optional marks, sweep geometry, and slider input.',
     registryImportCode: registryImport(['Gauge'], 'Gauge'),
     packageImportCode: packageImport(['Gauge']),
-    usageCode: `<Gauge defaultValue={42} min={0} max={100} variant="lcd-green" />`,
+    usageCode: `<Gauge defaultValue={42} min={0} max={100} tone="success" />`,
     exampleCode: `"use client"
 
 import * as React from "react"
@@ -866,7 +866,7 @@ export function GaugeExample() {
     api: [
       {
         title: 'Gauge',
-        description: 'A Base UI slider root rendered as a radial LCD gauge.',
+        description: 'A Base UI slider root rendered as a radial segmented display gauge.',
         props: [
           { name: 'value', type: 'number | number[]', description: 'Controlled gauge value.' },
           {
@@ -880,10 +880,10 @@ export function GaugeExample() {
             description: 'Receives drag and keyboard updates.',
           },
           {
-            name: 'variant',
-            type: '"lcd-green" | "lcd-amber" | "lcd-blue"',
-            defaultValue: '"lcd-green"',
-            description: 'Sets LCD color treatment.',
+            name: 'tone',
+            type: 'AnalogTone',
+            defaultValue: '"success"',
+            description: 'Sets the gauge fill tone.',
           },
           {
             name: 'startAngle',
@@ -919,7 +919,7 @@ export function GaugeExample() {
       'Use LCDDisplay for compact labels, values, and units with a glowing segmented readout treatment.',
     registryImportCode: registryImport(['LCDDisplay'], 'LCDDisplay'),
     packageImportCode: packageImport(['LCDDisplay']),
-    usageCode: `<LCDDisplay label="Output Trim" value="-12.8" units="DB" digits={5} />`,
+    usageCode: `<LCDDisplay label="Output Trim" value="-12.8" units="DB" digits={5} tone="success" />`,
     exampleCode: `import { LCDDisplay } from "@/registry/components/analog/LCDDisplay"
 
 export function LCDDisplayExample() {
@@ -929,7 +929,7 @@ export function LCDDisplayExample() {
       value="-12.8"
       units="DB"
       digits={5}
-      variant="lcd-green"
+      tone="success"
       size="lg"
     />
   )
@@ -956,10 +956,10 @@ export function LCDDisplayExample() {
             description: 'Optional unit label beside the value.',
           },
           {
-            name: 'variant',
-            type: '"lcd-green" | "lcd-amber" | "lcd-blue"',
-            defaultValue: '"lcd-green"',
-            description: 'Sets LCD color treatment.',
+            name: 'tone',
+            type: 'AnalogTone',
+            defaultValue: '"success"',
+            description: 'Sets the display glass tone.',
           },
           {
             name: 'size',
@@ -1047,9 +1047,15 @@ export function NeedleGaugeExample() {
           },
           {
             name: 'needleVariant',
-            type: '"red" | "chrome"',
-            defaultValue: '"red"',
-            description: 'Sets the needle finish.',
+            type: '"tone" | "chrome"',
+            defaultValue: '"tone"',
+            description: 'Sets whether the needle uses the tone color or chrome finish.',
+          },
+          {
+            name: 'needleTone',
+            type: 'AnalogTone',
+            defaultValue: '"destructive"',
+            description: 'Sets the tone-driven needle color.',
           },
           lightingProp,
           classNameProp,
@@ -1094,7 +1100,7 @@ export function MeterExample() {
     api: [
       {
         title: 'Meter',
-        description: 'A Base UI meter root rendered as an analog LED channel display.',
+        description: 'A Base UI meter root rendered as an analog segmented channel display.',
         props: [
           { name: 'value', type: 'number', defaultValue: '0', description: 'Current meter value.' },
           { name: 'peakValue', type: 'number', description: 'Optional peak hold marker.' },
@@ -1112,15 +1118,21 @@ export function MeterExample() {
           },
           {
             name: 'variant',
-            type: '"metered" | "lcd-green" | "lcd-amber" | "lcd-blue"',
+            type: '"metered" | "display"',
             defaultValue: '"metered"',
             description: 'Segment color model.',
+          },
+          {
+            name: 'tone',
+            type: 'AnalogTone',
+            defaultValue: '"success"',
+            description: 'Sets the display tone when variant is "display".',
           },
           {
             name: 'segments',
             type: 'number',
             defaultValue: '32',
-            description: 'Number of rendered LED segments.',
+            description: 'Number of rendered meter segments.',
           },
           {
             name: 'scalePreset',
@@ -1162,7 +1174,7 @@ export function MeterExample() {
       'Use Indicator for jewel-like status lights with optional bezel, shape, and color states.',
     registryImportCode: registryImport(['Indicator'], 'Indicator'),
     packageImportCode: packageImport(['Indicator']),
-    usageCode: `<Indicator isOn color="amber" size="lg" />`,
+    usageCode: `<Indicator isOn tone="warning" size="lg" />`,
     exampleCode: `"use client"
 
 import * as React from "react"
@@ -1174,7 +1186,7 @@ export function IndicatorExample() {
 
   return (
     <div className="flex items-center gap-4">
-      <Indicator isOn={isOn} color="amber" size="lg" />
+      <Indicator isOn={isOn} tone="warning" size="lg" />
       <Switch checked={isOn} onCheckedChange={setIsOn} />
     </div>
   )
@@ -1191,10 +1203,10 @@ export function IndicatorExample() {
             description: 'Controls whether the lamp is lit.',
           },
           {
-            name: 'color',
-            type: '"red" | "green" | "amber" | "blue" | "white" | "none"',
-            defaultValue: '"red"',
-            description: 'Sets the LED color.',
+            name: 'tone',
+            type: 'AnalogTone',
+            defaultValue: '"accent"',
+            description: 'Sets the indicator tone.',
           },
           {
             name: 'size',
@@ -1204,9 +1216,9 @@ export function IndicatorExample() {
           },
           {
             name: 'variant',
-            type: '"chrome" | "black" | "none"',
+            type: '"chrome" | "black"',
             defaultValue: 'inherited',
-            description: 'Sets bezel material. Use disableBezel for no bezel.',
+            description: 'Sets bezel material. Use disableBezel to hide the bezel.',
           },
           {
             name: 'disableBezel',
@@ -1277,7 +1289,7 @@ export function PanelExample() {
       <PanelFooter>
         <PushToggle
           className="w-full"
-          indicatorColor="amber"
+          indicatorTone="warning"
           pressed={bypass}
           onPressedChange={setBypass}
         >
