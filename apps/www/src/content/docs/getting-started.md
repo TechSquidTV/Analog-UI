@@ -1,6 +1,6 @@
 ---
 title: Installation
-description: Install Analog UI from the package or the registry, then wire the shared analog foundation into your app.
+description: Install Analog UI from the package or shadcn registry, then wire the shared analog foundation into your app.
 section: getting-started
 order: 10
 navTitle: Installation
@@ -10,7 +10,7 @@ draft: false
 Analog UI can be consumed in two ways:
 
 - as a package import for direct component usage
-- as a shadcn-compatible registry surface for item-by-item installation
+- as shadcn-compatible registry items that copy editable source into your project
 
 ## Package Usage
 
@@ -36,14 +36,14 @@ Repeat the second command for any other item, such as `slider`, `meter`, or `pan
 
 ## Choosing Between the Two
 
-- Pick the **package** when you want the fastest path to shipping a consistent analog surface.
+- Pick the **package** when you want the fastest path to a consistent tactile interface.
 - Pick the **registry** when you want ownership of the installed source files and shadcn-style local customization.
 
 ## Tailwind and Theme Assumptions
 
 Analog UI is designed for Tailwind CSS v4 and shadcn-compatible semantic tokens. The component recipes expect host tokens such as `background`, `card`, `secondary`, `accent`, and `border` to exist.
 
-## First Components To Try
+## First Controls To Try
 
 These components give a good feel for the system quickly:
 
@@ -51,11 +51,3 @@ These components give a good feel for the system quickly:
 - [Slider preview](/view/slider)
 - [Meter preview](/view/meter)
 - [Panel preview](/view/panel)
-
-## Registry Output In This Repo
-
-During local development, the website copies registry artifacts into [`/r`](/r/registry.json). The command that refreshes those files is defined in the package workspace:
-
-```bash
-pnpm --filter analog-ui registry:build
-```

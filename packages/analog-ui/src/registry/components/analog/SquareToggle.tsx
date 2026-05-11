@@ -1,17 +1,21 @@
 import * as React from 'react';
 import { Toggle } from '@base-ui/react/toggle';
-import { cn } from '../../../lib/utils';
-import { useMergedRefs } from '../../../lib/refs';
+import { cn } from '@/lib/utils';
+import { useMergedRefs } from '@/lib/refs';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
-import { AnalogIndicator, type AnalogIndicatorColor } from './Indicator';
+import { Indicator, type IndicatorColor } from './Indicator';
 import { SquarePlunger } from './SquarePlunger';
 
 export interface SquareToggleProps extends React.ComponentPropsWithoutRef<typeof Toggle> {
   variant?: 'chrome' | 'black';
-  indicatorColor?: AnalogIndicatorColor;
+  indicatorColor?: IndicatorColor;
   lighting?: AnalogLightingConfig<'surface' | 'track' | 'thumb' | 'lens'>;
   extrusionLayers?: number;
 }
+
+type TogglePressedChangeHandler = NonNullable<
+  React.ComponentPropsWithoutRef<typeof Toggle>['onPressedChange']
+>;
 
 export const SquareToggle = React.forwardRef<HTMLButtonElement, SquareToggleProps>(
   (
@@ -22,6 +26,9 @@ export const SquareToggle = React.forwardRef<HTMLButtonElement, SquareToggleProp
       lighting,
       extrusionLayers = 32,
       children,
+      pressed,
+      defaultPressed,
+      onPressedChange,
       ...props
     },
     ref,
@@ -30,7 +37,18 @@ export const SquareToggle = React.forwardRef<HTMLButtonElement, SquareToggleProp
     const mergedRef = useMergedRefs(ref, internalRef);
     const lightingStyle = useAnalogLighting(['surface', 'track', 'thumb', 'lens'], lighting);
 
-    const isPressed = props.pressed ?? props.defaultPressed;
+    const [uncontrolledPressed, setUncontrolledPressed] = React.useState(Boolean(defaultPressed));
+    const isPressed = pressed ?? uncontrolledPressed;
+    const handlePressedChange = React.useCallback<TogglePressedChangeHandler>(
+      (nextPressed, details) => {
+        if (pressed === undefined) {
+          setUncontrolledPressed(nextPressed);
+        }
+
+        onPressedChange?.(nextPressed, details);
+      },
+      [onPressedChange, pressed],
+    );
 
     return (
       <div
@@ -47,6 +65,9 @@ export const SquareToggle = React.forwardRef<HTMLButtonElement, SquareToggleProp
           ref={mergedRef}
           className="relative size-full appearance-none border-none bg-transparent p-0 outline-none select-none"
           style={{ transformStyle: 'preserve-3d' }}
+          pressed={pressed}
+          defaultPressed={defaultPressed}
+          onPressedChange={handlePressedChange}
           {...props}
         >
           <SquarePlunger
@@ -56,7 +77,7 @@ export const SquareToggle = React.forwardRef<HTMLButtonElement, SquareToggleProp
             indicator={
               indicatorColor !== 'none' && (
                 <div className="absolute right-0.5 top-[-3px]">
-                  <AnalogIndicator size="xs" color={indicatorColor} isOn={isPressed} disableBezel />
+                  <Indicator size="xs" color={indicatorColor} isOn={isPressed} disableBezel />
                 </div>
               )
             }

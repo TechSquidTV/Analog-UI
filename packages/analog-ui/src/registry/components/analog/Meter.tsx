@@ -1,64 +1,64 @@
 import * as React from 'react';
-import { Meter } from '@base-ui/react/meter';
-import { cn } from '../../../lib/utils';
+import { Meter as BaseMeter } from '@base-ui/react/meter';
+import { cn } from '@/lib/utils';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 import type { AnalogOrientation } from './orientation';
 
-export type AnalogMeterVariant = 'metered' | 'lcd-green' | 'lcd-amber' | 'lcd-blue';
-export type AnalogMeterScalePreset = 'linear' | 'dbfs' | 'vu';
-type AnalogMeterGroupOrientation = AnalogOrientation;
-type AnalogMeterGroupLabelPosition = 'top' | 'bottom' | 'left' | 'right';
-export type AnalogMeterGroupVariant = 'panel' | 'chrome' | 'black';
+export type MeterVariant = 'metered' | 'lcd-green' | 'lcd-amber' | 'lcd-blue';
+export type MeterScalePreset = 'linear' | 'dbfs' | 'vu';
+type MeterGroupOrientation = AnalogOrientation;
+type MeterGroupLabelPosition = 'top' | 'bottom' | 'left' | 'right';
+export type MeterGroupVariant = 'panel' | 'chrome' | 'black';
 
-export interface AnalogMeterMark {
+export interface MeterMark {
   value: number;
   label: React.ReactNode;
   position?: number;
 }
 
-export interface AnalogMeterZone {
+export interface MeterZone {
   from?: number;
   to?: number;
   color: string;
   glow?: string;
 }
 
-export interface AnalogMeterBallistics {
+export interface MeterBallistics {
   attackMs?: number;
   releaseMs?: number;
   peakHoldMs?: number;
   peakReleaseMs?: number;
 }
 
-export interface AnalogMeterProps extends React.ComponentPropsWithoutRef<typeof Meter.Root> {
+export interface MeterProps extends React.ComponentPropsWithoutRef<typeof BaseMeter.Root> {
   orientation?: AnalogOrientation;
   peakValue?: number | null;
-  variant?: AnalogMeterVariant;
+  variant?: MeterVariant;
   segments?: number;
   lighting?: AnalogLightingConfig<'surface' | 'track' | 'lens'>;
-  scalePreset?: AnalogMeterScalePreset;
-  marks?: readonly AnalogMeterMark[];
+  scalePreset?: MeterScalePreset;
+  marks?: readonly MeterMark[];
   showScale?: boolean;
   scaleSide?: 'leading' | 'trailing';
-  zones?: readonly AnalogMeterZone[];
-  ballistics?: 'none' | 'vu' | 'ppm' | AnalogMeterBallistics;
+  zones?: readonly MeterZone[];
+  ballistics?: 'none' | 'vu' | 'ppm' | MeterBallistics;
 }
 
-export interface AnalogMeterGroupProps extends React.HTMLAttributes<HTMLDivElement> {
-  orientation?: AnalogMeterGroupOrientation;
-  variant?: AnalogMeterGroupVariant;
+export interface MeterGroupProps extends React.HTMLAttributes<HTMLDivElement> {
+  orientation?: MeterGroupOrientation;
+  variant?: MeterGroupVariant;
   lighting?: AnalogLightingConfig<'panel' | 'bezel' | 'track' | 'lens'>;
 }
 
-export interface AnalogMeterGroupChannelProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface MeterGroupChannelProps extends React.HTMLAttributes<HTMLDivElement> {
   label?: React.ReactNode;
-  labelPosition?: AnalogMeterGroupLabelPosition;
+  labelPosition?: MeterGroupLabelPosition;
 }
 
-export type AnalogMeterGroupSeparatorProps = React.HTMLAttributes<HTMLDivElement>;
+export type MeterGroupSeparatorProps = React.HTMLAttributes<HTMLDivElement>;
 
-const AnalogMeterGroupContext = React.createContext<{
-  orientation: AnalogMeterGroupOrientation;
+const MeterGroupContext = React.createContext<{
+  orientation: MeterGroupOrientation;
 } | null>(null);
 
 const clampMeterPercentage = (value: number, min: number, max: number) => {
@@ -91,7 +91,7 @@ const getPeakMarkerStyle = (isVertical: boolean, percentage: number): React.CSSP
         height: 'calc(100% + 6px)',
       };
 
-const defaultScaleMarks: Record<Exclude<AnalogMeterScalePreset, 'linear'>, AnalogMeterMark[]> = {
+const defaultScaleMarks: Record<Exclude<MeterScalePreset, 'linear'>, MeterMark[]> = {
   dbfs: [
     { value: -60, label: '-60' },
     { value: -40, label: '-40' },
@@ -114,13 +114,13 @@ const defaultScaleMarks: Record<Exclude<AnalogMeterScalePreset, 'linear'>, Analo
   ],
 };
 
-const defaultScaleDomains: Record<AnalogMeterScalePreset, { min: number; max: number }> = {
+const defaultScaleDomains: Record<MeterScalePreset, { min: number; max: number }> = {
   linear: { min: 0, max: 100 },
   dbfs: { min: -60, max: 6 },
   vu: { min: -20, max: 3 },
 };
 
-const defaultScaleZones: Record<Exclude<AnalogMeterScalePreset, 'linear'>, AnalogMeterZone[]> = {
+const defaultScaleZones: Record<Exclude<MeterScalePreset, 'linear'>, MeterZone[]> = {
   dbfs: [
     {
       from: -60,
@@ -157,9 +157,7 @@ const defaultScaleZones: Record<Exclude<AnalogMeterScalePreset, 'linear'>, Analo
   ],
 };
 
-function resolveBallisticsConfig(
-  ballistics: AnalogMeterProps['ballistics'],
-): Required<AnalogMeterBallistics> {
+function resolveBallisticsConfig(ballistics: MeterProps['ballistics']): Required<MeterBallistics> {
   if (ballistics === 'vu') {
     return { attackMs: 300, releaseMs: 700, peakHoldMs: 900, peakReleaseMs: 450 };
   }
@@ -181,7 +179,7 @@ function resolveBallisticsConfig(
 }
 
 function buildZoneGradient(
-  zones: readonly AnalogMeterZone[],
+  zones: readonly MeterZone[],
   min: number,
   max: number,
   isVertical: boolean,
@@ -205,7 +203,7 @@ function buildZoneGradient(
   return `linear-gradient(${direction}, ${stops.join(', ')})`;
 }
 
-const getMeterGroupShellStyle = (variant: AnalogMeterGroupVariant): React.CSSProperties => {
+const getMeterGroupShellStyle = (variant: MeterGroupVariant): React.CSSProperties => {
   switch (variant) {
     case 'chrome':
       return {
@@ -243,7 +241,7 @@ const getMeterGroupShellStyle = (variant: AnalogMeterGroupVariant): React.CSSPro
   }
 };
 
-export const AnalogMeter = React.forwardRef<HTMLDivElement, AnalogMeterProps>(
+export const Meter = React.forwardRef<HTMLDivElement, MeterProps>(
   (
     {
       className,
@@ -335,7 +333,7 @@ export const AnalogMeter = React.forwardRef<HTMLDivElement, AnalogMeterProps>(
       }));
     }, [marks, resolvedMax, resolvedMin, scalePreset, showScale]);
 
-    const getVariantColors = (v: AnalogMeterVariant, isVert: boolean) => {
+    const getVariantColors = (v: MeterVariant, isVert: boolean) => {
       const dir = isVert ? 'to top' : 'to right';
       switch (v) {
         case 'lcd-green':
@@ -374,7 +372,7 @@ export const AnalogMeter = React.forwardRef<HTMLDivElement, AnalogMeterProps>(
       }
     };
 
-    const colors = getVariantColors(variant as AnalogMeterVariant, isVertical);
+    const colors = getVariantColors(variant as MeterVariant, isVertical);
     const resolvedZones =
       zones ?? (scalePreset === 'linear' ? undefined : defaultScaleZones[scalePreset]);
     const zoneBackground =
@@ -391,7 +389,7 @@ export const AnalogMeter = React.forwardRef<HTMLDivElement, AnalogMeterProps>(
     });
 
     return (
-      <Meter.Root
+      <BaseMeter.Root
         ref={ref}
         value={currentValue}
         min={resolvedMin}
@@ -443,7 +441,7 @@ export const AnalogMeter = React.forwardRef<HTMLDivElement, AnalogMeterProps>(
         ) : null}
 
         {/* Track / Cavity */}
-        <Meter.Track
+        <BaseMeter.Track
           className={cn(
             'relative overflow-hidden rounded-full analog-surface-recess-sm',
             isVertical ? 'w-3 h-full' : 'w-full h-3',
@@ -466,7 +464,7 @@ export const AnalogMeter = React.forwardRef<HTMLDivElement, AnalogMeterProps>(
           </div>
 
           {/* LED Indicator layer */}
-          <Meter.Indicator
+          <BaseMeter.Indicator
             className="absolute inset-0 pointer-events-none !w-full !h-full z-10"
             style={{
               clipPath: indicatorClipPath,
@@ -492,7 +490,7 @@ export const AnalogMeter = React.forwardRef<HTMLDivElement, AnalogMeterProps>(
                 opacity: `calc(var(--analog-grain-opacity) + (var(--analog-grain-opacity) * var(--analog-light-power, 1)))`,
               }}
             />
-          </Meter.Indicator>
+          </BaseMeter.Indicator>
 
           {peakPercentage != null && (
             <div
@@ -527,14 +525,14 @@ export const AnalogMeter = React.forwardRef<HTMLDivElement, AnalogMeterProps>(
               opacity: colors.isLcd ? 0.3 : 1,
             }}
           />
-        </Meter.Track>
-      </Meter.Root>
+        </BaseMeter.Track>
+      </BaseMeter.Root>
     );
   },
 );
-AnalogMeter.displayName = 'AnalogMeter';
+Meter.displayName = 'Meter';
 
-export const AnalogMeterGroup = React.forwardRef<HTMLDivElement, AnalogMeterGroupProps>(
+export const MeterGroup = React.forwardRef<HTMLDivElement, MeterGroupProps>(
   (
     {
       className,
@@ -552,7 +550,7 @@ export const AnalogMeterGroup = React.forwardRef<HTMLDivElement, AnalogMeterGrou
     const shellStyle = getMeterGroupShellStyle(variant);
 
     return (
-      <AnalogMeterGroupContext.Provider value={{ orientation }}>
+      <MeterGroupContext.Provider value={{ orientation }}>
         <div
           ref={ref}
           role={role ?? 'group'}
@@ -593,66 +591,64 @@ export const AnalogMeterGroup = React.forwardRef<HTMLDivElement, AnalogMeterGrou
             </div>
           </div>
         </div>
-      </AnalogMeterGroupContext.Provider>
+      </MeterGroupContext.Provider>
     );
   },
 );
-AnalogMeterGroup.displayName = 'AnalogMeterGroup';
+MeterGroup.displayName = 'MeterGroup';
 
-export const AnalogMeterGroupChannel = React.forwardRef<
-  HTMLDivElement,
-  AnalogMeterGroupChannelProps
->(({ className, label, labelPosition, children, ...props }, ref) => {
-  const group = React.useContext(AnalogMeterGroupContext);
-  const resolvedLabelPosition =
-    labelPosition ?? (group?.orientation === 'vertical' ? 'right' : 'bottom');
-  const labelNode =
-    label != null ? (
-      <span className="font-mono text-[9px] font-bold uppercase tracking-[0.32em] text-[color:var(--analog-telemetry-label)]">
-        {label}
-      </span>
-    ) : null;
+export const MeterGroupChannel = React.forwardRef<HTMLDivElement, MeterGroupChannelProps>(
+  ({ className, label, labelPosition, children, ...props }, ref) => {
+    const group = React.useContext(MeterGroupContext);
+    const resolvedLabelPosition =
+      labelPosition ?? (group?.orientation === 'vertical' ? 'right' : 'bottom');
+    const labelNode =
+      label != null ? (
+        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.32em] text-[color:var(--analog-telemetry-label)]">
+          {label}
+        </span>
+      ) : null;
 
-  return (
-    <div
-      ref={ref}
-      className={cn(
-        'relative flex shrink-0 items-center justify-center',
-        resolvedLabelPosition === 'top' && 'flex-col gap-3 px-3 pt-1 pb-2',
-        resolvedLabelPosition === 'bottom' && 'flex-col gap-3 px-3 pt-2 pb-1',
-        resolvedLabelPosition === 'left' && 'flex-row gap-3 px-2 py-3',
-        resolvedLabelPosition === 'right' && 'flex-row gap-3 px-2 py-3',
-        className,
-      )}
-      {...props}
-    >
-      {resolvedLabelPosition === 'top' || resolvedLabelPosition === 'left' ? labelNode : null}
-      <div className="relative flex items-center justify-center">{children}</div>
-      {resolvedLabelPosition === 'bottom' || resolvedLabelPosition === 'right' ? labelNode : null}
-    </div>
-  );
-});
-AnalogMeterGroupChannel.displayName = 'AnalogMeterGroupChannel';
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          'relative flex shrink-0 items-center justify-center',
+          resolvedLabelPosition === 'top' && 'flex-col gap-3 px-3 pt-1 pb-2',
+          resolvedLabelPosition === 'bottom' && 'flex-col gap-3 px-3 pt-2 pb-1',
+          resolvedLabelPosition === 'left' && 'flex-row gap-3 px-2 py-3',
+          resolvedLabelPosition === 'right' && 'flex-row gap-3 px-2 py-3',
+          className,
+        )}
+        {...props}
+      >
+        {resolvedLabelPosition === 'top' || resolvedLabelPosition === 'left' ? labelNode : null}
+        <div className="relative flex items-center justify-center">{children}</div>
+        {resolvedLabelPosition === 'bottom' || resolvedLabelPosition === 'right' ? labelNode : null}
+      </div>
+    );
+  },
+);
+MeterGroupChannel.displayName = 'MeterGroupChannel';
 
-export const AnalogMeterGroupSeparator = React.forwardRef<
-  HTMLDivElement,
-  AnalogMeterGroupSeparatorProps
->(({ className, style, ...props }, ref) => {
-  const group = React.useContext(AnalogMeterGroupContext);
-  const isHorizontal = (group?.orientation ?? 'horizontal') === 'horizontal';
+export const MeterGroupSeparator = React.forwardRef<HTMLDivElement, MeterGroupSeparatorProps>(
+  ({ className, style, ...props }, ref) => {
+    const group = React.useContext(MeterGroupContext);
+    const isHorizontal = (group?.orientation ?? 'horizontal') === 'horizontal';
 
-  return (
-    <div
-      ref={ref}
-      aria-hidden="true"
-      className={cn(
-        'relative shrink-0 overflow-hidden rounded-full analog-track-slot-guide opacity-80',
-        isHorizontal ? 'mx-1 my-3 w-px self-stretch' : 'mx-3 my-1 h-px self-auto',
-        className,
-      )}
-      style={style}
-      {...props}
-    />
-  );
-});
-AnalogMeterGroupSeparator.displayName = 'AnalogMeterGroupSeparator';
+    return (
+      <div
+        ref={ref}
+        aria-hidden="true"
+        className={cn(
+          'relative shrink-0 overflow-hidden rounded-full analog-track-slot-guide opacity-80',
+          isHorizontal ? 'mx-1 my-3 w-px self-stretch' : 'mx-3 my-1 h-px self-auto',
+          className,
+        )}
+        style={style}
+        {...props}
+      />
+    );
+  },
+);
+MeterGroupSeparator.displayName = 'MeterGroupSeparator';

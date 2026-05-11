@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Slider } from '@base-ui/react/slider';
-import { cn } from '../../../lib/utils';
-import { AnisotropicButton } from './AnisotropicButton';
+import { cn } from '@/lib/utils';
+import { SurfaceButton } from './SurfaceButton';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 
 export type GaugeVariant = 'lcd-green' | 'lcd-amber' | 'lcd-blue';
@@ -251,9 +251,9 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
                 </svg>
               </div>
 
-              {/* Central Dial (Anisotropic Indicator) */}
+              {/* Central dial surface */}
               <div className="absolute inset-6 pointer-events-none">
-                <AnisotropicButton
+                <SurfaceButton
                   rotation={rotationAngle}
                   containerClassName="w-full h-full pointer-events-none"
                   className="w-full h-full pointer-events-none"
@@ -296,7 +296,7 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
                       />
                     </div>
                   </div>
-                </AnisotropicButton>
+                </SurfaceButton>
               </div>
             </div>
           );

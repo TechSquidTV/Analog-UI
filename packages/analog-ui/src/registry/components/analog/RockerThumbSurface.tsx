@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { cn } from '../../../lib/utils';
+import { cn } from '@/lib/utils';
 import type { AnalogOrientation } from './orientation';
 import {
   useAnalogMaterialVariant,
   type AnalogMaterialVariant,
-} from '../../hooks/use-analog-material';
+} from '../../hooks/analog-material-scope';
 
 type RockerVariant = AnalogMaterialVariant;
 type RockerOrientation = AnalogOrientation;

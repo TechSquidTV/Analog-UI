@@ -1,0 +1,105 @@
+name: Publish Package
+
+on:
+  release:
+    types:
+      - published
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish to npm instead of running a package dry run.
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: publish-package-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  CI: true
+  NODE_VERSION: 24
+
+jobs:
+  publish:
+    name: npm
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: npm
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: https://registry.npmjs.org
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build package
+        run: pnpm --filter analog-ui build
+
+      - name: Prepare publish metadata
+        run: |
+          node --input-type=module <<'JS'
+          import { readFileSync, writeFileSync } from 'node:fs';
+
+          const packagePath = 'packages/analog-ui/package.json';
+          const packageJson = JSON.parse(readFileSync(packagePath, 'utf8'));
+          const repositoryUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}`;
+
+          if (process.env.GITHUB_EVENT_NAME === 'release') {
+            const allowedTags = [
+              packageJson.version,
+              `v${packageJson.version}`,
+              `${packageJson.name}@${packageJson.version}`,
+            ];
+
+            if (!allowedTags.includes(process.env.GITHUB_REF_NAME)) {
+              throw new Error(
+                `Release tag "${process.env.GITHUB_REF_NAME}" does not match package version "${packageJson.version}".`,
+              );
+            }
+          }
+
+          const repository =
+            typeof packageJson.repository === 'string'
+              ? { type: 'git', url: packageJson.repository }
+              : (packageJson.repository ?? {});
+
+          packageJson.repository = {
+            type: repository.type ?? 'git',
+            url: repository.url ?? `git+${repositoryUrl}.git`,
+            directory: repository.directory ?? 'packages/analog-ui',
+          };
+          packageJson.bugs ??= { url: `${repositoryUrl}/issues` };
+          packageJson.homepage ??= `${repositoryUrl}#readme`;
+          packageJson.publishConfig = {
+            access: 'public',
+            provenance: true,
+            ...packageJson.publishConfig,
+          };
+
+          writeFileSync(packagePath, `${JSON.stringify(packageJson, null, 2)}\n`);
+          JS
+
+      - name: Inspect package contents
+        run: pnpm --filter analog-ui pack --dry-run
+
+      - name: Publish to npm
+        if: github.event_name == 'release' || inputs.publish
+        run: pnpm --filter analog-ui publish --access public --provenance --no-git-checks

@@ -1,16 +1,16 @@
 ---
 title: Registry
-description: The machine-readable install surface for Analog UI, including per-item JSON and the shared foundation layer.
+description: Install editable Analog UI source files with the shadcn CLI.
 section: reference
 order: 40
 draft: false
 ---
 
-Analog UI publishes a shadcn-compatible registry document and per-item JSON files.
+Analog UI publishes shadcn-compatible registry files for the shared foundation and each installable control.
 
-## Registry Endpoints
+## Registry Files
 
-- [`/r/registry.json`](/r/registry.json) is the top-level registry index
+- [`/r/registry.json`](/r/registry.json) lists every installable item
 - [`/r/analog-foundation.json`](/r/analog-foundation.json) provides the shared token and finish layer
 - item files such as [`/r/dial.json`](/r/dial.json) or [`/r/panel.json`](/r/panel.json) install individual controls
 
@@ -27,21 +27,11 @@ Swap `panel.json` for whichever item you need next.
 
 ## Registry Families
 
-The registry currently includes:
+The registry includes:
 
 - **Style:** `analog-foundation`
 - **Lib:** `utils`, `refs`, `angle-utils`, `wheel-interaction`
-- **Hooks:** `use-analog-lighting`, `use-analog-material`, `use-mouse-lumination`, `use-wheel-scroll`
+- **Hooks:** `use-analog-lighting`, `analog-material-scope`, `use-pointer-lighting`, `use-wheel-input`
 - **Components and UI:** dials, meters, switches, wheels, panels, buttons, toggles, and thumb surfaces
 
-Controls that support inherited material finishes pull in `use-analog-material` automatically through their registry dependencies, so you only need to install it directly when composing your own subtree scopes.
-
-## Local Build Source
-
-This repo generates website registry artifacts from the package source with the package workspace script:
-
-```bash
-pnpm --filter analog-ui registry:build
-```
-
-That script updates the website copy under `/r/*` without changing the public registry schema.
+Controls that support inherited material finishes pull in `analog-material-scope` automatically through their registry dependencies, so you only need to install it directly when composing your own subtree scopes.

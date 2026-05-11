@@ -10,20 +10,20 @@ const cards = [
   {
     href: '/docs',
     eyebrow: 'Get Started',
-    title: 'Install the foundation and wire the lighting model',
-    body: 'Start with the docs flow people expect: introduction, installation, tokens, and registry setup before you pull components into an app.',
+    title: 'Install the foundation',
+    body: 'Add the shared tokens, material recipes, and lighting defaults, then choose the controls your app needs.',
   },
   {
     href: '/docs/components',
     eyebrow: 'Components',
-    title: 'Browse every public control in one place',
-    body: 'Use the hub page and per-component docs routes for install commands, dependencies, previews, and quick jumps into the examples.',
+    title: 'Choose the right controls',
+    body: 'Browse dials, faders, switches, trim wheels, meters, lamps, panels, and live examples in one place.',
   },
   {
     href: '/docs/registry',
     eyebrow: 'Registry',
-    title: 'Install copied source through the shadcn flow',
-    body: 'Use the registry guide for the install surface, dependency model, and per-item JSON feed that powers local customization.',
+    title: 'Install editable source with shadcn',
+    body: 'Use the registry guide when you want Analog UI components copied into your project for local customization.',
   },
 ] as const;
 

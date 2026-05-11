@@ -5,9 +5,9 @@ import {
   blendAngleTowardSource,
   clampLightingInfluence,
   vectorToLightingAngle,
-} from './angle-utils';
+} from '@/lib/angle-utils';
 
-export interface UseMouseLuminationOptions {
+export interface UsePointerLightingOptions {
   baseAngle?: number;
   influence?: number; // 0 keeps the base angle, 1 follows the pointer immediately
   enabled?: boolean;
@@ -37,20 +37,20 @@ function resolveAnchorPoint(targetRef: RefObject<HTMLElement | null> | undefined
 }
 
 /**
- * Maps the global mouse position to a continuous light angle around the lit surface.
+ * Maps pointer movement to a continuous light angle around the lit surface.
  * Lower influence values blend the moving light back toward the base angle.
  */
-export function useMouseLumination({
+export function usePointerLighting({
   baseAngle = 180,
   influence = 1,
   enabled = true,
   targetRef,
   suspendRef,
   deadZoneRadius = 8,
-}: UseMouseLuminationOptions = {}) {
+}: UsePointerLightingOptions = {}) {
   const angleValue = useMotionValue(baseAngle);
-  const continuousMouseAngle = useRef(baseAngle);
-  const previousRawMouseAngle = useRef<number | null>(null);
+  const continuousPointerAngle = useRef(baseAngle);
+  const previousRawPointerAngle = useRef<number | null>(null);
   const anchorPoint = useRef<{ x: number; y: number } | null>(null);
   const pendingFrame = useRef<number | null>(null);
   const latestPointer = useRef<{ x: number; y: number } | null>(null);
@@ -59,20 +59,20 @@ export function useMouseLumination({
 
   useEffect(() => {
     if (!enabled || resolvedInfluence <= 0) {
-      continuousMouseAngle.current = baseAngle;
-      previousRawMouseAngle.current = null;
+      continuousPointerAngle.current = baseAngle;
+      previousRawPointerAngle.current = null;
       angleValue.set(baseAngle);
       return;
     }
 
-    if (previousRawMouseAngle.current === null) {
-      continuousMouseAngle.current = baseAngle;
+    if (previousRawPointerAngle.current === null) {
+      continuousPointerAngle.current = baseAngle;
       angleValue.set(baseAngle);
       return;
     }
 
     angleValue.set(
-      blendAngleTowardSource(baseAngle, continuousMouseAngle.current, resolvedInfluence),
+      blendAngleTowardSource(baseAngle, continuousPointerAngle.current, resolvedInfluence),
     );
   }, [angleValue, baseAngle, enabled, resolvedInfluence]);
 
@@ -119,22 +119,22 @@ export function useMouseLumination({
       };
       const targetAngle = vectorToLightingAngle(targetLightVector.x, targetLightVector.y);
 
-      continuousMouseAngle.current =
-        previousRawMouseAngle.current === null
+      continuousPointerAngle.current =
+        previousRawPointerAngle.current === null
           ? targetAngle
           : advanceContinuousAngle(
-              continuousMouseAngle.current,
+              continuousPointerAngle.current,
               targetAngle,
-              previousRawMouseAngle.current,
+              previousRawPointerAngle.current,
             );
-      previousRawMouseAngle.current = targetAngle;
+      previousRawPointerAngle.current = targetAngle;
 
       angleValue.set(
-        blendAngleTowardSource(baseAngle, continuousMouseAngle.current, resolvedInfluence),
+        blendAngleTowardSource(baseAngle, continuousPointerAngle.current, resolvedInfluence),
       );
     };
 
-    const handleMouseMove = (e: MouseEvent) => {
+    const handleWindowMouseMove = (e: MouseEvent) => {
       if (isSuspended()) return;
 
       latestPointer.current = {
@@ -174,7 +174,7 @@ export function useMouseLumination({
       targetElement.addEventListener('pointerdown', handleTargetWarmup, { passive: true });
       targetElement.addEventListener('pointerenter', handleTargetWarmup, { passive: true });
     } else {
-      window.addEventListener('mousemove', handleMouseMove, { passive: true });
+      window.addEventListener('mousemove', handleWindowMouseMove, { passive: true });
     }
 
     window.addEventListener('resize', updateAnchorPoint, { passive: true });
@@ -199,7 +199,7 @@ export function useMouseLumination({
         targetElement.removeEventListener('pointerdown', handleTargetWarmup);
         targetElement.removeEventListener('pointerenter', handleTargetWarmup);
       } else {
-        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mousemove', handleWindowMouseMove);
       }
       window.removeEventListener('resize', updateAnchorPoint);
       window.removeEventListener('scroll', updateAnchorPoint);

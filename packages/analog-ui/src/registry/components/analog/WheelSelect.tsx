@@ -1,14 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { cn } from '../../../lib/utils';
-import { useMergedRefs } from '../../../lib/refs';
+import { cn } from '@/lib/utils';
+import { useMergedRefs } from '@/lib/refs';
 import { motion, useMotionValue, useTransform, animate } from 'motion/react';
-import { useWheelScroll } from '../../hooks/use-wheel-scroll';
+import { useWheelInput } from '../../hooks/use-wheel-input';
 import {
-  useAnalogLightEffect,
+  useAnalogLightStyle,
   useAnalogLighting,
   type AnalogLightingConfig,
 } from '../../hooks/use-analog-lighting';
-import { getWheelDirectionFactor, type AnalogWheelDirection } from './wheel-interaction';
+import { getWheelDirectionFactor, type WheelDirection } from './wheel-interaction';
 
 const useIsomorphicLayoutEffect =
   typeof window !== 'undefined' ? React.useLayoutEffect : React.useEffect;
@@ -86,7 +86,7 @@ function resolveLengthPx(node: HTMLElement, value: string) {
   return width;
 }
 
-export interface AnalogWheelSelectProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface WheelSelectProps extends React.HTMLAttributes<HTMLDivElement> {
   options?: string[];
   value?: string;
   defaultValue?: string;
@@ -103,12 +103,12 @@ export interface AnalogWheelSelectProps extends React.HTMLAttributes<HTMLDivElem
    * Which drag direction advances to later options in the array.
    * @default 'down'
    */
-  grabDirection?: AnalogWheelDirection;
+  grabDirection?: WheelDirection;
   /**
    * Which wheel-scroll direction advances to later options in the array.
    * @default 'down'
    */
-  scrollDirection?: AnalogWheelDirection;
+  scrollDirection?: WheelDirection;
 }
 
 function splitWheelLabel(label: string) {
@@ -148,7 +148,7 @@ function WheelOptionLabel({ label, tone }: { label: string; tone: 'primary' | 's
   );
 }
 
-export const AnalogWheelSelect = React.forwardRef<HTMLDivElement, AnalogWheelSelectProps>(
+export const WheelSelect = React.forwardRef<HTMLDivElement, WheelSelectProps>(
   (
     {
       options,
@@ -276,7 +276,7 @@ export const AnalogWheelSelect = React.forwardRef<HTMLDivElement, AnalogWheelSel
       ...lighting,
     };
     const lightingStyle = useAnalogLighting(['track', 'wheel'], wheelLighting);
-    const wheelFaceStyle = useAnalogLightEffect(
+    const wheelFaceStyle = useAnalogLightStyle(
       'wheel',
       {
         varName: '--analog-light-angle-wheel-face',
@@ -456,7 +456,7 @@ export const AnalogWheelSelect = React.forwardRef<HTMLDivElement, AnalogWheelSel
       commitIndex(index);
     };
 
-    useWheelScroll(
+    useWheelInput(
       containerRef,
       React.useCallback(
         (e, deltaDirection) => {
@@ -701,4 +701,4 @@ export const AnalogWheelSelect = React.forwardRef<HTMLDivElement, AnalogWheelSel
     );
   },
 );
-AnalogWheelSelect.displayName = 'AnalogWheelSelect';
+WheelSelect.displayName = 'WheelSelect';

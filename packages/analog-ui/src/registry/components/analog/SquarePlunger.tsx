@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { motion } from 'motion/react';
-import { cn } from '../../../lib/utils';
-import { useAnalogMaterialVariant } from '../../hooks/use-analog-material';
+import { cn } from '@/lib/utils';
+import { useAnalogMaterialVariant } from '../../hooks/analog-material-scope';
 
 interface SquarePlungerProps {
   variant?: 'chrome' | 'black';

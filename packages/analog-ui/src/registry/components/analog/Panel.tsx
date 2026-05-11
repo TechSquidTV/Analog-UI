@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { cn } from '../../../lib/utils';
-import { AnisotropicButton } from './AnisotropicButton';
+import { cn } from '@/lib/utils';
+import { SurfaceButton } from './SurfaceButton';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
-import { useAnalogMaterialVariant } from '../../hooks/use-analog-material';
+import { useAnalogMaterialVariant } from '../../hooks/analog-material-scope';
 
 const variantStyles = {
   default: 'border-[color:var(--analog-panel-border)] shadow-sm',
@@ -53,7 +53,7 @@ const Screw = ({
         { '--analog-light-angle-surface': 'var(--analog-light-angle-screw)' } as React.CSSProperties
       }
     >
-      <AnisotropicButton
+      <SurfaceButton
         variant={resolvedVariant}
         rotation={rotation}
         containerClassName="w-full h-full"
@@ -108,7 +108,7 @@ const Screw = ({
             </svg>
           </div>
         )}
-      </AnisotropicButton>
+      </SurfaceButton>
     </div>
   );
 };

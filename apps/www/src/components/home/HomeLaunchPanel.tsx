@@ -29,13 +29,13 @@ export default function HomeLaunchPanel({
   return (
     <Panel className="flex flex-col" screwHole="slot" variant="rack">
       <PanelHeader className="gap-2 p-6 pb-0">
-        <div className="eyebrow mb-4">Launch Surface</div>
+        <div className="eyebrow mb-4">Install Panel</div>
       </PanelHeader>
       <PanelContent className="grid gap-6 px-6 pb-6 pt-4">
         <div className="grid gap-4 md:grid-cols-3">
-          <MetricCard label="UI Items" value={registryUiCount} />
-          <MetricCard label="Registry Items" value={registryItemCount} />
-          <MetricCard label="Registry Feed" value="/r" />
+          <MetricCard label="Controls" value={registryUiCount} />
+          <MetricCard label="Installable Items" value={registryItemCount} />
+          <MetricCard label="shadcn Registry" value="/r" />
         </div>
         <div className="mt-6">
           <Panel screws={false} variant="default">

@@ -1,0 +1,39 @@
+name: Component request
+description: Propose a new control, variant, or tactile behavior.
+title: '[Component]: '
+labels:
+  - enhancement
+  - component
+body:
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use case
+      description: What interface or workflow needs this control?
+      placeholder: A stepped gain selector for audio/plugin-style settings.
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected behavior
+      description: Describe interaction, states, accessibility needs, and any value model.
+      placeholder: Keyboard arrows step through values, pointer drag adjusts continuously, and screen readers receive the active label.
+    validations:
+      required: true
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: Link examples, screenshots, hardware references, or comparable UI patterns.
+  - type: dropdown
+    id: install-surface
+    attributes:
+      label: Needed surface
+      options:
+        - Package export
+        - Registry item
+        - Both
+        - Not sure
+    validations:
+      required: true

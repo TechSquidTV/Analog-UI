@@ -5,16 +5,16 @@ import {
   blendAngleTowardSource,
   constrainAngleToArc,
   type AnalogLightConstraintMode,
-} from './angle-utils';
+} from '@/lib/angle-utils';
 
-export const LIGHTING_PRESETS = {
+export const ANALOG_LIGHTING_PRESETS = {
   fixed: 0,
   muted: 0.2,
   standard: 0.45,
   eager: 0.8,
 } as const;
 
-export type AnalogLightingPreset = keyof typeof LIGHTING_PRESETS;
+export type AnalogLightingPreset = keyof typeof ANALOG_LIGHTING_PRESETS;
 export type AnalogLightingValue = number | AnalogLightingPreset;
 export interface AnalogLightConstraint {
   anchor?: number;
@@ -29,7 +29,7 @@ export interface AnalogLightingResponse {
 }
 
 export type AnalogLightingSetting = AnalogLightingValue | AnalogLightingResponse;
-export interface AnalogLightEffectOptions extends AnalogLightingResponse {
+export interface AnalogLightStyleOptions extends AnalogLightingResponse {
   varName?: `--${string}`;
 }
 
@@ -65,7 +65,7 @@ interface LegacyAnalogLightingResponse extends AnalogLightingResponse {
   follow?: AnalogLightingValue;
 }
 
-export const DEFAULT_MATERIAL_RESPONSES: Record<
+export const DEFAULT_ANALOG_MATERIAL_RESPONSES: Record<
   AnalogMaterialChannel,
   ResolvedAnalogLightingResponse
 > = {
@@ -140,8 +140,8 @@ function resolveLightingValue(value: AnalogLightingValue | undefined, fallback: 
     return Math.min(1, Math.max(0, value));
   }
 
-  if (typeof value === 'string' && value in LIGHTING_PRESETS) {
-    return LIGHTING_PRESETS[value as AnalogLightingPreset];
+  if (typeof value === 'string' && value in ANALOG_LIGHTING_PRESETS) {
+    return ANALOG_LIGHTING_PRESETS[value as AnalogLightingPreset];
   }
 
   return fallback;
@@ -205,7 +205,7 @@ function useAnalogLightingEnvironment() {
   const baseAngle = useResolvedMotionNumber(baseAngleInput, 180);
   const sourceAngle = useResolvedMotionNumber(sourceAngleInput, baseAngle);
   const power = useResolvedMotionNumber(powerInput, 1);
-  const materials = context?.materials ?? DEFAULT_MATERIAL_RESPONSES;
+  const materials = context?.materials ?? DEFAULT_ANALOG_MATERIAL_RESPONSES;
   const previousRawSourceAngle = React.useRef<number | null>(null);
   const continuousSourceAngle = React.useRef(sourceAngle);
 
@@ -257,10 +257,12 @@ export function AnalogLightingProvider({
   const mergedMaterials = React.useMemo(() => {
     const next: Partial<Record<AnalogMaterialChannel, ResolvedAnalogLightingResponse>> = {};
 
-    for (const channel of Object.keys(DEFAULT_MATERIAL_RESPONSES) as AnalogMaterialChannel[]) {
+    for (const channel of Object.keys(
+      DEFAULT_ANALOG_MATERIAL_RESPONSES,
+    ) as AnalogMaterialChannel[]) {
       next[channel] = resolveLightingResponse(
         materials?.[channel],
-        DEFAULT_MATERIAL_RESPONSES[channel],
+        DEFAULT_ANALOG_MATERIAL_RESPONSES[channel],
       );
     }
 
@@ -293,7 +295,7 @@ export function useAnalogLighting<Channel extends AnalogMaterialChannel>(
   for (const channel of channels) {
     const response = resolveLightingResponse(
       overrides?.[channel],
-      environment.materials[channel] ?? DEFAULT_MATERIAL_RESPONSES[channel],
+      environment.materials[channel] ?? DEFAULT_ANALOG_MATERIAL_RESPONSES[channel],
     );
     const resolvedAngle = resolveAnalogLightAngle(
       environment.baseAngle,
@@ -306,9 +308,9 @@ export function useAnalogLighting<Channel extends AnalogMaterialChannel>(
   return style;
 }
 
-export function useAnalogLightEffect<Channel extends AnalogMaterialChannel>(
+export function useAnalogLightStyle<Channel extends AnalogMaterialChannel>(
   channel: Channel,
-  options: AnalogLightEffectOptions = {},
+  options: AnalogLightStyleOptions = {},
   override?: AnalogLightingSetting,
 ) {
   const resolvedAngle = useAnalogLightAngle(channel, options, override);
@@ -323,13 +325,13 @@ export function useAnalogLightEffect<Channel extends AnalogMaterialChannel>(
 
 export function useAnalogLightAngle<Channel extends AnalogMaterialChannel>(
   channel: Channel,
-  options: AnalogLightEffectOptions = {},
+  options: AnalogLightStyleOptions = {},
   override?: AnalogLightingSetting,
 ) {
   const environment = useAnalogLightingEnvironment();
   const response = resolveLightingResponse(
     override ?? options,
-    environment.materials[channel] ?? DEFAULT_MATERIAL_RESPONSES[channel],
+    environment.materials[channel] ?? DEFAULT_ANALOG_MATERIAL_RESPONSES[channel],
   );
   const effectResponse = resolveLightingResponse(options, response);
   const resolvedAngle = resolveAnalogLightAngle(

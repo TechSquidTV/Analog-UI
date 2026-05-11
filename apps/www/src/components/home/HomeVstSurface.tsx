@@ -1,16 +1,16 @@
 import { useEffect, useRef, useState, type ComponentPropsWithoutRef, type RefObject } from 'react';
 
 import {
-  AnalogIndicator,
-  AnalogMeter,
-  AnalogMeterGroup,
-  AnalogMeterGroupChannel,
-  AnalogMeterGroupSeparator,
-  AnalogSlider,
-  AnalogSwitch,
-  AnalogToggle,
-  AnalogWheelNumber,
-  AnalogWheelSelect,
+  Indicator,
+  Meter,
+  MeterGroup,
+  MeterGroupChannel,
+  MeterGroupSeparator,
+  Slider,
+  Switch,
+  Toggle,
+  WheelNumber,
+  WheelSelect,
   Dial,
   Gauge,
   Panel,
@@ -133,7 +133,7 @@ interface HomeVstSurfaceProps {
 }
 
 interface DemoSliderProps extends Omit<
-  ComponentPropsWithoutRef<typeof AnalogSlider>,
+  ComponentPropsWithoutRef<typeof Slider>,
   'value' | 'onValueChange'
 > {
   value: number;
@@ -149,7 +149,7 @@ function DemoSlider({ value, onValueChange, onScrubbingChange, ...props }: DemoS
   }, [value]);
 
   return (
-    <AnalogSlider
+    <Slider
       {...props}
       value={localValue}
       onPointerDownCapture={() => onScrubbingChange?.(true)}
@@ -201,27 +201,27 @@ function MasterOutPanel({
       <PanelContent className="grid gap-6 px-5 pb-5">
         <div className="flex justify-center">
           <div className="origin-top scale-[0.84] sm:scale-100">
-            <AnalogMeterGroup variant="panel" aria-label="Stereo output meter">
-              <AnalogMeterGroupChannel label="L">
-                <AnalogMeter
+            <MeterGroup variant="panel" aria-label="Stereo output meter">
+              <MeterGroupChannel label="L">
+                <Meter
                   orientation="vertical"
                   value={meter.l}
                   peakValue={meter.lPeak}
                   variant="metered"
                   segments={40}
                 />
-              </AnalogMeterGroupChannel>
-              <AnalogMeterGroupSeparator />
-              <AnalogMeterGroupChannel label="R">
-                <AnalogMeter
+              </MeterGroupChannel>
+              <MeterGroupSeparator />
+              <MeterGroupChannel label="R">
+                <Meter
                   orientation="vertical"
                   value={meter.r}
                   peakValue={meter.rPeak}
                   variant="metered"
                   segments={40}
                 />
-              </AnalogMeterGroupChannel>
-            </AnalogMeterGroup>
+              </MeterGroupChannel>
+            </MeterGroup>
           </div>
         </div>
       </PanelContent>
@@ -298,7 +298,7 @@ export default function HomeVstSurface({ onScrubbingChange }: HomeVstSurfaceProp
     <Panel ref={surfaceRef} variant="rack" screws screwHole="slot" className="w-full">
       <PanelHeader className="gap-4 p-6 md:p-8">
         <div className="text-[10px] font-semibold uppercase tracking-[0.34em] text-[#7f7f7f]">
-          Featured Surface
+          Channel Strip
         </div>
 
         <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
@@ -307,25 +307,26 @@ export default function HomeVstSurface({ onScrubbingChange }: HomeVstSurfaceProp
               Helios Channel
             </PanelTitle>
             <PanelDescription className="mt-3 text-base leading-7 text-[#9b9b9b]">
-              A fake VST channel built exclusively from Analog UI components and panel primitives.
+              A production-style audio panel assembled from Analog UI controls, readouts, and rack
+              hardware.
             </PanelDescription>
           </div>
 
           <PanelAction className="flex flex-wrap items-center gap-5">
             <div className="flex items-center gap-2">
-              <AnalogIndicator isOn={power} color="green" size="xs" />
+              <Indicator isOn={power} color="green" size="xs" />
               <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#9f9f9f]">
                 Power
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <AnalogIndicator isOn={clip} color="red" size="xs" />
+              <Indicator isOn={clip} color="red" size="xs" />
               <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#9f9f9f]">
                 Clip
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <AnalogIndicator isOn={sync} color="blue" size="xs" />
+              <Indicator isOn={sync} color="blue" size="xs" />
               <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#9f9f9f]">
                 Link
               </span>
@@ -347,18 +348,14 @@ export default function HomeVstSurface({ onScrubbingChange }: HomeVstSurfaceProp
                 <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#818181]">
                   Preset P-{preset.toString().padStart(2, '0')}
                 </span>
-                <AnalogWheelNumber value={preset} onValueChange={(next) => setPreset(next ?? 0)} />
+                <WheelNumber value={preset} onValueChange={(next) => setPreset(next ?? 0)} />
               </div>
 
               <div className="flex flex-col items-center gap-3">
                 <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#818181]">
                   Circuit {algorithm}
                 </span>
-                <AnalogWheelSelect
-                  options={algorithms}
-                  value={algorithm}
-                  onValueChange={setAlgorithm}
-                />
+                <WheelSelect options={algorithms} value={algorithm} onValueChange={setAlgorithm} />
               </div>
             </div>
 
@@ -455,7 +452,7 @@ export default function HomeVstSurface({ onScrubbingChange }: HomeVstSurfaceProp
                 <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#818181]">
                   Field {stereoMode}
                 </span>
-                <AnalogToggle
+                <Toggle
                   value={fieldMode}
                   onValueChange={setFieldMode}
                   leftLed="amber"
@@ -468,7 +465,7 @@ export default function HomeVstSurface({ onScrubbingChange }: HomeVstSurfaceProp
                 <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#818181]">
                   OS {oversample ? '4x' : '1x'}
                 </span>
-                <AnalogSwitch checked={oversample} onCheckedChange={setOversample} />
+                <Switch checked={oversample} onCheckedChange={setOversample} />
               </div>
             </div>
 
@@ -533,7 +530,7 @@ export default function HomeVstSurface({ onScrubbingChange }: HomeVstSurfaceProp
                     onScrubbingChange={handleScrubbingChange}
                   />
                   <div className="flex items-center gap-2">
-                    <AnalogIndicator isOn={power} color="white" size="xs" />
+                    <Indicator isOn={power} color="white" size="xs" />
                     <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#777]">
                       Line
                     </span>
@@ -554,7 +551,7 @@ export default function HomeVstSurface({ onScrubbingChange }: HomeVstSurfaceProp
                     onScrubbingChange={handleScrubbingChange}
                   />
                   <div className="flex items-center gap-2">
-                    <AnalogIndicator isOn={power} color="amber" size="xs" />
+                    <Indicator isOn={power} color="amber" size="xs" />
                     <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#777]">
                       Lift
                     </span>

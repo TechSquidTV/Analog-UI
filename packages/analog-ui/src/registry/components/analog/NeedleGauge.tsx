@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { Meter } from '@base-ui/react/meter';
-import { cn } from '../../../lib/utils';
+import { cn } from '@/lib/utils';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 import {
   useAnalogMaterialVariant,
   type AnalogMaterialVariant,
-} from '../../hooks/use-analog-material';
+} from '../../hooks/analog-material-scope';
 
 export type NeedleGaugeScalePreset = 'linear' | 'dbfs' | 'vu';
 export type NeedleGaugeNeedleVariant = 'red' | 'chrome';
@@ -638,7 +638,7 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
               <div className="pointer-events-none absolute left-1/2 bottom-0 z-30 aspect-square w-[17%] -translate-x-1/2 translate-y-1/2 overflow-hidden rounded-full">
                 <div
                   className={cn(
-                    'anisotropic-btn no-chamfer relative h-full w-full overflow-hidden rounded-full',
+                    'surface-button no-chamfer relative h-full w-full overflow-hidden rounded-full',
                     isBlack ? 'variant-black' : 'variant-chrome',
                   )}
                   style={

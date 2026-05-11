@@ -8,7 +8,7 @@
       "title": "Analog Foundation",
       "type": "registry:style",
       "description": "The shared token layer, lighting variables, and surface palettes required by Analog UI controls.",
-      "docs": "Install this foundation item with Analog UI controls to add the shared analog token layer. The tactile control recipes still live in the package stylesheet while they are being migrated into per-item registry CSS.",
+      "docs": "Install this foundation item with Analog UI controls to add shared analog tokens and the tactile component recipes used by the registry controls.",
       "cssVars": {
         "theme": {
           "analog-shadow-depth": "0.9",
@@ -144,6 +144,211 @@
           "analog-foil-opacity": "0.22",
           "analog-bloom-strength": "0.62"
         }
+      },
+      "css": {
+        "@layer components": {
+          ".analog-surface-recess": {
+            "--recess-depth": "4px",
+            "--recess-depth-inner": "2px",
+            "background-color": "var(--analog-surface-cavity)",
+            "box-shadow": "inset calc(sin(var(--analog-light-angle-track, 180deg)) * var(--recess-depth))\n        calc(cos(var(--analog-light-angle-track, 180deg)) * calc(-1 * var(--recess-depth)))\n        calc(var(--recess-depth) * 2) rgba(0, 0, 0, calc(0.95 * var(--analog-light-power, 1))),\n      inset calc(sin(var(--analog-light-angle-track, 180deg)) * var(--recess-depth-inner))\n        calc(cos(var(--analog-light-angle-track, 180deg)) * calc(-1 * var(--recess-depth-inner)))\n        calc(var(--recess-depth-inner) * 6) rgba(0, 0, 0, calc(1 * var(--analog-light-power, 1))),\n      calc(sin(var(--analog-light-angle-track, 180deg)) * 1px)\n        calc(cos(var(--analog-light-angle-track, 180deg)) * -1px) 0\n        rgba(255, 255, 255, calc(0.15 * var(--analog-light-power, 1)))"
+          },
+          ".analog-surface-recess-sm": {
+            "--recess-depth": "2px",
+            "--recess-depth-inner": "1px",
+            "background-color": "var(--analog-surface-cavity)",
+            "box-shadow": "inset calc(sin(var(--analog-light-angle-track, 180deg)) * var(--recess-depth))\n        calc(cos(var(--analog-light-angle-track, 180deg)) * calc(-1 * var(--recess-depth)))\n        calc(var(--recess-depth) * 2) rgba(0, 0, 0, calc(0.9 * var(--analog-light-power, 1))),\n      inset calc(sin(var(--analog-light-angle-track, 180deg)) * var(--recess-depth-inner))\n        calc(cos(var(--analog-light-angle-track, 180deg)) * calc(-1 * var(--recess-depth-inner)))\n        calc(var(--recess-depth-inner) * 6) rgba(0, 0, 0, calc(1 * var(--analog-light-power, 1))),\n      calc(sin(var(--analog-light-angle-track, 180deg)) * 1px)\n        calc(cos(var(--analog-light-angle-track, 180deg)) * -1px) 0\n        rgba(255, 255, 255, calc(0.15 * var(--analog-light-power, 1)))"
+          },
+          ".analog-track-slot": {
+            "--analog-track-slot-base": "var(--analog-surface-cavity-strong)",
+            "--analog-track-slot-gradient-highlight-alpha": "0.08",
+            "--analog-track-slot-gradient-shadow-alpha": "0.6",
+            "--analog-track-slot-inset-highlight-alpha": "0.08",
+            "--analog-track-slot-inset-shadow-alpha": "0.85",
+            "--analog-track-slot-inset-highlight-offset": "0.5px",
+            "--analog-track-slot-inset-highlight-blur": "3px",
+            "--analog-track-slot-inset-shadow-offset": "1px",
+            "--analog-track-slot-inset-shadow-blur": "4px",
+            "--analog-track-slot-drop-shadow": "0 0 0 rgba(0, 0, 0, 0)",
+            "position": "relative",
+            "overflow": "hidden",
+            "background": "linear-gradient(\n        var(--analog-light-angle-track, 180deg),\n        rgba(\n            255,\n            255,\n            255,\n            calc(var(--analog-track-slot-gradient-highlight-alpha) * var(--analog-light-power, 1))\n          )\n          0%,\n        rgba(255, 255, 255, 0) 34%,\n        rgba(\n            0,\n            0,\n            0,\n            calc(var(--analog-track-slot-gradient-shadow-alpha) * var(--analog-light-power, 1))\n          )\n          100%\n      ),\n      var(--analog-track-slot-base)",
+            "box-shadow": "inset\n        calc(\n          sin(var(--analog-light-angle-track, 180deg)) *\n            var(--analog-track-slot-inset-highlight-offset)\n        )\n        calc(\n          cos(var(--analog-light-angle-track, 180deg)) *\n            calc(-1 * var(--analog-track-slot-inset-highlight-offset))\n        )\n        var(--analog-track-slot-inset-highlight-blur)\n        rgba(\n          255,\n          255,\n          255,\n          calc(var(--analog-track-slot-inset-highlight-alpha) * var(--analog-light-power, 1))\n        ),\n      inset\n        calc(\n          sin(var(--analog-light-angle-track, 180deg)) *\n            calc(-1 * var(--analog-track-slot-inset-shadow-offset))\n        )\n        calc(\n          cos(var(--analog-light-angle-track, 180deg)) *\n            var(--analog-track-slot-inset-shadow-offset)\n        )\n        var(--analog-track-slot-inset-shadow-blur)\n        rgba(\n          0,\n          0,\n          0,\n          calc(var(--analog-track-slot-inset-shadow-alpha) * var(--analog-light-power, 1))\n        ),\n      var(--analog-track-slot-drop-shadow)"
+          },
+          ".analog-track-slot-deep": {
+            "--analog-track-slot-base": "var(--analog-surface-panel)",
+            "--analog-track-slot-gradient-shadow-alpha": "0.42",
+            "--analog-track-slot-inset-highlight-alpha": "0.06",
+            "--analog-track-slot-inset-shadow-alpha": "0.55",
+            "--analog-track-slot-inset-highlight-offset": "1px",
+            "--analog-track-slot-inset-highlight-blur": "10px",
+            "--analog-track-slot-inset-shadow-offset": "6px",
+            "--analog-track-slot-inset-shadow-blur": "18px",
+            "--analog-track-slot-drop-shadow": "0 10px 20px rgba(0, 0, 0, 0.8)"
+          },
+          ".analog-track-slot-unlit": {
+            "--analog-track-slot-gradient-highlight-alpha": "0",
+            "--analog-track-slot-gradient-shadow-alpha": "0",
+            "--analog-track-slot-inset-highlight-alpha": "0",
+            "--analog-track-slot-inset-shadow-alpha": "1",
+            "--analog-track-slot-inset-shadow-offset": "0px",
+            "--analog-track-slot-inset-shadow-blur": "3px"
+          },
+          ".analog-track-slot-guide": {
+            "background": "color-mix(in oklch, var(--analog-surface-raised) 50%, transparent)",
+            "box-shadow": "0 0 0 0.5px rgba(255, 255, 255, calc(0.04 * var(--analog-light-power, 1))),\n      0 0 4px rgba(0, 0, 0, calc(0.35 * var(--analog-light-power, 1)))"
+          },
+          ".analog-foil": {
+            "position": "absolute",
+            "inset": "0",
+            "pointer-events": "none",
+            "mix-blend-mode": "overlay",
+            "background-image": "var(--foil)",
+            "background-size": "150%",
+            "background-position": "center"
+          },
+          ".analog-wheel-lighting": {
+            "position": "absolute",
+            "inset": "0",
+            "z-index": "10",
+            "pointer-events": "none",
+            "opacity": "0.52",
+            "filter": "blur(10px)",
+            "transform": "scale(1.05)",
+            "background": "linear-gradient(to bottom, #000 0%, transparent 25%, transparent 75%, #000 100%),\n      linear-gradient(\n        var(--analog-light-angle-wheel-face, 180deg),\n        rgba(255, 255, 255, calc(0.12 * var(--analog-light-power, 1))) 0%,\n        rgba(255, 255, 255, calc(0.05 * var(--analog-light-power, 1))) 20%,\n        transparent 48%,\n        transparent 62%,\n        rgba(0, 0, 0, calc(0.72 * var(--analog-light-power, 1))) 100%\n      )"
+          },
+          ".surface-button": {
+            "@apply relative appearance-none overflow-hidden border-0 text-foreground tracking-wide rounded-full": {},
+            "background-color": "var(--analog-surface-metal-mid)",
+            "font-family": "inherit",
+            "transform": "translateZ(0)",
+            "--foil": "repeating-conic-gradient(\n        from calc(var(--analog-light-angle-surface, 180deg) - 90deg),\n        rgba(255, 255, 255, 0.18) 0deg,\n        rgba(255, 255, 255, 0.02) 7deg,\n        rgba(0, 0, 0, 0.22) 13deg,\n        rgba(255, 255, 255, 0.08) 19deg,\n        rgba(0, 0, 0, 0.16) 26deg\n      ),\n      repeating-radial-gradient(\n        circle at 50% 50%,\n        rgba(255, 255, 255, 0.22) 0,\n        rgba(255, 255, 255, 0.04) 1px,\n        transparent 2px,\n        rgba(0, 0, 0, 0.16) 3px,\n        transparent 5px\n      )",
+            "box-shadow": "0 0 0 1px inset rgba(255, 255, 255, calc(0.4 * var(--analog-light-power, 1))),\n      0 8px 16px -4px rgba(0, 0, 0, calc(0.4 * var(--analog-light-power, 1))),\n      inset 0 -4px 8px rgba(0, 0, 0, calc(0.2 * var(--analog-light-power, 1))),\n      inset 0 4px 12px rgba(255, 255, 255, calc(0.4 * var(--analog-light-power, 1)))"
+          },
+          ".surface-button.variant-black": {
+            "background-color": "var(--analog-surface-onyx-lo)",
+            "box-shadow": "0 0 0 1px inset rgba(255, 255, 255, calc(0.1 * var(--analog-light-power, 1))),\n      0 8px 16px -4px rgba(0, 0, 0, calc(0.8 * var(--analog-light-power, 1))),\n      inset 0 -4px 8px rgba(0, 0, 0, calc(0.6 * var(--analog-light-power, 1))),\n      inset 0 4px 12px rgba(255, 255, 255, calc(0.1 * var(--analog-light-power, 1)))"
+          },
+          ".surface-button::after": {
+            "content": "''",
+            "@apply absolute inset-0 z-[3] rounded-full pointer-events-none": {},
+            "box-shadow": "inset 0 0 0 1px rgba(255, 255, 255, calc(0.4 * var(--analog-light-power, 1))),\n      inset 0 0 0 calc(var(--spacing-track-padding) + 2px)\n        rgba(0, 0, 0, calc(0.1 * var(--analog-light-power, 1))),\n      inset 0 2px 0 var(--spacing-track-padding)\n        rgba(255, 255, 255, calc(0.7 * var(--analog-light-power, 1))),\n      inset 0 -2px 0 var(--spacing-track-padding)\n        rgba(0, 0, 0, calc(0.6 * var(--analog-light-power, 1))),\n      inset 0 0 0 calc(var(--spacing-track-padding) + 3px)\n        rgba(0, 0, 0, calc(0.6 * var(--analog-light-power, 1)))"
+          },
+          ".surface-button.variant-black::after": {
+            "box-shadow": "inset 0 0 0 1px rgba(255, 255, 255, calc(0.05 * var(--analog-light-power, 1))),\n      inset 0 0 0 calc(var(--spacing-track-padding) + 2px)\n        rgba(0, 0, 0, calc(0.4 * var(--analog-light-power, 1))),\n      inset 0 2px 0 var(--spacing-track-padding)\n        rgba(255, 255, 255, calc(0.2 * var(--analog-light-power, 1))),\n      inset 0 -2px 0 var(--spacing-track-padding)\n        rgba(0, 0, 0, calc(0.9 * var(--analog-light-power, 1))),\n      inset 0 0 0 calc(var(--spacing-track-padding) + 3px)\n        rgba(0, 0, 0, calc(0.9 * var(--analog-light-power, 1)))"
+          },
+          ".surface-button.variant-black .holo-bg": {
+            "filter": "grayscale(100%) brightness(0.2) contrast(1.5)",
+            "opacity": "0.9"
+          },
+          ".surface-button.variant-black .holo-glare": {
+            "opacity": "calc(0.1 + var(--pointer-from-center, 0) * 0.3)"
+          },
+          ".surface-button .content": {
+            "@apply relative z-10 flex w-full h-full items-center justify-center gap-2 font-bold pointer-events-none": {}
+          },
+          ".surface-button.no-chamfer::after": {
+            "content": "none",
+            "display": "none"
+          },
+          ".surface-button .holo-bg": {
+            "@apply absolute inset-0 z-[1] pointer-events-none rounded-full": {},
+            "opacity": "calc(0.8 * var(--analog-light-power, 1))",
+            "background-image": "var(--foil)",
+            "background-size": "cover",
+            "background-position": "center",
+            "filter": "grayscale(100%) brightness(0.8) contrast(1.2)",
+            "mix-blend-mode": "luminosity"
+          },
+          ".surface-button .holo-glare": {
+            "content": "''",
+            "@apply absolute inset-0 z-[2] pointer-events-none rounded-full": {},
+            "opacity": "calc((0.2 + var(--pointer-from-center, 0) * 0.4) * var(--analog-light-power, 1))",
+            "background": "conic-gradient(\n      from\n        calc(\n          var(--pointer-angle, 0deg) + 90deg + var(--analog-light-angle-surface, 180deg) - 180deg\n        )\n        at 50% 50%,\n      rgba(0, 0, 0, 0.2) 0deg,\n      rgba(255, 255, 255, 0.4) 45deg,\n      rgba(255, 255, 255, 0.8) 90deg,\n      rgba(255, 255, 255, 0.4) 135deg,\n      rgba(0, 0, 0, 0.2) 180deg,\n      rgba(0, 0, 0, 0.2) 180deg,\n      rgba(255, 255, 255, 0.4) 225deg,\n      rgba(255, 255, 255, 0.8) 270deg,\n      rgba(255, 255, 255, 0.4) 315deg,\n      rgba(0, 0, 0, 0.2) 360deg\n    )",
+            "mix-blend-mode": "hard-light"
+          },
+          ".surface-button .holo-texture": {
+            "@apply absolute inset-0 z-[3] pointer-events-none rounded-full": {},
+            "opacity": "0",
+            "background-image": "repeating-radial-gradient(\n      circle at 50% 50%,\n      transparent 0,\n      transparent 2px,\n      rgba(255, 255, 255, 0.8) 2.5px,\n      rgba(0, 0, 0, 0.8) 3px,\n      transparent 4px\n    )",
+            "mix-blend-mode": "overlay"
+          },
+          ".analog-switch-cylinder": {
+            "transform-origin": "center center -60px",
+            "transition": "transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+            "transform-style": "preserve-3d"
+          },
+          ".analog-switch[data-orientation='horizontal'] .analog-switch-cylinder": {
+            "transform": "translateZ(4px) rotateY(-40deg)"
+          },
+          ".analog-switch[data-orientation='horizontal'][data-checked] .analog-switch-cylinder": {
+            "transform": "translateZ(4px) rotateY(40deg)"
+          },
+          ".analog-switch[data-orientation='vertical'] .analog-switch-cylinder": {
+            "transform": "translateZ(4px) rotateX(40deg)"
+          },
+          ".analog-switch[data-orientation='vertical'][data-checked] .analog-switch-cylinder": {
+            "transform": "translateZ(4px) rotateX(-40deg)"
+          },
+          ".analog-switch-thumb": {
+            "transition": "transform 0.3s cubic-bezier(1, 0, 1, 1)"
+          },
+          ".analog-switch-face": {
+            "--foil": "repeating-conic-gradient(\n        from calc(var(--analog-light-angle-thumb, 180deg) - 90deg),\n        rgba(255, 255, 255, 0.16) 0deg,\n        rgba(255, 255, 255, 0.02) 8deg,\n        rgba(0, 0, 0, 0.22) 15deg,\n        rgba(255, 255, 255, 0.08) 22deg,\n        rgba(0, 0, 0, 0.16) 30deg\n      ),\n      repeating-radial-gradient(\n        circle at 50% 50%,\n        rgba(255, 255, 255, 0.18) 0,\n        rgba(255, 255, 255, 0.04) 1px,\n        transparent 2px,\n        rgba(0, 0, 0, 0.16) 3px,\n        transparent 5px\n      )",
+            "transform-style": "preserve-3d",
+            "transition": "all 0.3s cubic-bezier(1, 0, 1, 1)"
+          },
+          ".analog-switch-lighting": {
+            "border-radius": "inherit",
+            "pointer-events": "none"
+          },
+          ".analog-switch-lighting.variant-chrome": {
+            "mix-blend-mode": "screen",
+            "opacity": "calc(0.95 * var(--analog-light-power, 1))",
+            "background": "radial-gradient(\n        circle at calc(50% + sin(var(--analog-light-angle-thumb, 180deg)) * 22%)\n          calc(50% + cos(var(--analog-light-angle-thumb, 180deg)) * -22%),\n        rgba(255, 255, 255, 0.92) 0%,\n        rgba(255, 255, 255, 0.48) 18%,\n        rgba(255, 255, 255, 0.18) 36%,\n        rgba(255, 255, 255, 0.04) 52%,\n        transparent 72%\n      ),\n      linear-gradient(\n        calc(var(--analog-light-angle-thumb, 180deg) - 90deg),\n        rgba(255, 255, 255, 0.24) 0%,\n        rgba(255, 255, 255, 0.08) 38%,\n        rgba(0, 0, 0, 0.06) 72%,\n        rgba(0, 0, 0, 0.18) 100%\n      )"
+          },
+          ".analog-switch-lighting.variant-black": {
+            "mix-blend-mode": "screen",
+            "opacity": "calc(0.58 * var(--analog-light-power, 1))",
+            "background": "radial-gradient(\n        circle at calc(50% + sin(var(--analog-light-angle-thumb, 180deg)) * 18%)\n          calc(50% + cos(var(--analog-light-angle-thumb, 180deg)) * -18%),\n        rgba(255, 255, 255, 0.42) 0%,\n        rgba(255, 255, 255, 0.22) 18%,\n        rgba(255, 255, 255, 0.08) 34%,\n        transparent 64%\n      ),\n      linear-gradient(\n        calc(var(--analog-light-angle-thumb, 180deg) - 90deg),\n        rgba(255, 255, 255, 0.08) 0%,\n        rgba(255, 255, 255, 0.03) 36%,\n        rgba(0, 0, 0, 0.12) 74%,\n        rgba(0, 0, 0, 0.26) 100%\n      )"
+          },
+          ".analog-switch-foil": {
+            "background-size": "260%",
+            "background-position": "center"
+          },
+          ".analog-switch[data-orientation='horizontal'] .analog-switch-face.variant-chrome": {
+            "background": "linear-gradient(\n      calc(var(--analog-light-angle-thumb, 180deg) - 90deg),\n      var(--analog-surface-metal-mid),\n      var(--analog-surface-metal-hi) 50%,\n      var(--analog-surface-metal-lo)\n    )",
+            "box-shadow": "12px 6px 15px -4px rgba(0, 0, 0, calc(0.7 * var(--analog-light-power, 1))),\n      inset 2px 0 6px rgba(255, 255, 255, calc(1 * var(--analog-light-power, 1))),\n      inset -6px 0 12px rgba(0, 0, 0, calc(0.4 * var(--analog-light-power, 1))),\n      inset 0 1px 3px rgba(255, 255, 255, calc(0.9 * var(--analog-light-power, 1)))"
+          },
+          ".analog-switch[data-orientation='horizontal'][data-checked] .analog-switch-face.variant-chrome": {
+            "background": "linear-gradient(\n      calc(var(--analog-light-angle-thumb, 180deg) - 90deg),\n      var(--analog-surface-metal-lo),\n      var(--analog-surface-metal-hi) 50%,\n      var(--analog-surface-metal-mid)\n    )",
+            "box-shadow": "-12px 6px 15px -4px rgba(0, 0, 0, calc(0.7 * var(--analog-light-power, 1))),\n      inset -2px 0 6px rgba(255, 255, 255, calc(1 * var(--analog-light-power, 1))),\n      inset 6px 0 12px rgba(0, 0, 0, calc(0.4 * var(--analog-light-power, 1))),\n      inset 0 1px 3px rgba(255, 255, 255, calc(0.9 * var(--analog-light-power, 1)))"
+          },
+          ".analog-switch[data-orientation='vertical'] .analog-switch-face.variant-chrome": {
+            "background": "linear-gradient(\n      calc(var(--analog-light-angle-thumb, 180deg) - 90deg),\n      var(--analog-surface-metal-mid),\n      var(--analog-surface-metal-hi) 50%,\n      var(--analog-surface-metal-lo)\n    )",
+            "box-shadow": "0 12px 15px -4px rgba(0, 0, 0, calc(0.7 * var(--analog-light-power, 1))),\n      inset 0 2px 6px rgba(255, 255, 255, calc(1 * var(--analog-light-power, 1))),\n      inset 0 -6px 12px rgba(0, 0, 0, calc(0.4 * var(--analog-light-power, 1))),\n      inset 1px 0 3px rgba(255, 255, 255, calc(0.9 * var(--analog-light-power, 1)))"
+          },
+          ".analog-switch[data-orientation='vertical'][data-checked] .analog-switch-face.variant-chrome": {
+            "background": "linear-gradient(\n      calc(var(--analog-light-angle-thumb, 180deg) - 90deg),\n      var(--analog-surface-metal-lo),\n      var(--analog-surface-metal-hi) 50%,\n      var(--analog-surface-metal-mid)\n    )",
+            "box-shadow": "0 -12px 15px -4px rgba(0, 0, 0, calc(0.7 * var(--analog-light-power, 1))),\n      inset 0 -2px 6px rgba(255, 255, 255, calc(1 * var(--analog-light-power, 1))),\n      inset 0 6px 12px rgba(0, 0, 0, calc(0.4 * var(--analog-light-power, 1))),\n      inset 1px 0 3px rgba(255, 255, 255, calc(0.9 * var(--analog-light-power, 1)))"
+          },
+          ".analog-switch[data-orientation='horizontal'] .analog-switch-face.variant-black": {
+            "background": "linear-gradient(\n      calc(var(--analog-light-angle-thumb, 180deg) - 90deg),\n      var(--analog-surface-onyx-mid),\n      var(--analog-surface-onyx-hi) 50%,\n      var(--analog-surface-onyx-lo)\n    )",
+            "box-shadow": "12px 6px 15px -4px rgba(0, 0, 0, calc(0.95 * var(--analog-light-power, 1))),\n      inset 2px 0 4px rgba(255, 255, 255, calc(0.15 * var(--analog-light-power, 1))),\n      inset -6px 0 12px rgba(0, 0, 0, calc(0.9 * var(--analog-light-power, 1))),\n      inset 0 1px 2px rgba(255, 255, 255, calc(0.1 * var(--analog-light-power, 1)))"
+          },
+          ".analog-switch[data-orientation='horizontal'][data-checked] .analog-switch-face.variant-black": {
+            "background": "linear-gradient(\n      calc(var(--analog-light-angle-thumb, 180deg) - 90deg),\n      var(--analog-surface-onyx-lo),\n      var(--analog-surface-onyx-hi) 50%,\n      var(--analog-surface-onyx-mid)\n    )",
+            "box-shadow": "-12px 6px 15px -4px rgba(0, 0, 0, calc(0.95 * var(--analog-light-power, 1))),\n      inset -2px 0 4px rgba(255, 255, 255, calc(0.15 * var(--analog-light-power, 1))),\n      inset 6px 0 12px rgba(0, 0, 0, calc(0.9 * var(--analog-light-power, 1))),\n      inset 0 1px 2px rgba(255, 255, 255, calc(0.1 * var(--analog-light-power, 1)))"
+          },
+          ".analog-switch[data-orientation='vertical'] .analog-switch-face.variant-black": {
+            "background": "linear-gradient(\n      calc(var(--analog-light-angle-thumb, 180deg) - 90deg),\n      var(--analog-surface-onyx-mid),\n      var(--analog-surface-onyx-hi) 50%,\n      var(--analog-surface-onyx-lo)\n    )",
+            "box-shadow": "0 12px 15px -4px rgba(0, 0, 0, calc(0.95 * var(--analog-light-power, 1))),\n      inset 0 2px 4px rgba(255, 255, 255, calc(0.15 * var(--analog-light-power, 1))),\n      inset 0 -6px 12px rgba(0, 0, 0, calc(0.9 * var(--analog-light-power, 1))),\n      inset 1px 0 2px rgba(255, 255, 255, calc(0.1 * var(--analog-light-power, 1)))"
+          },
+          ".analog-switch[data-orientation='vertical'][data-checked] .analog-switch-face.variant-black": {
+            "background": "linear-gradient(\n      calc(var(--analog-light-angle-thumb, 180deg) - 90deg),\n      var(--analog-surface-onyx-lo),\n      var(--analog-surface-onyx-hi) 50%,\n      var(--analog-surface-onyx-mid)\n    )",
+            "box-shadow": "0 -12px 15px -4px rgba(0, 0, 0, calc(0.95 * var(--analog-light-power, 1))),\n      inset 0 -2px 4px rgba(255, 255, 255, calc(0.15 * var(--analog-light-power, 1))),\n      inset 0 6px 12px rgba(0, 0, 0, calc(0.9 * var(--analog-light-power, 1))),\n      inset 1px 0 2px rgba(255, 255, 255, calc(0.1 * var(--analog-light-power, 1)))"
+          }
+        }
       }
     },
     {
@@ -178,7 +383,7 @@
       "description": "Math helpers for blending, constraining, and advancing continuous analog light angles.",
       "files": [
         {
-          "path": "src/registry/hooks/angle-utils.ts",
+          "path": "src/lib/angle-utils.ts",
           "type": "registry:lib"
         }
       ]
@@ -188,6 +393,7 @@
       "title": "Analog Lighting Hook",
       "type": "registry:hook",
       "description": "Provides the shared analog lighting context and resolved material channel styles for tactile controls.",
+      "dependencies": ["motion"],
       "registryDependencies": ["angle-utils"],
       "files": [
         {
@@ -197,40 +403,40 @@
       ]
     },
     {
-      "name": "use-analog-material",
+      "name": "analog-material-scope",
       "title": "Analog Material Scope",
       "type": "registry:hook",
       "description": "Provides inherited chrome and black material defaults for Analog UI control subtrees.",
       "registryDependencies": ["utils"],
       "files": [
         {
-          "path": "src/registry/hooks/use-analog-material.tsx",
+          "path": "src/registry/hooks/analog-material-scope.tsx",
           "type": "registry:hook"
         }
       ]
     },
     {
-      "name": "use-wheel-scroll",
-      "title": "Wheel Scroll Hook",
+      "name": "use-wheel-input",
+      "title": "Wheel Input Hook",
       "type": "registry:hook",
       "description": "Normalizes wheel interactions for rotary and stepped Analog UI controls.",
       "files": [
         {
-          "path": "src/registry/hooks/use-wheel-scroll.ts",
+          "path": "src/registry/hooks/use-wheel-input.ts",
           "type": "registry:hook"
         }
       ]
     },
     {
-      "name": "use-mouse-lumination",
-      "title": "Mouse Lumination Hook",
+      "name": "use-pointer-lighting",
+      "title": "Pointer Lighting Hook",
       "type": "registry:hook",
-      "description": "Tracks pointer-driven lighting changes so components can react with dynamic lumination effects.",
+      "description": "Tracks pointer-driven lighting changes so components can react with dynamic lighting effects.",
       "dependencies": ["motion"],
       "registryDependencies": ["angle-utils"],
       "files": [
         {
-          "path": "src/registry/hooks/use-mouse-lumination.ts",
+          "path": "src/registry/hooks/use-pointer-lighting.ts",
           "type": "registry:hook"
         }
       ]
@@ -238,59 +444,76 @@
     {
       "name": "wheel-interaction",
       "title": "Wheel Interaction Helpers",
-      "type": "registry:lib",
+      "type": "registry:ui",
       "description": "Shared interaction utilities for the trim-wheel style inputs and selectors.",
       "files": [
         {
           "path": "src/registry/components/analog/wheel-interaction.ts",
-          "type": "registry:lib"
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "orientation",
+      "title": "Analog Orientation Type",
+      "type": "registry:ui",
+      "description": "Shared horizontal and vertical orientation type used by Analog UI controls.",
+      "files": [
+        {
+          "path": "src/registry/components/analog/orientation.ts",
+          "type": "registry:ui"
         }
       ]
     },
     {
       "name": "rocker-thumb-surface",
       "title": "Rocker Thumb Surface",
-      "type": "registry:component",
+      "type": "registry:ui",
       "description": "A reusable tactile thumb shell for sliders and switches with machined analog lighting treatment.",
-      "registryDependencies": ["analog-foundation", "use-analog-material", "utils"],
+      "registryDependencies": [
+        "analog-foundation",
+        "analog-material-scope",
+        "utils",
+        "orientation"
+      ],
       "files": [
         {
           "path": "src/registry/components/analog/RockerThumbSurface.tsx",
-          "type": "registry:component"
+          "type": "registry:ui"
         }
       ]
     },
     {
-      "name": "anisotropic-button",
-      "title": "Anisotropic Button",
+      "name": "surface-button",
+      "title": "Surface Button",
       "type": "registry:ui",
-      "description": "A metallic button surface with anisotropic foil reflections and pointer-responsive glare.",
-      "dependencies": ["@base-ui/react"],
+      "description": "A metallic button surface with foil reflections, material variants, and pointer-responsive glare.",
+      "dependencies": ["@base-ui/react", "motion"],
       "registryDependencies": [
         "analog-foundation",
         "refs",
         "use-analog-lighting",
-        "use-analog-material",
+        "analog-material-scope",
         "utils"
       ],
       "files": [
         {
-          "path": "src/registry/components/analog/AnisotropicButton.tsx",
+          "path": "src/registry/components/analog/SurfaceButton.tsx",
           "type": "registry:ui"
         }
       ]
     },
     {
       "name": "dial",
-      "title": "Anisotropic Dial",
+      "title": "Dial",
       "type": "registry:ui",
       "description": "A tactile rotary control that can behave as an endless encoder or a bounded knob with sweep, steps, and detents.",
       "registryDependencies": [
         "analog-foundation",
-        "anisotropic-button",
+        "surface-button",
         "use-analog-lighting",
-        "use-analog-material",
-        "use-wheel-scroll",
+        "analog-material-scope",
+        "use-wheel-input",
         "utils"
       ],
       "files": [
@@ -302,13 +525,13 @@
     },
     {
       "name": "gauge",
-      "title": "LCD Radial Gauge",
+      "title": "Gauge",
       "type": "registry:ui",
       "description": "A configurable radial gauge with custom sweep geometry, caller-defined marks, and optional center-fill behavior.",
       "dependencies": ["@base-ui/react"],
       "registryDependencies": [
         "analog-foundation",
-        "anisotropic-button",
+        "surface-button",
         "use-analog-lighting",
         "utils"
       ],
@@ -321,7 +544,7 @@
     },
     {
       "name": "lcd-display",
-      "title": "Seven-Segment LCD Display",
+      "title": "LCD Display",
       "type": "registry:ui",
       "description": "A seven-segment readout with tinted lens glow, static screen texture, and shadowed vintage LCD numerals.",
       "registryDependencies": ["analog-foundation", "use-analog-lighting", "utils"],
@@ -334,14 +557,14 @@
     },
     {
       "name": "needle-gauge",
-      "title": "Analog Needle Gauge",
+      "title": "Needle Gauge",
       "type": "registry:ui",
       "description": "A mechanical readout gauge with printed scale markings, colored range zones, a glass lens, and a lit physical needle.",
       "dependencies": ["@base-ui/react"],
       "registryDependencies": [
         "analog-foundation",
         "use-analog-lighting",
-        "use-analog-material",
+        "analog-material-scope",
         "utils"
       ],
       "files": [
@@ -353,11 +576,11 @@
     },
     {
       "name": "meter",
-      "title": "Audio Channel Monitor",
+      "title": "Meter",
       "type": "registry:ui",
       "description": "A calibrated level meter display with optional scale presets, display ballistics, and configurable LED styling.",
       "dependencies": ["@base-ui/react"],
-      "registryDependencies": ["analog-foundation", "use-analog-lighting", "utils"],
+      "registryDependencies": ["analog-foundation", "use-analog-lighting", "utils", "orientation"],
       "files": [
         {
           "path": "src/registry/components/analog/Meter.tsx",
@@ -367,7 +590,7 @@
     },
     {
       "name": "slider",
-      "title": "Professional Audio Fader",
+      "title": "Slider",
       "type": "registry:ui",
       "description": "A tactile linear slider with caller-defined scale marks, optional audio-style legends, and shared analog lighting response.",
       "dependencies": ["@base-ui/react"],
@@ -375,8 +598,9 @@
         "analog-foundation",
         "rocker-thumb-surface",
         "use-analog-lighting",
-        "use-analog-material",
-        "utils"
+        "analog-material-scope",
+        "utils",
+        "orientation"
       ],
       "files": [
         {
@@ -387,7 +611,7 @@
     },
     {
       "name": "switch",
-      "title": "Machined Cylinder Switch",
+      "title": "Switch",
       "type": "registry:ui",
       "description": "A track switch with a 3D extruded metallic cylinder that rolls through a recessed cavity in horizontal or vertical orientations.",
       "dependencies": ["@base-ui/react"],
@@ -395,8 +619,9 @@
         "analog-foundation",
         "refs",
         "use-analog-lighting",
-        "use-analog-material",
-        "utils"
+        "analog-material-scope",
+        "utils",
+        "orientation"
       ],
       "files": [
         {
@@ -407,13 +632,13 @@
     },
     {
       "name": "indicator",
-      "title": "Faceted Jewel Lamp",
+      "title": "Indicator",
       "type": "registry:ui",
       "description": "A hyper-skeuomorphic status indicator with faceted glass textures, bloom, and a machined bezel.",
       "registryDependencies": [
         "analog-foundation",
         "use-analog-lighting",
-        "use-analog-material",
+        "analog-material-scope",
         "utils"
       ],
       "files": [
@@ -425,7 +650,7 @@
     },
     {
       "name": "toggle",
-      "title": "Industrial Power Rocker",
+      "title": "Toggle",
       "type": "registry:ui",
       "description": "A heavy-duty rocker switch with textured grip ridges, an anodized baseplate, and optional LED states.",
       "dependencies": ["@base-ui/react"],
@@ -435,8 +660,9 @@
         "refs",
         "rocker-thumb-surface",
         "use-analog-lighting",
-        "use-analog-material",
-        "utils"
+        "analog-material-scope",
+        "utils",
+        "orientation"
       ],
       "files": [
         {
@@ -447,14 +673,14 @@
     },
     {
       "name": "wheel-number",
-      "title": "Tactile Trim Wheel (Numeric)",
+      "title": "Wheel Number",
       "type": "registry:ui",
       "description": "A continuous numeric trim wheel for precise scrubbing and fine-grained analog adjustments.",
       "dependencies": ["@base-ui/react", "motion", "lucide-react"],
       "registryDependencies": [
         "analog-foundation",
         "use-analog-lighting",
-        "use-wheel-scroll",
+        "use-wheel-input",
         "utils",
         "wheel-interaction"
       ],
@@ -467,16 +693,17 @@
     },
     {
       "name": "wheel-select",
-      "title": "Tactile Trim Wheel",
+      "title": "Wheel Select",
       "type": "registry:ui",
       "description": "A stepped selection wheel inspired by aircraft trim controls for tactile option navigation.",
       "dependencies": ["motion"],
       "registryDependencies": [
         "analog-foundation",
         "use-analog-lighting",
-        "use-wheel-scroll",
+        "use-wheel-input",
         "utils",
-        "wheel-interaction"
+        "wheel-interaction",
+        "refs"
       ],
       "files": [
         {
@@ -487,21 +714,21 @@
     },
     {
       "name": "square-plunger",
-      "title": "3D Square Plunger",
-      "type": "registry:component",
+      "title": "Square Plunger",
+      "type": "registry:ui",
       "description": "A reusable 3D square plunger surface with motion-driven physical displacement and machined lighting.",
       "dependencies": ["motion"],
-      "registryDependencies": ["analog-foundation", "use-analog-material", "utils"],
+      "registryDependencies": ["analog-foundation", "analog-material-scope", "utils"],
       "files": [
         {
           "path": "src/registry/components/analog/SquarePlunger.tsx",
-          "type": "registry:component"
+          "type": "registry:ui"
         }
       ]
     },
     {
       "name": "square-button",
-      "title": "3D Square Button",
+      "title": "Square Button",
       "type": "registry:ui",
       "description": "A skeuomorphic square button with 3D extrusion, machined finish, and dynamic analog lighting.",
       "dependencies": ["@base-ui/react", "motion"],
@@ -521,7 +748,7 @@
     },
     {
       "name": "square-toggle",
-      "title": "3D Square Toggle",
+      "title": "Square Toggle",
       "type": "registry:ui",
       "description": "A skeuomorphic square toggle with 3D extrusion, optional LED indicator, and state-aware analog lighting.",
       "dependencies": ["@base-ui/react", "motion"],
@@ -542,14 +769,14 @@
     },
     {
       "name": "panel",
-      "title": "Equipment Panel",
+      "title": "Panel",
       "type": "registry:ui",
       "description": "An industrial rack-style panel container with optional screws and structured layout slots.",
       "registryDependencies": [
         "analog-foundation",
-        "anisotropic-button",
+        "surface-button",
         "use-analog-lighting",
-        "use-analog-material",
+        "analog-material-scope",
         "utils"
       ],
       "files": [

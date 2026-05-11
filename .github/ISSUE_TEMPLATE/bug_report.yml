@@ -1,0 +1,52 @@
+name: Bug report
+description: Report a broken component, docs page, or registry install.
+title: '[Bug]: '
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for helping tighten Analog UI before launch.
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: Describe the behavior you saw and what you expected instead.
+      placeholder: The dial renders correctly, but dragging clockwise decreases the value.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Link a repo, StackBlitz, registry command, or paste the smallest code sample that shows the issue.
+      placeholder: pnpm dlx shadcn@latest add https://analogui.com/r/dial.json
+    validations:
+      required: true
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Area
+      options:
+        - Component
+        - Registry
+        - Website/docs
+        - Package build
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Analog UI version or commit
+      placeholder: 0.0.0 or commit SHA
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: macOS 15, Chrome 124, React 19, Tailwind 4
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Add screenshots, console output, or anything else that helps.

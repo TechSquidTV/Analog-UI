@@ -14,9 +14,10 @@ Analog UI is a tactile component library for interfaces that should feel like ha
 Use these pages in order:
 
 1. [Installation](/docs/getting-started): add the package or copy components from the registry.
-2. [Tokens and Lighting](/docs/design/tokens-and-lighting): learn how materials and light work.
-3. [All Components](/docs/components): find the control you need.
-4. [Registry](/docs/registry): inspect the install data and dependencies.
+2. [Tokens](/docs/design/tokens): learn how the theme contract and material variables work.
+3. [Lighting](/docs/design/lighting): wire shared light direction and material response.
+4. [All Components](/docs/components): find the control you need.
+5. [Registry](/docs/registry): inspect the install data and dependencies.
 
 ## Design Model
 

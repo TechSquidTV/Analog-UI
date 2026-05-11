@@ -1,6 +1,6 @@
 import { useEffect, type RefObject } from 'react';
 
-export function useWheelScroll<T extends HTMLElement>(
+export function useWheelInput<T extends HTMLElement>(
   ref: RefObject<T | null>,
   callback: (e: WheelEvent, deltaDirection: 1 | -1) => void,
   options: AddEventListenerOptions = { passive: false },

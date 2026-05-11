@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Documentation
+    url: https://analogui.com/docs
+    about: Check the docs and registry guide before opening a support issue.

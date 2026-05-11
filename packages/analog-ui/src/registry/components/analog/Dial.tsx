@@ -1,12 +1,15 @@
 import React, { useState, useRef } from 'react';
-import { AnisotropicButton } from './AnisotropicButton';
-import { cn } from '../../../lib/utils';
-import { useMergedRefs } from '../../../lib/refs';
-import { useWheelScroll } from '../../hooks/use-wheel-scroll';
+import { SurfaceButton } from './SurfaceButton';
+import { cn } from '@/lib/utils';
+import { useMergedRefs } from '@/lib/refs';
+import { useWheelInput } from '../../hooks/use-wheel-input';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
-import { useAnalogMaterialVariant } from '../../hooks/use-analog-material';
+import { useAnalogMaterialVariant } from '../../hooks/analog-material-scope';
 
-export interface DialProps {
+export interface DialProps extends Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  'defaultValue' | 'onChange'
+> {
   /**
    * In encoder mode this is the accumulated rotation in degrees.
    * In knob mode this is the domain value between min and max.
@@ -17,7 +20,6 @@ export interface DialProps {
   onValueChange?: (value: number) => void;
   mode?: 'encoder' | 'knob';
   variant?: 'chrome' | 'black';
-  className?: string;
   disabled?: boolean;
   lighting?: AnalogLightingConfig<'surface' | 'pointer'>;
   min?: number;
@@ -65,6 +67,14 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
       sweepAngle = 300,
       detentValue,
       detentThreshold,
+      style,
+      onPointerDown,
+      onPointerMove,
+      onPointerUp,
+      onPointerCancel,
+      onKeyDown,
+      tabIndex,
+      ...props
     }: DialProps = {},
     ref,
   ) => {
@@ -187,7 +197,7 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
     const degrees = ((pointerRotation % 360) + 360) % 360;
     const revolutions = isKnob ? 0 : Math.floor(currentValue / 360);
 
-    useWheelScroll(
+    useWheelInput(
       dialRef,
       React.useCallback(
         (event, deltaDirection) => {
@@ -202,6 +212,8 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
     );
 
     const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+      onPointerDown?.(event);
+      if (event.defaultPrevented) return;
       if (disabled) return;
 
       event.currentTarget.setPointerCapture(event.pointerId);
@@ -225,6 +237,8 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
     };
 
     const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+      onPointerMove?.(event);
+      if (event.defaultPrevented) return;
       if (!isDragging || disabled) return;
 
       const dx = event.clientX - centerRef.current.x;
@@ -257,6 +271,12 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
     };
 
     const handlePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
+      if (event.type === 'pointercancel') {
+        onPointerCancel?.(event);
+      } else {
+        onPointerUp?.(event);
+      }
+      if (event.defaultPrevented) return;
       if (disabled) return;
       setIsDragging(false);
       if (event.currentTarget.hasPointerCapture(event.pointerId)) {
@@ -265,6 +285,8 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
     };
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+      onKeyDown?.(event);
+      if (event.defaultPrevented) return;
       if (disabled) return;
 
       let nextValue: number | null = null;
@@ -319,6 +341,7 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
 
     return (
       <div
+        {...props}
         ref={mergedRef}
         data-analog-variant={resolvedVariant}
         className={cn(
@@ -331,9 +354,12 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
               : 'cursor-grab',
           className,
         )}
-        style={lightingStyle}
+        style={{
+          ...lightingStyle,
+          ...style,
+        }}
         role="spinbutton"
-        tabIndex={disabled ? -1 : 0}
+        tabIndex={disabled ? -1 : (tabIndex ?? 0)}
         aria-disabled={disabled || undefined}
         aria-valuenow={Math.round(currentValue * 1000) / 1000}
         aria-valuemin={isKnob ? resolvedMin : undefined}
@@ -343,14 +369,14 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
             ? `${roundDisplayValue(currentValue)} at ${Math.round(degrees)} degrees`
             : `${Math.round(degrees)} degrees, ${revolutions} revolutions`
         }
-        aria-label={isKnob ? 'Analog knob' : 'Analog dial'}
+        aria-label={props['aria-label'] ?? (isKnob ? 'Analog knob' : 'Analog dial')}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
         onKeyDown={handleKeyDown}
       >
-        <AnisotropicButton
+        <SurfaceButton
           disabled={disabled}
           variant={resolvedVariant}
           rotation={pointerRotation}
@@ -391,7 +417,7 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
               />
             </div>
           </div>
-        </AnisotropicButton>
+        </SurfaceButton>
       </div>
     );
   },

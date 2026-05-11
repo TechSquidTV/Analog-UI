@@ -1,16 +1,16 @@
 import * as React from 'react';
-import { cn } from '../../../lib/utils';
+import { cn } from '@/lib/utils';
 import { NumberField } from '@base-ui/react/number-field';
 import { createChangeEventDetails } from '@base-ui/react/internals/createBaseUIEventDetails';
 import { motion, useMotionValue, animate } from 'motion/react';
 import { MinusIcon, PlusIcon } from 'lucide-react';
-import { useWheelScroll } from '../../hooks/use-wheel-scroll';
+import { useWheelInput } from '../../hooks/use-wheel-input';
 import {
-  useAnalogLightEffect,
+  useAnalogLightStyle,
   useAnalogLighting,
   type AnalogLightingConfig,
 } from '../../hooks/use-analog-lighting';
-import { getWheelDirectionFactor, type AnalogWheelDirection } from './wheel-interaction';
+import { getWheelDirectionFactor, type WheelDirection } from './wheel-interaction';
 
 const wheelIndicatorStyle: React.CSSProperties = {
   backgroundColor: 'var(--analog-led-amber-base)',
@@ -29,23 +29,21 @@ function getWheelRidgeBackground(isMarked: boolean) {
     : `linear-gradient(var(--analog-light-angle-wheel-face, 180deg), color-mix(in oklch, var(--analog-surface-onyx-hi) 74%, white 10%) 0%, var(--analog-surface-onyx-mid) 48%, var(--analog-surface-onyx-lo) 100%)`;
 }
 
-export interface AnalogWheelNumberProps extends React.ComponentPropsWithoutRef<
-  typeof NumberField.Root
-> {
+export interface WheelNumberProps extends React.ComponentPropsWithoutRef<typeof NumberField.Root> {
   lighting?: AnalogLightingConfig<'surface' | 'track' | 'wheel'>;
   /**
    * Which drag direction increases the numeric value.
    * @default 'down'
    */
-  grabDirection?: AnalogWheelDirection;
+  grabDirection?: WheelDirection;
   /**
    * Which wheel-scroll direction increases the numeric value.
    * @default 'down'
    */
-  scrollDirection?: AnalogWheelDirection;
+  scrollDirection?: WheelDirection;
 }
 
-export const AnalogWheelNumber = React.forwardRef<HTMLDivElement, AnalogWheelNumberProps>(
+export const WheelNumber = React.forwardRef<HTMLDivElement, WheelNumberProps>(
   (
     {
       className,
@@ -76,8 +74,8 @@ export const AnalogWheelNumber = React.forwardRef<HTMLDivElement, AnalogWheelNum
       wheel: { travel: 0.36 },
       ...lighting,
     };
-    const lightingStyle = useAnalogLighting(['track', 'wheel'], wheelLighting);
-    const wheelFaceStyle = useAnalogLightEffect(
+    const lightingStyle = useAnalogLighting(['surface', 'track', 'wheel'], wheelLighting);
+    const wheelFaceStyle = useAnalogLightStyle(
       'wheel',
       {
         varName: '--analog-light-angle-wheel-face',
@@ -111,7 +109,7 @@ export const AnalogWheelNumber = React.forwardRef<HTMLDivElement, AnalogWheelNum
       [max, min],
     );
 
-    useWheelScroll(
+    useWheelInput(
       scrubAreaRef,
       React.useCallback(
         (e, deltaDirection) => {
@@ -268,7 +266,7 @@ export const AnalogWheelNumber = React.forwardRef<HTMLDivElement, AnalogWheelNum
     );
   },
 );
-AnalogWheelNumber.displayName = 'AnalogWheelNumber';
+WheelNumber.displayName = 'WheelNumber';
 
 function CursorGrowIcon(props: React.ComponentProps<'svg'>) {
   return (

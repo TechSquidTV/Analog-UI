@@ -1,18 +1,18 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 
 import {
-  AnalogIndicator,
+  Indicator,
   LCDDisplay,
   AnalogLightingProvider,
-  AnalogMeter,
-  AnalogMeterGroup,
-  AnalogMeterGroupChannel,
-  AnalogMeterGroupSeparator,
-  AnalogSlider,
-  AnalogSwitch,
-  AnalogToggle,
-  AnalogWheelNumber,
-  AnalogWheelSelect,
+  Meter,
+  MeterGroup,
+  MeterGroupChannel,
+  MeterGroupSeparator,
+  Slider,
+  Switch,
+  Toggle,
+  WheelNumber,
+  WheelSelect,
   Dial,
   Gauge,
   Panel,
@@ -25,7 +25,7 @@ import {
   SquareToggle,
   NeedleGauge,
   type NeedleGaugeScalePreset,
-  useMouseLumination,
+  usePointerLighting,
 } from '../../../../../packages/analog-ui/src/index';
 import { cn } from '../../../../../packages/analog-ui/src/lib/utils';
 import { RockerThumbSurface } from '../../../../../packages/analog-ui/src/registry/components/analog/RockerThumbSurface';
@@ -133,7 +133,7 @@ function DemoStage({
   children: ReactNode;
 }) {
   const surfaceRef = useRef<HTMLDivElement>(null);
-  const sourceAngle = useMouseLumination({
+  const sourceAngle = usePointerLighting({
     baseAngle: 180,
     influence: mode === 'compact' ? 0.24 : 0.38,
     targetRef: surfaceRef,
@@ -206,7 +206,7 @@ function SliderDemo({ mode }: { mode: DemoMode }) {
         )}
       >
         {mode === 'full' ? (
-          <AnalogSlider
+          <Slider
             orientation="vertical"
             variant="chrome"
             min={-40}
@@ -217,7 +217,7 @@ function SliderDemo({ mode }: { mode: DemoMode }) {
         ) : null}
 
         <div className="w-full max-w-md">
-          <AnalogSlider
+          <Slider
             orientation="horizontal"
             variant="black"
             min={-40}
@@ -259,7 +259,7 @@ function ToggleDemo({ mode }: { mode: DemoMode }) {
             <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#636363]">
               Main
             </span>
-            <AnalogToggle
+            <Toggle
               value={mainValue}
               onValueChange={setMainValue}
               leftLed="amber"
@@ -270,7 +270,7 @@ function ToggleDemo({ mode }: { mode: DemoMode }) {
             <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#636363]">
               Aux
             </span>
-            <AnalogToggle
+            <Toggle
               variant="black"
               value={auxValue}
               onValueChange={setAuxValue}
@@ -285,7 +285,7 @@ function ToggleDemo({ mode }: { mode: DemoMode }) {
             <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#636363]">
               Bay Door
             </span>
-            <AnalogToggle
+            <Toggle
               orientation="vertical"
               value={verticalValue}
               onValueChange={setVerticalValue}
@@ -405,13 +405,13 @@ function SwitchDemo({ mode }: { mode: DemoMode }) {
             <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#686868]">
               Warp
             </span>
-            <AnalogSwitch checked={warp} onCheckedChange={setWarp} />
+            <Switch checked={warp} onCheckedChange={setWarp} />
           </div>
           <div className="flex items-center justify-between gap-6">
             <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#686868]">
               Stealth
             </span>
-            <AnalogSwitch variant="black" checked={stealth} onCheckedChange={setStealth} />
+            <Switch variant="black" checked={stealth} onCheckedChange={setStealth} />
           </div>
         </div>
 
@@ -420,13 +420,13 @@ function SwitchDemo({ mode }: { mode: DemoMode }) {
             <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#686868]">
               Launch
             </span>
-            <AnalogSwitch orientation="vertical" checked={launch} onCheckedChange={setLaunch} />
+            <Switch orientation="vertical" checked={launch} onCheckedChange={setLaunch} />
           </div>
           <div className="flex flex-col items-center gap-4">
             <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#686868]">
               Cloak
             </span>
-            <AnalogSwitch
+            <Switch
               orientation="vertical"
               variant="black"
               checked={cloak}
@@ -454,7 +454,7 @@ function WheelSelectDemo({ mode }: { mode: DemoMode }) {
       }
     >
       <div className="flex items-center justify-center gap-8">
-        <AnalogWheelSelect options={options} value={value} onValueChange={setValue} infinite />
+        <WheelSelect options={options} value={value} onValueChange={setValue} infinite />
       </div>
     </DemoStage>
   );
@@ -473,7 +473,7 @@ function WheelNumberDemo({ mode }: { mode: DemoMode }) {
         </>
       }
     >
-      <AnalogWheelNumber value={value} onValueChange={(next) => setValue(next ?? 0)} />
+      <WheelNumber value={value} onValueChange={(next) => setValue(next ?? 0)} />
     </DemoStage>
   );
 }
@@ -677,27 +677,27 @@ function MeterDemo({ mode }: { mode: DemoMode }) {
       }
     >
       <div className={cn(mode === 'compact' ? 'scale-[0.82]' : 'scale-100')}>
-        <AnalogMeterGroup aria-label="Stereo output meter">
-          <AnalogMeterGroupChannel label="L">
-            <AnalogMeter
+        <MeterGroup aria-label="Stereo output meter">
+          <MeterGroupChannel label="L">
+            <Meter
               orientation="vertical"
               value={meter.l}
               peakValue={meter.lPeak}
               variant="metered"
               segments={40}
             />
-          </AnalogMeterGroupChannel>
-          <AnalogMeterGroupSeparator />
-          <AnalogMeterGroupChannel label="R">
-            <AnalogMeter
+          </MeterGroupChannel>
+          <MeterGroupSeparator />
+          <MeterGroupChannel label="R">
+            <Meter
               orientation="vertical"
               value={meter.r}
               peakValue={meter.rPeak}
               variant="metered"
               segments={40}
             />
-          </AnalogMeterGroupChannel>
-        </AnalogMeterGroup>
+          </MeterGroupChannel>
+        </MeterGroup>
       </div>
     </DemoStage>
   );
@@ -743,13 +743,13 @@ function IndicatorDemo({ mode }: { mode: DemoMode }) {
     >
       <div className="flex flex-wrap items-center justify-center gap-12">
         <div className="flex flex-col items-center gap-4">
-          <AnalogIndicator isOn={isOn} color={color} size="lg" variant="chrome" />
+          <Indicator isOn={isOn} color={color} size="lg" variant="chrome" />
           <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#686868]">
             Chrome
           </span>
         </div>
         <div className="flex flex-col items-center gap-4">
-          <AnalogIndicator isOn={isOn} color={color} size="lg" variant="black" />
+          <Indicator isOn={isOn} color={color} size="lg" variant="black" />
           <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#686868]">
             Black
           </span>
@@ -786,11 +786,7 @@ function PanelDemo({ mode }: { mode: DemoMode }) {
             <div className="flex flex-col justify-center gap-10 py-2">
               <div className="flex items-center justify-between gap-6">
                 <span className="text-sm text-[#a0a0a0]">Compression</span>
-                <AnalogToggle
-                  value={compression}
-                  onValueChange={setCompression}
-                  className="w-[104px]"
-                />
+                <Toggle value={compression} onValueChange={setCompression} className="w-[104px]" />
               </div>
               <div className="flex flex-col gap-10 pt-4">
                 <div className="flex items-center justify-between gap-6">
@@ -798,7 +794,7 @@ function PanelDemo({ mode }: { mode: DemoMode }) {
                   <span className="text-xs font-mono text-[#555]">{makeupGain[0]} dB</span>
                 </div>
                 <div className="px-2 pb-2 pt-4">
-                  <AnalogSlider
+                  <Slider
                     value={makeupGain}
                     onValueChange={(next) =>
                       setMakeupGain(Array.isArray(next) ? [...next] : [next as number])
@@ -820,27 +816,27 @@ function PanelDemo({ mode }: { mode: DemoMode }) {
                     'linear-gradient(to bottom, rgba(255,255,255,0), color-mix(in oklch, var(--analog-surface-raised) 42%, transparent) 18%, rgba(0,0,0,0.55) 50%, color-mix(in oklch, var(--analog-surface-raised) 24%, transparent) 82%, rgba(255,255,255,0))',
                 }}
               />
-              <AnalogMeterGroup variant="panel" aria-label="Master bus stereo output">
-                <AnalogMeterGroupChannel label="L">
-                  <AnalogMeter
+              <MeterGroup variant="panel" aria-label="Master bus stereo output">
+                <MeterGroupChannel label="L">
+                  <Meter
                     orientation="vertical"
                     value={meter.l}
                     peakValue={meter.lPeak}
                     variant="metered"
                     segments={40}
                   />
-                </AnalogMeterGroupChannel>
-                <AnalogMeterGroupSeparator />
-                <AnalogMeterGroupChannel label="R">
-                  <AnalogMeter
+                </MeterGroupChannel>
+                <MeterGroupSeparator />
+                <MeterGroupChannel label="R">
+                  <Meter
                     orientation="vertical"
                     value={meter.r}
                     peakValue={meter.rPeak}
                     variant="metered"
                     segments={40}
                   />
-                </AnalogMeterGroupChannel>
-              </AnalogMeterGroup>
+                </MeterGroupChannel>
+              </MeterGroup>
             </div>
           </PanelContent>
           <PanelFooter>

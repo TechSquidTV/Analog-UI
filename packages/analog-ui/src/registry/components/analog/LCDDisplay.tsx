@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cn } from '../../../lib/utils';
+import { cn } from '@/lib/utils';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 
 export type LCDDisplayVariant = 'lcd-green' | 'lcd-amber' | 'lcd-blue';

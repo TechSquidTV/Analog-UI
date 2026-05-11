@@ -2,7 +2,7 @@ import { useRef } from 'react';
 
 import {
   AnalogLightingProvider,
-  useMouseLumination,
+  usePointerLighting,
 } from '../../../../../packages/analog-ui/src/index';
 import HomeLaunchPanel from './HomeLaunchPanel';
 import HomeRouteCards from './HomeRouteCards';
@@ -16,7 +16,7 @@ interface HomePageProps {
 export default function HomePage({ registryUiCount, registryItemCount }: HomePageProps) {
   const pageRef = useRef<HTMLDivElement>(null);
   const suspendLightingRef = useRef(false);
-  const sourceAngle = useMouseLumination({
+  const sourceAngle = usePointerLighting({
     baseAngle: 180,
     influence: 0.34,
     suspendRef: suspendLightingRef,
@@ -70,13 +70,14 @@ export default function HomePage({ registryUiCount, registryItemCount }: HomePag
 
         <section className="site-frame mt-16">
           <div className="max-w-3xl">
-            <div className="eyebrow mb-4">Featured Surface</div>
+            <div className="eyebrow mb-4">Complete Assembly</div>
             <h2 className="text-4xl font-semibold tracking-[-0.04em] text-white">
-              A fake plugin built from the whole shelf.
+              A full channel strip built from Analog UI.
             </h2>
             <p className="mt-4 text-lg leading-8 text-[#a8a8a8]">
-              The guided landing now resolves into one stitched-together VST-style interface so
-              visitors can see the catalog behaving like real hardware instead of isolated tiles.
+              Dials, faders, meters, trim wheels, switches, lamps, and panels work together as one
+              production-style interface, with shared lighting that keeps the hardware illusion
+              coherent.
             </p>
           </div>
 

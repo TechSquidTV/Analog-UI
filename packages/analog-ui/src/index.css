@@ -164,12 +164,28 @@
       );
   }
 
-  .anisotropic-btn {
+  .surface-button {
     @apply relative appearance-none overflow-hidden border-0 text-foreground tracking-wide rounded-full;
     background-color: var(--analog-surface-metal-mid);
     font-family: inherit;
     transform: translateZ(0); /* Force GPU layer to isolate conic-gradients */
-    --foil: url('./texture.webp');
+    --foil:
+      repeating-conic-gradient(
+        from calc(var(--analog-light-angle-surface, 180deg) - 90deg),
+        rgba(255, 255, 255, 0.18) 0deg,
+        rgba(255, 255, 255, 0.02) 7deg,
+        rgba(0, 0, 0, 0.22) 13deg,
+        rgba(255, 255, 255, 0.08) 19deg,
+        rgba(0, 0, 0, 0.16) 26deg
+      ),
+      repeating-radial-gradient(
+        circle at 50% 50%,
+        rgba(255, 255, 255, 0.22) 0,
+        rgba(255, 255, 255, 0.04) 1px,
+        transparent 2px,
+        rgba(0, 0, 0, 0.16) 3px,
+        transparent 5px
+      );
 
     box-shadow:
       0 0 0 1px inset rgba(255, 255, 255, calc(0.4 * var(--analog-light-power, 1))),
@@ -178,7 +194,7 @@
       inset 0 4px 12px rgba(255, 255, 255, calc(0.4 * var(--analog-light-power, 1)));
   }
 
-  .anisotropic-btn.variant-black {
+  .surface-button.variant-black {
     background-color: var(--analog-surface-onyx-lo);
     box-shadow:
       0 0 0 1px inset rgba(255, 255, 255, calc(0.1 * var(--analog-light-power, 1))),
@@ -188,7 +204,7 @@
   }
 
   /* Chamfered edge effect */
-  .anisotropic-btn::after {
+  .surface-button::after {
     content: '';
     @apply absolute inset-0 z-[3] rounded-full pointer-events-none;
     box-shadow:
@@ -203,7 +219,7 @@
         rgba(0, 0, 0, calc(0.6 * var(--analog-light-power, 1)));
   }
 
-  .anisotropic-btn.variant-black::after {
+  .surface-button.variant-black::after {
     box-shadow:
       inset 0 0 0 1px rgba(255, 255, 255, calc(0.05 * var(--analog-light-power, 1))),
       inset 0 0 0 calc(var(--spacing-track-padding) + 2px)
@@ -216,26 +232,26 @@
         rgba(0, 0, 0, calc(0.9 * var(--analog-light-power, 1)));
   }
 
-  .anisotropic-btn.variant-black .holo-bg {
+  .surface-button.variant-black .holo-bg {
     filter: grayscale(100%) brightness(0.2) contrast(1.5);
     opacity: 0.9;
   }
 
-  .anisotropic-btn.variant-black .holo-glare {
+  .surface-button.variant-black .holo-glare {
     opacity: calc(0.1 + var(--pointer-from-center, 0) * 0.3);
   }
 
-  .anisotropic-btn .content {
+  .surface-button .content {
     @apply relative z-10 flex w-full h-full items-center justify-center gap-2 font-bold pointer-events-none;
   }
 
-  .anisotropic-btn.no-chamfer::after {
+  .surface-button.no-chamfer::after {
     content: none;
     display: none;
   }
 
   /* Base layer that tracks the pointer position */
-  .anisotropic-btn .holo-bg {
+  .surface-button .holo-bg {
     @apply absolute inset-0 z-[1] pointer-events-none rounded-full;
     opacity: calc(0.8 * var(--analog-light-power, 1));
     background-image: var(--foil);
@@ -247,7 +263,7 @@
   }
 
   /* Specular Glare (The rotating light beam) */
-  .anisotropic-btn .holo-glare {
+  .surface-button .holo-glare {
     content: '';
     @apply absolute inset-0 z-[2] pointer-events-none rounded-full;
     opacity: calc((0.2 + var(--pointer-from-center, 0) * 0.4) * var(--analog-light-power, 1));
@@ -272,7 +288,7 @@
   }
 
   /* Specific brushed metallic scratches texture */
-  .anisotropic-btn .holo-texture {
+  .surface-button .holo-texture {
     @apply absolute inset-0 z-[3] pointer-events-none rounded-full;
     opacity: 0; /* image has its own rings */
     background-image: repeating-radial-gradient(
@@ -313,7 +329,23 @@
   }
 
   .analog-switch-face {
-    --foil: url('./texture.webp');
+    --foil:
+      repeating-conic-gradient(
+        from calc(var(--analog-light-angle-thumb, 180deg) - 90deg),
+        rgba(255, 255, 255, 0.16) 0deg,
+        rgba(255, 255, 255, 0.02) 8deg,
+        rgba(0, 0, 0, 0.22) 15deg,
+        rgba(255, 255, 255, 0.08) 22deg,
+        rgba(0, 0, 0, 0.16) 30deg
+      ),
+      repeating-radial-gradient(
+        circle at 50% 50%,
+        rgba(255, 255, 255, 0.18) 0,
+        rgba(255, 255, 255, 0.04) 1px,
+        transparent 2px,
+        rgba(0, 0, 0, 0.16) 3px,
+        transparent 5px
+      );
     transform-style: preserve-3d;
     transition: all 0.3s cubic-bezier(1, 0, 1, 1);
   }

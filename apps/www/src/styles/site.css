@@ -11,6 +11,24 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'Geist Pixel Square';
+  src: url('../../node_modules/geist/dist/fonts/geist-pixel/GeistPixel-Square.woff2')
+    format('woff2');
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Geist Pixel Square';
+  src: url('../../node_modules/geist/dist/fonts/geist-pixel/GeistPixel-Square.woff2')
+    format('woff2');
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
 :root {
   color-scheme: dark;
 }
@@ -38,7 +56,8 @@ a {
   }
 
   .analog-docs-lcd-pixel {
-    --analog-font-lcd: 'Geist Pixel Square', var(--font-mono);
+    --analog-font-lcd: 'Geist Pixel Square', var(--analog-fallback-font-mono);
+    font-synthesis-weight: none;
   }
 
   .section-panel {

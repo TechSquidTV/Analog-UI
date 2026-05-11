@@ -1,18 +1,18 @@
 import * as React from 'react';
 import { Switch as BaseSwitch } from '@base-ui/react';
-import { cn } from '../../../lib/utils';
-import { useMergedRefs } from '../../../lib/refs';
+import { cn } from '@/lib/utils';
+import { useMergedRefs } from '@/lib/refs';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
-import { useAnalogMaterialVariant } from '../../hooks/use-analog-material';
+import { useAnalogMaterialVariant } from '../../hooks/analog-material-scope';
 import type { AnalogOrientation } from './orientation';
 
-export interface AnalogSwitchProps extends React.ComponentPropsWithoutRef<typeof BaseSwitch.Root> {
+export interface SwitchProps extends React.ComponentPropsWithoutRef<typeof BaseSwitch.Root> {
   variant?: 'chrome' | 'black';
   orientation?: AnalogOrientation;
   lighting?: AnalogLightingConfig<'track' | 'thumb'>;
 }
 
-export const AnalogSwitch = React.forwardRef<HTMLElement, AnalogSwitchProps>(
+export const Switch = React.forwardRef<HTMLElement, SwitchProps>(
   ({ className, variant, orientation = 'horizontal', lighting, ...props }, ref) => {
     const internalRef = React.useRef<HTMLElement>(null);
     const mergedRef = useMergedRefs(ref, internalRef);
@@ -92,7 +92,7 @@ export const AnalogSwitch = React.forwardRef<HTMLElement, AnalogSwitchProps>(
                   `variant-${resolvedVariant}`,
                 )}
               >
-                {/* Dial Conic Gradient for Anisotropic Specular Highlight */}
+                {/* Dial conic gradient for specular highlight */}
                 <div
                   className={cn(
                     'analog-switch-lighting absolute inset-0 z-[1]',
@@ -129,4 +129,4 @@ export const AnalogSwitch = React.forwardRef<HTMLElement, AnalogSwitchProps>(
     );
   },
 );
-AnalogSwitch.displayName = 'AnalogSwitch';
+Switch.displayName = 'Switch';

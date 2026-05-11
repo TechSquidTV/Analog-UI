@@ -132,21 +132,20 @@ export function DialExample() {
     ],
   },
   slider: {
-    usageIntro:
-      'Use AnalogSlider for horizontal or vertical fader travel with optional scale marks.',
-    registryImportCode: registryImport(['AnalogSlider'], 'Slider'),
-    packageImportCode: packageImport(['AnalogSlider']),
-    usageCode: `<AnalogSlider defaultValue={0} min={-40} max={10} className="w-full max-w-md" />`,
+    usageIntro: 'Use Slider for horizontal or vertical fader travel with optional scale marks.',
+    registryImportCode: registryImport(['Slider'], 'Slider'),
+    packageImportCode: packageImport(['Slider']),
+    usageCode: `<Slider defaultValue={0} min={-40} max={10} className="w-full max-w-md" />`,
     exampleCode: `"use client"
 
 import * as React from "react"
-import { AnalogSlider } from "@/registry/components/analog/Slider"
+import { Slider } from "@/registry/components/analog/Slider"
 
 export function SliderExample() {
   const [value, setValue] = React.useState(0)
 
   return (
-    <AnalogSlider
+    <Slider
       value={value}
       onValueChange={(next) => setValue(next as number)}
       min={-40}
@@ -162,7 +161,7 @@ export function SliderExample() {
 }`,
     api: [
       {
-        title: 'AnalogSlider',
+        title: 'Slider',
         description:
           'A Base UI slider root with Analog UI track, thumb, marks, and lighting treatment.',
         props: [
@@ -197,7 +196,7 @@ export function SliderExample() {
           },
           {
             name: 'marks',
-            type: 'AnalogSliderMark[]',
+            type: 'SliderMark[]',
             description: 'Optional scale marks with value, label, position, and alignment.',
           },
           {
@@ -213,20 +212,20 @@ export function SliderExample() {
     ],
   },
   toggle: {
-    usageIntro: 'Use AnalogToggle when a two-position choice should read like a heavy rocker.',
-    registryImportCode: registryImport(['AnalogToggle'], 'Toggle'),
-    packageImportCode: packageImport(['AnalogToggle']),
-    usageCode: `<AnalogToggle value="right" leftLed="amber" rightLed="green" />`,
+    usageIntro: 'Use Toggle when a two-position choice should read like a heavy rocker.',
+    registryImportCode: registryImport(['Toggle'], 'Toggle'),
+    packageImportCode: packageImport(['Toggle']),
+    usageCode: `<Toggle value="right" leftLed="amber" rightLed="green" />`,
     exampleCode: `"use client"
 
 import * as React from "react"
-import { AnalogToggle } from "@/registry/components/analog/Toggle"
+import { Toggle } from "@/registry/components/analog/Toggle"
 
 export function ToggleExample() {
   const [value, setValue] = React.useState<"left" | "right">("right")
 
   return (
-    <AnalogToggle
+    <Toggle
       value={value}
       onValueChange={setValue}
       leftLed="amber"
@@ -236,7 +235,7 @@ export function ToggleExample() {
 }`,
     api: [
       {
-        title: 'AnalogToggle',
+        title: 'Toggle',
         description: 'A Base UI toggle group styled as a two-position rocker switch.',
         props: [
           {
@@ -264,7 +263,7 @@ export function ToggleExample() {
           },
           {
             name: 'leftLed / rightLed',
-            type: 'AnalogIndicatorColor',
+            type: 'IndicatorColor',
             defaultValue: '"none"',
             description: 'Adds optional LED indicators on either side.',
           },
@@ -363,7 +362,7 @@ export function SquareToggleExample() {
           },
           {
             name: 'indicatorColor',
-            type: 'AnalogIndicatorColor',
+            type: 'IndicatorColor',
             defaultValue: '"none"',
             description: 'Optional LED color on the plunger face.',
           },
@@ -387,20 +386,20 @@ export function SquareToggleExample() {
   },
   switch: {
     usageIntro:
-      'Use AnalogSwitch for boolean state with a cylindrical thumb that rolls through a recessed track.',
-    registryImportCode: registryImport(['AnalogSwitch'], 'Switch'),
-    packageImportCode: packageImport(['AnalogSwitch']),
-    usageCode: `<AnalogSwitch defaultChecked />`,
+      'Use Switch for boolean state with a cylindrical thumb that rolls through a recessed track.',
+    registryImportCode: registryImport(['Switch'], 'Switch'),
+    packageImportCode: packageImport(['Switch']),
+    usageCode: `<Switch defaultChecked />`,
     exampleCode: `"use client"
 
 import * as React from "react"
-import { AnalogSwitch } from "@/registry/components/analog/Switch"
+import { Switch } from "@/registry/components/analog/Switch"
 
 export function SwitchExample() {
   const [checked, setChecked] = React.useState(true)
 
   return (
-    <AnalogSwitch
+    <Switch
       checked={checked}
       onCheckedChange={setChecked}
     />
@@ -408,7 +407,7 @@ export function SwitchExample() {
 }`,
     api: [
       {
-        title: 'AnalogSwitch',
+        title: 'Switch',
         description:
           'A Base UI switch root with Analog UI track, cylinder thumb, and orientation support.',
         props: [
@@ -438,14 +437,14 @@ export function SwitchExample() {
     ],
   },
   'wheel-select': {
-    usageIntro: 'Use AnalogWheelSelect when options should be stepped through like a trim wheel.',
-    registryImportCode: registryImport(['AnalogWheelSelect'], 'WheelSelect'),
-    packageImportCode: packageImport(['AnalogWheelSelect']),
-    usageCode: `<AnalogWheelSelect options={["LOW", "MID", "HIGH"]} defaultValue="MID" infinite />`,
+    usageIntro: 'Use WheelSelect when options should be stepped through like a trim wheel.',
+    registryImportCode: registryImport(['WheelSelect'], 'WheelSelect'),
+    packageImportCode: packageImport(['WheelSelect']),
+    usageCode: `<WheelSelect options={["LOW", "MID", "HIGH"]} defaultValue="MID" infinite />`,
     exampleCode: `"use client"
 
 import * as React from "react"
-import { AnalogWheelSelect } from "@/registry/components/analog/WheelSelect"
+import { WheelSelect } from "@/registry/components/analog/WheelSelect"
 
 const options = ["PITCH DOWN", "NEUTRAL", "PITCH UP"]
 
@@ -453,7 +452,7 @@ export function WheelSelectExample() {
   const [value, setValue] = React.useState(options[1])
 
   return (
-    <AnalogWheelSelect
+    <WheelSelect
       options={options}
       value={value}
       onValueChange={setValue}
@@ -463,7 +462,7 @@ export function WheelSelectExample() {
 }`,
     api: [
       {
-        title: 'AnalogWheelSelect',
+        title: 'WheelSelect',
         description: 'A draggable and wheel-scrollable option selector.',
         props: [
           { name: 'options', type: 'string[]', description: 'Labels rendered on the wheel.' },
@@ -503,20 +502,20 @@ export function WheelSelectExample() {
   },
   'wheel-number': {
     usageIntro:
-      'Use AnalogWheelNumber for fine numeric scrubbing with drag, wheel, keyboard, and stepper controls.',
-    registryImportCode: registryImport(['AnalogWheelNumber'], 'WheelNumber'),
-    packageImportCode: packageImport(['AnalogWheelNumber']),
-    usageCode: `<AnalogWheelNumber defaultValue={0} min={-12} max={12} />`,
+      'Use WheelNumber for fine numeric scrubbing with drag, wheel, keyboard, and stepper controls.',
+    registryImportCode: registryImport(['WheelNumber'], 'WheelNumber'),
+    packageImportCode: packageImport(['WheelNumber']),
+    usageCode: `<WheelNumber defaultValue={0} min={-12} max={12} />`,
     exampleCode: `"use client"
 
 import * as React from "react"
-import { AnalogWheelNumber } from "@/registry/components/analog/WheelNumber"
+import { WheelNumber } from "@/registry/components/analog/WheelNumber"
 
 export function WheelNumberExample() {
   const [value, setValue] = React.useState(0)
 
   return (
-    <AnalogWheelNumber
+    <WheelNumber
       value={value}
       onValueChange={(next) => setValue(next ?? 0)}
       min={-12}
@@ -527,7 +526,7 @@ export function WheelNumberExample() {
 }`,
     api: [
       {
-        title: 'AnalogWheelNumber',
+        title: 'WheelNumber',
         description: 'A Base UI number field with a tactile wheel interaction surface.',
         props: [
           { name: 'value', type: 'number | null', description: 'Controlled numeric value.' },
@@ -786,41 +785,41 @@ export function NeedleGaugeExample() {
   },
   meter: {
     usageIntro:
-      'Use AnalogMeter for calibrated level feedback, or compose a stereo display with the meter group helpers.',
+      'Use Meter for calibrated level feedback, or compose a stereo display with the meter group helpers.',
     registryImportCode: registryImport(
-      ['AnalogMeter', 'AnalogMeterGroup', 'AnalogMeterGroupChannel', 'AnalogMeterGroupSeparator'],
+      ['Meter', 'MeterGroup', 'MeterGroupChannel', 'MeterGroupSeparator'],
       'Meter',
     ),
     packageImportCode: packageImport([
-      'AnalogMeter',
-      'AnalogMeterGroup',
-      'AnalogMeterGroupChannel',
-      'AnalogMeterGroupSeparator',
+      'Meter',
+      'MeterGroup',
+      'MeterGroupChannel',
+      'MeterGroupSeparator',
     ]),
-    usageCode: `<AnalogMeter value={72} peakValue={88} orientation="vertical" />`,
+    usageCode: `<Meter value={72} peakValue={88} orientation="vertical" />`,
     exampleCode: `import {
-  AnalogMeter,
-  AnalogMeterGroup,
-  AnalogMeterGroupChannel,
-  AnalogMeterGroupSeparator,
+  Meter,
+  MeterGroup,
+  MeterGroupChannel,
+  MeterGroupSeparator,
 } from "@/registry/components/analog/Meter"
 
 export function MeterExample() {
   return (
-    <AnalogMeterGroup aria-label="Stereo output meter">
-      <AnalogMeterGroupChannel label="L">
-        <AnalogMeter value={72} peakValue={88} orientation="vertical" />
-      </AnalogMeterGroupChannel>
-      <AnalogMeterGroupSeparator />
-      <AnalogMeterGroupChannel label="R">
-        <AnalogMeter value={64} peakValue={82} orientation="vertical" />
-      </AnalogMeterGroupChannel>
-    </AnalogMeterGroup>
+    <MeterGroup aria-label="Stereo output meter">
+      <MeterGroupChannel label="L">
+        <Meter value={72} peakValue={88} orientation="vertical" />
+      </MeterGroupChannel>
+      <MeterGroupSeparator />
+      <MeterGroupChannel label="R">
+        <Meter value={64} peakValue={82} orientation="vertical" />
+      </MeterGroupChannel>
+    </MeterGroup>
   )
 }`,
     api: [
       {
-        title: 'AnalogMeter',
+        title: 'Meter',
         description: 'A Base UI meter root rendered as an analog LED channel display.',
         props: [
           { name: 'value', type: 'number', defaultValue: '0', description: 'Current meter value.' },
@@ -857,7 +856,7 @@ export function MeterExample() {
           },
           {
             name: 'ballistics',
-            type: 'AnalogMeterBallistics',
+            type: 'MeterBallistics',
             description: 'Controls meter attack, release, and peak hold timing.',
           },
           lightingProp,
@@ -865,7 +864,7 @@ export function MeterExample() {
         ],
       },
       {
-        title: 'AnalogMeterGroup',
+        title: 'MeterGroup',
         description: 'Layout helpers for channel groups and separators.',
         props: [
           {
@@ -877,7 +876,7 @@ export function MeterExample() {
           {
             name: 'label',
             type: 'React.ReactNode',
-            description: 'Channel label for AnalogMeterGroupChannel.',
+            description: 'Channel label for MeterGroupChannel.',
           },
           classNameProp,
         ],
@@ -886,27 +885,27 @@ export function MeterExample() {
   },
   indicator: {
     usageIntro:
-      'Use AnalogIndicator for jewel-like status lights with optional bezel, shape, and color states.',
-    registryImportCode: registryImport(['AnalogIndicator'], 'Indicator'),
-    packageImportCode: packageImport(['AnalogIndicator']),
-    usageCode: `<AnalogIndicator isOn color="amber" size="lg" />`,
+      'Use Indicator for jewel-like status lights with optional bezel, shape, and color states.',
+    registryImportCode: registryImport(['Indicator'], 'Indicator'),
+    packageImportCode: packageImport(['Indicator']),
+    usageCode: `<Indicator isOn color="amber" size="lg" />`,
     exampleCode: `"use client"
 
 import * as React from "react"
-import { AnalogIndicator } from "@/registry/components/analog/Indicator"
+import { Indicator } from "@/registry/components/analog/Indicator"
 
 export function IndicatorExample() {
   const [isOn, setIsOn] = React.useState(true)
 
   return (
     <button type="button" onClick={() => setIsOn((current) => !current)}>
-      <AnalogIndicator isOn={isOn} color="amber" size="lg" />
+      <Indicator isOn={isOn} color="amber" size="lg" />
     </button>
   )
 }`,
     api: [
       {
-        title: 'AnalogIndicator',
+        title: 'Indicator',
         description: 'A status lamp with faceted lens, bloom, and optional machined bezel.',
         props: [
           {

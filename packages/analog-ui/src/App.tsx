@@ -5,28 +5,28 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { cn } from './lib/utils';
-import { useMouseLumination } from './registry/hooks/use-mouse-lumination';
+import { usePointerLighting } from './registry/hooks/use-pointer-lighting';
 import { AnalogLightingProvider } from './registry/hooks/use-analog-lighting';
 import { Dial } from './registry/components/analog/Dial';
-import { AnalogToggle } from './registry/components/analog/Toggle';
+import { Toggle } from './registry/components/analog/Toggle';
 import { SquareButton } from './registry/components/analog/SquareButton';
 import { SquareToggle } from './registry/components/analog/SquareToggle';
-import { AnalogSwitch } from './registry/components/analog/Switch';
-import { AnalogSlider } from './registry/components/analog/Slider';
+import { Switch } from './registry/components/analog/Switch';
+import { Slider } from './registry/components/analog/Slider';
 import {
-  AnalogMeter,
-  AnalogMeterGroup,
-  AnalogMeterGroupChannel,
-  AnalogMeterGroupSeparator,
-  type AnalogMeterGroupVariant,
+  Meter,
+  MeterGroup,
+  MeterGroupChannel,
+  MeterGroupSeparator,
+  type MeterGroupVariant,
 } from './registry/components/analog/Meter';
-import { AnalogWheelSelect } from './registry/components/analog/WheelSelect';
-import { AnalogWheelNumber } from './registry/components/analog/WheelNumber';
+import { WheelSelect } from './registry/components/analog/WheelSelect';
+import { WheelNumber } from './registry/components/analog/WheelNumber';
 import {
-  AnalogIndicator,
-  type AnalogIndicatorColor,
-  type AnalogIndicatorShape,
-  type AnalogIndicatorSize,
+  Indicator,
+  type IndicatorColor,
+  type IndicatorShape,
+  type IndicatorSize,
 } from './registry/components/analog/Indicator';
 import { Gauge } from './registry/components/analog/Gauge';
 import {
@@ -103,8 +103,8 @@ export default function App() {
   const [verticalToggle2, setVerticalToggle2] = useState<'left' | 'right'>('left');
 
   // LED Config for Toggles
-  const [togglesLeftLed, setTogglesLeftLed] = useState<AnalogIndicatorColor>('none');
-  const [togglesRightLed, setTogglesRightLed] = useState<AnalogIndicatorColor>('none');
+  const [togglesLeftLed, setTogglesLeftLed] = useState<IndicatorColor>('none');
+  const [togglesRightLed, setTogglesRightLed] = useState<IndicatorColor>('none');
   const [togglesLeftActive, setTogglesLeftActive] = useState<'auto' | 'always' | 'never'>('auto');
   const [togglesRightActive, setTogglesRightActive] = useState<'auto' | 'always' | 'never'>('auto');
 
@@ -119,10 +119,9 @@ export default function App() {
   const [fader2, setFader2] = useState(0);
 
   const [indicatorOn, setIndicatorOn] = useState(false);
-  const [indicatorColor, setIndicatorColor] =
-    useState<Exclude<AnalogIndicatorColor, 'none'>>('red');
-  const [indicatorSize, setIndicatorSize] = useState<Exclude<AnalogIndicatorSize, 'xs'>>('lg');
-  const [indicatorShape, setIndicatorShape] = useState<AnalogIndicatorShape>('round');
+  const [indicatorColor, setIndicatorColor] = useState<Exclude<IndicatorColor, 'none'>>('red');
+  const [indicatorSize, setIndicatorSize] = useState<Exclude<IndicatorSize, 'xs'>>('lg');
+  const [indicatorShape, setIndicatorShape] = useState<IndicatorShape>('round');
   const [indicatorHasBezel, setIndicatorHasBezel] = useState(true);
 
   // Square Button / Toggle States
@@ -137,7 +136,7 @@ export default function App() {
   const [meterVariant, setMeterVariant] = useState<
     'metered' | 'lcd-green' | 'lcd-amber' | 'lcd-blue'
   >('metered');
-  const [meterGroupVariant, setMeterGroupVariant] = useState<AnalogMeterGroupVariant>('chrome');
+  const [meterGroupVariant, setMeterGroupVariant] = useState<MeterGroupVariant>('chrome');
   const [isSegmented, setIsSegmented] = useState(true);
   const [gaugeValue, setGaugeValue] = useState(0);
   const [gaugeVariant, setGaugeVariant] = useState<'lcd-green' | 'lcd-amber' | 'lcd-blue'>(
@@ -151,7 +150,7 @@ export default function App() {
   const [lightPower, setLightPower] = useState(120);
   const [mouseInfluence, setMouseInfluence] = useState(1);
 
-  const dynamicLightAngle = useMouseLumination({
+  const dynamicLightAngle = usePointerLighting({
     baseAngle: lightAngle,
     influence: mouseInfluence,
     targetRef: surfaceRef,
@@ -308,7 +307,7 @@ export default function App() {
         </ComponentShowcase>
 
         <ComponentShowcase
-          title="3D Square Button & Toggle"
+          title="Square Button & Toggle"
           description="Skeuomorphic square controls with realistic 3D extrusion, machined finishes, and dynamic lighting. The toggle variant includes an optional LED indicator for state feedback."
           specs={[
             { label: 'Toggle 1', value: sqToggle1 ? 'ON' : 'OFF' },
@@ -354,7 +353,7 @@ export default function App() {
         </ComponentShowcase>
 
         <ComponentShowcase
-          title="Industrial Power Rocker"
+          title="Toggle"
           description="A heavy-duty rocker switch modeled with physical depth. Features textured grip ridges, an anodized baseplate, and configurable LED status indicators."
           specs={[
             { label: 'State (Chrome)', value: toggle1 === 'right' ? 'ON' : 'OFF' },
@@ -429,7 +428,7 @@ export default function App() {
                 <span className="font-mono text-xs text-[#555] uppercase tracking-widest">
                   Sys Pwr
                 </span>
-                <AnalogToggle
+                <Toggle
                   leftLed={togglesLeftLed}
                   rightLed={togglesRightLed}
                   leftLedActive={togglesLeftActive}
@@ -442,7 +441,7 @@ export default function App() {
                 <span className="font-mono text-xs text-[#555] uppercase tracking-widest">
                   Aux Pwr
                 </span>
-                <AnalogToggle
+                <Toggle
                   variant="black"
                   leftLed={togglesLeftLed}
                   rightLed={togglesRightLed}
@@ -462,7 +461,7 @@ export default function App() {
                 <span className="font-mono text-[10px] text-[#555] uppercase tracking-[0.3em]">
                   Open
                 </span>
-                <AnalogToggle
+                <Toggle
                   orientation="vertical"
                   leftLed={togglesLeftLed}
                   rightLed={togglesRightLed}
@@ -483,7 +482,7 @@ export default function App() {
                 <span className="font-mono text-[10px] text-[#555] uppercase tracking-[0.3em]">
                   Arm
                 </span>
-                <AnalogToggle
+                <Toggle
                   variant="black"
                   orientation="vertical"
                   leftLed={togglesLeftLed}
@@ -502,7 +501,7 @@ export default function App() {
         </ComponentShowcase>
 
         <ComponentShowcase
-          title="Machined Cylinder Switch"
+          title="Switch"
           description="A tactile track switch that reimagines the standard toggle. Features a 3D-extruded metallic cylinder that rolls through a recessed cavity in horizontal or vertical layouts."
           specs={[
             { label: 'Horizontal (Chrome)', value: switch1 ? 'ON' : 'OFF' },
@@ -517,13 +516,13 @@ export default function App() {
                 <span className="font-mono text-xs text-[#555] uppercase tracking-widest">
                   Warp
                 </span>
-                <AnalogSwitch variant="chrome" checked={switch1} onCheckedChange={setSwitch1} />
+                <Switch variant="chrome" checked={switch1} onCheckedChange={setSwitch1} />
               </div>
               <div className="flex items-center justify-between w-full gap-6">
                 <span className="font-mono text-xs text-[#555] uppercase tracking-widest">
                   Stealth
                 </span>
-                <AnalogSwitch variant="black" checked={switch2} onCheckedChange={setSwitch2} />
+                <Switch variant="black" checked={switch2} onCheckedChange={setSwitch2} />
               </div>
             </div>
 
@@ -532,7 +531,7 @@ export default function App() {
                 <span className="font-mono text-xs text-[#555] uppercase tracking-widest">
                   Launch
                 </span>
-                <AnalogSwitch
+                <Switch
                   orientation="vertical"
                   variant="chrome"
                   checked={verticalSwitch1}
@@ -543,7 +542,7 @@ export default function App() {
                 <span className="font-mono text-xs text-[#555] uppercase tracking-widest">
                   Cloak
                 </span>
-                <AnalogSwitch
+                <Switch
                   orientation="vertical"
                   variant="black"
                   checked={verticalSwitch2}
@@ -555,7 +554,7 @@ export default function App() {
         </ComponentShowcase>
 
         <ComponentShowcase
-          title="Professional Audio Fader"
+          title="Slider"
           description="A linear sliding fader with a thick tactile base and extruded grip track. Highly responsive and fully integrated with the shared analog lighting system for dynamic casting."
           specs={[
             { label: 'Fader 1 (Chrome)', value: `${fader1}dB` },
@@ -565,7 +564,7 @@ export default function App() {
         >
           <div className="flex flex-col gap-24 items-center justify-center py-12">
             <div className="flex gap-24 items-center justify-center">
-              <AnalogSlider
+              <Slider
                 orientation="vertical"
                 variant="chrome"
                 min={-60}
@@ -577,7 +576,7 @@ export default function App() {
               />
             </div>
             <div className="flex w-full max-w-sm">
-              <AnalogSlider
+              <Slider
                 orientation="horizontal"
                 variant="black"
                 min={-60}
@@ -593,14 +592,12 @@ export default function App() {
         </ComponentShowcase>
 
         <ComponentShowcase
-          title="Audio Channel Monitor"
+          title="Meter"
           description="A calibrated stereo level meter with optional display ballistics, dbFS scale marks, and segmented or continuous LED arrays."
           specs={[
             {
               label: 'Animated',
-              value: (
-                <AnalogSwitch checked={isMeterAnimated} onCheckedChange={setIsMeterAnimated} />
-              ),
+              value: <Switch checked={isMeterAnimated} onCheckedChange={setIsMeterAnimated} />,
             },
             {
               label: 'Stat L',
@@ -653,7 +650,7 @@ export default function App() {
                 <select
                   className="bg-[#111] text-[#888] border border-[#333] rounded px-2 py-1 text-xs outline-none"
                   value={meterGroupVariant}
-                  onChange={(e) => setMeterGroupVariant(e.target.value as AnalogMeterGroupVariant)}
+                  onChange={(e) => setMeterGroupVariant(e.target.value as MeterGroupVariant)}
                 >
                   <option value="chrome">Chrome</option>
                   <option value="panel">Panel</option>
@@ -663,14 +660,14 @@ export default function App() {
             },
             {
               label: 'Segments',
-              value: <AnalogSwitch checked={isSegmented} onCheckedChange={setIsSegmented} />,
+              value: <Switch checked={isSegmented} onCheckedChange={setIsSegmented} />,
             },
           ]}
         >
           <div className="flex items-center justify-center py-12">
-            <AnalogMeterGroup variant={meterGroupVariant} aria-label="Stereo output meter">
-              <AnalogMeterGroupChannel label="L">
-                <AnalogMeter
+            <MeterGroup variant={meterGroupVariant} aria-label="Stereo output meter">
+              <MeterGroupChannel label="L">
+                <Meter
                   orientation="vertical"
                   value={isMeterAnimated ? meter.l : staticMeterL}
                   peakValue={meter.lPeak}
@@ -680,10 +677,10 @@ export default function App() {
                   ballistics="ppm"
                   segments={isSegmented ? 40 : undefined}
                 />
-              </AnalogMeterGroupChannel>
-              <AnalogMeterGroupSeparator />
-              <AnalogMeterGroupChannel label="R">
-                <AnalogMeter
+              </MeterGroupChannel>
+              <MeterGroupSeparator />
+              <MeterGroupChannel label="R">
+                <Meter
                   orientation="vertical"
                   value={isMeterAnimated ? meter.r : staticMeterR}
                   peakValue={meter.rPeak}
@@ -693,8 +690,8 @@ export default function App() {
                   ballistics="ppm"
                   segments={isSegmented ? 40 : undefined}
                 />
-              </AnalogMeterGroupChannel>
-            </AnalogMeterGroup>
+              </MeterGroupChannel>
+            </MeterGroup>
           </div>
         </ComponentShowcase>
 
@@ -748,12 +745,12 @@ export default function App() {
         </ComponentShowcase>
 
         <ComponentShowcase
-          title="Tactile Trim Wheel"
+          title="Wheel Select"
           description="A vertically-oriented selection wheel inspired by aircraft pitch trim mechanisms. Provides tactile, stepped navigation through options."
           specs={[{ label: 'Value', value: wheelValue }]}
         >
           <div className="flex w-full items-center justify-center py-12">
-            <AnalogWheelSelect
+            <WheelSelect
               className="max-w-sm"
               options={['PITCH DOWN', 'NEUTRAL', 'PITCH UP', 'AUTO TRIM', 'MANUAL']}
               value={wheelValue}
@@ -763,12 +760,12 @@ export default function App() {
         </ComponentShowcase>
 
         <ComponentShowcase
-          title="Tactile Trim Wheel (Numeric)"
+          title="Wheel Number"
           description="A continuous numeric input mechanism with scrub interactions. Perfect for precision adjustments requiring fine-grained control."
           specs={[{ label: 'Value', value: wheelNum.toString() }]}
         >
           <div className="flex w-full items-center justify-center py-12">
-            <AnalogWheelNumber
+            <WheelNumber
               className="max-w-sm"
               value={wheelNum}
               onValueChange={(val) => setWheelNum(val ?? 0)}
@@ -777,12 +774,12 @@ export default function App() {
         </ComponentShowcase>
 
         <ComponentShowcase
-          title="Faceted Jewel Lamp"
+          title="Indicator"
           description="A hyper-skeuomorphic status indicator based on classic amp and console jewel lights. Features faceted glass textures, dynamic core lighting with bloom, and a metallic bezel."
           specs={[
             {
               label: 'State',
-              value: <AnalogSwitch checked={indicatorOn} onCheckedChange={setIndicatorOn} />,
+              value: <Switch checked={indicatorOn} onCheckedChange={setIndicatorOn} />,
             },
             {
               label: 'Color',
@@ -830,15 +827,13 @@ export default function App() {
             },
             {
               label: 'Bezel',
-              value: (
-                <AnalogSwitch checked={indicatorHasBezel} onCheckedChange={setIndicatorHasBezel} />
-              ),
+              value: <Switch checked={indicatorHasBezel} onCheckedChange={setIndicatorHasBezel} />,
             },
           ]}
         >
           <div className="flex gap-16 items-center justify-center py-12">
             <div className="flex flex-col gap-4 items-center">
-              <AnalogIndicator
+              <Indicator
                 isOn={indicatorOn}
                 color={indicatorColor}
                 size={indicatorSize}
@@ -851,7 +846,7 @@ export default function App() {
               </span>
             </div>
             <div className="flex flex-col gap-4 items-center">
-              <AnalogIndicator
+              <Indicator
                 isOn={indicatorOn}
                 color={indicatorColor}
                 size={indicatorSize}
@@ -867,7 +862,7 @@ export default function App() {
         </ComponentShowcase>
 
         <ComponentShowcase
-          title="Equipment Panel"
+          title="Panel"
           description="A container component analogous to an audio rack panel. Features industrial styling, optional screws, and structured layout subcomponents (Header, Content, Footer)."
           specs={[
             {
@@ -885,7 +880,7 @@ export default function App() {
             },
             {
               label: 'Screws',
-              value: <AnalogSwitch checked={panelScrews} onCheckedChange={setPanelScrews} />,
+              value: <Switch checked={panelScrews} onCheckedChange={setPanelScrews} />,
             },
             {
               label: 'Screw Variant',
@@ -932,7 +927,7 @@ export default function App() {
                 <div className="flex flex-col justify-center gap-10 py-2">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-[#a0a0a0]">Compression</span>
-                    <AnalogToggle
+                    <Toggle
                       value={compressionToggle}
                       onValueChange={setCompressionToggle}
                       className="w-[104px]"
@@ -944,7 +939,7 @@ export default function App() {
                       <span className="text-xs font-mono text-[#555]">{makeupGain[0]} dB</span>
                     </div>
                     <div className="px-2 pb-2 mt-4">
-                      <AnalogSlider
+                      <Slider
                         value={makeupGain}
                         onValueChange={(value) =>
                           setMakeupGain(Array.isArray(value) ? [...value] : [value])
@@ -967,13 +962,13 @@ export default function App() {
                         'linear-gradient(to bottom, rgba(255,255,255,0), color-mix(in oklch, var(--analog-surface-raised) 42%, transparent) 18%, rgba(0,0,0,0.55) 50%, color-mix(in oklch, var(--analog-surface-raised) 24%, transparent) 82%, rgba(255,255,255,0))',
                     }}
                   />
-                  <AnalogMeterGroup
+                  <MeterGroup
                     variant="panel"
                     className="my-auto"
                     aria-label="Master bus stereo output"
                   >
-                    <AnalogMeterGroupChannel label="L">
-                      <AnalogMeter
+                    <MeterGroupChannel label="L">
+                      <Meter
                         orientation="vertical"
                         value={isMeterAnimated ? meter.l : staticMeterL}
                         peakValue={meter.lPeak}
@@ -983,10 +978,10 @@ export default function App() {
                         ballistics="ppm"
                         segments={isSegmented ? 40 : undefined}
                       />
-                    </AnalogMeterGroupChannel>
-                    <AnalogMeterGroupSeparator />
-                    <AnalogMeterGroupChannel label="R">
-                      <AnalogMeter
+                    </MeterGroupChannel>
+                    <MeterGroupSeparator />
+                    <MeterGroupChannel label="R">
+                      <Meter
                         orientation="vertical"
                         value={isMeterAnimated ? meter.r : staticMeterR}
                         peakValue={meter.rPeak}
@@ -996,8 +991,8 @@ export default function App() {
                         ballistics="ppm"
                         segments={isSegmented ? 40 : undefined}
                       />
-                    </AnalogMeterGroupChannel>
-                  </AnalogMeterGroup>
+                    </MeterGroupChannel>
+                  </MeterGroup>
                 </div>
               </PanelContent>
               <PanelFooter>

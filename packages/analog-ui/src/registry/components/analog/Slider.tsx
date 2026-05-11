@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { Slider } from '@base-ui/react';
-import { cn } from '../../../lib/utils';
+import { Slider as BaseSlider } from '@base-ui/react';
+import { cn } from '@/lib/utils';
 import { RockerThumbSurface } from './RockerThumbSurface';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
-import { useAnalogMaterialVariant } from '../../hooks/use-analog-material';
+import { useAnalogMaterialVariant } from '../../hooks/analog-material-scope';
 import type { AnalogOrientation } from './orientation';
 
-export interface AnalogSliderMark {
+export interface SliderMark {
   value: number;
   label: React.ReactNode;
   /**
@@ -17,18 +17,18 @@ export interface AnalogSliderMark {
   align?: 'start' | 'center' | 'end';
 }
 
-export interface AnalogSliderProps extends Omit<
-  React.ComponentPropsWithoutRef<typeof Slider.Root>,
+export interface SliderProps extends Omit<
+  React.ComponentPropsWithoutRef<typeof BaseSlider.Root>,
   'orientation'
 > {
   variant?: 'chrome' | 'black';
   orientation?: AnalogOrientation;
   lighting?: AnalogLightingConfig<'track' | 'thumb'>;
-  marks?: readonly AnalogSliderMark[];
+  marks?: readonly SliderMark[];
   showMarks?: boolean;
 }
 
-export const AnalogSlider = React.forwardRef<HTMLDivElement, AnalogSliderProps>(
+export const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
   (
     {
       className,
@@ -71,7 +71,7 @@ export const AnalogSlider = React.forwardRef<HTMLDivElement, AnalogSliderProps>(
     }, [marks, min, showMarks, sliderRange]);
 
     return (
-      <Slider.Root
+      <BaseSlider.Root
         ref={ref}
         orientation={orientation}
         min={min}
@@ -79,7 +79,7 @@ export const AnalogSlider = React.forwardRef<HTMLDivElement, AnalogSliderProps>(
         data-analog-variant={resolvedVariant}
         {...props}
       >
-        <Slider.Control
+        <BaseSlider.Control
           className={cn(
             'group relative flex items-center justify-center touch-none select-none data-[orientation=horizontal]:h-16 data-[orientation=horizontal]:w-full data-[orientation=horizontal]:min-w-0 data-[orientation=vertical]:h-64 data-[orientation=vertical]:w-16 data-[orientation=vertical]:shrink-0',
             className,
@@ -143,13 +143,13 @@ export const AnalogSlider = React.forwardRef<HTMLDivElement, AnalogSliderProps>(
             </div>
           </div>
 
-          <Slider.Track className="relative data-[orientation=vertical]:h-full data-[orientation=vertical]:w-0 data-[orientation=horizontal]:w-full data-[orientation=horizontal]:h-0 flex items-center justify-center">
+          <BaseSlider.Track className="relative data-[orientation=vertical]:h-full data-[orientation=vertical]:w-0 data-[orientation=horizontal]:w-full data-[orientation=horizontal]:h-0 flex items-center justify-center">
             {/* 
               Slider Indicator could go here if we wanted an LED strip next to the track.
               For a pure pro-audio fader, we usually just have a plastic/metal thumb.
             */}
 
-            <Slider.Thumb
+            <BaseSlider.Thumb
               className={cn(
                 'absolute pointer-events-auto outline-none select-none transform-gpu data-[orientation=horizontal]:top-0 data-[orientation=horizontal]:h-8 data-[orientation=horizontal]:w-[72px] data-[orientation=horizontal]:-translate-y-1/2 data-[orientation=vertical]:left-0 data-[orientation=vertical]:h-[72px] data-[orientation=vertical]:w-8 data-[orientation=vertical]:-translate-x-1/2',
               )}
@@ -164,11 +164,11 @@ export const AnalogSlider = React.forwardRef<HTMLDivElement, AnalogSliderProps>(
               >
                 <div className="absolute inset-[4px] rounded-[var(--analog-radius-micro)] ring-2 ring-[var(--color-accent)] opacity-0 group-has-[[data-focus-visible]]:opacity-100 transition-opacity duration-300 pointer-events-none z-[4]" />
               </RockerThumbSurface>
-            </Slider.Thumb>
-          </Slider.Track>
-        </Slider.Control>
-      </Slider.Root>
+            </BaseSlider.Thumb>
+          </BaseSlider.Track>
+        </BaseSlider.Control>
+      </BaseSlider.Root>
     );
   },
 );
-AnalogSlider.displayName = 'AnalogSlider';
+Slider.displayName = 'Slider';

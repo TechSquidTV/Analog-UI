@@ -1,5 +1,5 @@
-export type AnalogWheelDirection = 'up' | 'down';
+export type WheelDirection = 'up' | 'down';
 
-export function getWheelDirectionFactor(direction: AnalogWheelDirection) {
+export function getWheelDirectionFactor(direction: WheelDirection) {
   return direction === 'down' ? 1 : -1;
 }

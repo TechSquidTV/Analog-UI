@@ -1,28 +1,28 @@
 import * as React from 'react';
-import { cn } from '../../../lib/utils';
+import { cn } from '@/lib/utils';
 import {
   useAnalogLightAngle,
   useAnalogLighting,
   type AnalogLightingConfig,
 } from '../../hooks/use-analog-lighting';
-import { useAnalogMaterialVariant } from '../../hooks/use-analog-material';
+import { useAnalogMaterialVariant } from '../../hooks/analog-material-scope';
 
-export type AnalogIndicatorColor = 'red' | 'green' | 'amber' | 'blue' | 'white' | 'none';
-export type AnalogIndicatorSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-export type AnalogIndicatorVariant = 'chrome' | 'black';
-export type AnalogIndicatorShape = 'round' | 'square';
+export type IndicatorColor = 'red' | 'green' | 'amber' | 'blue' | 'white' | 'none';
+export type IndicatorSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+export type IndicatorVariant = 'chrome' | 'black';
+export type IndicatorShape = 'round' | 'square';
 
-export interface AnalogIndicatorProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface IndicatorProps extends React.HTMLAttributes<HTMLDivElement> {
   isOn?: boolean;
-  color?: AnalogIndicatorColor;
-  size?: AnalogIndicatorSize;
+  color?: IndicatorColor;
+  size?: IndicatorSize;
   /**
    * Bezel material when the bezel is visible.
    * `variant="none"` is deprecated; use `disableBezel` instead.
    */
-  variant?: AnalogIndicatorVariant | 'none';
+  variant?: IndicatorVariant | 'none';
   disableBezel?: boolean;
-  shape?: AnalogIndicatorShape;
+  shape?: IndicatorShape;
   lighting?: AnalogLightingConfig<'bezel' | 'lens'>;
 }
 
@@ -82,7 +82,7 @@ const glowMaps = {
 
 const lensInset = '16%';
 
-export const AnalogIndicator = React.forwardRef<HTMLDivElement, AnalogIndicatorProps>(
+export const Indicator = React.forwardRef<HTMLDivElement, IndicatorProps>(
   (
     {
       className,
@@ -263,4 +263,4 @@ export const AnalogIndicator = React.forwardRef<HTMLDivElement, AnalogIndicatorP
     );
   },
 );
-AnalogIndicator.displayName = 'AnalogIndicator';
+Indicator.displayName = 'Indicator';
