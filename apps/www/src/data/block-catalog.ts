@@ -38,6 +38,12 @@ export const blockCatalog = {
     order: 30,
     summary: 'A heavy-duty rocker with optional LED states and enough depth to feel mechanical.',
   },
+  'rocker-switch-group': {
+    name: 'rocker-switch-group',
+    category: 'inputs',
+    order: 32,
+    summary: 'A recessed switch bank for arranging rocker toggles with shared lighting.',
+  },
   'square-button': {
     name: 'square-button',
     category: 'inputs',
@@ -50,6 +56,12 @@ export const blockCatalog = {
     category: 'inputs',
     order: 36,
     summary: 'A latching square toggle that pairs plunger depth with compact LED state feedback.',
+  },
+  'toggle-button-group': {
+    name: 'toggle-button-group',
+    category: 'inputs',
+    order: 37,
+    summary: 'A selection group of square plunger toggle buttons with active LED feedback.',
   },
   switch: {
     name: 'switch',

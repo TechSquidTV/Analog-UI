@@ -280,6 +280,106 @@ export function ToggleExample() {
       },
     ],
   },
+  'rocker-switch-group': {
+    usageIntro:
+      'Use RockerSwitchGroup to arrange multiple heavy rocker toggles in a shared recessed bank.',
+    registryImportCode: registryImport(
+      ['RockerSwitchGroup', 'RockerSwitchGroupItem'],
+      'RockerSwitchGroup',
+    ),
+    packageImportCode: packageImport(['RockerSwitchGroup', 'RockerSwitchGroupItem']),
+    usageCode: `<RockerSwitchGroup>
+  <RockerSwitchGroupItem label="Main" value={main} onValueChange={setMain} />
+  <RockerSwitchGroupItem label="Aux" value={aux} onValueChange={setAux} />
+</RockerSwitchGroup>`,
+    exampleCode: `"use client"
+
+import * as React from "react"
+import {
+  RockerSwitchGroup,
+  RockerSwitchGroupItem,
+} from "@/registry/components/analog/RockerSwitchGroup"
+
+export function RockerSwitchGroupExample() {
+  const [main, setMain] = React.useState<"left" | "right">("right")
+  const [aux, setAux] = React.useState<"left" | "right">("left")
+
+  return (
+    <RockerSwitchGroup aria-label="Bus controls">
+      <RockerSwitchGroupItem label="Main" value={main} onValueChange={setMain} />
+      <RockerSwitchGroupItem
+        label="Aux"
+        value={aux}
+        onValueChange={setAux}
+        variant="black"
+        leftLed="red"
+      />
+    </RockerSwitchGroup>
+  )
+}`,
+    api: [
+      {
+        title: 'RockerSwitchGroup',
+        description: 'A recessed layout bank for related rocker toggles.',
+        props: [
+          {
+            name: 'layout',
+            type: '"horizontal" | "vertical"',
+            defaultValue: '"horizontal"',
+            description: 'Controls how switch items flow through the bank.',
+          },
+          {
+            name: 'switchOrientation',
+            type: '"horizontal" | "vertical"',
+            defaultValue: '"horizontal"',
+            description: 'Default rocker direction for items in the bank.',
+          },
+          {
+            name: 'variant',
+            type: '"chrome" | "black"',
+            defaultValue: 'inherited',
+            description: 'Default material finish for child rockers.',
+          },
+          {
+            name: 'leftLed / rightLed',
+            type: 'IndicatorColor',
+            defaultValue: '"amber" / "green"',
+            description: 'Default LED colors for child rockers.',
+          },
+          lightingProp,
+          classNameProp,
+        ],
+      },
+      {
+        title: 'RockerSwitchGroupItem',
+        description: 'A labeled rocker switch inside a RockerSwitchGroup bank.',
+        props: [
+          {
+            name: 'label',
+            type: 'React.ReactNode',
+            description: 'Short hardware label rendered beside the rocker.',
+          },
+          {
+            name: 'labelPosition',
+            type: '"start" | "end" | "top" | "bottom"',
+            defaultValue: '"top"',
+            description: 'Places the item label around the rocker.',
+          },
+          {
+            name: 'toggleClassName',
+            type: 'string',
+            description: 'Adds classes to the nested Toggle control.',
+          },
+          {
+            name: 'value / onValueChange',
+            type: 'Toggle value props',
+            description: 'Passes through to the nested Toggle.',
+          },
+          classNameProp,
+        ],
+      },
+    ],
+  },
   'square-button': {
     usageIntro: 'Use SquareButton for a momentary action with physical plunger travel.',
     registryImportCode: registryImport(['SquareButton'], 'SquareButton'),
@@ -392,6 +492,152 @@ export function SquareToggleExample() {
             type: 'number',
             defaultValue: '32',
             description: 'Controls the rendered depth layers.',
+          },
+          lightingProp,
+          classNameProp,
+        ],
+      },
+    ],
+  },
+  'toggle-button-group': {
+    usageIntro:
+      'Use ToggleButtonGroup for mutually exclusive square plunger toggles with LED state feedback.',
+    registryImportCode: registryImport(
+      ['ToggleButtonGroup', 'ToggleButtonGroupItem'],
+      'ToggleButtonGroup',
+    ),
+    packageImportCode: packageImport(['ToggleButtonGroup', 'ToggleButtonGroupItem']),
+    usageCode: `<ToggleButtonGroup value={mode} onValueChange={setMode}>
+  <ToggleButtonGroupItem value="mix">Mix</ToggleButtonGroupItem>
+  <ToggleButtonGroupItem value="solo">Solo</ToggleButtonGroupItem>
+</ToggleButtonGroup>`,
+    exampleCode: `"use client"
+
+import * as React from "react"
+import {
+  ToggleButtonGroup,
+  ToggleButtonGroupItem,
+} from "@/registry/components/analog/ToggleButtonGroup"
+
+export function ToggleButtonGroupExample() {
+  const [mode, setMode] = React.useState("mix")
+
+  return (
+    <ToggleButtonGroup value={mode} onValueChange={setMode} aria-label="Signal mode">
+      <ToggleButtonGroupItem value="mix" width="4.75rem">
+        Mix
+      </ToggleButtonGroupItem>
+      <ToggleButtonGroupItem value="solo" width="4.75rem" variant="black">
+        Solo
+      </ToggleButtonGroupItem>
+      <ToggleButtonGroupItem value="mute" width="4.75rem" indicatorColor="red">
+        Mute
+      </ToggleButtonGroupItem>
+    </ToggleButtonGroup>
+  )
+}`,
+    api: [
+      {
+        title: 'ToggleButtonGroup',
+        description: 'A Base UI toggle group styled as a recessed plunger-button bank.',
+        props: [
+          {
+            name: 'value',
+            type: 'string',
+            description: 'Controlled selected item value.',
+          },
+          {
+            name: 'defaultValue',
+            type: 'string',
+            description: 'Initial uncontrolled selected item value.',
+          },
+          {
+            name: 'onValueChange',
+            type: '(value: string) => void',
+            description: 'Receives the next selected item value.',
+          },
+          {
+            name: 'orientation',
+            type: '"horizontal" | "vertical"',
+            defaultValue: '"horizontal"',
+            description: 'Controls group flow and keyboard orientation.',
+          },
+          {
+            name: 'variant',
+            type: '"chrome" | "black"',
+            defaultValue: 'inherited',
+            description: 'Default plunger material finish for child items.',
+          },
+          {
+            name: 'indicatorColor',
+            type: 'IndicatorColor',
+            defaultValue: '"green"',
+            description: 'Default LED color for child items.',
+          },
+          {
+            name: 'indicatorActive',
+            type: '"auto" | "always" | "never"',
+            defaultValue: '"auto"',
+            description: 'Controls when child item LEDs light.',
+          },
+          {
+            name: 'allowEmpty',
+            type: 'boolean',
+            defaultValue: 'false',
+            description: 'Allows the active item to be toggled off.',
+          },
+          {
+            name: 'itemHeight',
+            type: 'React.CSSProperties["height"]',
+            defaultValue: '"3.5rem"',
+            description: 'Default item height for child toggles.',
+          },
+          lightingProp,
+          classNameProp,
+        ],
+      },
+      {
+        title: 'ToggleButtonGroupItem',
+        description: 'A square plunger toggle item with optional link behavior.',
+        props: [
+          {
+            name: 'value',
+            type: 'string',
+            description: 'Unique item value used by the parent group.',
+          },
+          {
+            name: 'href',
+            type: 'string',
+            description: 'Renders the item as a link while preserving toggle styling.',
+          },
+          {
+            name: 'width / height',
+            type: 'React.CSSProperties',
+            description: 'Sets the item footprint.',
+          },
+          {
+            name: 'variant',
+            type: '"chrome" | "black"',
+            defaultValue: 'group default',
+            description: 'Overrides the item material finish.',
+          },
+          {
+            name: 'indicatorColor',
+            type: 'IndicatorColor',
+            defaultValue: 'group default',
+            description: 'Overrides the item LED color.',
+          },
+          {
+            name: 'indicatorActive',
+            type: '"auto" | "always" | "never"',
+            defaultValue: 'group default',
+            description: 'Controls when this item LED lights.',
+          },
+          {
+            name: 'extrusionLayers',
+            type: 'number',
+            defaultValue: '32',
+            description: 'Controls rendered plunger depth.',
           },
           lightingProp,
           classNameProp,

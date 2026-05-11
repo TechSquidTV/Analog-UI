@@ -678,6 +678,30 @@
       ]
     },
     {
+      "name": "rocker-switch-group",
+      "title": "Rocker Switch Group",
+      "type": "registry:ui",
+      "description": "A recessed switch bank for grouping heavy-duty rocker toggles with shared material lighting and labels.",
+      "dependencies": ["@base-ui/react"],
+      "registryDependencies": [
+        "analog-foundation",
+        "indicator",
+        "refs",
+        "rocker-thumb-surface",
+        "toggle",
+        "use-analog-lighting",
+        "analog-material-scope",
+        "utils",
+        "orientation"
+      ],
+      "files": [
+        {
+          "path": "src/registry/components/analog/RockerSwitchGroup.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "wheel-number",
       "title": "Wheel Number",
       "type": "registry:ui",
@@ -769,6 +793,28 @@
       "files": [
         {
           "path": "src/registry/components/analog/SquareToggle.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "toggle-button-group",
+      "title": "Toggle Button Group",
+      "type": "registry:ui",
+      "description": "A Base UI selection group for square plunger toggle buttons with shared recessed hardware and LED state feedback.",
+      "dependencies": ["@base-ui/react", "motion"],
+      "registryDependencies": [
+        "analog-foundation",
+        "indicator",
+        "refs",
+        "use-analog-lighting",
+        "utils",
+        "orientation",
+        "square-plunger"
+      ],
+      "files": [
+        {
+          "path": "src/registry/components/analog/ToggleButtonGroup.tsx",
           "type": "registry:ui"
         }
       ]

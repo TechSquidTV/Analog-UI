@@ -1,5 +1,5 @@
 ---
-import { SquareButton } from '../../../../../packages/analog-ui/src/index';
+import SiteNavToggleGroup from './SiteNavToggleGroup';
 
 interface Props {
   pathname: string;
@@ -38,19 +38,8 @@ const activeHref = links
       </span>
     </a>
 
-    <nav class="flex flex-wrap items-center gap-2">
-      {
-        links.map((link) => (
-          <SquareButton
-            href={link.href}
-            width={link.width}
-            height="2.5rem"
-            variant={activeHref === link.href ? 'chrome' : 'black'}
-          >
-            {link.label}
-          </SquareButton>
-        ))
-      }
+    <nav>
+      <SiteNavToggleGroup client:load links={links} activeHref={activeHref} />
     </nav>
   </div>
 </header>

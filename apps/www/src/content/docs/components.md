@@ -14,8 +14,10 @@ Browse the Analog UI control set by role: inputs, readouts, and panel surfaces. 
 - [Dial](/docs/components/dial): rotary input with metallic foil response
 - [Slider](/docs/components/slider): linear fader with recessed travel and machined thumb
 - [Toggle](/docs/components/toggle): heavy rocker control with optional LED states
+- [Rocker Switch Group](/docs/components/rocker-switch-group): recessed bank for grouped rocker toggles
 - [Square Button](/docs/components/square-button): momentary square plunger with deep 3D travel
 - [Square Toggle](/docs/components/square-toggle): latching square control with optional LED feedback
+- [Toggle Button Group](/docs/components/toggle-button-group): grouped square plunger toggles with LED selection
 - [Switch](/docs/components/switch): cylindrical track switch with rolling thumb behavior
 - [Wheel Select](/docs/components/wheel-select): stepped trim wheel for option navigation
 - [Wheel Number](/docs/components/wheel-number): numeric trim wheel for precise scrubbing

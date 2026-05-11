@@ -21,8 +21,12 @@ import {
   PanelFooter,
   PanelHeader,
   PanelTitle,
+  RockerSwitchGroup,
+  RockerSwitchGroupItem,
   SquareButton,
   SquareToggle,
+  ToggleButtonGroup,
+  ToggleButtonGroupItem,
   NeedleGauge,
   type NeedleGaugeScalePreset,
   usePointerLighting,
@@ -318,6 +322,57 @@ function ToggleDemo({ mode }: { mode: DemoMode }) {
   );
 }
 
+function RockerSwitchGroupDemo({ mode }: { mode: DemoMode }) {
+  const [mainValue, setMainValue] = useState<'left' | 'right'>('right');
+  const [auxValue, setAuxValue] = useState<'left' | 'right'>('left');
+  const [busValue, setBusValue] = useState<'left' | 'right'>('right');
+
+  return (
+    <DemoStage
+      mode={mode}
+      footer={
+        <>
+          <FooterItem label="Main" value={mainValue === 'right' ? 'On' : 'Off'} />
+          <FooterItem label="Aux" value={auxValue === 'right' ? 'On' : 'Off'} />
+          <FooterItem label="Bank" value="Rocker group" />
+        </>
+      }
+    >
+      <div className="flex w-full flex-wrap items-center justify-center gap-10">
+        <RockerSwitchGroup aria-label="Bus rocker switch bank">
+          <RockerSwitchGroupItem label="Main" value={mainValue} onValueChange={setMainValue} />
+          <RockerSwitchGroupItem
+            label="Aux"
+            value={auxValue}
+            onValueChange={setAuxValue}
+            variant="black"
+            leftLed="red"
+          />
+          {mode === 'full' ? (
+            <RockerSwitchGroupItem label="Bus" value={busValue} onValueChange={setBusValue} />
+          ) : null}
+        </RockerSwitchGroup>
+
+        {mode === 'full' ? (
+          <RockerSwitchGroup
+            aria-label="Vertical rocker switch bank"
+            layout="horizontal"
+            switchOrientation="vertical"
+            variant="black"
+          >
+            <RockerSwitchGroupItem
+              label="Door"
+              value={busValue}
+              onValueChange={setBusValue}
+              labelPosition="bottom"
+            />
+          </RockerSwitchGroup>
+        ) : null}
+      </div>
+    </DemoStage>
+  );
+}
+
 function SquareButtonDemo({ mode }: { mode: DemoMode }) {
   const [lastAction, setLastAction] = useState('Idle');
 
@@ -394,6 +449,47 @@ function SquareToggleDemo({ mode }: { mode: DemoMode }) {
             Latching (LED)
           </span>
         </div>
+      </div>
+    </DemoStage>
+  );
+}
+
+function ToggleButtonGroupDemo({ mode }: { mode: DemoMode }) {
+  const [selected, setSelected] = useState('mix');
+
+  return (
+    <DemoStage
+      mode={mode}
+      footer={
+        <>
+          <FooterItem label="Selected" value={selected.toUpperCase()} />
+          <FooterItem label="Behavior" value="Exclusive group" />
+          <FooterItem label="Indicator" value="Active LED" />
+        </>
+      }
+    >
+      <div className="flex w-full flex-wrap items-center justify-center gap-10">
+        <ToggleButtonGroup
+          value={selected}
+          onValueChange={setSelected}
+          aria-label="Signal mode"
+          itemHeight="3rem"
+        >
+          <ToggleButtonGroupItem value="mix" width="4.75rem">
+            Mix
+          </ToggleButtonGroupItem>
+          <ToggleButtonGroupItem value="solo" width="4.75rem" variant="black">
+            Solo
+          </ToggleButtonGroupItem>
+          <ToggleButtonGroupItem value="mute" width="4.75rem" indicatorColor="red">
+            Mute
+          </ToggleButtonGroupItem>
+          {mode === 'full' ? (
+            <ToggleButtonGroupItem value="cue" width="4.75rem" indicatorColor="amber">
+              Cue
+            </ToggleButtonGroupItem>
+          ) : null}
+        </ToggleButtonGroup>
       </div>
     </DemoStage>
   );
@@ -940,10 +1036,14 @@ export default function BlockDemo({ name, mode = 'full' }: BlockDemoProps) {
       return <SliderDemo mode={mode} />;
     case 'toggle':
       return <ToggleDemo mode={mode} />;
+    case 'rocker-switch-group':
+      return <RockerSwitchGroupDemo mode={mode} />;
     case 'square-button':
       return <SquareButtonDemo mode={mode} />;
     case 'square-toggle':
       return <SquareToggleDemo mode={mode} />;
+    case 'toggle-button-group':
+      return <ToggleButtonGroupDemo mode={mode} />;
     case 'switch':
       return <SwitchDemo mode={mode} />;
     case 'wheel-select':
