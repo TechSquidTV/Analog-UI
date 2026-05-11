@@ -19,6 +19,7 @@ interface ComponentPageDoc {
   packageImportCode?: string;
   usageCode: string;
   exampleCode: string;
+  /** Editorial fallback for generated API docs; source prop names, types, and defaults come from component-api-loader. */
   api: ComponentApiSection[];
 }
 

@@ -6,6 +6,7 @@ import { getComponentPageDoc } from '../../../data/component-docs';
 import DocsLayout from '../../../layouts/DocsLayout.astro';
 import { getBlockEntries, getBlockEntry } from '../../../lib/blocks';
 import { getComponentDocHref, getDocsNavigation } from '../../../lib/docs';
+import { getEntry } from 'astro:content';
 
 function slugify(value: string) {
   return value
@@ -28,12 +29,19 @@ if (!entry) {
 
 const navigation = await getDocsNavigation();
 const componentDoc = getComponentPageDoc(entry.name);
+const componentApiDoc = await getEntry('componentApis', entry.name);
+
+if (!componentApiDoc) {
+  throw new Error(`Missing generated component API entry for "${entry.name}".`);
+}
+
+const apiSections = componentApiDoc.data.sections;
 const headings = [
   { depth: 2, slug: 'example', text: 'Live Example' },
   { depth: 2, slug: 'installation', text: 'Installation' },
   { depth: 2, slug: 'usage', text: 'Usage' },
   { depth: 2, slug: 'api-reference', text: 'Props' },
-  ...componentDoc.api.map((section) => ({
+  ...apiSections.map((section) => ({
     depth: 3,
     slug: slugify(section.title),
     text: section.title,
@@ -127,7 +135,7 @@ const packageInstallSnippet = `pnpm add analog-ui`;
   </p>
 
   {
-    componentDoc.api.map((section) => (
+    apiSections.map((section) => (
       <>
         <h3 id={slugify(section.title)}>{section.title}</h3>
         <p>{section.description}</p>

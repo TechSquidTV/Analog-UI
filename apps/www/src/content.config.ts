@@ -2,6 +2,8 @@ import { defineCollection, z } from 'astro:content';
 import { glob, type Loader, type LoaderContext } from 'astro/loaders';
 import { fileURLToPath } from 'node:url';
 
+import { componentApiLoader } from './lib/component-api-loader';
+
 function ignoreSameFileDuplicateWarnings(loader: Loader): Loader {
   return {
     ...loader,
@@ -52,4 +54,26 @@ const docs = defineCollection({
   }),
 });
 
-export const collections = { docs };
+const componentApiProp = z.object({
+  name: z.string(),
+  type: z.string(),
+  defaultValue: z.string().optional(),
+  description: z.string(),
+});
+
+const componentApis = defineCollection({
+  type: 'content_layer',
+  loader: componentApiLoader(),
+  schema: z.object({
+    title: z.string(),
+    sections: z.array(
+      z.object({
+        title: z.string(),
+        description: z.string(),
+        props: z.array(componentApiProp),
+      }),
+    ),
+  }),
+});
+
+export const collections = { docs, componentApis };
