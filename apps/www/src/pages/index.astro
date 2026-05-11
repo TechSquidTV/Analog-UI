@@ -1,16 +1,11 @@
 ---
 import HomePage from '../components/home/HomePage';
-import { getRegistryItems } from '../lib/registry';
 import SiteLayout from '../layouts/SiteLayout.astro';
-
-const registryItems = getRegistryItems();
-const registryUiCount = registryItems.filter((item) => item.type === 'registry:ui').length;
-const registryItemCount = registryItems.length;
 ---
 
 <SiteLayout
   title="Analog UI"
   description="A tactile component library and registry for studio-grade interfaces with analog lighting and machined surfaces."
 >
-  <HomePage client:load registryItemCount={registryItemCount} registryUiCount={registryUiCount} />
+  <HomePage client:load />
 </SiteLayout>
