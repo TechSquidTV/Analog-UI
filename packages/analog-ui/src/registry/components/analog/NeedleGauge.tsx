@@ -419,7 +419,7 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
         max={resolvedMax}
         data-analog-variant={resolvedVariant}
         className={cn(
-          'relative inline-flex aspect-[11/8] w-full max-w-[19rem] min-w-0 shrink-0 items-center justify-center rounded-[var(--analog-radius-panel)] border border-transparent p-[var(--spacing-track-padding)] text-[var(--analog-control-foreground)]',
+          'relative inline-flex aspect-[11/7] w-full max-w-[19rem] min-w-0 shrink-0 items-center justify-center rounded-[var(--analog-radius-panel)] border border-transparent p-[var(--spacing-track-padding)] text-[var(--analog-control-foreground)]',
           className,
         )}
         style={{
@@ -666,7 +666,7 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
                 </div>
               </div>
 
-              <div className="pointer-events-none absolute inset-x-0 bottom-[9%] z-20 flex flex-col items-center gap-1 px-8 text-center">
+              <div className="pointer-events-none absolute inset-x-0 bottom-[13%] z-20 flex flex-col items-center gap-1 px-8 text-center">
                 <div className="text-[9px] font-bold tracking-[0.32em] text-[color:var(--analog-telemetry-label)] uppercase">
                   {label}
                 </div>
