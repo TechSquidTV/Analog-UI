@@ -1,6 +1,17 @@
 {
   "name": "analog-ui",
   "version": "0.0.0",
+  "description": "Studio Hyper-Skeuomorphic React components for tactile controls, machined panels, meters, and analog lighting.",
+  "keywords": [
+    "analog-ui",
+    "react",
+    "tailwindcss",
+    "shadcn",
+    "shadcn-ui",
+    "studio-hyper-skeuomorphic",
+    "skeuomorphic",
+    "components"
+  ],
   "license": "MIT",
   "type": "module",
   "sideEffects": [

@@ -1,7 +1,7 @@
 ---
 version: alpha
 name: Analog UI
-description: Studio Hyper-Skeuomorphism for tactile control surfaces, machined hardware, and restrained console lighting.
+description: Studio Hyper-Skeuomorphic React components for tactile controls, machined panels, meters, and analog lighting.
 colors:
   background: '#080808'
   panel: '#121212'
@@ -155,6 +155,24 @@ components:
 Analog UI uses **Studio Hyper-Skeuomorphism**: dark rack panels, machined knobs, dense cavities, foil reflections, and jewel-like indicators that feel lifted from studio hardware rather than flat app chrome. The interface should feel tactile, engineered, and premium, with physical mass implied through bevels, layered shadows, and material-specific lighting response.
 
 The brand voice is technical and cinematic rather than playful. Most of the screen should stay in deep neutrals and textured metals. Saturated color belongs almost exclusively to lit states, meter fills, display glass, and indicator optics.
+
+## Registry Positioning
+
+Use **Studio Hyper-Skeuomorphic** as the category phrase in registry listings, site metadata, and short product descriptions. It should work the way "Neobrutalism" or "Pixel Art" works for other styled shadcn libraries: the phrase names the visual movement before the implementation details.
+
+Canonical registry description:
+
+> Studio Hyper-Skeuomorphic React components for tactile controls, machined panels, meters, and analog lighting. Built with Tailwind CSS and a shadcn-compatible registry.
+
+Short description:
+
+> Studio Hyper-Skeuomorphic components for tactile React interfaces.
+
+When space is tight, keep the phrase near the front and connect it to concrete UI outputs:
+
+- Prefer: `Studio Hyper-Skeuomorphic components for tactile controls and analog lighting.`
+- Prefer: `Studio Hyper-Skeuomorphic React components for machined panels, meters, and control surfaces.`
+- Avoid: generic descriptions that say only `beautiful`, `modern`, `hardware-like`, or `skeuomorphic` without naming the studio-control vocabulary.
 
 ## Colors
 

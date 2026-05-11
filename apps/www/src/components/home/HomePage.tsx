@@ -32,9 +32,8 @@ export default function HomePage() {
               <span className="block text-[var(--color-accent)] italic">feel.</span>
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-[#afafaf] md:text-xl">
-              Analog UI brings studio hyper-skeuomorphism to the web: machined knobs, dense rack
-              panels, jewel lamps, trim wheels, and a shared lighting model that makes surfaces
-              react like hardware.
+              Studio Hyper-Skeuomorphic React components for tactile controls, machined panels,
+              meters, and analog lighting. Built with Tailwind CSS and a shadcn-compatible registry.
             </p>
 
             <div className="mt-8 flex flex-wrap justify-center gap-3">

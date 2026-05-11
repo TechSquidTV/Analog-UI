@@ -8,12 +8,16 @@ interface Props {
   description?: string;
 }
 
-const {
-  title = 'Analog UI',
-  description = 'Analog UI is a tactile component library and custom registry for studio-grade, hyper-skeuomorphic interfaces.',
-} = Astro.props;
+const defaultDescription =
+  'Studio Hyper-Skeuomorphic React components for tactile controls, machined panels, meters, and analog lighting. Built with Tailwind CSS and a shadcn-compatible registry.';
 
-const pageTitle = title === 'Analog UI' ? title : `${title} | Analog UI`;
+const { title = 'Analog UI', description = defaultDescription } = Astro.props;
+
+const pageTitle =
+  title === 'Analog UI'
+    ? 'Analog UI - Studio Hyper-Skeuomorphic React Components'
+    : `${title} | Analog UI`;
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url).toString();
 ---
 
 <!doctype html>
@@ -25,7 +29,16 @@ const pageTitle = title === 'Analog UI' ? title : `${title} | Analog UI`;
     <link rel="icon" type="image/png" sizes="64x64" href="/img/logo/64w/logo.png" />
     <link rel="apple-touch-icon" sizes="256x256" href="/img/logo/256w/logo.png" />
     <title>{pageTitle}</title>
+    <link rel="canonical" href={canonicalUrl} />
     <meta name="description" content={description} />
+    <meta property="og:site_name" content="Analog UI" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
   </head>
   <body class="text-foreground antialiased selection:bg-white/10 selection:text-white">
     <div

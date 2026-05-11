@@ -1,8 +1,8 @@
 # Analog UI
 
-Analog UI is a tactile React component library for interfaces that should feel
-like hardware: machined panels, rotary controls, faders, switches, segmented
-readouts, meters, and tone-driven indicators.
+Analog UI is a Studio Hyper-Skeuomorphic React component library for tactile
+interfaces: machined panels, rotary controls, faders, switches, segmented
+readouts, meters, analog lighting, and tone-driven indicators.
 
 The library ships in two forms:
 

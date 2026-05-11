@@ -10,6 +10,7 @@ export default defineConfig({
     rehypePlugins: [rehypeDocsCodeBlocks],
   },
   publicDir: './src/public',
+  site: 'https://analogui.com',
   vite: {
     plugins: [tailwindcss()],
     resolve: {

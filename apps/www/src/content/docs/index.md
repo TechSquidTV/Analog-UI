@@ -1,13 +1,13 @@
 ---
 title: Get Started
-description: Install Analog UI, learn the design model, and choose a component.
+description: Learn the Studio Hyper-Skeuomorphic design model, install Analog UI, and choose a tactile component.
 section: introduction
 order: 0
 navTitle: Introduction
 draft: false
 ---
 
-Analog UI is a tactile component library for interfaces that should feel like hardware. It pairs shadcn-compatible registry components with machined surfaces, lighting-aware materials, and restrained console styling.
+Analog UI is a Studio Hyper-Skeuomorphic component library for tactile React interfaces. It pairs shadcn-compatible registry components with machined surfaces, lighting-aware materials, and restrained console styling.
 
 ## Start Here
 
