@@ -192,8 +192,8 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
                     strokeDashoffset={-fillStart}
                     transform={`rotate(${startAngle - 90} 50 50)`}
                     style={{
-                      filter: 'blur(4px)',
-                      opacity: 0.5,
+                      filter: 'blur(calc(4px * var(--analog-bloom-strength, 0.7) * 1.428571))',
+                      opacity: 'calc(0.5 * var(--analog-bloom-strength, 0.7) * 1.428571)',
                     }}
                   />
 
@@ -282,7 +282,7 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
                           `color-mix(in oklch, var(--analog-surface-metal-hi) 78%, white 22%) 0%, ` +
                           `var(--analog-surface-metal-mid) 40%, ` +
                           `var(--analog-surface-metal-lo) 100%)`,
-                        boxShadow: `inset calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 2px rgba(255,255,255,calc(0.6 * var(--analog-light-power, 1))), inset calc(sin(${pointerBevelAngle}) * -1px) calc(cos(${pointerBevelAngle}) * 1px) 2px rgba(0,0,0,calc(0.5 * var(--analog-light-power, 1))), calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 4px rgba(0,0,0,calc(0.6 * var(--analog-light-power, 1)))`,
+                        boxShadow: `inset calc(sin(${pointerBevelAngle}) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(${pointerBevelAngle}) * var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 0.5) rgba(255,255,255,calc(0.6 * var(--analog-light-power, 1))), inset calc(sin(${pointerBevelAngle}) * var(--analog-bevel-width, 4px) * -0.25) calc(cos(${pointerBevelAngle}) * var(--analog-bevel-width, 4px) * 0.25) calc(var(--analog-bevel-width, 4px) * 0.5) rgba(0,0,0,calc(0.5 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), calc(sin(${pointerBevelAngle}) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(${pointerBevelAngle}) * var(--analog-bevel-width, 4px) * -0.25) var(--analog-bevel-width, 4px) rgba(0,0,0,calc(0.6 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
                       }}
                     >
                       <div

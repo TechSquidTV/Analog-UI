@@ -16,7 +16,8 @@ const useIsomorphicLayoutEffect =
 const wheelIndicatorStyle: React.CSSProperties = {
   backgroundColor: 'var(--analog-led-amber-base)',
   borderColor: 'var(--analog-control-surface-strong)',
-  boxShadow: '0 0 10px var(--analog-led-amber-glow)',
+  boxShadow:
+    '0 0 calc(10px * var(--analog-bloom-strength, 0.7) * 1.428571) var(--analog-led-amber-glow)',
 };
 
 const wheelReadoutGlassStyle: React.CSSProperties = {

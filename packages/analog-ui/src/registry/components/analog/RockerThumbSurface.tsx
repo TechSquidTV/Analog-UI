@@ -11,9 +11,14 @@ type RockerOrientation = AnalogOrientation;
 type RockerRaisedSide = 'start' | 'end' | 'both';
 type RockerSingleSide = Exclude<RockerRaisedSide, 'both'>;
 type RockerSurfaceMode = 'single' | 'dual';
+type CssLength = number | string;
 
 const cssVariableBlendMode = (value: `var(${string})`) =>
   value as unknown as React.CSSProperties['mixBlendMode'];
+
+const cssLength = (value: CssLength) => (typeof value === 'number' ? `${value}px` : value);
+const negativeCssLength = (value: CssLength) =>
+  typeof value === 'number' ? `${-value}px` : `calc(${value} * -1)`;
 
 interface RockerThumbSurfaceProps {
   className?: string;
@@ -37,26 +42,34 @@ const crossAxisGradientAngle = (orientation: RockerOrientation) =>
 const axisInset = (
   orientation: RockerOrientation,
   direction: RockerSingleSide,
-  distance: number,
-  blur: number,
+  distance: CssLength,
+  blur: CssLength,
   color: string,
 ) =>
   orientation === 'horizontal'
-    ? `inset ${direction === 'start' ? distance : -distance}px 0 ${blur}px ${color}`
-    : `inset 0 ${direction === 'start' ? distance : -distance}px ${blur}px ${color}`;
+    ? `inset ${
+        direction === 'start' ? cssLength(distance) : negativeCssLength(distance)
+      } 0 ${cssLength(blur)} ${color}`
+    : `inset 0 ${
+        direction === 'start' ? cssLength(distance) : negativeCssLength(distance)
+      } ${cssLength(blur)} ${color}`;
 
 const axisDrop = (
   orientation: RockerOrientation,
   direction: RockerSingleSide,
-  mainOffset: number,
-  crossOffset: number,
-  blur: number,
-  spread: number,
+  mainOffset: CssLength,
+  crossOffset: CssLength,
+  blur: CssLength,
+  spread: CssLength,
   color: string,
 ) =>
   orientation === 'horizontal'
-    ? `${direction === 'start' ? mainOffset : -mainOffset}px ${crossOffset}px ${blur}px ${spread}px ${color}`
-    : `${crossOffset}px ${direction === 'start' ? mainOffset : -mainOffset}px ${blur}px ${spread}px ${color}`;
+    ? `${
+        direction === 'start' ? cssLength(mainOffset) : negativeCssLength(mainOffset)
+      } ${cssLength(crossOffset)} ${cssLength(blur)} ${cssLength(spread)} ${color}`
+    : `${cssLength(crossOffset)} ${
+        direction === 'start' ? cssLength(mainOffset) : negativeCssLength(mainOffset)
+      } ${cssLength(blur)} ${cssLength(spread)} ${color}`;
 
 const singleFaceBackground = (
   orientation: RockerOrientation,
@@ -98,11 +111,11 @@ const singleFaceShadow = (
   const drop = axisDrop(
     orientation,
     raisedSide,
-    12,
-    6,
-    15,
-    -4,
-    `rgba(0,0,0,calc(${dropAlpha} * var(--analog-light-power, 1)))`,
+    'calc(var(--analog-bevel-width, 4px) * 3)',
+    'calc(var(--analog-bevel-width, 4px) * 1.5)',
+    'calc(var(--analog-bevel-width, 4px) * 3.75)',
+    'calc(var(--analog-bevel-width, 4px) * -1)',
+    `rgba(0,0,0,calc(${dropAlpha} * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
   );
 
   return [
@@ -110,18 +123,18 @@ const singleFaceShadow = (
     axisInset(
       orientation,
       raisedSide,
-      2,
-      6,
+      'calc(var(--analog-bevel-width, 4px) * 0.5)',
+      'calc(var(--analog-bevel-width, 4px) * 1.5)',
       `rgba(255,255,255,calc(var(--analog-rocker-highlight-alpha) * var(--analog-light-power, 1)))`,
     ),
     axisInset(
       orientation,
       raisedSide === 'start' ? 'end' : 'start',
-      6,
-      12,
-      `rgba(0,0,0,calc(${oppositeShadowAlpha} * var(--analog-light-power, 1)))`,
+      'calc(var(--analog-bevel-width, 4px) * 1.5)',
+      'calc(var(--analog-bevel-width, 4px) * 3)',
+      `rgba(0,0,0,calc(${oppositeShadowAlpha} * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
     ),
-    `inset 0 1px 3px rgba(255,255,255,calc(var(--analog-rocker-top-highlight-alpha) * var(--analog-light-power, 1)))`,
+    `inset 0 calc(var(--analog-bevel-width, 4px) * 0.25) calc(var(--analog-bevel-width, 4px) * 0.75) rgba(255,255,255,calc(var(--analog-rocker-top-highlight-alpha) * var(--analog-light-power, 1)))`,
   ].join(', ');
 };
 
@@ -197,8 +210,8 @@ const GripRidges = ({
           style={{
             background: `linear-gradient(${isHorizontal ? 'to right' : 'to bottom'}, var(--analog-rocker-ridge-edge-tone), var(--analog-rocker-ridge-center-tone) 50%, var(--analog-rocker-ridge-edge-tone))`,
             boxShadow: isHorizontal
-              ? `1px 0 1px rgba(255,255,255,calc(${ridgeHighlightAlpha} * var(--analog-light-power, 1))), -1px 0 2px rgba(0,0,0,calc(${ridgeShadowAlpha} * var(--analog-light-power, 1)))`
-              : `0 1px 1px rgba(255,255,255,calc(${ridgeHighlightAlpha} * var(--analog-light-power, 1))), 0 -1px 2px rgba(0,0,0,calc(${ridgeShadowAlpha} * var(--analog-light-power, 1)))`,
+              ? `calc(var(--analog-bevel-width, 4px) * 0.25) 0 calc(var(--analog-bevel-width, 4px) * 0.25) rgba(255,255,255,calc(${ridgeHighlightAlpha} * var(--analog-light-power, 1))), calc(var(--analog-bevel-width, 4px) * -0.25) 0 calc(var(--analog-bevel-width, 4px) * 0.5) rgba(0,0,0,calc(${ridgeShadowAlpha} * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`
+              : `0 calc(var(--analog-bevel-width, 4px) * 0.25) calc(var(--analog-bevel-width, 4px) * 0.25) rgba(255,255,255,calc(${ridgeHighlightAlpha} * var(--analog-light-power, 1))), 0 calc(var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 0.5) rgba(0,0,0,calc(${ridgeShadowAlpha} * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
           }}
         />
       ))}
@@ -266,7 +279,7 @@ function RockerOverlay({
         style={{
           mixBlendMode: cssVariableBlendMode('var(--analog-rocker-glare-blend)'),
           background: `linear-gradient(${crossAxisGradientAngle(orientation)}, transparent 4%, rgba(255,255,255,calc(${glareEdgeAlpha} * 0.85 * var(--analog-light-power, 1))) 24%, rgba(255,255,255,calc(${glareMidAlpha} * var(--analog-light-power, 1))) 40%, rgba(255,255,255,calc(${glareCoreAlpha} * 0.72 * var(--analog-light-power, 1))) 50%, rgba(255,255,255,calc(${glareMidAlpha} * var(--analog-light-power, 1))) 60%, rgba(255,255,255,calc(${glareEdgeAlpha} * 0.85 * var(--analog-light-power, 1))) 76%, transparent 96%), radial-gradient(110% 72% at 50% 24%, rgba(255,255,255,calc(${glareMidAlpha} * var(--analog-light-power, 1))) 0%, rgba(255,255,255,calc(${glareEdgeAlpha} * var(--analog-light-power, 1))) 42%, transparent 78%)`,
-          filter: 'blur(1.35px)',
+          filter: 'blur(calc(var(--analog-bevel-width, 4px) * 0.3375))',
         }}
       />
 

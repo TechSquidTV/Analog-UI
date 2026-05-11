@@ -72,14 +72,22 @@ export const SquarePlunger = ({
               : `linear-gradient(calc(var(--analog-light-angle-surface, 180deg) - 180deg), var(--analog-surface-onyx-hi), var(--analog-surface-onyx-mid) 50%, var(--analog-surface-onyx-lo))`,
             boxShadow: isChrome
               ? `
-                inset calc(sin(var(--analog-light-angle-surface)) * 3px) calc(cos(var(--analog-light-angle-surface)) * -3px) 2px rgba(255, 255, 255, calc(1 * var(--analog-light-power, 1))),
-                inset calc(sin(var(--analog-light-angle-surface)) * -6px) calc(cos(var(--analog-light-angle-surface)) * 6px) 16px rgba(0, 0, 0, calc(0.5 * var(--analog-light-power, 1))),
-                ${isPressed ? '0 2px 4px' : '0 15px 30px'} rgba(0, 0, 0, calc(0.7 * var(--analog-light-power, 1)))
+                inset calc(sin(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * 0.75) calc(cos(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * -0.75) calc(var(--analog-bevel-width, 4px) * 0.5) rgba(255, 255, 255, calc(1 * var(--analog-light-power, 1))),
+                inset calc(sin(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * -1.5) calc(cos(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * 1.5) calc(var(--analog-bevel-width, 4px) * 4) rgba(0, 0, 0, calc(0.5 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))),
+                ${
+                  isPressed
+                    ? '0 calc(var(--analog-bevel-width, 4px) * 0.5) var(--analog-bevel-width, 4px)'
+                    : '0 calc(var(--analog-bevel-width, 4px) * 3.75) calc(var(--analog-bevel-width, 4px) * 7.5)'
+                } rgba(0, 0, 0, calc(0.7 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))
               `
               : `
-                inset calc(sin(var(--analog-light-angle-surface)) * 1.5px) calc(cos(var(--analog-light-angle-surface)) * -1.5px) 1px rgba(255, 255, 255, calc(0.3 * var(--analog-light-power, 1))),
-                inset calc(sin(var(--analog-light-angle-surface)) * -3px) calc(cos(var(--analog-light-angle-surface)) * 3px) 12px rgba(0, 0, 0, calc(0.95 * var(--analog-light-power, 1))),
-                ${isPressed ? '0 3px 6px' : '0 18px 36px'} rgba(0, 0, 0, calc(0.9 * var(--analog-light-power, 1)))
+                inset calc(sin(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * 0.375) calc(cos(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * -0.375) calc(var(--analog-bevel-width, 4px) * 0.25) rgba(255, 255, 255, calc(0.3 * var(--analog-light-power, 1))),
+                inset calc(sin(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * -0.75) calc(cos(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * 0.75) calc(var(--analog-bevel-width, 4px) * 3) rgba(0, 0, 0, calc(0.95 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))),
+                ${
+                  isPressed
+                    ? '0 calc(var(--analog-bevel-width, 4px) * 0.75) calc(var(--analog-bevel-width, 4px) * 1.5)'
+                    : '0 calc(var(--analog-bevel-width, 4px) * 4.5) calc(var(--analog-bevel-width, 4px) * 9)'
+                } rgba(0, 0, 0, calc(0.9 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))
               `,
           }}
         >

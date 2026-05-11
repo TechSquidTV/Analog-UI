@@ -6,32 +6,36 @@
 
 @layer components {
   .analog-surface-recess {
-    --recess-depth: 4px;
-    --recess-depth-inner: 2px;
+    --recess-depth: var(--analog-bevel-width, 4px);
+    --recess-depth-inner: calc(var(--analog-bevel-width, 4px) * 0.5);
     background-color: var(--analog-surface-cavity);
     box-shadow:
       inset calc(sin(var(--analog-light-angle-track, 180deg)) * var(--recess-depth))
         calc(cos(var(--analog-light-angle-track, 180deg)) * calc(-1 * var(--recess-depth)))
-        calc(var(--recess-depth) * 2) rgba(0, 0, 0, calc(0.95 * var(--analog-light-power, 1))),
+        calc(var(--recess-depth) * 2)
+        rgba(0, 0, 0, calc(0.95 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))),
       inset calc(sin(var(--analog-light-angle-track, 180deg)) * var(--recess-depth-inner))
         calc(cos(var(--analog-light-angle-track, 180deg)) * calc(-1 * var(--recess-depth-inner)))
-        calc(var(--recess-depth-inner) * 6) rgba(0, 0, 0, calc(1 * var(--analog-light-power, 1))),
+        calc(var(--recess-depth-inner) * 6)
+        rgba(0, 0, 0, calc(1 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))),
       calc(sin(var(--analog-light-angle-track, 180deg)) * 1px)
         calc(cos(var(--analog-light-angle-track, 180deg)) * -1px) 0
         rgba(255, 255, 255, calc(0.15 * var(--analog-light-power, 1)));
   }
 
   .analog-surface-recess-sm {
-    --recess-depth: 2px;
-    --recess-depth-inner: 1px;
+    --recess-depth: calc(var(--analog-bevel-width, 4px) * 0.5);
+    --recess-depth-inner: calc(var(--analog-bevel-width, 4px) * 0.25);
     background-color: var(--analog-surface-cavity);
     box-shadow:
       inset calc(sin(var(--analog-light-angle-track, 180deg)) * var(--recess-depth))
         calc(cos(var(--analog-light-angle-track, 180deg)) * calc(-1 * var(--recess-depth)))
-        calc(var(--recess-depth) * 2) rgba(0, 0, 0, calc(0.9 * var(--analog-light-power, 1))),
+        calc(var(--recess-depth) * 2)
+        rgba(0, 0, 0, calc(0.9 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))),
       inset calc(sin(var(--analog-light-angle-track, 180deg)) * var(--recess-depth-inner))
         calc(cos(var(--analog-light-angle-track, 180deg)) * calc(-1 * var(--recess-depth-inner)))
-        calc(var(--recess-depth-inner) * 6) rgba(0, 0, 0, calc(1 * var(--analog-light-power, 1))),
+        calc(var(--recess-depth-inner) * 6)
+        rgba(0, 0, 0, calc(1 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))),
       calc(sin(var(--analog-light-angle-track, 180deg)) * 1px)
         calc(cos(var(--analog-light-angle-track, 180deg)) * -1px) 0
         rgba(255, 255, 255, calc(0.15 * var(--analog-light-power, 1)));
@@ -43,10 +47,10 @@
     --analog-track-slot-gradient-shadow-alpha: 0.6;
     --analog-track-slot-inset-highlight-alpha: 0.08;
     --analog-track-slot-inset-shadow-alpha: 0.85;
-    --analog-track-slot-inset-highlight-offset: 0.5px;
-    --analog-track-slot-inset-highlight-blur: 3px;
-    --analog-track-slot-inset-shadow-offset: 1px;
-    --analog-track-slot-inset-shadow-blur: 4px;
+    --analog-track-slot-inset-highlight-offset: calc(var(--analog-bevel-width, 4px) * 0.125);
+    --analog-track-slot-inset-highlight-blur: calc(var(--analog-bevel-width, 4px) * 0.75);
+    --analog-track-slot-inset-shadow-offset: calc(var(--analog-bevel-width, 4px) * 0.25);
+    --analog-track-slot-inset-shadow-blur: var(--analog-bevel-width, 4px);
     --analog-track-slot-drop-shadow: 0 0 0 rgba(0, 0, 0, 0);
     position: relative;
     overflow: hidden;
@@ -65,7 +69,10 @@
             0,
             0,
             0,
-            calc(var(--analog-track-slot-gradient-shadow-alpha) * var(--analog-light-power, 1))
+            calc(
+              var(--analog-track-slot-gradient-shadow-alpha) * var(--analog-shadow-depth, 1) *
+                var(--analog-light-power, 1)
+            )
           )
           100%
       ),
@@ -101,7 +108,10 @@
           0,
           0,
           0,
-          calc(var(--analog-track-slot-inset-shadow-alpha) * var(--analog-light-power, 1))
+          calc(
+            var(--analog-track-slot-inset-shadow-alpha) * var(--analog-shadow-depth, 1) *
+              var(--analog-light-power, 1)
+          )
         ),
       var(--analog-track-slot-drop-shadow);
   }
@@ -111,11 +121,13 @@
     --analog-track-slot-gradient-shadow-alpha: 0.42;
     --analog-track-slot-inset-highlight-alpha: 0.06;
     --analog-track-slot-inset-shadow-alpha: 0.55;
-    --analog-track-slot-inset-highlight-offset: 1px;
-    --analog-track-slot-inset-highlight-blur: 10px;
-    --analog-track-slot-inset-shadow-offset: 6px;
-    --analog-track-slot-inset-shadow-blur: 18px;
-    --analog-track-slot-drop-shadow: 0 10px 20px rgba(0, 0, 0, 0.8);
+    --analog-track-slot-inset-highlight-offset: calc(var(--analog-bevel-width, 4px) * 0.25);
+    --analog-track-slot-inset-highlight-blur: calc(var(--analog-bevel-width, 4px) * 2.5);
+    --analog-track-slot-inset-shadow-offset: calc(var(--analog-bevel-width, 4px) * 1.5);
+    --analog-track-slot-inset-shadow-blur: calc(var(--analog-bevel-width, 4px) * 4.5);
+    --analog-track-slot-drop-shadow: 0 calc(var(--analog-bevel-width, 4px) * 2.5)
+      calc(var(--analog-bevel-width, 4px) * 5)
+      rgba(0, 0, 0, calc(0.8 * var(--analog-shadow-depth, 1)));
   }
 
   .analog-track-slot-unlit {
@@ -124,14 +136,15 @@
     --analog-track-slot-inset-highlight-alpha: 0;
     --analog-track-slot-inset-shadow-alpha: 1;
     --analog-track-slot-inset-shadow-offset: 0px;
-    --analog-track-slot-inset-shadow-blur: 3px;
+    --analog-track-slot-inset-shadow-blur: calc(var(--analog-bevel-width, 4px) * 0.75);
   }
 
   .analog-track-slot-guide {
     background: color-mix(in oklch, var(--analog-surface-raised) 50%, transparent);
     box-shadow:
       0 0 0 0.5px rgba(255, 255, 255, calc(0.04 * var(--analog-light-power, 1))),
-      0 0 4px rgba(0, 0, 0, calc(0.35 * var(--analog-light-power, 1)));
+      0 0 var(--analog-bevel-width, 4px)
+        rgba(0, 0, 0, calc(0.35 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)));
   }
 
   .analog-foil {
@@ -189,18 +202,26 @@
 
     box-shadow:
       0 0 0 1px inset rgba(255, 255, 255, calc(0.4 * var(--analog-light-power, 1))),
-      0 8px 16px -4px rgba(0, 0, 0, calc(0.4 * var(--analog-light-power, 1))),
-      inset 0 -4px 8px rgba(0, 0, 0, calc(0.2 * var(--analog-light-power, 1))),
-      inset 0 4px 12px rgba(255, 255, 255, calc(0.4 * var(--analog-light-power, 1)));
+      0 calc(var(--analog-bevel-width, 4px) * 2) calc(var(--analog-bevel-width, 4px) * 4)
+        calc(var(--analog-bevel-width, 4px) * -1)
+        rgba(0, 0, 0, calc(0.4 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))),
+      inset 0 calc(var(--analog-bevel-width, 4px) * -1) calc(var(--analog-bevel-width, 4px) * 2)
+        rgba(0, 0, 0, calc(0.2 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))),
+      inset 0 var(--analog-bevel-width, 4px) calc(var(--analog-bevel-width, 4px) * 3)
+        rgba(255, 255, 255, calc(0.4 * var(--analog-light-power, 1)));
   }
 
   .surface-button.variant-black {
     background-color: var(--analog-surface-onyx-lo);
     box-shadow:
       0 0 0 1px inset rgba(255, 255, 255, calc(0.1 * var(--analog-light-power, 1))),
-      0 8px 16px -4px rgba(0, 0, 0, calc(0.8 * var(--analog-light-power, 1))),
-      inset 0 -4px 8px rgba(0, 0, 0, calc(0.6 * var(--analog-light-power, 1))),
-      inset 0 4px 12px rgba(255, 255, 255, calc(0.1 * var(--analog-light-power, 1)));
+      0 calc(var(--analog-bevel-width, 4px) * 2) calc(var(--analog-bevel-width, 4px) * 4)
+        calc(var(--analog-bevel-width, 4px) * -1)
+        rgba(0, 0, 0, calc(0.8 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))),
+      inset 0 calc(var(--analog-bevel-width, 4px) * -1) calc(var(--analog-bevel-width, 4px) * 2)
+        rgba(0, 0, 0, calc(0.6 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))),
+      inset 0 var(--analog-bevel-width, 4px) calc(var(--analog-bevel-width, 4px) * 3)
+        rgba(255, 255, 255, calc(0.1 * var(--analog-light-power, 1)));
   }
 
   .surface-button.analog-dial-surface {
@@ -239,28 +260,30 @@
     content: '';
     @apply absolute inset-0 z-[3] rounded-full pointer-events-none;
     box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, calc(0.4 * var(--analog-light-power, 1))),
-      inset 0 0 0 calc(var(--spacing-track-padding) + 2px)
-        rgba(0, 0, 0, calc(0.1 * var(--analog-light-power, 1))),
-      inset 0 2px 0 var(--spacing-track-padding)
+      inset 0 0 0 calc(var(--analog-bevel-width, 4px) * 0.25)
+        rgba(255, 255, 255, calc(0.4 * var(--analog-light-power, 1))),
+      inset 0 0 0 calc(var(--spacing-track-padding) + var(--analog-bevel-width, 4px) * 0.5)
+        rgba(0, 0, 0, calc(0.1 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))),
+      inset 0 calc(var(--analog-bevel-width, 4px) * 0.5) 0 var(--spacing-track-padding)
         rgba(255, 255, 255, calc(0.7 * var(--analog-light-power, 1))),
-      inset 0 -2px 0 var(--spacing-track-padding)
-        rgba(0, 0, 0, calc(0.6 * var(--analog-light-power, 1))),
-      inset 0 0 0 calc(var(--spacing-track-padding) + 3px)
-        rgba(0, 0, 0, calc(0.6 * var(--analog-light-power, 1)));
+      inset 0 calc(var(--analog-bevel-width, 4px) * -0.5) 0 var(--spacing-track-padding)
+        rgba(0, 0, 0, calc(0.6 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))),
+      inset 0 0 0 calc(var(--spacing-track-padding) + var(--analog-bevel-width, 4px) * 0.75)
+        rgba(0, 0, 0, calc(0.6 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)));
   }
 
   .surface-button.variant-black::after {
     box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, calc(0.05 * var(--analog-light-power, 1))),
-      inset 0 0 0 calc(var(--spacing-track-padding) + 2px)
-        rgba(0, 0, 0, calc(0.4 * var(--analog-light-power, 1))),
-      inset 0 2px 0 var(--spacing-track-padding)
+      inset 0 0 0 calc(var(--analog-bevel-width, 4px) * 0.25)
+        rgba(255, 255, 255, calc(0.05 * var(--analog-light-power, 1))),
+      inset 0 0 0 calc(var(--spacing-track-padding) + var(--analog-bevel-width, 4px) * 0.5)
+        rgba(0, 0, 0, calc(0.4 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))),
+      inset 0 calc(var(--analog-bevel-width, 4px) * 0.5) 0 var(--spacing-track-padding)
         rgba(255, 255, 255, calc(0.2 * var(--analog-light-power, 1))),
-      inset 0 -2px 0 var(--spacing-track-padding)
-        rgba(0, 0, 0, calc(0.9 * var(--analog-light-power, 1))),
-      inset 0 0 0 calc(var(--spacing-track-padding) + 3px)
-        rgba(0, 0, 0, calc(0.9 * var(--analog-light-power, 1)));
+      inset 0 calc(var(--analog-bevel-width, 4px) * -0.5) 0 var(--spacing-track-padding)
+        rgba(0, 0, 0, calc(0.9 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))),
+      inset 0 0 0 calc(var(--spacing-track-padding) + var(--analog-bevel-width, 4px) * 0.75)
+        rgba(0, 0, 0, calc(0.9 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)));
   }
 
   .surface-button.variant-black .holo-bg {

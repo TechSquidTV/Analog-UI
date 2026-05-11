@@ -72,12 +72,34 @@ const sizeMaps = {
   xl: 'w-24 h-24',
 };
 
+const bloomScale = 'var(--analog-bloom-strength, 0.7) * 1.428571';
+
 const glowMaps = {
-  xs: { blur: '2px', shadow: '0 0 4px 1px', shadow2: '0 0 8px 2px' },
-  sm: { blur: '4px', shadow: '0 0 6px 1px', shadow2: '0 0 12px 3px' },
-  md: { blur: '8px', shadow: '0 0 12px 2px', shadow2: '0 0 24px 6px' },
-  lg: { blur: '12px', shadow: '0 0 16px 3px', shadow2: '0 0 32px 8px' },
-  xl: { blur: '16px', shadow: '0 0 24px 4px', shadow2: '0 0 48px 12px' },
+  xs: {
+    blur: `calc(2px * ${bloomScale})`,
+    shadow: `0 0 calc(4px * ${bloomScale}) calc(1px * ${bloomScale})`,
+    shadow2: `0 0 calc(8px * ${bloomScale}) calc(2px * ${bloomScale})`,
+  },
+  sm: {
+    blur: `calc(4px * ${bloomScale})`,
+    shadow: `0 0 calc(6px * ${bloomScale}) calc(1px * ${bloomScale})`,
+    shadow2: `0 0 calc(12px * ${bloomScale}) calc(3px * ${bloomScale})`,
+  },
+  md: {
+    blur: `calc(8px * ${bloomScale})`,
+    shadow: `0 0 calc(12px * ${bloomScale}) calc(2px * ${bloomScale})`,
+    shadow2: `0 0 calc(24px * ${bloomScale}) calc(6px * ${bloomScale})`,
+  },
+  lg: {
+    blur: `calc(12px * ${bloomScale})`,
+    shadow: `0 0 calc(16px * ${bloomScale}) calc(3px * ${bloomScale})`,
+    shadow2: `0 0 calc(32px * ${bloomScale}) calc(8px * ${bloomScale})`,
+  },
+  xl: {
+    blur: `calc(16px * ${bloomScale})`,
+    shadow: `0 0 calc(24px * ${bloomScale}) calc(4px * ${bloomScale})`,
+    shadow2: `0 0 calc(48px * ${bloomScale}) calc(12px * ${bloomScale})`,
+  },
 };
 
 const lensInset = '16%';
@@ -144,8 +166,8 @@ export const Indicator = React.forwardRef<HTMLDivElement, IndicatorProps>(
                 ? `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 90deg), var(--analog-surface-metal-hi), var(--analog-surface-metal-mid) 40%, var(--analog-surface-metal-hi) 60%, var(--analog-surface-metal-lo))`
                 : `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 90deg), var(--analog-surface-onyx-hi), var(--analog-surface-onyx-lo) 40%, var(--analog-surface-onyx-mid) 60%, color-mix(in oklch, var(--analog-surface-onyx-lo) 82%, black))`,
               boxShadow: isChrome
-                ? `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * 2px) calc(cos(var(--analog-light-angle-bezel, 180deg)) * -2px) 3px rgba(255,255,255,calc(1.2 * var(--analog-light-power, 1))), inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * -3px) calc(cos(var(--analog-light-angle-bezel, 180deg)) * 3px) 4px rgba(0,0,0,calc(0.4 * var(--analog-light-power, 1))), calc(sin(var(--analog-light-angle-bezel, 180deg)) * 1px) calc(cos(var(--analog-light-angle-bezel, 180deg)) * -1px) 0 rgba(255,255,255,calc(0.18 * var(--analog-light-power, 1))), 0 4px 6px rgba(0,0,0,calc(0.6 * var(--analog-light-power, 1))), 0 0 0 1px rgba(0,0,0,calc(0.15 * var(--analog-light-power, 1)))`
-                : `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * 1px) calc(cos(var(--analog-light-angle-bezel, 180deg)) * -1px) 2px rgba(255,255,255,calc(0.15 * var(--analog-light-power, 1))), inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * -2px) calc(cos(var(--analog-light-angle-bezel, 180deg)) * 2px) 3px rgba(0,0,0,calc(0.8 * var(--analog-light-power, 1))), calc(sin(var(--analog-light-angle-bezel, 180deg)) * 1px) calc(cos(var(--analog-light-angle-bezel, 180deg)) * -1px) 0 rgba(255,255,255,calc(0.08 * var(--analog-light-power, 1))), 0 3px 5px rgba(0,0,0,calc(0.9 * var(--analog-light-power, 1))), 0 0 0 1px rgba(0,0,0,calc(0.6 * var(--analog-light-power, 1)))`,
+                ? `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.5) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.5) calc(var(--analog-bevel-width, 4px) * 0.75) rgba(255,255,255,calc(1.2 * var(--analog-light-power, 1))), inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.75) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.75) var(--analog-bevel-width, 4px) rgba(0,0,0,calc(0.4 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) 0 rgba(255,255,255,calc(0.18 * var(--analog-light-power, 1))), 0 var(--analog-bevel-width, 4px) calc(var(--analog-bevel-width, 4px) * 1.5) rgba(0,0,0,calc(0.6 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), 0 0 0 calc(var(--analog-bevel-width, 4px) * 0.25) rgba(0,0,0,calc(0.15 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`
+                : `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 0.5) rgba(255,255,255,calc(0.15 * var(--analog-light-power, 1))), inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.5) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.5) calc(var(--analog-bevel-width, 4px) * 0.75) rgba(0,0,0,calc(0.8 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) 0 rgba(255,255,255,calc(0.08 * var(--analog-light-power, 1))), 0 calc(var(--analog-bevel-width, 4px) * 0.75) calc(var(--analog-bevel-width, 4px) * 1.25) rgba(0,0,0,calc(0.9 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), 0 0 0 calc(var(--analog-bevel-width, 4px) * 0.25) rgba(0,0,0,calc(0.6 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
             }}
           />
         )}
@@ -160,9 +182,9 @@ export const Indicator = React.forwardRef<HTMLDivElement, IndicatorProps>(
             backgroundColor: palette.bg,
             boxShadow: hasBezel
               ? `
-              inset calc(sin(var(--analog-light-angle-lens, 180deg)) * -4px) calc(cos(var(--analog-light-angle-lens, 180deg)) * 4px) 8px rgba(0,0,0,calc(0.9 * var(--analog-light-power, 1))),
-              inset calc(sin(var(--analog-light-angle-lens, 180deg)) * -1px) calc(cos(var(--analog-light-angle-lens, 180deg)) * 1px) 2px rgba(0,0,0,calc(1 * var(--analog-light-power, 1))),
-              calc(sin(var(--analog-light-angle-lens, 180deg)) * 1px) calc(cos(var(--analog-light-angle-lens, 180deg)) * -1px) 0 rgba(255,255,255,calc(${isChrome ? 0.6 : 0.2} * var(--analog-light-power, 1)))
+              inset calc(sin(var(--analog-light-angle-lens, 180deg)) * var(--analog-bevel-width, 4px) * -1) calc(cos(var(--analog-light-angle-lens, 180deg)) * var(--analog-bevel-width, 4px)) calc(var(--analog-bevel-width, 4px) * 2) rgba(0,0,0,calc(0.9 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))),
+              inset calc(sin(var(--analog-light-angle-lens, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(cos(var(--analog-light-angle-lens, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(var(--analog-bevel-width, 4px) * 0.5) rgba(0,0,0,calc(1 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))),
+              calc(sin(var(--analog-light-angle-lens, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-lens, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) 0 rgba(255,255,255,calc(${isChrome ? 0.6 : 0.2} * var(--analog-light-power, 1)))
             `
               : undefined,
           }}
@@ -253,7 +275,7 @@ export const Indicator = React.forwardRef<HTMLDivElement, IndicatorProps>(
             borderRadius: radius,
             background: `
                radial-gradient(circle at 50% 50%, ${palette.bloom} 0%, transparent 20%),
-               radial-gradient(circle at 50% 50%, color-mix(in oklch, ${palette.bloom} 30%, transparent) 20%, transparent 60%)
+               radial-gradient(circle at 50% 50%, color-mix(in oklch, ${palette.bloom} calc(30% * ${bloomScale}), transparent) 20%, transparent 60%)
              `,
             filter: `blur(${glow.blur})`,
             mixBlendMode: 'screen',

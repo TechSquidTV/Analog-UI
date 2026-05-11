@@ -242,11 +242,11 @@ const getNeedleGaugeShellStyle = (variant: AnalogMaterialVariant): React.CSSProp
       borderColor: 'transparent',
       background: `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 90deg), var(--analog-surface-onyx-hi) 0%, var(--analog-surface-onyx-mid) 45%, var(--analog-surface-onyx-lo) 100%)`,
       boxShadow:
-        `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * 1px) calc(cos(var(--analog-light-angle-bezel, 180deg)) * -1px) 1px rgba(255,255,255,calc(0.14 * var(--analog-light-power, 1))), ` +
-        `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * -1px) calc(cos(var(--analog-light-angle-bezel, 180deg)) * 1px) 2px rgba(0,0,0,calc(0.8 * var(--analog-light-power, 1))), ` +
-        `calc(sin(var(--analog-light-angle-bezel, 180deg)) * 1px) calc(cos(var(--analog-light-angle-bezel, 180deg)) * -1px) 0 rgba(255,255,255,calc(0.08 * var(--analog-light-power, 1))), ` +
-        `0 2px 4px rgba(0,0,0,calc(0.9 * var(--analog-light-power, 1))), ` +
-        `0 0 0 1px rgba(0,0,0,calc(0.6 * var(--analog-light-power, 1)))`,
+        `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 0.25) rgba(255,255,255,calc(0.14 * var(--analog-light-power, 1))), ` +
+        `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(var(--analog-bevel-width, 4px) * 0.5) rgba(0,0,0,calc(0.8 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), ` +
+        `calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) 0 rgba(255,255,255,calc(0.08 * var(--analog-light-power, 1))), ` +
+        `0 calc(var(--analog-bevel-width, 4px) * 0.5) var(--analog-bevel-width, 4px) rgba(0,0,0,calc(0.9 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), ` +
+        `0 0 0 calc(var(--analog-bevel-width, 4px) * 0.25) rgba(0,0,0,calc(0.6 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
     };
   }
 
@@ -254,11 +254,11 @@ const getNeedleGaugeShellStyle = (variant: AnalogMaterialVariant): React.CSSProp
     borderColor: 'transparent',
     background: `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 90deg), color-mix(in oklch, var(--analog-surface-metal-hi) 82%, white 10%) 0%, var(--analog-surface-metal-hi) 18%, var(--analog-surface-metal-mid) 52%, var(--analog-surface-metal-lo) 100%)`,
     boxShadow:
-      `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * 1px) calc(cos(var(--analog-light-angle-bezel, 180deg)) * -1px) 1px rgba(255,255,255,calc(0.95 * var(--analog-light-power, 1))), ` +
-      `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * -1px) calc(cos(var(--analog-light-angle-bezel, 180deg)) * 1px) 2px rgba(0,0,0,calc(0.25 * var(--analog-light-power, 1))), ` +
-      `calc(sin(var(--analog-light-angle-bezel, 180deg)) * 1px) calc(cos(var(--analog-light-angle-bezel, 180deg)) * -1px) 0 rgba(255,255,255,calc(0.18 * var(--analog-light-power, 1))), ` +
-      `0 2px 4px rgba(0,0,0,calc(0.5 * var(--analog-light-power, 1))), ` +
-      `0 0 0 1px rgba(0,0,0,calc(0.1 * var(--analog-light-power, 1)))`,
+      `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 0.25) rgba(255,255,255,calc(0.95 * var(--analog-light-power, 1))), ` +
+      `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(var(--analog-bevel-width, 4px) * 0.5) rgba(0,0,0,calc(0.25 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), ` +
+      `calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) 0 rgba(255,255,255,calc(0.18 * var(--analog-light-power, 1))), ` +
+      `0 calc(var(--analog-bevel-width, 4px) * 0.5) var(--analog-bevel-width, 4px) rgba(0,0,0,calc(0.5 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), ` +
+      `0 0 0 calc(var(--analog-bevel-width, 4px) * 0.25) rgba(0,0,0,calc(0.1 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
   };
 };
 
@@ -513,8 +513,10 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
                         stroke={zone.glow ?? zone.color}
                         strokeWidth="9"
                         strokeLinecap="round"
-                        opacity="0.26"
-                        style={{ filter: 'blur(4px)' }}
+                        style={{
+                          opacity: 'calc(0.26 * var(--analog-bloom-strength, 0.7) * 1.428571)',
+                          filter: 'blur(calc(4px * var(--analog-bloom-strength, 0.7) * 1.428571))',
+                        }}
                       />
                       <path
                         d={arcPath(
@@ -631,7 +633,7 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
                       ? `inset 1px 0 1px rgba(255,255,255,calc(0.56 * var(--analog-light-power, 1))), inset -1px 0 1px rgba(0,0,0,calc(0.38 * var(--analog-light-power, 1)))`
                       : `inset 1px 0 1px rgba(255,255,255,calc(0.42 * var(--analog-light-power, 1))), inset -1px 0 1px rgba(0,0,0,calc(0.46 * var(--analog-light-power, 1))), 0 0 10px color-mix(in oklch, var(--analog-led-red-glow) 28%, transparent)`,
                   filter:
-                    'drop-shadow(calc(sin(var(--analog-light-angle-pointer, 180deg)) * 2px) calc(cos(var(--analog-light-angle-pointer, 180deg)) * -2px) 3px rgba(0,0,0,0.72))',
+                    'drop-shadow(calc(sin(var(--analog-light-angle-pointer, 180deg)) * var(--analog-bevel-width, 4px) * 0.5) calc(cos(var(--analog-light-angle-pointer, 180deg)) * var(--analog-bevel-width, 4px) * -0.5) calc(var(--analog-bevel-width, 4px) * 0.75) rgba(0,0,0,calc(0.72 * var(--analog-shadow-depth, 1))))',
                 }}
               />
 
