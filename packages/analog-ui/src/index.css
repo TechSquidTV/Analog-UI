@@ -222,6 +222,18 @@
       );
   }
 
+  .surface-button.analog-screw-surface {
+    --foil:
+      url('./texture.webp'),
+      linear-gradient(
+        calc(var(--analog-light-angle-surface, 180deg) - 90deg),
+        rgba(255, 255, 255, 0.2) 0%,
+        rgba(255, 255, 255, 0.05) 24%,
+        transparent 48%,
+        rgba(0, 0, 0, 0.16) 100%
+      );
+  }
+
   /* Chamfered edge effect */
   .surface-button::after {
     content: '';

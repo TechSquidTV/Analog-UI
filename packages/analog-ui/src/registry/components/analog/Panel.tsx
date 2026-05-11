@@ -57,7 +57,7 @@ const Screw = ({
         variant={resolvedVariant}
         rotation={rotation}
         containerClassName="w-full h-full"
-        className="!p-0 w-full h-full min-h-[0px] min-w-[0px] flex items-center justify-center no-chamfer"
+        className="analog-screw-surface !p-0 w-full h-full min-h-[0px] min-w-[0px] flex items-center justify-center no-chamfer"
         style={{
           boxShadow:
             `inset calc(sin(var(--analog-light-angle-screw, 180deg)) * 1px) calc(cos(var(--analog-light-angle-screw, 180deg)) * -1px) 1px color-mix(in oklch, var(--analog-control-foreground) 40%, transparent), ` +
