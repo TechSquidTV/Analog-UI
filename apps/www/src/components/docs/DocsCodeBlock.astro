@@ -1,5 +1,6 @@
 ---
 import { Code } from 'astro:components';
+import { SquareButton } from '../../../../../packages/analog-ui/src/index';
 
 type DocsCodeLang = 'tsx' | 'bash';
 type DocsCodeTheme = 'github-dark';
@@ -10,6 +11,7 @@ interface Props {
   lang?: DocsCodeLang;
   theme?: DocsCodeTheme;
   framed?: boolean;
+  compact?: boolean;
   class?: string;
 }
 
@@ -19,17 +21,25 @@ const {
   lang = 'tsx',
   theme = 'github-dark',
   framed = true,
+  compact = false,
   class: className,
 } = Astro.props;
 ---
 
 <div
-  class:list={['not-prose docs-code-block', framed && 'docs-code-block--framed', className]}
+  class:list={[
+    'not-prose docs-code-block',
+    framed && 'docs-code-block--framed',
+    compact && 'docs-code-block--compact',
+    className,
+  ]}
   data-docs-copy-root
 >
   <div class="docs-code-header">
     <span class="micro-label">{label}</span>
-    <button type="button" class="docs-code-copy" data-docs-copy> Copy </button>
+    <SquareButton type="button" width="5.5rem" height="2.25rem" variant="black" data-docs-copy>
+      <span data-docs-copy-label>Copy</span>
+    </SquareButton>
   </div>
   <div class="docs-code-body" data-docs-code>
     <Code code={code} lang={lang} theme={theme} />

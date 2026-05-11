@@ -638,7 +638,7 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
               <div className="pointer-events-none absolute left-1/2 bottom-0 z-30 aspect-square w-[17%] -translate-x-1/2 translate-y-1/2 overflow-hidden rounded-full">
                 <div
                   className={cn(
-                    'surface-button no-chamfer relative h-full w-full overflow-hidden rounded-full',
+                    'surface-button analog-dial-surface no-chamfer relative h-full w-full overflow-hidden rounded-full',
                     isBlack ? 'variant-black' : 'variant-chrome',
                   )}
                   style={

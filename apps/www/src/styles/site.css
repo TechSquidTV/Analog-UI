@@ -84,10 +84,6 @@ a {
     @apply text-[9px] font-semibold uppercase tracking-[0.28em] text-[#7d7d7d];
   }
 
-  .pill-link {
-    @apply inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm text-[#dfdfdf] transition-colors duration-200 hover:border-white/20 hover:bg-white/[0.08];
-  }
-
   .docs-sidebar-shell {
     @apply rounded-[var(--analog-radius-panel)] border border-white/8 bg-black/18 p-3;
     box-shadow:
@@ -181,10 +177,6 @@ a {
     @apply flex items-center justify-between gap-3 border-b border-white/10 px-4 py-2;
   }
 
-  .docs-code-copy {
-    @apply rounded-[var(--analog-radius-window)] border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[11px] font-medium text-[#d8d8d8] transition-colors duration-200 hover:border-white/18 hover:bg-white/[0.08] hover:text-white;
-  }
-
   .docs-code-body {
     @apply min-w-0 max-w-full;
   }
@@ -212,6 +204,16 @@ a {
 
   [data-docs-copy-root] pre span {
     background: transparent !important;
+  }
+
+  .docs-code-block--compact .docs-code-header {
+    @apply px-3;
+  }
+
+  .docs-code-block--compact pre {
+    padding: 0.75rem;
+    font-size: 0.75rem;
+    line-height: 1.65;
   }
 
   .docs-prose ul,

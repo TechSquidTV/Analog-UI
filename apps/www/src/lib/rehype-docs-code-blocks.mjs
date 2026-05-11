@@ -57,15 +57,6 @@ function wrapCodeBlock(preNode) {
     [
       makeElement('div', { className: ['docs-code-header'] }, [
         makeElement('span', { className: ['micro-label'] }, [makeText(label)]),
-        makeElement(
-          'button',
-          {
-            type: 'button',
-            className: ['docs-code-copy'],
-            dataDocsCopy: '',
-          },
-          [makeText('Copy')],
-        ),
       ]),
       makeElement(
         'div',

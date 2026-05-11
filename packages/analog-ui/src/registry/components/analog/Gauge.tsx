@@ -256,7 +256,7 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
                 <SurfaceButton
                   rotation={rotationAngle}
                   containerClassName="w-full h-full pointer-events-none"
-                  className="w-full h-full pointer-events-none"
+                  className="analog-dial-surface w-full h-full pointer-events-none"
                   style={{ pointerEvents: 'none' }}
                   disabled
                   tabIndex={-1}

@@ -5,29 +5,39 @@ import { useMergedRefs } from '@/lib/refs';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 import { SquarePlunger } from './SquarePlunger';
 
-export interface SquareButtonProps extends React.ComponentPropsWithoutRef<typeof Button> {
+type SquareButtonElement = HTMLButtonElement | HTMLAnchorElement;
+type NativeButtonProps = Omit<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  'height' | 'width' | 'onMouseDown' | 'onMouseUp' | 'onMouseLeave'
+>;
+type SquareButtonMouseHandler = React.MouseEventHandler<SquareButtonElement>;
+
+export interface SquareButtonProps extends NativeButtonProps {
   variant?: 'chrome' | 'black';
+  width?: React.CSSProperties['width'];
+  height?: React.CSSProperties['height'];
+  href?: string;
+  rel?: string;
+  target?: React.HTMLAttributeAnchorTarget;
+  download?: React.AnchorHTMLAttributes<HTMLAnchorElement>['download'];
+  onMouseDown?: SquareButtonMouseHandler;
+  onMouseUp?: SquareButtonMouseHandler;
+  onMouseLeave?: SquareButtonMouseHandler;
   lighting?: AnalogLightingConfig<'surface' | 'track' | 'thumb'>;
   extrusionLayers?: number;
 }
 
-type ButtonMouseDownEvent = Parameters<
-  NonNullable<React.ComponentPropsWithoutRef<typeof Button>['onMouseDown']>
->[0];
-
-type ButtonMouseUpEvent = Parameters<
-  NonNullable<React.ComponentPropsWithoutRef<typeof Button>['onMouseUp']>
->[0];
-
-type ButtonMouseLeaveEvent = Parameters<
-  NonNullable<React.ComponentPropsWithoutRef<typeof Button>['onMouseLeave']>
->[0];
-
-export const SquareButton = React.forwardRef<HTMLButtonElement, SquareButtonProps>(
+export const SquareButton = React.forwardRef<SquareButtonElement, SquareButtonProps>(
   (
     {
       className,
       variant,
+      width,
+      height,
+      href,
+      target,
+      rel,
+      download,
       lighting,
       extrusionLayers = 32,
       children,
@@ -38,26 +48,29 @@ export const SquareButton = React.forwardRef<HTMLButtonElement, SquareButtonProp
     },
     ref,
   ) => {
-    const internalRef = React.useRef<HTMLButtonElement>(null);
+    const internalRef = React.useRef<HTMLElement>(null);
     const mergedRef = useMergedRefs(ref, internalRef);
     const lightingStyle = useAnalogLighting(['surface', 'track', 'thumb'], lighting);
 
     const [isPressed, setIsPressed] = React.useState(false);
 
-    const handleMouseDown = (e: ButtonMouseDownEvent) => {
+    const handleMouseDown: SquareButtonMouseHandler = (e) => {
       setIsPressed(true);
       onMouseDown?.(e);
     };
 
-    const handleMouseUp = (e: ButtonMouseUpEvent) => {
+    const handleMouseUp: SquareButtonMouseHandler = (e) => {
       setIsPressed(false);
       onMouseUp?.(e);
     };
 
-    const handleMouseLeave = (e: ButtonMouseLeaveEvent) => {
+    const handleMouseLeave: SquareButtonMouseHandler = (e) => {
       setIsPressed(false);
       onMouseLeave?.(e);
     };
+
+    const buttonProps = props as React.ComponentPropsWithoutRef<typeof Button>;
+    const linkProps = props as unknown as React.AnchorHTMLAttributes<HTMLAnchorElement>;
 
     return (
       <div
@@ -67,22 +80,56 @@ export const SquareButton = React.forwardRef<HTMLButtonElement, SquareButtonProp
         )}
         style={{
           ...lightingStyle,
+          width,
+          height,
           perspective: '2400px',
         }}
       >
-        <Button
-          ref={mergedRef}
-          onMouseDown={handleMouseDown}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseLeave}
-          className="relative size-full appearance-none border-none bg-transparent p-0 outline-none select-none"
-          style={{ transformStyle: 'preserve-3d' }}
-          {...props}
-        >
-          <SquarePlunger variant={variant} isPressed={isPressed} extrusionLayers={extrusionLayers}>
-            {children}
-          </SquarePlunger>
-        </Button>
+        {href ? (
+          <a
+            ref={mergedRef as React.Ref<HTMLAnchorElement>}
+            href={href}
+            target={target}
+            rel={rel}
+            download={download}
+            onMouseDown={handleMouseDown as React.MouseEventHandler<HTMLAnchorElement>}
+            onMouseUp={handleMouseUp as React.MouseEventHandler<HTMLAnchorElement>}
+            onMouseLeave={handleMouseLeave as React.MouseEventHandler<HTMLAnchorElement>}
+            className="relative size-full appearance-none border-none bg-transparent p-0 outline-none select-none"
+            style={{ transformStyle: 'preserve-3d' }}
+            {...linkProps}
+          >
+            <SquarePlunger
+              variant={variant}
+              isPressed={isPressed}
+              extrusionLayers={extrusionLayers}
+            >
+              {children}
+            </SquarePlunger>
+          </a>
+        ) : (
+          <Button
+            ref={mergedRef as React.Ref<HTMLButtonElement>}
+            onMouseDown={
+              handleMouseDown as React.ComponentPropsWithoutRef<typeof Button>['onMouseDown']
+            }
+            onMouseUp={handleMouseUp as React.ComponentPropsWithoutRef<typeof Button>['onMouseUp']}
+            onMouseLeave={
+              handleMouseLeave as React.ComponentPropsWithoutRef<typeof Button>['onMouseLeave']
+            }
+            className="relative size-full appearance-none border-none bg-transparent p-0 outline-none select-none"
+            style={{ transformStyle: 'preserve-3d' }}
+            {...buttonProps}
+          >
+            <SquarePlunger
+              variant={variant}
+              isPressed={isPressed}
+              extrusionLayers={extrusionLayers}
+            >
+              {children}
+            </SquarePlunger>
+          </Button>
+        )}
       </div>
     );
   },

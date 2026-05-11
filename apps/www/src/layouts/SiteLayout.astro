@@ -39,5 +39,51 @@ const pageTitle = title === 'Analog UI' ? title : `${title} | Analog UI`;
       </main>
       <SiteFooter />
     </div>
+    <script>
+      function bindDocsCopyButtons() {
+        document.querySelectorAll<HTMLButtonElement>('[data-docs-copy]').forEach((button) => {
+          if (button.dataset.docsCopyBound === 'true') return;
+
+          button.dataset.docsCopyBound = 'true';
+          const label = button.querySelector<HTMLElement>('[data-docs-copy-label]');
+          const initialLabel = label?.textContent || button.textContent || 'Copy';
+          const setLabel = (value: string) => {
+            if (label) {
+              label.textContent = value;
+            } else {
+              button.textContent = value;
+            }
+          };
+
+          button.addEventListener('click', async () => {
+            const root = button.closest('[data-docs-copy-root]');
+            const code = root?.querySelector<HTMLElement>('[data-docs-code]');
+            const text = code?.textContent?.trimEnd() ?? '';
+
+            if (!navigator.clipboard) {
+              setLabel('Unavailable');
+              window.setTimeout(() => {
+                setLabel(initialLabel);
+              }, 1400);
+              return;
+            }
+
+            try {
+              await navigator.clipboard.writeText(text);
+              setLabel('Copied');
+            } catch {
+              setLabel('Failed');
+            }
+
+            window.setTimeout(() => {
+              setLabel(initialLabel);
+            }, 1400);
+          });
+        });
+      }
+
+      bindDocsCopyButtons();
+      document.addEventListener('astro:page-load', bindDocsCopyButtons);
+    </script>
   </body>
 </html>

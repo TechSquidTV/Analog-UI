@@ -98,7 +98,7 @@ export const SquarePlunger = ({
 
           {/* Face Content */}
           <div
-            className="relative z-10 flex size-full items-center justify-center p-1 text-[10px] font-bold uppercase tracking-[0.25em] drop-shadow-[0_2px_4px_rgba(0,0,0,1)]"
+            className="relative z-10 flex size-full items-center justify-center p-1 text-center text-[10px] font-bold tracking-[0.25em] whitespace-nowrap uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,1)]"
             style={{
               color: isChrome
                 ? 'color-mix(in oklch, var(--analog-surface-metal-lo) 42%, var(--analog-control-foreground) 58%)'

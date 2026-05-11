@@ -1,0 +1,41 @@
+---
+interface Props {
+  registryDependencies: string[];
+  packageDependencies: string[];
+  layout?: 'grid' | 'stack';
+  class?: string;
+}
+
+const {
+  registryDependencies,
+  packageDependencies,
+  layout = 'grid',
+  class: className,
+} = Astro.props;
+
+const sections = [
+  { label: 'Registry Dependencies', dependencies: registryDependencies },
+  { label: 'Package Dependencies', dependencies: packageDependencies },
+];
+---
+
+<div class:list={['not-prose grid gap-4', layout === 'grid' && 'md:grid-cols-2', className]}>
+  {
+    sections.map((section) => (
+      <div class="section-panel p-4">
+        <div class="micro-label">{section.label}</div>
+        <div class="mt-4 flex flex-wrap gap-2">
+          {section.dependencies.length > 0 ? (
+            section.dependencies.map((dependency) => (
+              <span class="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs text-[#d6d6d6]">
+                {dependency}
+              </span>
+            ))
+          ) : (
+            <span class="text-sm text-[#7c7c7c]">None</span>
+          )}
+        </div>
+      </div>
+    ))
+  }
+</div>

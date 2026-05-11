@@ -1,5 +1,7 @@
 ---
 import BlockDemo from '../../../components/blocks/BlockDemo';
+import ComponentDependencyCards from '../../../components/docs/ComponentDependencyCards.astro';
+import ComponentInstallCode from '../../../components/docs/ComponentInstallCode.astro';
 import ComponentPreview from '../../../components/docs/ComponentPreview.astro';
 import DocsCodeBlock from '../../../components/docs/DocsCodeBlock.astro';
 import { getComponentPageDoc } from '../../../data/component-docs';
@@ -7,6 +9,7 @@ import DocsLayout from '../../../layouts/DocsLayout.astro';
 import { getBlockEntries, getBlockEntry } from '../../../lib/blocks';
 import { getComponentDocHref, getDocsNavigation } from '../../../lib/docs';
 import { getEntry } from 'astro:content';
+import { SquareButton } from '../../../../../../packages/analog-ui/src/index';
 
 function slugify(value: string) {
   return value
@@ -47,9 +50,6 @@ const headings = [
     text: section.title,
   })),
 ];
-const registryInstallSnippet = `pnpm dlx shadcn@latest add https://analogui.com/r/analog-foundation.json
-pnpm dlx shadcn@latest add https://analogui.com${entry.registryHref}`;
-const packageInstallSnippet = `pnpm add analog-ui`;
 ---
 
 <DocsLayout
@@ -79,8 +79,12 @@ const packageInstallSnippet = `pnpm add analog-ui`;
   </ComponentPreview>
 
   <div class="not-prose mt-6 flex flex-wrap gap-3">
-    <a class="pill-link" href="/docs/components">All Components</a>
-    <a class="pill-link" href={entry.viewHref}> Open Isolated Preview </a>
+    <SquareButton href="/docs/components" width="9.75rem" height="2.5rem" variant="black">
+      All Components
+    </SquareButton>
+    <SquareButton href={entry.viewHref} width="12rem" height="2.5rem" variant="black">
+      Open Isolated Preview
+    </SquareButton>
   </div>
 
   <h2 id="installation">Installation</h2>
@@ -90,7 +94,7 @@ const packageInstallSnippet = `pnpm add analog-ui`;
   </p>
 
   <h3>Registry</h3>
-  <DocsCodeBlock code={registryInstallSnippet} label="Terminal" lang="bash" />
+  <ComponentInstallCode registryHref={entry.registryHref} />
 
   {
     componentDoc.packageImportCode ? (
@@ -100,7 +104,7 @@ const packageInstallSnippet = `pnpm add analog-ui`;
           If you prefer package imports, install the package and import the shared stylesheet once
           in your app.
         </p>
-        <DocsCodeBlock code={packageInstallSnippet} label="Terminal" lang="bash" />
+        <ComponentInstallCode registryHref={entry.registryHref} mode="package" />
       </>
     ) : (
       <blockquote>
@@ -139,7 +143,7 @@ const packageInstallSnippet = `pnpm add analog-ui`;
       <>
         <h3 id={slugify(section.title)}>{section.title}</h3>
         <p>{section.description}</p>
-        <div class="not-prose mt-4 overflow-x-auto rounded-[var(--analog-radius-shell)] border border-white/10 bg-black/30">
+        <div class="section-panel not-prose mt-4 overflow-x-auto">
           <table class="w-full min-w-[720px] border-collapse text-left text-sm">
             <thead>
               <tr class="border-b border-white/10 text-[11px] uppercase tracking-[0.2em] text-[#8a8a8a]">
@@ -174,38 +178,9 @@ const packageInstallSnippet = `pnpm add analog-ui`;
     Registry installs include the package and local item dependencies needed for this component.
   </p>
 
-  <div class="not-prose mt-6 grid gap-4 md:grid-cols-2">
-    <div class="rounded-[var(--analog-radius-shell)] border border-white/10 bg-black/30 p-4">
-      <div class="micro-label">Registry Dependencies</div>
-      <div class="mt-4 flex flex-wrap gap-2">
-        {
-          entry.registryDependencies.length > 0 ? (
-            entry.registryDependencies.map((dependency) => (
-              <span class="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs text-[#d6d6d6]">
-                {dependency}
-              </span>
-            ))
-          ) : (
-            <span class="text-sm text-[#7c7c7c]">None</span>
-          )
-        }
-      </div>
-    </div>
-    <div class="rounded-[var(--analog-radius-shell)] border border-white/10 bg-black/30 p-4">
-      <div class="micro-label">Package Dependencies</div>
-      <div class="mt-4 flex flex-wrap gap-2">
-        {
-          entry.dependencies.length > 0 ? (
-            entry.dependencies.map((dependency) => (
-              <span class="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs text-[#d6d6d6]">
-                {dependency}
-              </span>
-            ))
-          ) : (
-            <span class="text-sm text-[#7c7c7c]">None</span>
-          )
-        }
-      </div>
-    </div>
-  </div>
+  <ComponentDependencyCards
+    class="mt-6"
+    registryDependencies={entry.registryDependencies}
+    packageDependencies={entry.dependencies}
+  />
 </DocsLayout>

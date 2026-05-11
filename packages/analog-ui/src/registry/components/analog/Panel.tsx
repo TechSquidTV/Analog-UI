@@ -9,8 +9,28 @@ const variantStyles = {
   rack: 'border-[color:var(--analog-panel-border)]',
 };
 
+type PanelSurfaceStyle = React.CSSProperties & {
+  '--analog-panel-hotspot-mix': string;
+  '--analog-panel-hotspot-stop': string;
+  '--analog-panel-edge-surface': string;
+};
+
+const surfaceStyles = {
+  default: {
+    '--analog-panel-hotspot-mix': '72%',
+    '--analog-panel-hotspot-stop': '72%',
+    '--analog-panel-edge-surface': 'var(--background, var(--analog-fallback-background))',
+  },
+  subtle: {
+    '--analog-panel-hotspot-mix': '20%',
+    '--analog-panel-hotspot-stop': '145%',
+    '--analog-panel-edge-surface': 'var(--analog-surface-panel)',
+  },
+} satisfies Record<string, PanelSurfaceStyle>;
+
 export interface PanelProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: 'default' | 'rack';
+  surface?: keyof typeof surfaceStyles;
   screws?: boolean;
   screwVariant?: 'chrome' | 'black';
   screwHole?: 'none' | 'slot' | 'cross' | 'star';
@@ -118,6 +138,7 @@ const Panel = React.forwardRef<HTMLDivElement, PanelProps>(
     {
       className,
       variant = 'default',
+      surface = 'default',
       screws = true,
       screwVariant,
       screwHole = 'none',
@@ -140,6 +161,7 @@ const Panel = React.forwardRef<HTMLDivElement, PanelProps>(
         )}
         style={{
           ...lightingStyle,
+          ...surfaceStyles[surface],
           ...style,
           ...(screws
             ? {
@@ -163,8 +185,8 @@ const Panel = React.forwardRef<HTMLDivElement, PanelProps>(
             : {
                 background:
                   `radial-gradient(circle at center, ` +
-                  `color-mix(in oklch, var(--analog-control-surface-strong) 72%, var(--analog-surface-panel) 28%) 0%, ` +
-                  `var(--background, var(--analog-fallback-background)) 72%)`,
+                  `color-mix(in oklch, var(--analog-control-surface-strong) var(--analog-panel-hotspot-mix, 72%), var(--analog-surface-panel)) 0%, ` +
+                  `var(--analog-panel-edge-surface, var(--background, var(--analog-fallback-background))) var(--analog-panel-hotspot-stop, 72%))`,
               }),
         }}
         {...props}

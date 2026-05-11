@@ -1,0 +1,33 @@
+---
+import DocsCodeBlock from './DocsCodeBlock.astro';
+import { getRegistryInstallSnippet, packageInstallSnippet } from '../../lib/install-snippets';
+
+interface Props {
+  registryHref: string;
+  mode?: 'registry' | 'package';
+  label?: string;
+  framed?: boolean;
+  compact?: boolean;
+  class?: string;
+}
+
+const {
+  registryHref,
+  mode = 'registry',
+  label = 'Terminal',
+  framed = true,
+  compact = false,
+  class: className,
+} = Astro.props;
+
+const code = mode === 'package' ? packageInstallSnippet : getRegistryInstallSnippet(registryHref);
+---
+
+<DocsCodeBlock
+  code={code}
+  label={label}
+  lang="bash"
+  framed={framed}
+  compact={compact}
+  class={className}
+/>

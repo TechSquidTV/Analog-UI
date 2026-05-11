@@ -1,4 +1,6 @@
 ---
+import { SquareButton } from '../../../../../packages/analog-ui/src/index';
+
 interface Props {
   pathname: string;
 }
@@ -6,9 +8,9 @@ interface Props {
 const { pathname } = Astro.props;
 
 const links = [
-  { href: '/create', label: 'Create' },
-  { href: '/docs', label: 'Docs' },
-  { href: '/docs/components', label: 'Components' },
+  { href: '/create', label: 'Create', width: '5.75rem' },
+  { href: '/docs', label: 'Docs', width: '5rem' },
+  { href: '/docs/components', label: 'Components', width: '7.75rem' },
 ];
 
 const activeHref = links
@@ -39,17 +41,14 @@ const activeHref = links
     <nav class="flex flex-wrap items-center gap-2">
       {
         links.map((link) => (
-          <a
+          <SquareButton
             href={link.href}
-            class:list={[
-              'rounded-full border px-4 py-2 text-sm transition-colors duration-200',
-              activeHref === link.href
-                ? 'border-white/14 bg-white/[0.08] text-white'
-                : 'border-white/8 bg-white/[0.02] text-[#b8b8b8] hover:border-white/14 hover:bg-white/[0.06] hover:text-white',
-            ]}
+            width={link.width}
+            height="2.5rem"
+            variant={activeHref === link.href ? 'chrome' : 'black'}
           >
             {link.label}
-          </a>
+          </SquareButton>
         ))
       }
     </nav>

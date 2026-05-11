@@ -1,3 +1,7 @@
+---
+import { SquareButton } from '../../../../../packages/analog-ui/src/index';
+---
+
 <footer class="border-t border-white/8">
   <div
     class="site-frame flex flex-col gap-4 py-10 text-sm text-[#8e8e8e] md:flex-row md:items-center md:justify-between"
@@ -10,9 +14,15 @@
     </div>
 
     <div class="flex flex-wrap items-center gap-3">
-      <a class="pill-link !text-xs" href="/docs">Read the docs</a>
-      <a class="pill-link !text-xs" href="/docs/components">Components</a>
-      <a class="pill-link !text-xs" href="/r/registry.json">Registry JSON</a>
+      <SquareButton href="/docs" width="10rem" height="2.5rem" variant="black">
+        Read the docs
+      </SquareButton>
+      <SquareButton href="/docs/components" width="7.75rem" height="2.5rem" variant="black">
+        Components
+      </SquareButton>
+      <SquareButton href="/r/registry.json" width="8.5rem" height="2.5rem" variant="black">
+        Registry JSON
+      </SquareButton>
     </div>
   </div>
 </footer>

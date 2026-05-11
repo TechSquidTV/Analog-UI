@@ -13,7 +13,7 @@ interface HomeLaunchPanelProps {
 
 function MetricCard({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <Panel screws={false} variant="default">
+    <Panel screws={false} surface="subtle" variant="default">
       <PanelContent className="relative z-10 p-4">
         <div className="micro-label">{label}</div>
         <PanelTitle className="mt-2 text-3xl font-semibold text-white">{value}</PanelTitle>
@@ -38,7 +38,7 @@ export default function HomeLaunchPanel({
           <MetricCard label="shadcn Registry" value="/r" />
         </div>
         <div className="mt-6">
-          <Panel screws={false} variant="default">
+          <Panel screws={false} surface="subtle" variant="default">
             <PanelContent className="p-4">
               <div className="micro-label">First Install</div>
               <pre className="mt-3 overflow-x-auto font-mono text-xs leading-7 text-[#e6e6e6]">

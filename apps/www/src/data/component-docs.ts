@@ -306,6 +306,20 @@ export function SquareButtonExample() {
             description: 'Sets the plunger material finish.',
           },
           {
+            name: 'width',
+            type: 'React.CSSProperties["width"]',
+            defaultValue: '"3.5rem"',
+            description:
+              'Sets the plunger footprint width. Omit it to keep the default square button.',
+          },
+          {
+            name: 'height',
+            type: 'React.CSSProperties["height"]',
+            defaultValue: '"3.5rem"',
+            description:
+              'Sets the plunger footprint height. Omit it to keep the default square button.',
+          },
+          {
             name: 'extrusionLayers',
             type: 'number',
             defaultValue: '32',
@@ -894,14 +908,16 @@ export function MeterExample() {
 
 import * as React from "react"
 import { Indicator } from "@/registry/components/analog/Indicator"
+import { Switch } from "@/registry/components/analog/Switch"
 
 export function IndicatorExample() {
   const [isOn, setIsOn] = React.useState(true)
 
   return (
-    <button type="button" onClick={() => setIsOn((current) => !current)}>
+    <div className="flex items-center gap-4">
       <Indicator isOn={isOn} color="amber" size="lg" />
-    </button>
+      <Switch checked={isOn} onCheckedChange={setIsOn} />
+    </div>
   )
 }`,
     api: [
@@ -972,7 +988,10 @@ export function IndicatorExample() {
   </PanelHeader>
   <PanelContent>Controls go here.</PanelContent>
 </Panel>`,
-    exampleCode: `import {
+    exampleCode: `"use client"
+
+import * as React from "react"
+import {
   Panel,
   PanelContent,
   PanelDescription,
@@ -980,8 +999,11 @@ export function IndicatorExample() {
   PanelHeader,
   PanelTitle,
 } from "@/registry/components/analog/Panel"
+import { SquareToggle } from "@/registry/components/analog/SquareToggle"
 
 export function PanelExample() {
+  const [bypass, setBypass] = React.useState(false)
+
   return (
     <Panel variant="rack" screws className="max-w-md">
       <PanelHeader>
@@ -994,9 +1016,14 @@ export function PanelExample() {
         </div>
       </PanelContent>
       <PanelFooter>
-        <button type="button" className="w-full rounded bg-[#222] px-3 py-2 text-sm">
+        <SquareToggle
+          className="w-full"
+          indicatorColor="amber"
+          pressed={bypass}
+          onPressedChange={setBypass}
+        >
           Bypass
-        </button>
+        </SquareToggle>
       </PanelFooter>
     </Panel>
   )
@@ -1011,6 +1038,12 @@ export function PanelExample() {
             type: '"default" | "rack"',
             defaultValue: '"default"',
             description: 'Sets the panel surface style.',
+          },
+          {
+            name: 'surface',
+            type: '"default" | "subtle"',
+            defaultValue: '"default"',
+            description: 'Reduces the center hotspot for nested or secondary panel surfaces.',
           },
           {
             name: 'screws',

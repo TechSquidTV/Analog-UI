@@ -89,12 +89,33 @@ function useAudioMeter() {
 
 function FooterItem({ label, value }: { label: string; value: ReactNode }) {
   return (
-    <div className="min-w-[110px] flex-1 rounded-[var(--analog-radius-shell)] border border-white/10 bg-black/30 px-3 py-2">
+    <FooterPanel>
       <div className="text-[9px] font-semibold uppercase tracking-[0.26em] text-[#787878]">
         {label}
       </div>
       <div className="mt-1 font-mono text-[12px] text-[#e5e5e5]">{value}</div>
-    </div>
+    </FooterPanel>
+  );
+}
+
+function FooterPanel({
+  className,
+  contentClassName,
+  children,
+}: {
+  className?: string;
+  contentClassName?: string;
+  children: ReactNode;
+}) {
+  return (
+    <Panel
+      variant="default"
+      surface="subtle"
+      screws={false}
+      className={cn('min-w-[110px] flex-1', className)}
+    >
+      <PanelContent className={cn('px-3 py-2', contentClassName)}>{children}</PanelContent>
+    </Panel>
   );
 }
 
@@ -108,18 +129,16 @@ function ControlButton({
   children: ReactNode;
 }) {
   return (
-    <button
+    <SquareButton
       type="button"
+      width="5.5rem"
+      height="2.5rem"
+      extrusionLayers={18}
+      variant={isActive ? 'chrome' : 'black'}
       onClick={onClick}
-      className={cn(
-        'rounded-full border px-3 py-1.5 text-[11px] uppercase tracking-[0.2em] transition-colors duration-200',
-        isActive
-          ? 'border-white/16 bg-white/[0.08] text-white'
-          : 'border-white/8 bg-white/[0.03] text-[#a8a8a8] hover:border-white/14 hover:bg-white/[0.06] hover:text-white',
-      )}
     >
       {children}
-    </button>
+    </SquareButton>
   );
 }
 
@@ -488,7 +507,7 @@ function GaugeDemo({ mode }: { mode: DemoMode }) {
       footer={
         <>
           <FooterItem label="Value" value={`${value}%`} />
-          <div className="flex min-w-[180px] flex-1 flex-wrap gap-2 rounded-[var(--analog-radius-shell)] border border-white/10 bg-black/30 px-3 py-2">
+          <FooterPanel className="min-w-[180px]" contentClassName="flex flex-wrap gap-2">
             <div className="w-full text-[9px] font-semibold uppercase tracking-[0.26em] text-[#787878]">
               Variant
             </div>
@@ -507,7 +526,7 @@ function GaugeDemo({ mode }: { mode: DemoMode }) {
             <ControlButton isActive={variant === 'lcd-blue'} onClick={() => setVariant('lcd-blue')}>
               Blue
             </ControlButton>
-          </div>
+          </FooterPanel>
         </>
       }
     >
@@ -533,7 +552,7 @@ function LCDDisplayDemo({ mode }: { mode: DemoMode }) {
         <>
           <FooterItem label="Readout" value={current.value} />
           <FooterItem label="Preset" value={current.label} />
-          <div className="flex min-w-[220px] flex-1 flex-wrap gap-2 rounded-[var(--analog-radius-shell)] border border-white/10 bg-black/30 px-3 py-2">
+          <FooterPanel className="min-w-[220px]" contentClassName="flex flex-wrap gap-2">
             <div className="w-full text-[9px] font-semibold uppercase tracking-[0.26em] text-[#787878]">
               Variant
             </div>
@@ -557,7 +576,7 @@ function LCDDisplayDemo({ mode }: { mode: DemoMode }) {
             >
               Profile
             </ControlButton>
-          </div>
+          </FooterPanel>
         </>
       }
     >
@@ -610,7 +629,10 @@ function NeedleGaugeDemo({ mode }: { mode: DemoMode }) {
       footer={
         <>
           <FooterItem label="Needle" value={`${value}${preset.unit}`} />
-          <div className="flex min-w-0 flex-1 basis-full flex-wrap gap-2 rounded-[var(--analog-radius-shell)] border border-white/10 bg-black/30 px-3 py-2 sm:min-w-[220px] sm:basis-auto">
+          <FooterPanel
+            className="min-w-0 basis-full sm:min-w-[220px] sm:basis-auto"
+            contentClassName="flex flex-wrap gap-2"
+          >
             <div className="w-full text-[9px] font-semibold uppercase tracking-[0.26em] text-[#787878]">
               Range
             </div>
@@ -623,19 +645,25 @@ function NeedleGaugeDemo({ mode }: { mode: DemoMode }) {
             <ControlButton isActive={scalePreset === 'linear'} onClick={() => setPreset('linear')}>
               Load
             </ControlButton>
-          </div>
+          </FooterPanel>
           {mode === 'full' ? (
-            <div className="flex min-w-0 flex-1 basis-full flex-wrap gap-2 rounded-[var(--analog-radius-shell)] border border-white/10 bg-black/30 px-3 py-2 sm:min-w-[260px] sm:basis-auto">
+            <FooterPanel
+              className="min-w-0 basis-full sm:min-w-[260px] sm:basis-auto"
+              contentClassName="flex flex-wrap gap-2"
+            >
               <div className="w-full text-[9px] font-semibold uppercase tracking-[0.26em] text-[#787878]">
                 Reading
               </div>
               <ControlButton onClick={() => setValue(preset.points[0])}>Low</ControlButton>
               <ControlButton onClick={() => setValue(preset.points[1])}>Nom</ControlButton>
               <ControlButton onClick={() => setValue(preset.points[2])}>Peak</ControlButton>
-            </div>
+            </FooterPanel>
           ) : null}
           {mode === 'full' ? (
-            <div className="flex min-w-[180px] flex-none flex-wrap gap-2 rounded-[var(--analog-radius-shell)] border border-white/10 bg-black/30 px-3 py-2">
+            <FooterPanel
+              className="min-w-[180px] flex-none"
+              contentClassName="flex flex-wrap gap-2"
+            >
               <div className="w-full text-[9px] font-semibold uppercase tracking-[0.26em] text-[#787878]">
                 Shell
               </div>
@@ -645,7 +673,7 @@ function NeedleGaugeDemo({ mode }: { mode: DemoMode }) {
               <ControlButton isActive={variant === 'black'} onClick={() => setVariant('black')}>
                 Black
               </ControlButton>
-            </div>
+            </FooterPanel>
           ) : null}
         </>
       }
@@ -717,25 +745,30 @@ function IndicatorDemo({ mode }: { mode: DemoMode }) {
           <FooterItem
             label="State"
             value={
-              <button
-                type="button"
-                onClick={() => setIsOn((current) => !current)}
-                className="text-left"
+              <SquareToggle
+                className="h-10 w-24"
+                indicatorColor={color}
+                pressed={isOn}
+                variant={isOn ? 'chrome' : 'black'}
+                onPressedChange={setIsOn}
               >
                 {isOn ? 'Powered' : 'Dark'}
-              </button>
+              </SquareToggle>
             }
           />
           <FooterItem
             label="Color"
             value={
-              <button
+              <SquareButton
                 type="button"
+                width="5.5rem"
+                height="2.5rem"
+                extrusionLayers={18}
+                variant="black"
                 onClick={() => setColorIndex((current) => (current + 1) % colors.length)}
-                className="text-left capitalize"
               >
                 {color}
-              </button>
+              </SquareButton>
             }
           />
         </>
@@ -840,18 +873,15 @@ function PanelDemo({ mode }: { mode: DemoMode }) {
             </div>
           </PanelContent>
           <PanelFooter>
-            <button
-              type="button"
-              onClick={() => setBypass((current) => !current)}
-              className={cn(
-                'w-full rounded py-2 font-mono text-sm uppercase tracking-widest shadow-[inset_0_1px_rgba(255,255,255,0.05),0_1px_4px_rgba(0,0,0,0.5)] transition-colors',
-                bypass
-                  ? 'bg-[var(--color-accent)] text-white'
-                  : 'bg-[#222] text-[#888] hover:bg-[#333]',
-              )}
+            <SquareToggle
+              className="w-full"
+              indicatorColor="amber"
+              pressed={bypass}
+              variant={bypass ? 'chrome' : 'black'}
+              onPressedChange={setBypass}
             >
               Bypass
-            </button>
+            </SquareToggle>
           </PanelFooter>
         </Panel>
       </div>

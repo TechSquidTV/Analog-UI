@@ -1,7 +1,10 @@
 ---
 import BlockDemo from '../../components/blocks/BlockDemo';
+import ComponentDependencyCards from '../../components/docs/ComponentDependencyCards.astro';
+import ComponentInstallCode from '../../components/docs/ComponentInstallCode.astro';
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import { getAllBlockNames, getBlockEntry } from '../../lib/blocks';
+import { SquareButton } from '../../../../../packages/analog-ui/src/index';
 
 export function getStaticPaths() {
   return getAllBlockNames().map((name) => ({
@@ -18,12 +21,9 @@ if (!entry) {
 
 <SiteLayout title={`${entry.title} Preview`} description={entry.description}>
   <section class="site-frame pt-10 md:pt-12">
-    <a
-      href={entry.href}
-      class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm text-[#bdbdbd] transition-colors duration-200 hover:border-white/16 hover:bg-white/[0.08] hover:text-white"
-    >
+    <SquareButton href={entry.href} width="16rem" height="2.5rem" variant="black">
       Back to component docs
-    </a>
+    </SquareButton>
 
     <div class="mt-6 grid gap-8 lg:grid-cols-[320px_minmax(0,1fr)]">
       <aside class="section-panel h-fit min-w-0 p-5">
@@ -32,55 +32,26 @@ if (!entry) {
         <p class="mt-3 text-base leading-7 text-[#b0b0b0]">{entry.summary}</p>
         <p class="mt-4 text-sm leading-7 text-[#878787]">{entry.description}</p>
 
-        <div
-          class="mt-6 rounded-[var(--analog-radius-shell)] border border-white/10 bg-black/30 p-4"
-        >
-          <div class="micro-label">Install</div>
-          <pre
-            class="mt-3 overflow-x-auto text-xs text-[#e0e0e0]"><code>{`pnpm dlx shadcn@latest add https://analogui.com/r/analog-foundation.json
-pnpm dlx shadcn@latest add https://analogui.com${entry.registryHref}`}</code></pre>
-        </div>
+        <ComponentInstallCode
+          class="mt-6"
+          registryHref={entry.registryHref}
+          label="Install"
+          compact
+        />
 
-        <div class="mt-6 space-y-4 text-sm text-[#a8a8a8]">
+        <div class="mt-6 text-sm text-[#a8a8a8]">
           <div>
             <div class="micro-label mb-2">Registry Type</div>
             <div class="text-white">{entry.registryType}</div>
           </div>
-
-          <div>
-            <div class="micro-label mb-2">Registry Dependencies</div>
-            <div class="flex flex-wrap gap-2">
-              {
-                entry.registryDependencies.length > 0 ? (
-                  entry.registryDependencies.map((dependency) => (
-                    <span class="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs text-[#d6d6d6]">
-                      {dependency}
-                    </span>
-                  ))
-                ) : (
-                  <span class="text-[#7c7c7c]">None</span>
-                )
-              }
-            </div>
-          </div>
-
-          <div>
-            <div class="micro-label mb-2">Package Dependencies</div>
-            <div class="flex flex-wrap gap-2">
-              {
-                entry.dependencies.length > 0 ? (
-                  entry.dependencies.map((dependency) => (
-                    <span class="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs text-[#d6d6d6]">
-                      {dependency}
-                    </span>
-                  ))
-                ) : (
-                  <span class="text-[#7c7c7c]">None</span>
-                )
-              }
-            </div>
-          </div>
         </div>
+
+        <ComponentDependencyCards
+          class="mt-6"
+          layout="stack"
+          registryDependencies={entry.registryDependencies}
+          packageDependencies={entry.dependencies}
+        />
       </aside>
 
       <div class="section-panel min-w-0 overflow-hidden p-5 md:p-8">

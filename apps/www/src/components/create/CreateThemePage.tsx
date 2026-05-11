@@ -10,6 +10,7 @@ import {
 import {
   AnalogLightingProvider,
   Dial,
+  Gauge,
   Indicator,
   LCDDisplay,
   Meter,
@@ -24,7 +25,7 @@ import {
   PanelHeader,
   PanelTitle,
   Slider,
-  SurfaceButton,
+  SquareButton,
   Switch,
   Toggle,
   usePointerLighting,
@@ -431,6 +432,7 @@ function TokenField({
   }
 
   const numberValue = Number(value);
+  const sliderValue = Number.isFinite(numberValue) ? numberValue : Number(control.defaultValue);
 
   return (
     <label className="grid gap-3 rounded-[var(--analog-radius-window)] border border-white/8 bg-black/18 p-3">
@@ -440,14 +442,18 @@ function TokenField({
           {formatTokenValue(control, value)}
         </span>
       </span>
-      <input
-        className="h-2 w-full cursor-pointer appearance-none rounded-full bg-white/12 accent-[var(--accent)]"
-        type="range"
+      <Slider
+        className="h-12"
         min={control.min}
         max={control.max}
         step={control.step}
-        value={Number.isFinite(numberValue) ? numberValue : Number(control.defaultValue)}
-        onChange={(event) => updateValue(event.currentTarget.value)}
+        value={sliderValue}
+        showMarks={false}
+        onValueChange={(nextValue) => {
+          const resolvedValue = Array.isArray(nextValue) ? nextValue[0] : nextValue;
+
+          updateValue(String(resolvedValue ?? sliderValue));
+        }}
       />
     </label>
   );
@@ -475,19 +481,16 @@ function ThemeWorkbench({
       <PanelContent className="px-5 pb-5">
         <div className="grid grid-cols-2 gap-2">
           {tokenGroups.map((group) => (
-            <button
+            <SquareButton
               key={group.id}
               type="button"
-              className={[
-                'rounded-[var(--analog-radius-window)] border px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition-colors duration-200',
-                activeGroup.id === group.id
-                  ? 'border-[var(--accent)] bg-[color-mix(in_oklch,var(--accent)_18%,transparent)] text-white'
-                  : 'border-white/8 bg-white/[0.025] text-[#a8a8a8] hover:border-white/16 hover:bg-white/[0.06] hover:text-white',
-              ].join(' ')}
+              width="100%"
+              height="2.75rem"
+              variant={activeGroup.id === group.id ? 'chrome' : 'black'}
               onClick={() => onGroupChange(group.id)}
             >
               {group.label}
-            </button>
+            </SquareButton>
           ))}
         </div>
 
@@ -503,23 +506,18 @@ function ThemeWorkbench({
         </div>
       </PanelContent>
       <PanelFooter className="grid grid-cols-2 gap-3 px-5 pb-5">
-        <SurfaceButton
+        <SquareButton
           type="button"
+          width="100%"
+          height="2.75rem"
           variant="black"
-          containerClassName="w-full"
-          className="min-h-11 w-full px-4 text-xs uppercase tracking-[0.18em]"
           onClick={() => setValues(initialThemeValues)}
         >
           Reset
-        </SurfaceButton>
-        <SurfaceButton
-          type="button"
-          containerClassName="w-full"
-          className="min-h-11 w-full px-4 text-xs uppercase tracking-[0.18em]"
-          onClick={onExport}
-        >
+        </SquareButton>
+        <SquareButton type="button" width="100%" height="2.75rem" onClick={onExport}>
           Export
-        </SurfaceButton>
+        </SquareButton>
       </PanelFooter>
     </Panel>
   );
@@ -575,7 +573,7 @@ function RackPreview() {
 
       <PanelContent className="grid gap-5 px-5 pb-5 md:px-7 md:pb-7 xl:grid-cols-[1fr_280px]">
         <div className="grid gap-5">
-          <Panel variant="default" screws={false}>
+          <Panel variant="default" surface="subtle" screws={false}>
             <PanelContent className="grid gap-5 p-5">
               <div className="grid gap-4 md:grid-cols-3">
                 <div className="grid justify-items-center gap-3">
@@ -639,7 +637,7 @@ function RackPreview() {
           </Panel>
 
           <div className="grid gap-5 md:grid-cols-2">
-            <Panel variant="default" screws={false}>
+            <Panel variant="default" surface="subtle" screws={false}>
               <PanelHeader className="p-5 pb-3">
                 <PanelTitle className="text-lg uppercase tracking-[0.16em]">
                   Semantic Card
@@ -647,29 +645,46 @@ function RackPreview() {
                 <PanelDescription>Program level and headroom.</PanelDescription>
               </PanelHeader>
               <PanelContent className="px-5 pb-5">
-                <div className="rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] p-4 text-[var(--card-foreground)]">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <div className="text-sm font-semibold">Total Signal</div>
-                      <div className="mt-1 text-3xl font-semibold tracking-tight">
-                        {Math.round(energy)}%
+                <Panel variant="default" surface="subtle" screws={false}>
+                  <PanelContent className="p-4">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <div className="text-sm font-semibold">Total Signal</div>
+                        <div className="mt-1 text-3xl font-semibold tracking-tight">
+                          {Math.round(energy)}%
+                        </div>
                       </div>
+                      <span className="rounded-full border border-[var(--border)] bg-[color-mix(in_oklch,var(--accent)_18%,transparent)] px-3 py-1 text-xs font-semibold text-[var(--accent)]">
+                        Live
+                      </span>
                     </div>
-                    <span className="rounded-full border border-[var(--border)] bg-[color-mix(in_oklch,var(--accent)_18%,transparent)] px-3 py-1 text-xs font-semibold text-[var(--accent)]">
-                      Live
-                    </span>
-                  </div>
-                  <div className="mt-5 h-2 overflow-hidden rounded-full bg-[color-mix(in_oklch,var(--foreground)_12%,transparent)]">
-                    <div
-                      className="h-full rounded-full bg-[var(--accent)] transition-[width] duration-300"
-                      style={{ width: `${Math.min(100, energy)}%` }}
-                    />
-                  </div>
-                </div>
+                    <div className="mt-5 grid grid-cols-[5.5rem_minmax(0,1fr)] items-center gap-4">
+                      <Gauge
+                        aria-label="Total signal gauge"
+                        className="max-w-[5.5rem] p-1"
+                        disabled
+                        max={100}
+                        min={0}
+                        showMarks={false}
+                        value={energy}
+                        variant={isHot ? 'lcd-amber' : 'lcd-green'}
+                      />
+                      <LCDDisplay
+                        className="min-w-0"
+                        label="HDRM"
+                        value={Math.round(100 - energy)}
+                        units="%"
+                        variant={isHot ? 'lcd-amber' : 'lcd-green'}
+                        size="sm"
+                        valueClassName="text-[20px]"
+                      />
+                    </div>
+                  </PanelContent>
+                </Panel>
               </PanelContent>
             </Panel>
 
-            <Panel variant="default" screws={false}>
+            <Panel variant="default" surface="subtle" screws={false}>
               <PanelHeader className="p-5 pb-3">
                 <PanelTitle className="text-lg uppercase tracking-[0.16em]">Readout</PanelTitle>
                 <PanelDescription>Patch telemetry.</PanelDescription>
@@ -692,7 +707,12 @@ function RackPreview() {
           </div>
         </div>
 
-        <Panel variant="default" screws={false} className="flex min-h-[360px] flex-col">
+        <Panel
+          variant="default"
+          surface="subtle"
+          screws={false}
+          className="flex min-h-[360px] flex-col"
+        >
           <PanelHeader className="p-5 pb-4">
             <PanelTitle className="text-lg uppercase tracking-[0.16em]">Meters</PanelTitle>
             <PanelDescription>Stereo bus.</PanelDescription>
@@ -737,16 +757,15 @@ function CardsPreview() {
     <div className="grid gap-5">
       <div className="grid gap-4 md:grid-cols-3">
         {rows.map(([label, value, color]) => (
-          <div
-            key={label}
-            className="rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] p-5 text-[var(--card-foreground)] shadow-[0_18px_50px_rgba(0,0,0,0.28)]"
-          >
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-sm text-[var(--muted-foreground)]">{label}</span>
-              <Indicator isOn color={color} size="xs" disableBezel />
-            </div>
-            <div className="mt-5 text-3xl font-semibold tracking-tight">{value}</div>
-          </div>
+          <Panel key={label} variant="default" surface="subtle" screws={false}>
+            <PanelContent className="p-5">
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-sm text-[var(--muted-foreground)]">{label}</span>
+                <Indicator isOn color={color} size="xs" disableBezel />
+              </div>
+              <div className="mt-5 text-3xl font-semibold tracking-tight">{value}</div>
+            </PanelContent>
+          </Panel>
         ))}
       </div>
 
@@ -777,24 +796,28 @@ function CardsPreview() {
               ))}
           </div>
 
-          <div className="rounded-[var(--radius)] border border-[var(--border)] bg-[var(--background)] p-5">
-            <div className="flex flex-wrap items-center gap-3">
-              <SurfaceButton className="min-h-10 px-5 text-xs uppercase tracking-[0.16em]">
-                Primary
-              </SurfaceButton>
-              <SurfaceButton
-                variant="black"
-                className="min-h-10 px-5 text-xs uppercase tracking-[0.16em]"
-              >
-                Secondary
-              </SurfaceButton>
-            </div>
-            <div className="mt-6 grid gap-3">
-              <div className="h-3 rounded-full bg-[var(--accent)]" />
-              <div className="h-3 w-3/4 rounded-full bg-[var(--secondary)]" />
-              <div className="h-3 w-1/2 rounded-full bg-[var(--border)]" />
-            </div>
-          </div>
+          <Panel variant="default" surface="subtle" screws={false}>
+            <PanelContent className="p-5">
+              <div className="flex flex-wrap items-center gap-3">
+                <SquareButton type="button" width="8rem" height="2.75rem">
+                  Primary
+                </SquareButton>
+                <SquareButton type="button" width="8rem" height="2.75rem" variant="black">
+                  Secondary
+                </SquareButton>
+              </div>
+              <div className="mt-6 grid grid-cols-[7rem_minmax(0,1fr)] items-center gap-4">
+                <Gauge
+                  aria-label="Theme token level gauge"
+                  className="max-w-[7rem] p-1"
+                  disabled
+                  value={74}
+                  variant="lcd-blue"
+                />
+                <LCDDisplay label="Accent" value={74} units="%" variant="lcd-blue" size="sm" />
+              </div>
+            </PanelContent>
+          </Panel>
         </PanelContent>
       </Panel>
     </div>
@@ -812,61 +835,46 @@ function PreviewStage({
   themeStyle: CSSProperties;
   exportCss: string;
 }) {
-  const previewRef = useRef<HTMLDivElement>(null);
-  const suspendLightingRef = useRef(false);
-  const sourceAngle = usePointerLighting({
-    baseAngle: 180,
-    influence: 0.34,
-    suspendRef: suspendLightingRef,
-    targetRef: previewRef,
-  });
-
   return (
-    <AnalogLightingProvider baseAngle={180} sourceAngle={sourceAngle} power={1}>
-      <div
-        ref={previewRef}
-        className="min-w-0 overflow-hidden rounded-[var(--analog-radius-panel)] border border-white/8 bg-[var(--background)] p-3 text-[var(--foreground)] shadow-[0_24px_80px_rgba(0,0,0,0.32)] md:p-5"
-        style={themeStyle}
-      >
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap gap-2">
-            {previewTabs.map((tab) => (
-              <button
-                key={tab}
-                type="button"
-                className={[
-                  'rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition-colors duration-200',
-                  activeTab === tab
-                    ? 'border-[var(--accent)] bg-[color-mix(in_oklch,var(--accent)_20%,transparent)] text-white'
-                    : 'border-white/10 bg-white/[0.03] text-[#aaa] hover:border-white/18 hover:bg-white/[0.07] hover:text-white',
-                ].join(' ')}
-                onClick={() => setActiveTab(tab)}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
-          <a
-            className="rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[#b8b8b2] transition-colors duration-200 hover:border-white/18 hover:text-white"
-            href="/docs/design/tokens"
-          >
-            tokens.md
-          </a>
+    <Panel
+      variant="rack"
+      screws={false}
+      className="min-w-0 p-3 text-[var(--foreground)] md:p-5"
+      style={themeStyle}
+    >
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap gap-2">
+          {previewTabs.map((tab) => (
+            <SquareButton
+              key={tab}
+              type="button"
+              width="5.75rem"
+              height="2.6rem"
+              variant={activeTab === tab ? 'chrome' : 'black'}
+              onClick={() => setActiveTab(tab)}
+            >
+              {tab}
+            </SquareButton>
+          ))}
         </div>
-
-        {activeTab === 'Rack' ? <RackPreview /> : null}
-        {activeTab === 'Cards' ? <CardsPreview /> : null}
-        {activeTab === 'Code' ? (
-          <pre className="max-h-[680px] overflow-auto rounded-[var(--analog-radius-shell)] border border-white/10 bg-black/42 p-4 text-sm leading-6 text-[#e6e6dc]">
-            <code>{exportCss}</code>
-          </pre>
-        ) : null}
+        <SquareButton href="/docs/design/tokens" width="8.75rem" height="2.5rem" variant="black">
+          tokens.md
+        </SquareButton>
       </div>
-    </AnalogLightingProvider>
+
+      {activeTab === 'Rack' ? <RackPreview /> : null}
+      {activeTab === 'Cards' ? <CardsPreview /> : null}
+      {activeTab === 'Code' ? (
+        <pre className="max-h-[680px] overflow-auto rounded-[var(--analog-radius-shell)] border border-white/10 bg-black/42 p-4 text-sm leading-6 text-[#e6e6dc]">
+          <code>{exportCss}</code>
+        </pre>
+      ) : null}
+    </Panel>
   );
 }
 
 export default function CreateThemePage() {
+  const pageRef = useRef<HTMLElement>(null);
   const [values, setValues] = useState<ThemeValues>(initialThemeValues);
   const [activeGroupId, setActiveGroupId] = useState(tokenGroups[0].id);
   const [activeTab, setActiveTab] = useState<(typeof previewTabs)[number]>('Rack');
@@ -874,6 +882,11 @@ export default function CreateThemePage() {
   const themeStyle = useMemo(() => getThemeStyle(values), [values]);
   const exportCss = useMemo(() => getThemeCss(values), [values]);
   const activeGroup = tokenGroups.find((group) => group.id === activeGroupId) ?? tokenGroups[0];
+  const sourceAngle = usePointerLighting({
+    baseAngle: 180,
+    influence: 0.34,
+    targetRef: pageRef,
+  });
 
   const handleExport = async () => {
     setActiveTab('Code');
@@ -887,43 +900,41 @@ export default function CreateThemePage() {
   };
 
   return (
-    <section className="site-frame pt-8 md:pt-10">
-      <div className="mb-6 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-          <div className="eyebrow mb-4">Create Theme</div>
-          <h1 className="max-w-3xl text-4xl font-semibold tracking-[-0.04em] text-white md:text-6xl">
-            Analog theme workbench
-          </h1>
+    <AnalogLightingProvider baseAngle={180} sourceAngle={sourceAngle} power={1}>
+      <section ref={pageRef} className="site-frame pt-8 md:pt-10">
+        <div className="mb-6 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <div className="eyebrow mb-4">Create Theme</div>
+            <h1 className="max-w-3xl text-4xl font-semibold tracking-[-0.04em] text-white md:text-6xl">
+              Analog theme workbench
+            </h1>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 font-mono text-xs uppercase tracking-[0.2em] text-[#a9a9a2]">
+              {exportMessage}
+            </span>
+            <SquareButton type="button" width="10rem" onClick={handleExport}>
+              Export Theme
+            </SquareButton>
+          </div>
         </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 font-mono text-xs uppercase tracking-[0.2em] text-[#a9a9a2]">
-            {exportMessage}
-          </span>
-          <SurfaceButton
-            type="button"
-            className="min-h-11 px-5 text-xs uppercase tracking-[0.18em]"
-            onClick={handleExport}
-          >
-            Export Theme
-          </SurfaceButton>
-        </div>
-      </div>
 
-      <div className="grid gap-6 lg:grid-cols-[360px_minmax(0,1fr)]">
-        <ThemeWorkbench
-          activeGroup={activeGroup}
-          values={values}
-          setValues={setValues}
-          onExport={handleExport}
-          onGroupChange={setActiveGroupId}
-        />
-        <PreviewStage
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          themeStyle={themeStyle}
-          exportCss={exportCss}
-        />
-      </div>
-    </section>
+        <div className="grid gap-6 lg:grid-cols-[360px_minmax(0,1fr)]">
+          <ThemeWorkbench
+            activeGroup={activeGroup}
+            values={values}
+            setValues={setValues}
+            onExport={handleExport}
+            onGroupChange={setActiveGroupId}
+          />
+          <PreviewStage
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            themeStyle={themeStyle}
+            exportCss={exportCss}
+          />
+        </div>
+      </section>
+    </AnalogLightingProvider>
   );
 }

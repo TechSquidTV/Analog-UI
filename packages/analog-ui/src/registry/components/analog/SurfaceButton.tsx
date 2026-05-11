@@ -1,25 +1,26 @@
 import React, { useRef } from 'react';
-import { Button } from '@base-ui/react';
 import { cn } from '@/lib/utils';
 import { useMergedRefs } from '@/lib/refs';
 import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 import { useAnalogMaterialVariant } from '../../hooks/analog-material-scope';
 
-export interface SurfaceButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface SurfaceButtonProps extends React.HTMLAttributes<HTMLDivElement> {
   children?: React.ReactNode;
   containerClassName?: string;
+  disabled?: boolean;
   rotation?: number;
   variant?: 'chrome' | 'black';
   lighting?: AnalogLightingConfig<'surface'>;
 }
 
-export const SurfaceButton = React.forwardRef<HTMLButtonElement, SurfaceButtonProps>(
+export const SurfaceButton = React.forwardRef<HTMLDivElement, SurfaceButtonProps>(
   (
     {
       children,
       className,
       containerClassName,
+      disabled,
       style,
       rotation = 0,
       variant,
@@ -30,7 +31,7 @@ export const SurfaceButton = React.forwardRef<HTMLButtonElement, SurfaceButtonPr
     },
     forwardedRef,
   ) => {
-    const internalRef = useRef<HTMLButtonElement>(null);
+    const internalRef = useRef<HTMLDivElement>(null);
     const mergedRef = useMergedRefs(forwardedRef, internalRef);
     const lightingStyle = useAnalogLighting(['surface'], lighting);
     const resolvedVariant = useAnalogMaterialVariant(variant);
@@ -44,7 +45,7 @@ export const SurfaceButton = React.forwardRef<HTMLButtonElement, SurfaceButtonPr
     const springY = useSpring(rawY, springConfig);
     const springCenter = useSpring(rawCenter, springConfig);
 
-    const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
       if (!internalRef.current) return;
       const rect = internalRef.current.getBoundingClientRect();
       const absoluteX = e.clientX - rect.left;
@@ -68,7 +69,7 @@ export const SurfaceButton = React.forwardRef<HTMLButtonElement, SurfaceButtonPr
       onMouseMove?.(e);
     };
 
-    const handleMouseLeave = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
       rawX.set(0);
       rawY.set(0);
       rawCenter.set(0.4);
@@ -81,10 +82,11 @@ export const SurfaceButton = React.forwardRef<HTMLButtonElement, SurfaceButtonPr
 
     return (
       <div className={cn('inline-flex', containerClassName)}>
-        <Button
+        <div
           ref={mergedRef}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
+          aria-disabled={disabled || undefined}
           data-analog-variant={resolvedVariant}
           className={cn('surface-button', `variant-${resolvedVariant}`, className)}
           style={{
@@ -105,7 +107,7 @@ export const SurfaceButton = React.forwardRef<HTMLButtonElement, SurfaceButtonPr
           />
           <div className="holo-texture" style={{ transform: `rotate(${rotation}deg)` }} />
           {children && <span className="content">{children}</span>}
-        </Button>
+        </div>
       </div>
     );
   },

@@ -4,7 +4,6 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
-import { cn } from './lib/utils';
 import { usePointerLighting } from './registry/hooks/use-pointer-lighting';
 import { AnalogLightingProvider } from './registry/hooks/use-analog-lighting';
 import { Dial } from './registry/components/analog/Dial';
@@ -194,7 +193,11 @@ export default function App() {
         ref={surfaceRef}
         className="flex min-h-screen w-full flex-col bg-background p-8 pt-32 font-sans text-foreground md:p-16 md:pt-16"
       >
-        <div className="fixed top-6 right-6 md:top-12 md:right-12 z-50 bg-[#141414] border border-[#262626] rounded-xl p-5 w-72 shadow-[0_20px_40px_rgba(0,0,0,0.4),0_0_0_1px_rgba(255,255,255,0.05)]">
+        <Panel
+          variant="rack"
+          screws={false}
+          className="fixed top-6 right-6 z-50 w-72 p-5 md:top-12 md:right-12"
+        >
           <div className="text-[10px] uppercase tracking-[0.3em] text-[var(--color-accent)] mb-5">
             Analog Lighting
           </div>
@@ -219,13 +222,14 @@ export default function App() {
                 <span>Power</span>
                 <span className="text-[var(--color-accent)]">{lightPower}W</span>
               </div>
-              <input
-                type="range"
-                min="0"
-                max="500"
+              <Slider
+                aria-label="Lighting power"
+                className="mb-2 h-10 w-full"
+                min={0}
+                max={500}
                 value={lightPower}
-                onChange={(e) => setLightPower(Number(e.target.value))}
-                className="w-full h-1 bg-[#222] rounded-full appearance-none outline-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--color-accent)] [&::-webkit-slider-thumb]:cursor-pointer mb-4"
+                showMarks={false}
+                onValueChange={(next) => setLightPower(Math.round(next as number))}
               />
               <div className="flex justify-between text-[10px] text-[#888] font-mono uppercase mb-2">
                 <span>Mouse Travel</span>
@@ -233,18 +237,19 @@ export default function App() {
                   {Math.round(mouseInfluence * 100)}%
                 </span>
               </div>
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
+              <Slider
+                aria-label="Mouse travel influence"
+                className="h-10 w-full"
+                min={0}
+                max={1}
+                step={0.01}
                 value={mouseInfluence}
-                onChange={(e) => setMouseInfluence(Number(e.target.value))}
-                className="w-full h-1 bg-[#222] rounded-full appearance-none outline-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--color-accent)] [&::-webkit-slider-thumb]:cursor-pointer"
+                showMarks={false}
+                onValueChange={(next) => setMouseInfluence(next as number)}
               />
             </div>
           </div>
-        </div>
+        </Panel>
 
         <div className="mb-12 md:mb-20 max-w-xl text-left">
           <div className="mb-6 inline-flex h-24 w-24 items-center justify-center rounded-[30px] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02))] p-3 shadow-[0_24px_60px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.08)]">
@@ -602,30 +607,34 @@ export default function App() {
             {
               label: 'Stat L',
               value: (
-                <input
-                  type="range"
-                  className="w-24 accent-[#555]"
+                <Slider
+                  aria-label="Static left meter level"
+                  className="h-10 w-28"
                   disabled={isMeterAnimated}
                   min={-60}
                   max={6}
                   step={1}
                   value={staticMeterL}
-                  onChange={(e) => setStaticMeterL(Number(e.target.value))}
+                  showMarks={false}
+                  variant="black"
+                  onValueChange={(next) => setStaticMeterL(next as number)}
                 />
               ),
             },
             {
               label: 'Stat R',
               value: (
-                <input
-                  type="range"
-                  className="w-24 accent-[#555]"
+                <Slider
+                  aria-label="Static right meter level"
+                  className="h-10 w-28"
                   disabled={isMeterAnimated}
                   min={-60}
                   max={6}
                   step={1}
                   value={staticMeterR}
-                  onChange={(e) => setStaticMeterR(Number(e.target.value))}
+                  showMarks={false}
+                  variant="black"
+                  onValueChange={(next) => setStaticMeterR(next as number)}
                 />
               ),
             },
@@ -702,13 +711,15 @@ export default function App() {
             {
               label: 'Pan',
               value: (
-                <input
-                  type="range"
-                  className="w-24 accent-[#555]"
+                <Slider
+                  aria-label="Pan gauge value"
+                  className="h-10 w-28"
                   min={-100}
                   max={100}
                   value={gaugeValue}
-                  onChange={(e) => setGaugeValue(Number(e.target.value))}
+                  showMarks={false}
+                  variant="black"
+                  onValueChange={(next) => setGaugeValue(next as number)}
                 />
               ),
             },
@@ -996,17 +1007,15 @@ export default function App() {
                 </div>
               </PanelContent>
               <PanelFooter>
-                <button
-                  onClick={() => setBypass(!bypass)}
-                  className={cn(
-                    'w-full py-2 text-sm rounded shadow-[inset_0_1px_rgba(255,255,255,0.05),0_1px_4px_rgba(0,0,0,0.5)] transition-colors font-mono uppercase tracking-widest cursor-pointer',
-                    bypass
-                      ? 'bg-[var(--color-accent)] text-white'
-                      : 'bg-[#222] hover:bg-[#333] text-[#888]',
-                  )}
+                <SquareToggle
+                  className="w-full"
+                  indicatorColor="amber"
+                  pressed={bypass}
+                  variant={bypass ? 'chrome' : 'black'}
+                  onPressedChange={setBypass}
                 >
                   Bypass
-                </button>
+                </SquareToggle>
               </PanelFooter>
             </Panel>
           </div>
