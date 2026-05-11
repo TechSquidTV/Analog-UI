@@ -346,6 +346,7 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
         data-analog-variant={resolvedVariant}
         className={cn(
           'mx-auto aspect-square max-w-full shrink-0 rounded-full touch-none',
+          'outline-none',
           !hasExplicitSizeOverride && 'w-64',
           isDragging
             ? 'cursor-grabbing'
