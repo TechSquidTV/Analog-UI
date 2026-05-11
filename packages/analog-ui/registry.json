@@ -229,6 +229,9 @@
             "background-color": "var(--analog-surface-onyx-lo)",
             "box-shadow": "0 0 0 1px inset rgba(255, 255, 255, calc(0.1 * var(--analog-light-power, 1))),\n      0 8px 16px -4px rgba(0, 0, 0, calc(0.8 * var(--analog-light-power, 1))),\n      inset 0 -4px 8px rgba(0, 0, 0, calc(0.6 * var(--analog-light-power, 1))),\n      inset 0 4px 12px rgba(255, 255, 255, calc(0.1 * var(--analog-light-power, 1)))"
           },
+          ".surface-button.analog-dial-surface": {
+            "--foil": "url('./texture.webp'),\n      linear-gradient(\n        calc(var(--analog-light-angle-surface, 180deg) - 90deg),\n        rgba(255, 255, 255, 0.2) 0%,\n        rgba(255, 255, 255, 0.05) 24%,\n        transparent 48%,\n        rgba(0, 0, 0, 0.16) 100%\n      ),\n      repeating-linear-gradient(\n        calc(var(--analog-light-angle-surface, 180deg) - 90deg),\n        rgba(255, 255, 255, 0.05) 0,\n        rgba(255, 255, 255, 0.05) 1px,\n        transparent 1px,\n        transparent 6px\n      )"
+          },
           ".surface-button::after": {
             "content": "''",
             "@apply absolute inset-0 z-[3] rounded-full pointer-events-none": {},
