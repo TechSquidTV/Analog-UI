@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { useMergedRefs } from '@/lib/refs';
-import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
+import { motion, useMotionValue, useSpring } from 'motion/react';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 import { useAnalogMaterialVariant } from '../../hooks/analog-material-scope';
 
@@ -36,13 +36,9 @@ export const SurfaceButton = React.forwardRef<HTMLDivElement, SurfaceButtonProps
     const lightingStyle = useAnalogLighting(['surface'], lighting);
     const resolvedVariant = useAnalogMaterialVariant(variant);
 
-    const rawX = useMotionValue(0);
-    const rawY = useMotionValue(0);
     const rawCenter = useMotionValue(0.4);
 
     const springConfig = { stiffness: 150, damping: 20, mass: 0.5 };
-    const springX = useSpring(rawX, springConfig);
-    const springY = useSpring(rawY, springConfig);
     const springCenter = useSpring(rawCenter, springConfig);
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -58,27 +54,19 @@ export const SurfaceButton = React.forwardRef<HTMLDivElement, SurfaceButtonProps
       const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
       const maxDistance = Math.sqrt(centerX * centerX + centerY * centerY);
 
-      const normalizedDeltaX = centerX > 0 ? deltaX / centerX : 0;
-      const normalizedDeltaY = centerY > 0 ? deltaY / centerY : 0;
       const pointerFromCenter = maxDistance > 0 ? Math.min(1, distance / maxDistance) : 0;
 
-      rawX.set(normalizedDeltaX);
-      rawY.set(normalizedDeltaY);
       rawCenter.set(Math.max(0.4, pointerFromCenter));
 
       onMouseMove?.(e);
     };
 
     const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
-      rawX.set(0);
-      rawY.set(0);
       rawCenter.set(0.4);
       onMouseLeave?.(e);
     };
 
-    const pointerAngle = useTransform([springX, springY], ([x, y]: [number, number]) => {
-      return `${-rotation * 0.75 + (x * 30 + y * 15)}deg`;
-    });
+    const pointerAngle = `${-rotation * 0.75}deg`;
 
     return (
       <div className={cn('inline-flex', containerClassName)}>

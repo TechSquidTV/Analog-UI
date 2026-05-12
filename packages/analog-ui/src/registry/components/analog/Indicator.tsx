@@ -95,7 +95,7 @@ export const Indicator = React.forwardRef<HTMLDivElement, IndicatorProps>(
     const lensLightAngle = useAnalogLightAngle('lens', {}, lighting?.lens);
     const lensGlintPosition = React.useMemo(() => {
       const radians = (lensLightAngle * Math.PI) / 180;
-      const horizontal = -Math.sin(radians);
+      const horizontal = Math.sin(radians);
       const arcHalfRadians = (60 / 2) * (Math.PI / 180);
       const maxArcX = Math.sin(arcHalfRadians);
       const projectedX = maxArcX * Math.sin(horizontal * (Math.PI / 2));

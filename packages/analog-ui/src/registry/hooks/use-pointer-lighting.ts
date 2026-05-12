@@ -114,8 +114,8 @@ export function usePointerLighting({
       }
 
       const targetLightVector = {
-        x: -dx / distanceFromCenter,
-        y: -dy / distanceFromCenter,
+        x: dx / distanceFromCenter,
+        y: dy / distanceFromCenter,
       };
       const targetAngle = vectorToLightingAngle(targetLightVector.x, targetLightVector.y);
 
