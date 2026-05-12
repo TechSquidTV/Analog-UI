@@ -1,44 +1,50 @@
 ---
 title: Components
-description: Browse the Analog UI controls by role, with live previews, install commands, usage snippets, and prop references.
+description: Studio Hyper-Skeuomorphic React components for tactile controls and analog lighting.
 section: reference
 order: 30
 navTitle: All Components
 draft: false
 ---
 
-Browse the Analog UI control set by role: inputs, readouts, and panel surfaces. Each component page includes a live preview, install command, usage snippet, and prop reference.
+Studio Hyper-Skeuomorphic React components for tactile controls, machined panels, meters, and analog lighting. Built with Tailwind CSS and a shadcn-compatible registry.
 
 ## Inputs
 
-- [Dial](/docs/components/dial): rotary input with metallic foil response
-- [Slider](/docs/components/slider): linear fader with recessed travel and machined thumb
-- [Toggle](/docs/components/toggle): heavy rocker control with optional tone indicators
-- [Rocker Switch Group](/docs/components/rocker-switch-group): recessed bank for grouped rocker toggles
-- [Push Button](/docs/components/push-button): momentary push control with deep 3D travel
-- [Push Toggle](/docs/components/push-toggle): latching push control with optional tone feedback
-- [Toggle Button Group](/docs/components/toggle-button-group): grouped push toggles with tone selection
-- [Switch](/docs/components/switch): cylindrical track switch with rolling thumb behavior
-- [Wheel Select](/docs/components/wheel-select): stepped trim wheel for option navigation
-- [Wheel Number](/docs/components/wheel-number): numeric trim wheel for precise scrubbing
+| Component | Material Logic |
+| --- | --- |
+| **[Dial](/docs/components/dial)** | The main face uses `surface`; pointer lines, pips, or needles use `pointer`. |
+| **[Slider](/docs/components/slider)** | The rail, recess, and dust slot use `track`; the handle, cap, and grip ridges use `thumb`. |
+| **[Toggle](/docs/components/toggle)** | The housing sits in `surface` or `track`; the moving paddle or rocker uses `thumb`; embedded lamps use `lens`. |
+| **[Rocker Switch Group](/docs/components/rocker-switch-group)** | Group related controls inside panels or equipment bays rather than floating them independently. |
+| **[Push Button](/docs/components/push-button)** | Static Chassis, Moving Plunger, Surface Recess, and Perspective Tilt. |
+| **[Push Toggle](/docs/components/push-toggle)** | For precision toggles and latching buttons, place tone indicators in the Top-Right corner. |
+| **[Toggle Button Group](/docs/components/toggle-button-group)** | Group related controls inside panels or equipment bays rather than floating them independently. |
+| **[Switch](/docs/components/switch)** | The housing sits in `surface` or `track`; the moving paddle or rocker uses `thumb`; embedded lamps use `lens`. |
+| **[Wheel Select](/docs/components/wheel-select)** | The background cavity uses `track`; the cylinder, printed drum surface, and any broad foil glare use `wheel`. |
+| **[Wheel Number](/docs/components/wheel-number)** | The background cavity uses `track`; the cylinder, printed drum surface, and any broad foil glare use `wheel`. |
 
 ## Readouts
 
-- [Gauge](/docs/components/gauge): circular segmented monitor with dial-face styling
-- [LCD Display](/docs/components/lcd-display): segmented display readout with tone-driven glass, static texture, and an opt-in display font hook
-- [Needle Gauge](/docs/components/needle-gauge): mechanical needle readout with printed scale markings and glass depth
-- [Meter](/docs/components/meter): stereo output monitor with analog ballistics
-- [Indicator](/docs/components/indicator): status lamp with bloom and bezel variants
+| Component | Material Logic |
+| --- | --- |
+| **[Gauge](/docs/components/gauge)** | Housings and bridge panels use `panel` or `surface`; needles and read pointers use `pointer`; glass covers and optical glints use `lens`. |
+| **[LCD Display](/docs/components/lcd-display)** | Segmented readouts, display glass, and mono for telemetry. |
+| **[Needle Gauge](/docs/components/needle-gauge)** | Housings and bridge panels use `panel` or `surface`; needles and read pointers use `pointer`; glass covers and optical glints use `lens`. |
+| **[Meter](/docs/components/meter)** | Housings and bridge panels use `panel` or `surface`; needles and read pointers use `pointer`; glass covers and optical glints use `lens`. |
+| **[Indicator](/docs/components/indicator)** | Bezels, lamp cups, and retaining rings use `bezel`; lit glass, jewels, and clear caps use `lens`. |
 
 ## Surfaces
 
-- [Panel](/docs/components/panel): rack-style housing for dense control groupings
-- [Rocker Thumb Surface](/docs/components/rocker-thumb-surface): reusable thumb shell used by sliders and switches
+| Component | Material Logic |
+| --- | --- |
+| **[Panel](/docs/components/panel)** | The rack face uses `panel`; screws and hardware use `screw`; mounted control caps still keep their own local channels instead of inheriting panel behavior. |
+| **[Rocker Thumb Surface](/docs/components/rocker-thumb-surface)** | Handles, rockers, switch paddles, slider caps, and moving plungers. |
 
 ## Examples And Install Commands
 
-Each component page keeps the live example, install path, usage code, and prop reference together:
-
-- [`/docs/components/dial`](/docs/components/dial) and the other component pages for full reference
-- [`/view/dial`](/view/dial) and the other `/view/*` routes for isolated previews
-- [`/docs/registry`](/docs/registry) for shadcn registry installation
+| Route | Role |
+| --- | --- |
+| **[`/docs/components/dial`](/docs/components/dial)** | Core component presentation. |
+| **[`/view/dial`](/view/dial)** | Showcase surfaces. |
+| **[`/docs/registry`](/docs/registry)** | shadcn-compatible registry. |
