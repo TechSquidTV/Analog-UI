@@ -221,6 +221,18 @@ a {
     @apply pl-5;
   }
 
+  .docs-prose ul {
+    list-style: disc;
+  }
+
+  .docs-prose ol {
+    list-style: decimal;
+  }
+
+  .docs-prose li::marker {
+    color: #8a8a8a;
+  }
+
   .docs-prose li + li {
     @apply mt-2;
   }
