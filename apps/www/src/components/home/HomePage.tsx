@@ -7,7 +7,11 @@ import {
 } from '../../../../../packages/analog-ui/src/index';
 import HomeVstSurface from './HomeVstSurface';
 
-export default function HomePage() {
+interface HomePageProps {
+  componentCountLabel: string;
+}
+
+export default function HomePage({ componentCountLabel }: HomePageProps) {
   const pageRef = useRef<HTMLDivElement>(null);
   const suspendLightingRef = useRef(false);
   const sourceAngle = usePointerLighting({
@@ -32,8 +36,8 @@ export default function HomePage() {
               <span className="block text-[var(--color-accent)] italic">feel.</span>
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-[#afafaf] md:text-xl">
-              Studio Hyper-Skeuomorphic React components for tactile controls, and analog
-              experiences. TailwindCSS and Shadcn compatible,
+              A growing set of {componentCountLabel} Studio Hyper-Skeuomorphic React components for
+              tactile controls and analog experiences. Tailwind CSS and shadcn-compatible.
             </p>
 
             <div className="mt-8 flex flex-wrap justify-center gap-3">
