@@ -748,7 +748,7 @@ export function RotarySwitchExample() {
     api: [
       {
         title: 'RotarySwitch',
-        description: 'A Base UI slider root rendered as a stepped seven-flute rotary selector.',
+        description: 'A detented rotary selector with pointer, keyboard, and whole-integer updates.',
         props: [
           {
             name: 'value',

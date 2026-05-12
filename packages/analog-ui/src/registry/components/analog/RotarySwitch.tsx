@@ -1,11 +1,10 @@
 import * as React from 'react';
-import { Slider } from '@base-ui/react/slider';
 import { cn } from '@/lib/utils';
 import { SurfaceButton } from './SurfaceButton';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 
-const FLUTE_COUNT = 7;
-const FLUTE_INDICES = Array.from({ length: FLUTE_COUNT }, (_, index) => index);
+const FLUTED_LAYER_PATH =
+  'M155 1q29 34 72 34l25 31c-6 28 0 57 18 78l-9 39a93 93 0 0 0-50 63l-36 17a92 92 0 0 0-80 0l-36-17q-10-43-50-63l-8-39q26-34 17-78c11-12 15-18 25-31 28 0 55-13 72-35z';
 
 export interface RotarySwitchMark {
   value: number;
@@ -14,9 +13,15 @@ export interface RotarySwitchMark {
 }
 
 export interface RotarySwitchProps extends Omit<
-  React.ComponentPropsWithoutRef<typeof Slider.Root>,
-  'render' | 'step'
+  React.HTMLAttributes<HTMLDivElement>,
+  'defaultValue' | 'onChange'
 > {
+  value?: number | readonly number[];
+  defaultValue?: number | readonly number[];
+  onValueChange?: (value: number) => void;
+  disabled?: boolean;
+  min?: number;
+  max?: number;
   lighting?: AnalogLightingConfig<'surface' | 'bezel' | 'pointer'>;
   startAngle?: number;
   sweepAngle?: number;
@@ -34,12 +39,47 @@ function getRangeRatio(value: number, min: number, range: number) {
   return clamp((value - min) / range, 0, 1);
 }
 
+function getScalarValue(value: number | readonly number[] | undefined) {
+  if (Array.isArray(value)) return value[0];
+  return value;
+}
+
+function normalizeSwitchValue(value: number, min: number, max: number) {
+  return clamp(Math.round(value), min, max);
+}
+
+function getArcRatioFromPoint(
+  clientX: number,
+  clientY: number,
+  rect: DOMRect,
+  startAngle: number,
+  sweepAngle: number,
+) {
+  if (sweepAngle === 0) return 0;
+
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+  const angle = (Math.atan2(clientY - centerY, clientX - centerX) * 180) / Math.PI;
+  const normalizedAngle = ((angle - startAngle + 360) % 360) % 360;
+
+  if (normalizedAngle <= sweepAngle) {
+    return clamp(normalizedAngle / sweepAngle, 0, 1);
+  }
+
+  const distanceToStart = Math.min(normalizedAngle, 360 - normalizedAngle);
+  const distanceToEnd = Math.abs(normalizedAngle - sweepAngle);
+  return distanceToStart < distanceToEnd ? 0 : 1;
+}
+
 export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
   (
     {
       className,
       disabled,
       lighting,
+      value,
+      defaultValue,
+      onValueChange,
       min = 0,
       max = 6,
       startAngle = -135,
@@ -47,6 +87,13 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
       marks,
       showMarks = marks !== undefined,
       showDetents = true,
+      style,
+      tabIndex,
+      onPointerDown,
+      onPointerMove,
+      onPointerUp,
+      onPointerCancel,
+      onKeyDown,
       ...props
     },
     ref,
@@ -57,6 +104,151 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
     const resolvedSweepAngle = Math.min(359.999, Math.max(0, sweepAngle));
     const lightingStyle = useAnalogLighting(['surface', 'bezel', 'pointer'], lighting);
     const surfaceLighting = lighting?.surface ? { surface: lighting.surface } : undefined;
+    const generatedId = React.useId().replace(/:/g, '');
+    const backingGradientId = `rotary-switch-backing-${generatedId}`;
+    const bodyGradientId = `rotary-switch-body-${generatedId}`;
+    const glossGradientId = `rotary-switch-gloss-${generatedId}`;
+    const isControlled = value !== undefined;
+    const [internalValue, setInternalValue] = React.useState(() =>
+      normalizeSwitchValue(getScalarValue(defaultValue) ?? resolvedMin, resolvedMin, resolvedMax),
+    );
+    const currentValue = normalizeSwitchValue(
+      getScalarValue(value) ?? internalValue,
+      resolvedMin,
+      resolvedMax,
+    );
+    const currentValueRef = React.useRef(currentValue);
+    const rootRef = React.useRef<HTMLDivElement>(null);
+    const activePointerIdRef = React.useRef<number | null>(null);
+    currentValueRef.current = currentValue;
+
+    const setRootRef = React.useCallback(
+      (node: HTMLDivElement | null) => {
+        rootRef.current = node;
+
+        if (typeof ref === 'function') {
+          ref(node);
+        } else if (ref) {
+          ref.current = node;
+        }
+      },
+      [ref],
+    );
+
+    const commitValue = React.useCallback(
+      (nextValue: number) => {
+        const normalizedValue = normalizeSwitchValue(nextValue, resolvedMin, resolvedMax);
+        if (normalizedValue === currentValueRef.current) return;
+
+        currentValueRef.current = normalizedValue;
+
+        if (!isControlled) {
+          setInternalValue(normalizedValue);
+        }
+
+        onValueChange?.(normalizedValue);
+      },
+      [isControlled, onValueChange, resolvedMax, resolvedMin],
+    );
+
+    const commitPointerValue = React.useCallback(
+      (event: React.PointerEvent<HTMLDivElement>) => {
+        const node = rootRef.current;
+        if (!node) return;
+
+        const ratio = getArcRatioFromPoint(
+          event.clientX,
+          event.clientY,
+          node.getBoundingClientRect(),
+          startAngle,
+          resolvedSweepAngle,
+        );
+
+        commitValue(resolvedMin + ratio * range);
+      },
+      [commitValue, range, resolvedMin, resolvedSweepAngle, startAngle],
+    );
+
+    const handlePointerDown = React.useCallback(
+      (event: React.PointerEvent<HTMLDivElement>) => {
+        onPointerDown?.(event);
+        if (event.defaultPrevented || disabled) return;
+
+        activePointerIdRef.current = event.pointerId;
+        event.currentTarget.setPointerCapture(event.pointerId);
+        event.currentTarget.focus();
+        event.preventDefault();
+        commitPointerValue(event);
+      },
+      [commitPointerValue, disabled, onPointerDown],
+    );
+
+    const handlePointerMove = React.useCallback(
+      (event: React.PointerEvent<HTMLDivElement>) => {
+        onPointerMove?.(event);
+        if (event.defaultPrevented || disabled) return;
+        if (activePointerIdRef.current !== event.pointerId) return;
+
+        event.preventDefault();
+        commitPointerValue(event);
+      },
+      [commitPointerValue, disabled, onPointerMove],
+    );
+
+    const handlePointerUp = React.useCallback(
+      (event: React.PointerEvent<HTMLDivElement>) => {
+        onPointerUp?.(event);
+        if (activePointerIdRef.current !== event.pointerId) return;
+
+        activePointerIdRef.current = null;
+        if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+          event.currentTarget.releasePointerCapture(event.pointerId);
+        }
+      },
+      [onPointerUp],
+    );
+
+    const handlePointerCancel = React.useCallback(
+      (event: React.PointerEvent<HTMLDivElement>) => {
+        onPointerCancel?.(event);
+        if (activePointerIdRef.current !== event.pointerId) return;
+
+        activePointerIdRef.current = null;
+        if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+          event.currentTarget.releasePointerCapture(event.pointerId);
+        }
+      },
+      [onPointerCancel],
+    );
+
+    const handleKeyDown = React.useCallback(
+      (event: React.KeyboardEvent<HTMLDivElement>) => {
+        onKeyDown?.(event);
+        if (event.defaultPrevented || disabled) return;
+
+        switch (event.key) {
+          case 'ArrowRight':
+          case 'ArrowUp':
+            event.preventDefault();
+            commitValue(currentValueRef.current + 1);
+            break;
+          case 'ArrowLeft':
+          case 'ArrowDown':
+            event.preventDefault();
+            commitValue(currentValueRef.current - 1);
+            break;
+          case 'Home':
+            event.preventDefault();
+            commitValue(resolvedMin);
+            break;
+          case 'End':
+            event.preventDefault();
+            commitValue(resolvedMax);
+            break;
+        }
+      },
+      [commitValue, disabled, onKeyDown, resolvedMax, resolvedMin],
+    );
 
     const detents = React.useMemo(() => {
       if (!showDetents || range < 0 || range > 40) return [];
@@ -90,198 +282,219 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
       }));
     }, [detents, marks, range, resolvedMin, showMarks]);
 
-    return (
-      <Slider.Root
-        ref={ref}
-        min={resolvedMin}
-        max={resolvedMax}
-        disabled={disabled}
-        {...props}
-        step={1}
-        render={(rootProps, state) => {
-          const rawValue = state.values[0] ?? resolvedMin;
-          const switchValue = clamp(Math.round(rawValue), resolvedMin, resolvedMax);
-          const ratio = getRangeRatio(switchValue, resolvedMin, range);
-          const rotationAngle = startAngle + ratio * resolvedSweepAngle;
-          const knobRotation = rotationAngle + 90;
-          const pointerBevelAngle = `calc(var(--analog-light-angle-pointer, 180deg) - ${rotationAngle}deg)`;
+    const ratio = getRangeRatio(currentValue, resolvedMin, range);
+    const rotationAngle = startAngle + ratio * resolvedSweepAngle;
+    const knobRotation = rotationAngle + 90;
 
-          return (
-            <div
-              {...rootProps}
-              className={cn(
-                'relative mx-auto flex aspect-square w-full min-w-0 max-w-[13rem] select-none items-center justify-center p-5 outline-none',
-                disabled ? 'opacity-50' : 'opacity-100',
-                className,
-              )}
-              data-analog-value={switchValue}
+    return (
+      <div
+        ref={setRootRef}
+        role="slider"
+        aria-valuemin={resolvedMin}
+        aria-valuemax={resolvedMax}
+        aria-valuenow={currentValue}
+        aria-disabled={disabled || undefined}
+        tabIndex={disabled ? -1 : (tabIndex ?? 0)}
+        {...props}
+        className={cn(
+          'relative mx-auto flex aspect-square w-full min-w-0 max-w-[14rem] touch-none select-none items-center justify-center p-7 outline-none',
+          disabled ? 'cursor-not-allowed opacity-50' : 'cursor-ew-resize opacity-100',
+          className,
+        )}
+        data-analog-value={currentValue}
+        style={{
+          ...lightingStyle,
+          ...style,
+        }}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerCancel}
+        onKeyDown={handleKeyDown}
+      >
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 100 100"
+          className="pointer-events-none absolute inset-0 z-40 h-full w-full overflow-visible"
+        >
+          {detents.map((detent) => {
+            const angle = startAngle + detent.ratio * resolvedSweepAngle;
+            const radians = (angle * Math.PI) / 180;
+            const isSelected = detent.value === currentValue;
+            const lineStartX = 50 + Math.cos(radians) * 51.5;
+            const lineStartY = 50 + Math.sin(radians) * 51.5;
+            const lineEndX = 50 + Math.cos(radians) * 57;
+            const lineEndY = 50 + Math.sin(radians) * 57;
+
+            return (
+              <line
+                key={detent.value}
+                x1={lineStartX}
+                y1={lineStartY}
+                x2={lineEndX}
+                y2={lineEndY}
+                stroke={
+                  isSelected
+                    ? 'color-mix(in oklch, var(--analog-surface-metal-hi) 84%, white 16%)'
+                    : 'var(--analog-telemetry-label)'
+                }
+                strokeWidth={isSelected ? 1.2 : 0.75}
+                strokeLinecap="round"
+                style={{ opacity: isSelected ? 0.95 : 0.62 }}
+              />
+            );
+          })}
+
+          {resolvedMarks.map((mark) => {
+            const angle = startAngle + mark.ratio * resolvedSweepAngle;
+            const radians = (angle * Math.PI) / 180;
+            const labelX = 50 + Math.cos(radians) * 65;
+            const labelY = 50 + Math.sin(radians) * 65;
+
+            return (
+              <text
+                key={`${mark.value}-${String(mark.label)}`}
+                x={labelX}
+                y={labelY}
+                fill="var(--analog-legend)"
+                fontSize="4.6"
+                fontFamily="var(--font-mono)"
+                fontWeight="700"
+                textAnchor="middle"
+                dominantBaseline="central"
+                style={{ opacity: 0.78 }}
+              >
+                {mark.label}
+              </text>
+            );
+          })}
+        </svg>
+
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-[8%] z-20 overflow-visible"
+        >
+          <svg viewBox="0 0 270 264" className="h-full w-full overflow-visible">
+            <defs>
+              <radialGradient
+                id={backingGradientId}
+                cx="112"
+                cy="72"
+                r="180"
+                gradientUnits="userSpaceOnUse"
+              >
+                <stop
+                  offset="0%"
+                  stopColor="color-mix(in oklch, var(--analog-surface-onyx-mid) 54%, black 46%)"
+                />
+                <stop
+                  offset="58%"
+                  stopColor="color-mix(in oklch, var(--analog-surface-onyx-lo) 64%, black 36%)"
+                />
+                <stop offset="100%" stopColor="black" />
+              </radialGradient>
+              <radialGradient
+                id={bodyGradientId}
+                cx="108"
+                cy="68"
+                r="172"
+                gradientUnits="userSpaceOnUse"
+              >
+                <stop
+                  offset="0%"
+                  stopColor="color-mix(in oklch, var(--analog-surface-onyx-hi) 72%, white 8%)"
+                />
+                <stop
+                  offset="35%"
+                  stopColor="color-mix(in oklch, var(--analog-surface-onyx-mid) 78%, var(--analog-surface-onyx-hi) 22%)"
+                />
+                <stop
+                  offset="72%"
+                  stopColor="color-mix(in oklch, var(--analog-surface-onyx-lo) 90%, black 10%)"
+                />
+                <stop offset="100%" stopColor="black" />
+              </radialGradient>
+              <radialGradient
+                id={glossGradientId}
+                cx="84"
+                cy="36"
+                r="194"
+                gradientUnits="userSpaceOnUse"
+              >
+                <stop
+                  offset="0%"
+                  stopColor="rgba(255,255,255,calc(0.16 * var(--analog-light-power, 1)))"
+                />
+                <stop offset="46%" stopColor="rgba(255,255,255,0)" />
+                <stop
+                  offset="100%"
+                  stopColor="rgba(0,0,0,calc(0.42 * var(--analog-light-power, 1)))"
+                />
+              </radialGradient>
+            </defs>
+
+            <circle
+              cx="135"
+              cy="132"
+              r="145"
+              fill={`url(#${backingGradientId})`}
+              stroke="rgba(255,255,255,calc(0.045 * var(--analog-light-power, 1)))"
+              strokeWidth="1.2"
+            />
+
+            <g
               style={{
-                ...lightingStyle,
-                ...rootProps.style,
+                transform: `rotate(${knobRotation}deg) scale(0.9)`,
+                transformOrigin: '50% 50%',
+                transition: 'transform 90ms cubic-bezier(0.2, 0, 0, 1)',
+                willChange: 'transform',
               }}
             >
-              <Slider.Control
-                className={cn(
-                  'absolute inset-5 z-50 touch-none rounded-full',
-                  disabled ? 'cursor-not-allowed' : 'cursor-ew-resize',
-                )}
-              >
-                <Slider.Track className="h-full w-full opacity-0">
-                  <Slider.Thumb className="h-full w-10" />
-                </Slider.Track>
-              </Slider.Control>
-
-              <svg
-                aria-hidden="true"
-                viewBox="0 0 100 100"
-                className="pointer-events-none absolute inset-0 h-full w-full overflow-visible"
-              >
-                {detents.map((detent) => {
-                  const angle = startAngle + detent.ratio * resolvedSweepAngle;
-                  const radians = (angle * Math.PI) / 180;
-                  const isSelected = detent.value === switchValue;
-                  const lineStartX = 50 + Math.cos(radians) * 39.5;
-                  const lineStartY = 50 + Math.sin(radians) * 39.5;
-                  const lineEndX = 50 + Math.cos(radians) * 45;
-                  const lineEndY = 50 + Math.sin(radians) * 45;
-
-                  return (
-                    <line
-                      key={detent.value}
-                      x1={lineStartX}
-                      y1={lineStartY}
-                      x2={lineEndX}
-                      y2={lineEndY}
-                      stroke={
-                        isSelected
-                          ? 'color-mix(in oklch, var(--analog-surface-metal-hi) 84%, white 16%)'
-                          : 'var(--analog-telemetry-label)'
-                      }
-                      strokeWidth={isSelected ? 1.2 : 0.75}
-                      strokeLinecap="round"
-                      style={{ opacity: isSelected ? 0.95 : 0.62 }}
-                    />
-                  );
-                })}
-
-                {resolvedMarks.map((mark) => {
-                  const angle = startAngle + mark.ratio * resolvedSweepAngle;
-                  const radians = (angle * Math.PI) / 180;
-                  const labelX = 50 + Math.cos(radians) * 34;
-                  const labelY = 50 + Math.sin(radians) * 34;
-
-                  return (
-                    <text
-                      key={`${mark.value}-${String(mark.label)}`}
-                      x={labelX}
-                      y={labelY}
-                      fill="var(--analog-legend)"
-                      fontSize="4"
-                      fontFamily="var(--font-mono)"
-                      fontWeight="700"
-                      textAnchor="middle"
-                      dominantBaseline="central"
-                      style={{ opacity: 0.78 }}
-                    >
-                      {mark.label}
-                    </text>
-                  );
-                })}
-              </svg>
-
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-[9%] rounded-full"
-                style={{
-                  background:
-                    `radial-gradient(circle at 50% 42%, transparent 0 54%, rgba(255,255,255,calc(0.11 * var(--analog-light-power, 1))) 55%, transparent 59%), ` +
-                    `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 90deg), color-mix(in oklch, var(--analog-surface-onyx-hi) 58%, black 42%) 0%, var(--analog-surface-onyx-mid) 34%, var(--analog-surface-onyx-lo) 100%)`,
-                  boxShadow:
-                    '0 18px 28px rgba(0,0,0,calc(0.58 * var(--analog-shadow-depth, 1))), ' +
-                    'inset 0 2px 3px rgba(255,255,255,calc(0.12 * var(--analog-light-power, 1))), ' +
-                    'inset 0 -10px 16px rgba(0,0,0,calc(0.88 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))',
-                }}
+              <path
+                d={FLUTED_LAYER_PATH}
+                fill={`url(#${bodyGradientId})`}
+                stroke="rgba(255,255,255,calc(0.14 * var(--analog-light-power, 1)))"
+                strokeLinejoin="round"
+                strokeWidth="2"
               />
 
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-[13%] overflow-hidden rounded-full"
-                style={{
-                  transform: `rotate(${knobRotation}deg)`,
-                  transition: 'transform 180ms cubic-bezier(0.22, 1, 0.36, 1)',
-                  background:
-                    `repeating-conic-gradient(from -90deg, color-mix(in oklch, var(--analog-surface-onyx-hi) 24%, var(--analog-surface-onyx-mid) 76%) 0deg, var(--analog-surface-onyx-mid) 17deg, var(--analog-surface-onyx-lo) 25deg, color-mix(in oklch, black 82%, var(--analog-surface-onyx-lo) 18%) 30deg, var(--analog-surface-onyx-mid) 51.428deg), ` +
-                    `radial-gradient(circle at 50% 50%, transparent 0 50%, rgba(255,255,255,calc(0.08 * var(--analog-light-power, 1))) 52%, transparent 57%, rgba(0,0,0,calc(0.82 * var(--analog-light-power, 1))) 100%)`,
-                  boxShadow:
-                    'inset 0 0 0 1px rgba(255,255,255,calc(0.08 * var(--analog-light-power, 1))), ' +
-                    'inset 0 12px 18px rgba(255,255,255,calc(0.08 * var(--analog-light-power, 1))), ' +
-                    'inset 0 -16px 22px rgba(0,0,0,calc(0.86 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))',
-                }}
-              >
-                {FLUTE_INDICES.map((index) => {
-                  const fluteAngle = (index * 360) / FLUTE_COUNT;
+              <path d={FLUTED_LAYER_PATH} fill={`url(#${glossGradientId})`} opacity="0.78" />
 
-                  return (
-                    <div
-                      key={index}
-                      className="absolute left-1/2 top-[2.5%] h-[47%] w-[18%]"
-                      style={{
-                        transform: `translateX(-50%) rotate(${fluteAngle}deg)`,
-                        transformOrigin: '50% 101%',
-                        clipPath:
-                          'polygon(50% 0%, 82% 8%, 100% 72%, 82% 100%, 18% 100%, 0% 72%, 18% 8%)',
-                        borderRadius: '999px 999px 24% 24%',
-                        background:
-                          `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - ${rotationAngle + fluteAngle}deg), ` +
-                          `color-mix(in oklch, var(--analog-surface-onyx-hi) 54%, black 46%) 0%, ` +
-                          `var(--analog-surface-onyx-mid) 42%, ` +
-                          `color-mix(in oklch, var(--analog-surface-onyx-lo) 86%, black 14%) 100%)`,
-                        boxShadow:
-                          'inset 1px 0 2px rgba(255,255,255,calc(0.08 * var(--analog-light-power, 1))), ' +
-                          'inset -1px 0 2px rgba(0,0,0,calc(0.72 * var(--analog-light-power, 1))), ' +
-                          '0 1px 1px rgba(255,255,255,calc(0.05 * var(--analog-light-power, 1)))',
-                      }}
-                    >
-                      {index === 0 ? (
-                        <div
-                          className="absolute left-1/2 top-[10%] h-[75%] w-[18%] -translate-x-1/2 rounded-full"
-                          style={{
-                            background:
-                              'linear-gradient(90deg, rgba(255,255,255,0.92), rgba(255,255,255,0.48) 58%, rgba(0,0,0,0.42))',
-                            boxShadow:
-                              `inset calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 1px rgba(255,255,255,calc(0.5 * var(--analog-light-power, 1))), ` +
-                              '0 0 0 1px rgba(0,0,0,0.34), 0 0 7px rgba(255,255,255,0.16)',
-                          }}
-                        />
-                      ) : null}
-                    </div>
-                  );
-                })}
+              <line
+                x1={135}
+                y1={50}
+                x2={135}
+                y2={12}
+                stroke="rgba(255,255,255,0.9)"
+                strokeWidth="7"
+                strokeLinecap="round"
+              />
 
-                <div
-                  className="absolute inset-[23%] rounded-full"
-                  style={{
-                    boxShadow: '0 0 0 1px rgba(0,0,0,0.82), inset 0 0 18px rgba(0,0,0,0.74)',
-                    background: 'radial-gradient(circle, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.8) 100%)',
-                  }}
-                />
-              </div>
+              <circle cx="135" cy="132" r="83" fill="rgba(0,0,0,0.82)" />
 
-              <div className="pointer-events-none absolute inset-[23%] z-30 rounded-full">
-                <SurfaceButton
-                  rotation={knobRotation}
-                  lighting={surfaceLighting}
-                  containerClassName="h-full w-full pointer-events-none"
-                  className="analog-dial-surface h-full w-full pointer-events-none"
-                  style={{ pointerEvents: 'none' }}
-                  disabled
-                  tabIndex={-1}
-                />
-              </div>
-            </div>
-          );
-        }}
-      />
+              <path
+                d={FLUTED_LAYER_PATH}
+                fill="none"
+                stroke="rgba(0,0,0,calc(0.64 * var(--analog-shadow-depth, 1)))"
+                strokeLinejoin="round"
+                strokeWidth="1.4"
+              />
+            </g>
+          </svg>
+        </div>
+
+        <div className="pointer-events-none absolute inset-[27%] z-30 rounded-full">
+          <SurfaceButton
+            rotation={knobRotation}
+            lighting={surfaceLighting}
+            containerClassName="h-full w-full pointer-events-none"
+            className="analog-dial-surface no-chamfer h-full w-full pointer-events-none"
+            style={{ pointerEvents: 'none' }}
+            disabled
+            tabIndex={-1}
+          />
+        </div>
+      </div>
     );
   },
 );
