@@ -143,7 +143,7 @@ export const LCDDisplay = React.forwardRef<HTMLDivElement, LCDDisplayProps>(
         {...props}
       >
         <div
-          className={cn('relative overflow-hidden border', sizeStyle.rootClass)}
+          className={cn('relative border', sizeStyle.rootClass)}
           style={{
             borderRadius: sizeStyle.rootRadius,
             borderColor: 'color-mix(in oklch, var(--analog-control-border-strong) 72%, black 28%)',
@@ -177,11 +177,13 @@ export const LCDDisplay = React.forwardRef<HTMLDivElement, LCDDisplayProps>(
             style={{ borderRadius: sizeStyle.screenRadius }}
           >
             <div
-              className="pointer-events-none absolute inset-[-4px] z-20 rounded-[inherit]"
+              className="pointer-events-none absolute inset-0 z-0 rounded-[inherit]"
               style={{
                 backgroundColor: palette.glow,
-                filter: 'blur(calc(4px * var(--analog-bloom-strength, 0.7) * 1.428571))',
-                opacity: 'calc(0.5 * var(--analog-bloom-strength, 0.7) * 1.428571)',
+                boxShadow:
+                  `0 0 calc(10px * var(--analog-bloom-strength, 0.7) * 1.428571) calc(1px * var(--analog-bloom-strength, 0.7) * 1.428571) ${palette.glow}, ` +
+                  `0 0 calc(22px * var(--analog-bloom-strength, 0.7) * 1.428571) calc(3px * var(--analog-bloom-strength, 0.7) * 1.428571) color-mix(in oklch, ${palette.glow} 72%, transparent)`,
+                opacity: 'calc(0.42 * var(--analog-bloom-strength, 0.7) * 1.428571)',
               }}
             />
             <div
