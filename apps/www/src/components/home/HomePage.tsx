@@ -26,14 +26,14 @@ export default function HomePage() {
       <div ref={pageRef}>
         <section className="site-frame pt-10 text-center md:pt-16">
           <div className="mx-auto max-w-3xl">
-            <div className="eyebrow mb-5">Tactile Interface System</div>
+            <div className="eyebrow mb-5">New UI. Old soul.</div>
             <h1 className="text-5xl font-semibold tracking-[-0.05em] text-white md:text-7xl">
               UI you can
               <span className="block text-[var(--color-accent)] italic">feel.</span>
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-[#afafaf] md:text-xl">
-              Studio Hyper-Skeuomorphic React components for tactile controls, machined panels,
-              meters, and analog lighting. Built with Tailwind CSS and a shadcn-compatible registry.
+              Studio Hyper-Skeuomorphic React components for tactile controls, and analog
+              experiences. TailwindCSS and Shadcn compatible,
             </p>
 
             <div className="mt-8 flex flex-wrap justify-center gap-3">
