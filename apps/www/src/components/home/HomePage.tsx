@@ -50,22 +50,8 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="site-frame mt-16">
-          <div className="max-w-3xl">
-            <div className="eyebrow mb-4">Complete Assembly</div>
-            <h2 className="text-4xl font-semibold tracking-[-0.04em] text-white">
-              A full channel strip built from Analog UI.
-            </h2>
-            <p className="mt-4 text-lg leading-8 text-[#a8a8a8]">
-              Dials, faders, meters, trim wheels, switches, lamps, and panels work together as one
-              production-style interface, with shared lighting that keeps the hardware illusion
-              coherent.
-            </p>
-          </div>
-
-          <div className="mt-8">
-            <HomeVstSurface onScrubbingChange={handleScrubbingChange} />
-          </div>
+        <section className="site-frame mt-12 md:mt-16">
+          <HomeVstSurface onScrubbingChange={handleScrubbingChange} />
         </section>
       </div>
     </AnalogLightingProvider>

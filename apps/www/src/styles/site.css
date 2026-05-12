@@ -60,6 +60,15 @@ a {
     font-synthesis-weight: none;
   }
 
+  .analog-docs-lcd-pixel-bold {
+    --analog-font-lcd: 'Geist Pixel Square', var(--font-mono);
+    font-synthesis-weight: auto;
+  }
+
+  .analog-docs-lcd-pixel-bold .font-lcd {
+    font-weight: 700;
+  }
+
   .section-panel {
     @apply relative overflow-hidden rounded-[var(--analog-radius-panel)] border border-[#2a2a2a] bg-[#121212];
     background:
