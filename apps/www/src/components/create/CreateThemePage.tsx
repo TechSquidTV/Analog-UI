@@ -24,6 +24,7 @@ import {
   PanelFooter,
   PanelHeader,
   PanelTitle,
+  RotarySwitch,
   Slider,
   PushButton,
   Switch,
@@ -549,6 +550,7 @@ function RackPreview() {
   const [drive, setDrive] = useState(64);
   const [tone, setTone] = useState(44);
   const [focus, setFocus] = useState(72);
+  const [circuit, setCircuit] = useState(2);
   const [mix, setMix] = useState(-6);
   const [power, setPower] = useState(true);
   const [mode, setMode] = useState<'left' | 'right'>('right');
@@ -593,7 +595,7 @@ function RackPreview() {
         <div className="grid gap-5">
           <Panel variant="default" surface="subtle" screws={false}>
             <PanelContent className="grid gap-5 p-5">
-              <div className="grid gap-4 md:grid-cols-3">
+              <div className="grid gap-4 md:grid-cols-4">
                 <div className="grid justify-items-center gap-3">
                   <ControlLabel label="Drive" value={`${Math.round(drive)}%`} />
                   <Dial
@@ -626,6 +628,18 @@ function RackPreview() {
                     value={focus}
                     className="w-24 md:w-28"
                     onValueChange={setFocus}
+                  />
+                </div>
+                <div className="grid justify-items-center gap-3">
+                  <ControlLabel label="Circuit" value={['A', 'B', 'C', 'D', 'E'][circuit] ?? 'C'} />
+                  <RotarySwitch
+                    aria-label="Circuit selector"
+                    className="w-28 p-2 md:w-32"
+                    min={0}
+                    max={4}
+                    value={circuit}
+                    onValueChange={(next) => setCircuit(next as number)}
+                    showMarks={false}
                   />
                 </div>
               </div>

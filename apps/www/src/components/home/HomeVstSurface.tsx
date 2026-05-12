@@ -23,13 +23,13 @@ import {
   PushToggle,
   RockerSwitchGroup,
   RockerSwitchGroupItem,
+  RotarySwitch,
   Slider,
   Switch,
   Toggle,
   ToggleButtonGroup,
   ToggleButtonGroupItem,
   WheelNumber,
-  WheelSelect,
   type AnalogTone,
 } from '../../../../../packages/analog-ui/src/index';
 
@@ -369,7 +369,7 @@ export default function HomeVstSurface({ onScrubbingChange }: HomeVstSurfaceProp
   const [meterClip, setMeterClip] = useState(false);
 
   const [preset, setPreset] = useState(7);
-  const [algorithm, setAlgorithm] = useState(algorithms[2]);
+  const [algorithmIndex, setAlgorithmIndex] = useState(2);
   const [drive, setDrive] = useState(168);
   const [tone, setTone] = useState(36);
   const [width, setWidth] = useState(214);
@@ -404,6 +404,7 @@ export default function HomeVstSurface({ onScrubbingChange }: HomeVstSurfaceProp
           (oversample ? 0.03 : 0),
       )
     : 0;
+  const algorithm = algorithms[algorithmIndex] ?? algorithms[0];
   const gaugeTone: Extract<AnalogTone, 'success' | 'warning' | 'info'> =
     algorithm === 'TAPE' || algorithm === 'CLIP'
       ? 'warning'
@@ -528,11 +529,14 @@ export default function HomeVstSurface({ onScrubbingChange }: HomeVstSurfaceProp
                     </span>
                   </div>
                   <div className="flex min-h-0 items-center justify-center">
-                    <WheelSelect
-                      options={algorithms}
-                      value={algorithm}
-                      onValueChange={setAlgorithm}
-                      className="w-full"
+                    <RotarySwitch
+                      aria-label="Circuit selector"
+                      className="w-full max-w-[9.5rem] p-2"
+                      min={0}
+                      max={algorithms.length - 1}
+                      value={algorithmIndex}
+                      onValueChange={(next) => setAlgorithmIndex(next as number)}
+                      showMarks={false}
                     />
                   </div>
                 </div>
