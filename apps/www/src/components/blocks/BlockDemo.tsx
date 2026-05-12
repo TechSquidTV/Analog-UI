@@ -15,6 +15,7 @@ import {
   WheelSelect,
   Dial,
   Gauge,
+  RotarySwitch,
   Panel,
   PanelContent,
   PanelDescription,
@@ -626,6 +627,42 @@ function GaugeDemo({ mode }: { mode: DemoMode }) {
   );
 }
 
+function RotarySwitchDemo({ mode }: { mode: DemoMode }) {
+  const [value, setValue] = useState(3);
+  const marks = [
+    { value: 0, label: '0' },
+    { value: 1, label: '1' },
+    { value: 2, label: '2' },
+    { value: 3, label: '3' },
+    { value: 4, label: '4' },
+    { value: 5, label: '5' },
+    { value: 6, label: '6' },
+  ] as const;
+
+  return (
+    <DemoStage
+      mode={mode}
+      footer={
+        <>
+          <FooterItem label="Position" value={value} />
+          <FooterItem label="Range" value="0-6" />
+          <FooterItem label="Detents" value="Whole integers" />
+        </>
+      }
+    >
+      <RotarySwitch
+        className={mode === 'compact' ? 'max-w-[11rem]' : 'max-w-[13rem]'}
+        value={value}
+        onValueChange={(next) => setValue(next as number)}
+        min={0}
+        max={6}
+        marks={marks}
+        showMarks
+      />
+    </DemoStage>
+  );
+}
+
 function LCDDisplayDemo({ mode }: { mode: DemoMode }) {
   const programs = [
     { label: 'Program', value: 'CH-07', units: 'MEM' },
@@ -1035,6 +1072,8 @@ export default function BlockDemo({ name, mode = 'full' }: BlockDemoProps) {
       return <ToggleButtonGroupDemo mode={mode} />;
     case 'switch':
       return <SwitchDemo mode={mode} />;
+    case 'rotary-switch':
+      return <RotarySwitchDemo mode={mode} />;
     case 'wheel-select':
       return <WheelSelectDemo mode={mode} />;
     case 'wheel-number':

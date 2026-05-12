@@ -8,6 +8,7 @@ export * from './registry/components/analog/orientation';
 export * from './registry/components/analog/SurfaceButton';
 export * from './registry/components/analog/Dial';
 export * from './registry/components/analog/Gauge';
+export * from './registry/components/analog/RotarySwitch';
 export * from './registry/components/analog/Indicator';
 export * from './registry/components/analog/LCDDisplay';
 export * from './registry/components/analog/Meter';

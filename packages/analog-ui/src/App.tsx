@@ -27,6 +27,7 @@ import {
   type IndicatorSize,
 } from './registry/components/analog/Indicator';
 import { Gauge } from './registry/components/analog/Gauge';
+import { RotarySwitch } from './registry/components/analog/RotarySwitch';
 import type { AnalogTone } from './registry/components/analog/tone';
 import {
   Panel,
@@ -138,6 +139,7 @@ export default function App() {
   const [isSegmented, setIsSegmented] = useState(true);
   const [gaugeValue, setGaugeValue] = useState(0);
   const [gaugeTone, setGaugeTone] = useState<AnalogTone>('success');
+  const [rotaryValue, setRotaryValue] = useState(3);
   const [wheelValue, setWheelValue] = useState('SPEED');
   const [wheelNum, setWheelNum] = useState(0);
 
@@ -178,6 +180,15 @@ export default function App() {
     { value: -100, label: 'L' },
     { value: 0, label: 'C' },
     { value: 100, label: 'R' },
+  ] as const;
+  const rotaryMarks = [
+    { value: 0, label: '0' },
+    { value: 1, label: '1' },
+    { value: 2, label: '2' },
+    { value: 3, label: '3' },
+    { value: 4, label: '4' },
+    { value: 5, label: '5' },
+    { value: 6, label: '6' },
   ] as const;
 
   return (
@@ -763,6 +774,27 @@ export default function App() {
               fillMode="center"
               centerValue={0}
               marks={panGaugeMarks}
+              showMarks
+            />
+          </div>
+        </ComponentShowcase>
+
+        <ComponentShowcase
+          title="Rotary Switch"
+          description="A stepped integer selector with a black seven-flute ring, white index stripe, and machined Dial-style center cap for limited range inputs."
+          specs={[
+            { label: 'Position', value: rotaryValue },
+            { label: 'Range', value: '0-6' },
+          ]}
+        >
+          <div className="flex w-full items-center justify-center py-12">
+            <RotarySwitch
+              className="max-w-sm"
+              min={0}
+              max={6}
+              value={rotaryValue}
+              onValueChange={(val) => setRotaryValue(val as number)}
+              marks={rotaryMarks}
               showMarks
             />
           </div>

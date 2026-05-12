@@ -710,6 +710,102 @@ export function SwitchExample() {
       },
     ],
   },
+  'rotary-switch': {
+    usageIntro:
+      'Use RotarySwitch for limited integer selection with visible detents, a fluted black selector ring, and a machined Dial-style center cap.',
+    registryImportCode: registryImport(['RotarySwitch'], 'RotarySwitch'),
+    packageImportCode: packageImport(['RotarySwitch']),
+    usageCode: `<RotarySwitch defaultValue={3} min={0} max={6} />`,
+    exampleCode: `"use client"
+
+import * as React from "react"
+import { RotarySwitch } from "@/registry/components/analog/RotarySwitch"
+
+const marks = [
+  { value: 0, label: "0" },
+  { value: 1, label: "1" },
+  { value: 2, label: "2" },
+  { value: 3, label: "3" },
+  { value: 4, label: "4" },
+  { value: 5, label: "5" },
+  { value: 6, label: "6" },
+]
+
+export function RotarySwitchExample() {
+  const [value, setValue] = React.useState(3)
+
+  return (
+    <RotarySwitch
+      value={value}
+      onValueChange={(next) => setValue(next as number)}
+      min={0}
+      max={6}
+      marks={marks}
+      showMarks
+    />
+  )
+}`,
+    api: [
+      {
+        title: 'RotarySwitch',
+        description: 'A Base UI slider root rendered as a stepped seven-flute rotary selector.',
+        props: [
+          {
+            name: 'value',
+            type: 'number | number[]',
+            description: 'Controlled switch value. Values are displayed as whole integers.',
+          },
+          {
+            name: 'defaultValue',
+            type: 'number | number[]',
+            description: 'Initial uncontrolled value.',
+          },
+          {
+            name: 'onValueChange',
+            type: '(value: number | number[]) => void',
+            description: 'Receives drag and keyboard updates.',
+          },
+          {
+            name: 'min / max',
+            type: 'number',
+            defaultValue: '0 / 6',
+            description: 'Integer domain bounds.',
+          },
+          {
+            name: 'startAngle',
+            type: 'number',
+            defaultValue: '-135',
+            description: 'Start of the selectable arc.',
+          },
+          {
+            name: 'sweepAngle',
+            type: 'number',
+            defaultValue: '270',
+            description: 'Selectable arc length in degrees.',
+          },
+          {
+            name: 'marks',
+            type: 'RotarySwitchMark[]',
+            description: 'Optional labels placed around the selectable arc.',
+          },
+          {
+            name: 'showMarks',
+            type: 'boolean',
+            defaultValue: 'true when marks are provided',
+            description: 'Controls whether mark labels render.',
+          },
+          {
+            name: 'showDetents',
+            type: 'boolean',
+            defaultValue: 'true',
+            description: 'Controls whether integer detent ticks render around the arc.',
+          },
+          lightingProp,
+          classNameProp,
+        ],
+      },
+    ],
+  },
   'wheel-select': {
     usageIntro: 'Use WheelSelect when options should be stepped through like a trim wheel.',
     registryImportCode: registryImport(['WheelSelect'], 'WheelSelect'),

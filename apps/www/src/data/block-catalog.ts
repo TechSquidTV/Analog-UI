@@ -70,6 +70,12 @@ export const blockCatalog = {
     summary:
       'A cylindrical track switch that rolls through a deep cavity rather than snapping flat.',
   },
+  'rotary-switch': {
+    name: 'rotary-switch',
+    category: 'inputs',
+    order: 45,
+    summary: 'A stepped integer selector with a seven-flute black ring and machined center cap.',
+  },
   'wheel-select': {
     name: 'wheel-select',
     category: 'inputs',
