@@ -9,7 +9,6 @@ import {
 } from 'react';
 
 import {
-  AnalogLightingProvider,
   Dial,
   Gauge,
   Indicator,
@@ -31,7 +30,6 @@ import {
   Toggle,
   ToggleButtonGroup,
   ToggleButtonGroupItem,
-  usePointerLighting,
   WheelNumber,
   type AnalogTone,
 } from '../../../../../packages/analog-ui/src/index';
@@ -170,7 +168,6 @@ interface ControlCellProps {
 interface VstLightingZoneProps {
   children: ReactNode;
   className?: string;
-  suspendRef: RefObject<boolean>;
 }
 
 interface StatusLampProps {
@@ -256,22 +253,8 @@ function ControlCell({ label, value, children, className }: ControlCellProps) {
   );
 }
 
-function VstLightingZone({ children, className, suspendRef }: VstLightingZoneProps) {
-  const zoneRef = useRef<HTMLDivElement>(null);
-  const sourceAngle = usePointerLighting({
-    baseAngle: 180,
-    influence: 0.28,
-    suspendRef,
-    targetRef: zoneRef,
-  });
-
-  return (
-    <AnalogLightingProvider baseAngle={180} sourceAngle={sourceAngle} power={1}>
-      <div ref={zoneRef} className={className}>
-        {children}
-      </div>
-    </AnalogLightingProvider>
-  );
+function VstLightingZone({ children, className }: VstLightingZoneProps) {
+  return <div className={className}>{children}</div>;
 }
 
 function DemoSlider({ value, onValueChange, onScrubbingChange, ...props }: DemoSliderProps) {
@@ -520,7 +503,7 @@ export default function HomeVstSurface() {
         </div>
 
         <div className="grid gap-3 p-3 xl:grid-cols-[minmax(15rem,18rem)_minmax(0,1fr)_minmax(16rem,21rem)]">
-          <VstLightingZone className="grid min-w-0 gap-3" suspendRef={isScrubbingRef}>
+          <VstLightingZone className="grid min-w-0 gap-3">
             <div
               className="grid min-w-0 gap-3 rounded-[var(--analog-radius-window)] border border-white/[0.08] bg-black/20 p-3"
               style={{
@@ -653,7 +636,7 @@ export default function HomeVstSurface() {
             </div>
           </VstLightingZone>
 
-          <VstLightingZone className="grid min-w-0 gap-3" suspendRef={isScrubbingRef}>
+          <VstLightingZone className="grid min-w-0 gap-3">
             <div className="grid min-w-0 gap-3 sm:grid-cols-3">
               <ControlCell label="Drive" value={`${driveDisplay}%`}>
                 <Dial value={drive} onChange={(next) => setDrive(next)} className="w-24 md:w-28" />
@@ -852,7 +835,7 @@ export default function HomeVstSurface() {
             </div>
           </VstLightingZone>
 
-          <VstLightingZone className="h-full min-w-0" suspendRef={isScrubbingRef}>
+          <VstLightingZone className="h-full min-w-0">
             <Panel variant="rack" screws screwHole="slot" className="h-full">
               <PanelContent className="h-full p-0">
                 <MasterOutPanel
