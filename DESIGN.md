@@ -180,7 +180,7 @@ The palette is anchored in black chassis surfaces, gunmetal mid-tones, and brigh
 
 - **Background (`#080808`)** is the void behind the system.
 - **Panel (`#121212`)** is the main rack face.
-- **Surface and raised surface (`#1A1A1A`, `#2A2A2A`)** support cavities, housings, and control wells.
+- **Surface, panel, and derived raised surfaces (`#1A1A1A`, `#2A2A2A`)** support cavities, housings, rack plates, and control wells.
 - **Chrome (`#E5E5E5`, `#B5B5B5`, `#8A8A8A`)** is reserved for machined faces, dials, and premium hardware.
 - **Black material (`#3A3A3A`, `#242424`, `#151515`)** is for stealth variants and heavy-duty controls.
 - **Annotation and legend grays** stay split by role: `legend` for printed markings, `annotation` for supporting copy, `telemetry-label` for scale ticks, and `telemetry-value` for live readouts.
@@ -198,15 +198,21 @@ Analog UI layers tactile hardware tokens on top of the host theme without invent
 
 Recommended token tiers:
 
-- **Host semantic tokens:** `--background`, `--foreground`, `--card`, `--primary`, `--secondary`, `--accent`, `--destructive`, `--border`, `--input`, `--ring`, `--chart-*`.
+- **Host semantic tokens:** `--background`, `--foreground`, `--card`, `--card-foreground`, `--popover`, `--popover-foreground`, `--primary`, `--primary-foreground`, `--secondary`, `--secondary-foreground`, `--muted`, `--muted-foreground`, `--accent`, `--accent-foreground`, `--destructive`, `--destructive-foreground`, `--border`, `--input`, `--ring`, and `--chart-*`.
 - **Analog material tokens:** `--analog-surface-*`, `--analog-shadow-*`, `--analog-grain-*`, `--analog-track-*`, `--analog-bevel-*`.
 - **Analog tone tokens:** `--analog-tone-primary`, `--analog-tone-secondary`, `--analog-tone-accent`, `--analog-tone-destructive`, `--analog-tone-success`, `--analog-tone-warning`, `--analog-tone-info`, `--analog-tone-neutral`, and `--analog-tone-chart-1` through `--analog-tone-chart-5`.
 - **Analog optical slot tokens:** `--analog-tone-current`, `--analog-emissive-base`, `--analog-emissive-core`, `--analog-emissive-glow`, `--analog-emissive-surface`, `--analog-emissive-edge`, `--analog-display-fill`, `--analog-display-ink`, and `--analog-display-legend`.
 - **Runtime lighting tokens:** `--analog-light-power` and `--analog-light-angle-*`.
 
+Theme authoring tools should distinguish source controls from derived roles:
+
+- Expose source controls for host semantic tokens, host chart tokens, base Analog surfaces, material ramps, named Analog tones, lighting inputs, and recipe values.
+- Emit derived tokens in generated CSS, but treat them as read-only previews unless an advanced editor intentionally exposes them. Derived roles include `--analog-surface-cavity-strong`, `--analog-surface-raised`, `--analog-tone-chart-*`, `--analog-tone-current`, `--analog-emissive-*`, `--analog-display-*`, and meter-zone optical roles.
+- Derive `--analog-surface-cavity-strong` from `--analog-surface-cavity`, derive `--analog-surface-raised` from `--analog-surface-panel`, and derive `--analog-tone-chart-1` through `--analog-tone-chart-5` from the host `--chart-1` through `--chart-5` tokens.
+
 Recommended naming rules:
 
-- **Surfaces and materials:** `--analog-surface-cavity`, `--analog-surface-panel`, `--analog-surface-metal-hi`, `--analog-surface-onyx-lo`.
+- **Surfaces and materials:** `--analog-surface-cavity`, `--analog-surface-panel`, `--analog-surface-metal-hi`, `--analog-surface-onyx-lo`. Use `card` only for the host app-surface token `--card`; use `surface`, `panel`, `cavity`, `well`, `rack`, or `housing` for tactile Analog hardware.
 - **Component color control:** use a `tone` prop for color role. Keep `variant` for visual structure, material recipe, or interaction style.
 - **Optical states:** components set `data-analog-tone="<tone>"` and read the optical slot tokens. They should not encode physical hue names in props or CSS variables.
 - **Finish controls:** `--analog-shadow-depth`, `--analog-bevel-width`, `--analog-grain-opacity`, `--analog-foil-opacity`, `--analog-bloom-strength`.
@@ -254,6 +260,8 @@ Consumer customization should happen by overriding CSS variables, either globall
 ```
 
 This keeps the library compatible with shadcn and tweakcn exports while giving Analog components their own tactile optical vocabulary.
+
+Chart tone CSS variables should mirror the host chart scale. A theme can customize charts once through `--chart-1` through `--chart-5`, while Analog components consume the corresponding `--analog-tone-chart-*` aliases for optical states.
 
 ## Typography
 
