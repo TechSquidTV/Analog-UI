@@ -5,7 +5,7 @@ import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-an
 
 const FLUTED_LAYER_PATH =
   'M155 1q29 34 72 34l25 31c-6 28 0 57 18 78l-9 39a93 93 0 0 0-50 63l-36 17a92 92 0 0 0-80 0l-36-17q-10-43-50-63l-8-39q26-34 17-78c11-12 15-18 25-31 28 0 55-13 72-35z';
-const FLUTED_LAYER_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 270 264"><path fill="black" d="${FLUTED_LAYER_PATH}"/></svg>`;
+const FLUTED_LAYER_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 270 264"><path fill="currentColor" d="${FLUTED_LAYER_PATH}"/></svg>`;
 const FLUTED_LAYER_MASK = `url("data:image/svg+xml,${encodeURIComponent(FLUTED_LAYER_SVG)}")`;
 const FLUTED_LAYER_MASK_STYLE = {
   WebkitMaskImage: FLUTED_LAYER_MASK,
@@ -296,8 +296,8 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
     const flutedLightingTransform = `rotate(${-knobRotation}deg)`;
     const flutedBevelAngle = `calc(var(--analog-light-angle-bezel, 180deg) - ${knobRotation}deg)`;
     const flutedEdgeFilter =
-      `drop-shadow(calc(sin(${flutedBevelAngle}) * 0.55px) calc(cos(${flutedBevelAngle}) * -0.55px) 0 rgba(255,255,255,calc(0.1 * var(--analog-light-power, 1)))) ` +
-      `drop-shadow(calc(sin(${flutedBevelAngle}) * -1.2px) calc(cos(${flutedBevelAngle}) * 1.2px) 1.6px rgba(0,0,0,calc(0.58 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))))`;
+      `drop-shadow(calc(sin(${flutedBevelAngle}) * 0.55px) calc(cos(${flutedBevelAngle}) * -0.55px) 0 rgb(var(--analog-highlight-rgb) / calc(0.1 * var(--analog-light-power, 1)))) ` +
+      `drop-shadow(calc(sin(${flutedBevelAngle}) * -1.2px) calc(cos(${flutedBevelAngle}) * 1.2px) 1.6px rgb(var(--analog-shadow-rgb) / calc(0.58 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))))`;
 
     return (
       <div
@@ -352,7 +352,7 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
                 y2={lineEndY}
                 stroke={
                   isSelected
-                    ? 'color-mix(in oklch, var(--analog-surface-metal-hi) 84%, white 16%)'
+                    ? 'color-mix(in oklch, var(--analog-surface-metal-hi) 84%, var(--analog-highlight-color) 16%)'
                     : 'var(--analog-telemetry-label)'
                 }
                 strokeWidth={isSelected ? 1.2 : 0.75}
@@ -398,11 +398,11 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
             data-slot="rotary-switch-backing"
             style={{
               background:
-                `radial-gradient(circle at 42% 28%, color-mix(in oklch, var(--analog-surface-onyx-mid) 52%, white 3%) 0%, transparent 34%), ` +
-                `linear-gradient(calc(var(--analog-light-angle-track, 180deg) - 90deg), color-mix(in oklch, var(--analog-surface-onyx-hi) 28%, black 72%) 0%, var(--analog-surface-onyx-mid) 36%, var(--analog-surface-onyx-lo) 100%)`,
+                `radial-gradient(circle at 42% 28%, color-mix(in oklch, var(--analog-surface-onyx-mid) 52%, var(--analog-highlight-color) 3%) 0%, transparent 34%), ` +
+                `linear-gradient(calc(var(--analog-light-angle-track, 180deg) - 90deg), color-mix(in oklch, var(--analog-surface-onyx-hi) 28%, var(--analog-shadow-color) 72%) 0%, var(--analog-surface-onyx-mid) 36%, var(--analog-surface-onyx-lo) 100%)`,
               boxShadow:
-                `inset calc(sin(var(--analog-light-angle-track, 180deg)) * 1px) calc(cos(var(--analog-light-angle-track, 180deg)) * -1px) 0 rgba(255,255,255,calc(0.07 * var(--analog-light-power, 1))), ` +
-                `inset calc(sin(var(--analog-light-angle-track, 180deg)) * -5px) calc(cos(var(--analog-light-angle-track, 180deg)) * 5px) 16px rgba(0,0,0,calc(0.72 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
+                `inset calc(sin(var(--analog-light-angle-track, 180deg)) * 1px) calc(cos(var(--analog-light-angle-track, 180deg)) * -1px) 0 rgb(var(--analog-highlight-rgb) / calc(0.07 * var(--analog-light-power, 1))), ` +
+                `inset calc(sin(var(--analog-light-angle-track, 180deg)) * -5px) calc(cos(var(--analog-light-angle-track, 180deg)) * 5px) 16px rgb(var(--analog-shadow-rgb) / calc(0.72 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
             }}
           />
 
@@ -422,8 +422,8 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
               style={{
                 ...FLUTED_LAYER_MASK_STYLE,
                 boxShadow:
-                  `inset calc(sin(${flutedBevelAngle}) * 2px) calc(cos(${flutedBevelAngle}) * -2px) 3px rgba(255,255,255,calc(0.12 * var(--analog-light-power, 1))), ` +
-                  `inset calc(sin(${flutedBevelAngle}) * -8px) calc(cos(${flutedBevelAngle}) * 8px) 18px rgba(0,0,0,calc(0.76 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
+                  `inset calc(sin(${flutedBevelAngle}) * 2px) calc(cos(${flutedBevelAngle}) * -2px) 3px rgb(var(--analog-highlight-rgb) / calc(0.12 * var(--analog-light-power, 1))), ` +
+                  `inset calc(sin(${flutedBevelAngle}) * -8px) calc(cos(${flutedBevelAngle}) * 8px) 18px rgb(var(--analog-shadow-rgb) / calc(0.76 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
               }}
             >
               <div
@@ -433,7 +433,7 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
                   transform: flutedLightingTransform,
                   transformOrigin: '50% 50%',
                   background:
-                    `radial-gradient(circle at 38% 22%, rgba(255,255,255,calc(0.13 * var(--analog-light-power, 1))) 0%, transparent 32%), ` +
+                    `radial-gradient(circle at 38% 22%, rgb(var(--analog-highlight-rgb) / calc(0.13 * var(--analog-light-power, 1))) 0%, transparent 32%), ` +
                     `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 90deg), var(--analog-surface-onyx-hi) 0%, var(--analog-surface-onyx-mid) 44%, var(--analog-surface-onyx-lo) 100%)`,
                 }}
               />
@@ -451,7 +451,7 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
                 style={{
                   transform: flutedLightingTransform,
                   transformOrigin: '50% 50%',
-                  background: `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 112deg), rgba(255,255,255,calc(0.15 * var(--analog-light-power, 1))) 0%, rgba(255,255,255,0.02) 31%, transparent 52%, rgba(0,0,0,calc(0.42 * var(--analog-light-power, 1))) 100%)`,
+                  background: `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 112deg), rgb(var(--analog-highlight-rgb) / calc(0.15 * var(--analog-light-power, 1))) 0%, rgb(var(--analog-highlight-rgb) / 0.02) 31%, transparent 52%, rgb(var(--analog-shadow-rgb) / calc(0.42 * var(--analog-light-power, 1))) 100%)`,
                 }}
               />
             </div>
@@ -465,7 +465,7 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
               <path
                 d={FLUTED_LAYER_PATH}
                 fill="none"
-                stroke="rgba(0,0,0,0.38)"
+                stroke="rgb(var(--analog-shadow-rgb) / 0.38)"
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth="4.5"
@@ -484,17 +484,20 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
               className="absolute inset-[31%] rounded-full"
               data-slot="rotary-switch-center-shadow"
               style={{
-                background: 'radial-gradient(circle, rgba(0,0,0,0.48) 0%, rgba(0,0,0,0.9) 100%)',
-                boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.82), inset 0 0 14px rgba(0,0,0,0.72)',
+                background:
+                  'radial-gradient(circle, var(--analog-surface-cavity) 0%, var(--analog-surface-cavity-strong) 100%)',
+                boxShadow:
+                  'inset 0 0 0 1px rgb(var(--analog-shadow-rgb) / 0.82), inset 0 0 14px rgb(var(--analog-shadow-rgb) / 0.72)',
               }}
             />
             <div
               className="absolute left-1/2 top-[5%] h-[28%] w-[4.5%] -translate-x-1/2 rounded-full"
               data-slot="rotary-switch-pointer"
               style={{
-                background: `linear-gradient(calc(var(--analog-light-angle-pointer, 180deg) - 90deg), rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.72) 58%, rgba(0,0,0,0.34) 100%)`,
+                background:
+                  'linear-gradient(calc(var(--analog-light-angle-pointer, 180deg) - 90deg), var(--analog-surface-metal-hi) 0%, var(--analog-surface-metal-mid) 58%, var(--analog-surface-metal-lo) 100%)',
                 boxShadow:
-                  '0 0 0 1px rgba(0,0,0,0.3), 0 0 5px rgba(255,255,255,0.14), inset 0 0 1px rgba(255,255,255,0.82)',
+                  '0 0 0 1px var(--analog-material-border-strong), 0 0 5px rgb(var(--analog-highlight-rgb) / 0.14), inset 0 0 1px rgb(var(--analog-highlight-rgb) / 0.82)',
               }}
             />
           </div>

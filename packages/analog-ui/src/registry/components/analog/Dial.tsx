@@ -434,10 +434,10 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
       : 'color-mix(in oklch, var(--analog-surface-metal-lo) 52%, transparent)';
     const pointerBackground = isBlack
       ? `linear-gradient(calc(var(--analog-light-angle-pointer, 180deg) - ${pointerRotation}deg - 45deg), color-mix(in oklch, var(--analog-surface-onyx-hi) 38%, var(--analog-surface-metal-lo) 62%) 0%, var(--analog-surface-onyx-mid) 40%, var(--analog-surface-onyx-lo) 100%)`
-      : `linear-gradient(calc(var(--analog-light-angle-pointer, 180deg) - ${pointerRotation}deg - 45deg), color-mix(in oklch, var(--analog-surface-metal-hi) 78%, white 22%) 0%, var(--analog-surface-metal-mid) 40%, var(--analog-surface-metal-lo) 100%)`;
+      : `linear-gradient(calc(var(--analog-light-angle-pointer, 180deg) - ${pointerRotation}deg - 45deg), color-mix(in oklch, var(--analog-surface-metal-hi) 78%, var(--analog-highlight-color) 22%) 0%, var(--analog-surface-metal-mid) 40%, var(--analog-surface-metal-lo) 100%)`;
     const pointerHighlight = isBlack
       ? 'color-mix(in oklch, var(--analog-surface-metal-mid) 72%, var(--analog-surface-metal-hi) 28%)'
-      : 'color-mix(in oklch, var(--analog-surface-metal-hi) 88%, white 12%)';
+      : 'color-mix(in oklch, var(--analog-surface-metal-hi) 88%, var(--analog-highlight-color) 12%)';
     const pointerBevelAngle = `calc(var(--analog-light-angle-pointer, 180deg) - ${pointerRotation}deg)`;
     const pointerNode = renderPointer?.({
       value: currentValue,
@@ -461,8 +461,8 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
         borderColor: pointerBorderColor,
         background: pointerBackground,
         boxShadow: isBlack
-          ? `inset calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 1px rgba(255,255,255,calc(0.2 * var(--analog-light-power, 1))), inset calc(sin(${pointerBevelAngle}) * -1px) calc(cos(${pointerBevelAngle}) * 1px) 2px rgba(0,0,0,calc(0.8 * var(--analog-light-power, 1))), calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 4px rgba(0,0,0,calc(0.9 * var(--analog-light-power, 1)))`
-          : `inset calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 2px rgba(255,255,255,calc(0.6 * var(--analog-light-power, 1))), inset calc(sin(${pointerBevelAngle}) * -1px) calc(cos(${pointerBevelAngle}) * 1px) 2px rgba(0,0,0,calc(0.5 * var(--analog-light-power, 1))), calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 4px rgba(0,0,0,calc(0.6 * var(--analog-light-power, 1)))`,
+          ? `inset calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 1px rgb(var(--analog-highlight-rgb) / calc(0.2 * var(--analog-light-power, 1))), inset calc(sin(${pointerBevelAngle}) * -1px) calc(cos(${pointerBevelAngle}) * 1px) 2px rgb(var(--analog-shadow-rgb) / calc(0.8 * var(--analog-light-power, 1))), calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 4px rgb(var(--analog-shadow-rgb) / calc(0.9 * var(--analog-light-power, 1)))`
+          : `inset calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 2px rgb(var(--analog-highlight-rgb) / calc(0.6 * var(--analog-light-power, 1))), inset calc(sin(${pointerBevelAngle}) * -1px) calc(cos(${pointerBevelAngle}) * 1px) 2px rgb(var(--analog-shadow-rgb) / calc(0.5 * var(--analog-light-power, 1))), calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 4px rgb(var(--analog-shadow-rgb) / calc(0.6 * var(--analog-light-power, 1)))`,
       },
       highlightClassName: 'absolute rounded-full blur-[0.5px]',
       highlightStyle: {
@@ -497,8 +497,8 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
           borderColor: pointerBorderColor,
           background: pointerBackground,
           boxShadow: isBlack
-            ? `inset calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 1px rgba(255,255,255,calc(0.2 * var(--analog-light-power, 1))), inset calc(sin(${pointerBevelAngle}) * -1px) calc(cos(${pointerBevelAngle}) * 1px) 2px rgba(0,0,0,calc(0.8 * var(--analog-light-power, 1))), calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 4px rgba(0,0,0,calc(0.9 * var(--analog-light-power, 1)))`
-            : `inset calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 2px rgba(255,255,255,calc(0.6 * var(--analog-light-power, 1))), inset calc(sin(${pointerBevelAngle}) * -1px) calc(cos(${pointerBevelAngle}) * 1px) 2px rgba(0,0,0,calc(0.5 * var(--analog-light-power, 1))), calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 4px rgba(0,0,0,calc(0.6 * var(--analog-light-power, 1)))`,
+            ? `inset calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 1px rgb(var(--analog-highlight-rgb) / calc(0.2 * var(--analog-light-power, 1))), inset calc(sin(${pointerBevelAngle}) * -1px) calc(cos(${pointerBevelAngle}) * 1px) 2px rgb(var(--analog-shadow-rgb) / calc(0.8 * var(--analog-light-power, 1))), calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 4px rgb(var(--analog-shadow-rgb) / calc(0.9 * var(--analog-light-power, 1)))`
+            : `inset calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 2px rgb(var(--analog-highlight-rgb) / calc(0.6 * var(--analog-light-power, 1))), inset calc(sin(${pointerBevelAngle}) * -1px) calc(cos(${pointerBevelAngle}) * 1px) 2px rgb(var(--analog-shadow-rgb) / calc(0.5 * var(--analog-light-power, 1))), calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 4px rgb(var(--analog-shadow-rgb) / calc(0.6 * var(--analog-light-power, 1)))`,
         }}
         highlightClassName="absolute rounded-full blur-[0.5px]"
         highlightStyle={{

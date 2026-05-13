@@ -99,6 +99,18 @@
   --analog-panel-foreground: var(--card-foreground);
   --analog-panel-muted: color-mix(in oklch, var(--muted-foreground) 82%, var(--foreground) 18%);
   --analog-screw-hole: color-mix(in oklch, var(--analog-surface-cavity-strong) 72%, black 28%);
+  --analog-highlight-rgb: 255 255 255;
+  --analog-shadow-rgb: 0 0 0;
+  --analog-highlight-color: rgb(var(--analog-highlight-rgb));
+  --analog-shadow-color: rgb(var(--analog-shadow-rgb));
+  --analog-mask-fill: white;
+  --analog-control-shadow: rgb(var(--analog-shadow-rgb) / 0.5);
+  --analog-seam-shadow: rgb(var(--analog-shadow-rgb) / 0.1);
+  --analog-seam-highlight: rgb(var(--analog-highlight-rgb) / 0.1);
+  --analog-extrusion-highlight: rgb(var(--analog-highlight-rgb) / 0.15);
+  --analog-extrusion-highlight-muted: rgb(var(--analog-highlight-rgb) / 0.02);
+  --analog-extrusion-shadow: rgb(var(--analog-shadow-rgb) / 0.3);
+  --analog-extrusion-shadow-strong: rgb(var(--analog-shadow-rgb) / 0.6);
   --analog-tone-primary: var(--primary);
   --analog-tone-secondary: color-mix(in oklch, var(--secondary) 65%, var(--foreground) 35%);
   --analog-tone-accent: var(--accent);
@@ -122,6 +134,9 @@
   --analog-display-fill: color-mix(in oklch, var(--analog-tone-current) 84%, white 16%);
   --analog-display-ink: color-mix(in oklch, var(--analog-tone-current) 18%, black 82%);
   --analog-display-legend: color-mix(in oklch, var(--analog-tone-current) 30%, black 70%);
+  --analog-display-text-shadow: rgb(var(--analog-shadow-rgb) / 0.35);
+  --analog-display-glass-highlight-subtle: rgb(var(--analog-highlight-rgb) / 0.02);
+  --analog-display-glass-shadow-soft: rgb(var(--analog-shadow-rgb) / 0.18);
   --analog-meter-zone-success: var(--analog-tone-success);
   --analog-meter-zone-success-glow: color-mix(
     in oklch,
@@ -180,6 +195,36 @@
   --analog-wheel-label-secondary-size: calc(var(--spacing) * 2);
   --analog-wheel-label-secondary-line-height: calc(var(--spacing) * 2.5);
   --analog-wheel-label-letter-spacing: 0.05em;
+  --analog-wheel-vignette-color: var(--analog-shadow-color);
+  --analog-wheel-ridge-marked-hi: color-mix(
+    in oklch,
+    var(--analog-surface-metal-hi) 78%,
+    var(--analog-highlight-color) 22%
+  );
+  --analog-wheel-ridge-marked-mid: var(--analog-surface-metal-mid);
+  --analog-wheel-ridge-marked-lo: var(--analog-surface-metal-lo);
+  --analog-wheel-ridge-unmarked-hi: color-mix(
+    in oklch,
+    var(--analog-surface-onyx-hi) 74%,
+    var(--analog-highlight-color) 10%
+  );
+  --analog-wheel-ridge-unmarked-mid: var(--analog-surface-onyx-mid);
+  --analog-wheel-ridge-unmarked-lo: var(--analog-surface-onyx-lo);
+  --analog-wheel-ridge-border: color-mix(
+    in oklch,
+    var(--analog-control-border-strong) 80%,
+    var(--analog-shadow-color) 20%
+  );
+  --analog-wheel-cursor-fill: var(--analog-surface-cavity-strong);
+  --analog-wheel-cursor-stroke: var(--analog-control-foreground);
+  --analog-wheel-cursor-shadow: rgb(var(--analog-shadow-rgb) / 0.8);
+  --analog-wheel-label-shadow: rgb(var(--analog-shadow-rgb) / 0.7);
+  --analog-wheel-label-shadow-strong: rgb(var(--analog-shadow-rgb) / 0.68);
+  --analog-lens-facet-highlight: rgb(var(--analog-highlight-rgb) / 0.2);
+  --analog-lens-facet-highlight-strong: rgb(var(--analog-highlight-rgb) / 0.4);
+  --analog-lens-facet-shadow: rgb(var(--analog-shadow-rgb) / 0.1);
+  --analog-lens-dome-shadow: rgb(var(--analog-shadow-rgb) / 0.6);
+  --analog-lens-core-glint: rgb(var(--analog-highlight-rgb) / 0.3);
   --analog-light-source: 180deg;
   --spacing-track-padding: var(--analog-track-padding);
 }

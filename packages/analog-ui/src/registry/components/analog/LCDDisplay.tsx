@@ -146,20 +146,21 @@ export const LCDDisplay = React.forwardRef<HTMLDivElement, LCDDisplayProps>(
           className={cn('relative border', sizeStyle.rootClass)}
           style={{
             borderRadius: sizeStyle.rootRadius,
-            borderColor: 'color-mix(in oklch, var(--analog-control-border-strong) 72%, black 28%)',
+            borderColor:
+              'color-mix(in oklch, var(--analog-control-border-strong) 72%, var(--analog-shadow-color) 28%)',
             background:
               `linear-gradient(calc(var(--analog-light-angle-surface, 180deg) - 90deg), ` +
-              `rgba(255,255,255,calc(0.08 * var(--analog-light-power, 1))) 0%, ` +
-              `rgba(255,255,255,0.02) 20%, ` +
-              `rgba(0,0,0,0.18) 58%, ` +
-              `rgba(0,0,0,calc(0.42 * var(--analog-light-power, 1))) 100%), ` +
+              `rgb(var(--analog-highlight-rgb) / calc(0.08 * var(--analog-light-power, 1))) 0%, ` +
+              `var(--analog-display-glass-highlight-subtle) 20%, ` +
+              `var(--analog-display-glass-shadow-soft) 58%, ` +
+              `rgb(var(--analog-shadow-rgb) / calc(0.42 * var(--analog-light-power, 1))) 100%), ` +
               `linear-gradient(calc(var(--analog-light-angle-surface, 180deg) - 90deg), var(--analog-surface-raised) 0%, var(--analog-surface-panel) 48%, var(--analog-surface-cavity) 100%)`,
             boxShadow:
-              `inset calc(sin(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 0.25) rgba(255,255,255,calc(0.14 * var(--analog-light-power, 1))), ` +
-              `inset calc(sin(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * -0.5) calc(cos(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * 0.5) calc(var(--analog-bevel-width, 4px) * 0.75) rgba(0,0,0,calc(0.72 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), ` +
-              `calc(sin(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) 0 rgba(255,255,255,calc(0.08 * var(--analog-light-power, 1))), ` +
-              `0 calc(var(--analog-bevel-width, 4px) * 2.5) calc(var(--analog-bevel-width, 4px) * 5.5) rgba(0,0,0,calc(0.42 * var(--analog-shadow-depth, 1))), ` +
-              `0 0 0 calc(var(--analog-bevel-width, 4px) * 0.25) rgba(0,0,0,calc(0.55 * var(--analog-shadow-depth, 1)))`,
+              `inset calc(sin(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 0.25) rgb(var(--analog-highlight-rgb) / calc(0.14 * var(--analog-light-power, 1))), ` +
+              `inset calc(sin(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * -0.5) calc(cos(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * 0.5) calc(var(--analog-bevel-width, 4px) * 0.75) rgb(var(--analog-shadow-rgb) / calc(0.72 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), ` +
+              `calc(sin(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) 0 rgb(var(--analog-highlight-rgb) / calc(0.08 * var(--analog-light-power, 1))), ` +
+              `0 calc(var(--analog-bevel-width, 4px) * 2.5) calc(var(--analog-bevel-width, 4px) * 5.5) rgb(var(--analog-shadow-rgb) / calc(0.42 * var(--analog-shadow-depth, 1))), ` +
+              `0 0 0 calc(var(--analog-bevel-width, 4px) * 0.25) rgb(var(--analog-shadow-rgb) / calc(0.55 * var(--analog-shadow-depth, 1)))`,
           }}
         >
           <div
@@ -168,7 +169,7 @@ export const LCDDisplay = React.forwardRef<HTMLDivElement, LCDDisplayProps>(
               border:
                 '1px solid color-mix(in oklch, var(--analog-control-foreground) 3.5%, transparent)',
               boxShadow:
-                'inset calc(sin(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) 0 rgba(255,255,255,0.03), inset calc(sin(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * -2) calc(cos(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * 2) calc(var(--analog-bevel-width, 4px) * 4) rgba(0,0,0,calc(0.18 * var(--analog-shadow-depth, 1)))',
+                'inset calc(sin(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) 0 rgb(var(--analog-highlight-rgb) / 0.03), inset calc(sin(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * -2) calc(cos(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * 2) calc(var(--analog-bevel-width, 4px) * 4) rgb(var(--analog-shadow-rgb) / calc(0.18 * var(--analog-shadow-depth, 1)))',
             }}
           />
 
@@ -191,7 +192,7 @@ export const LCDDisplay = React.forwardRef<HTMLDivElement, LCDDisplayProps>(
               style={
                 {
                   borderColor:
-                    'color-mix(in oklch, var(--analog-control-border-strong) 76%, black 24%)',
+                    'color-mix(in oklch, var(--analog-control-border-strong) 76%, var(--analog-shadow-color) 24%)',
                 } as React.CSSProperties
               }
             >
@@ -219,7 +220,7 @@ export const LCDDisplay = React.forwardRef<HTMLDivElement, LCDDisplayProps>(
                   )}
                   style={{
                     color: palette.legend,
-                    textShadow: '0 1px 1px rgba(0,0,0,0.35)',
+                    textShadow: '0 1px 1px var(--analog-display-text-shadow)',
                     opacity: 0.9,
                   }}
                 >
@@ -237,7 +238,7 @@ export const LCDDisplay = React.forwardRef<HTMLDivElement, LCDDisplayProps>(
                   )}
                   style={{
                     color: palette.ink,
-                    textShadow: '0 1px 1px rgba(0,0,0,0.35)',
+                    textShadow: '0 1px 1px var(--analog-display-text-shadow)',
                     opacity: 0.9,
                   }}
                 >
@@ -252,7 +253,7 @@ export const LCDDisplay = React.forwardRef<HTMLDivElement, LCDDisplayProps>(
                     )}
                     style={{
                       color: palette.legend,
-                      textShadow: '0 1px 1px rgba(0,0,0,0.35)',
+                      textShadow: '0 1px 1px var(--analog-display-text-shadow)',
                       opacity: 0.9,
                     }}
                   >

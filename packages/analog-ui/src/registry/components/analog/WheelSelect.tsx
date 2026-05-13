@@ -32,8 +32,8 @@ const WHEEL_UNBOUNDED_DRAG_STEPS = 2048;
 
 function getWheelRidgeBackground(isMarked: boolean) {
   return isMarked
-    ? `linear-gradient(var(--analog-light-angle-wheel-face, 180deg), color-mix(in oklch, var(--analog-surface-metal-hi) 78%, white 22%) 0%, var(--analog-surface-metal-mid) 52%, var(--analog-surface-metal-lo) 100%)`
-    : `linear-gradient(var(--analog-light-angle-wheel-face, 180deg), color-mix(in oklch, var(--analog-surface-onyx-hi) 74%, white 10%) 0%, var(--analog-surface-onyx-mid) 48%, var(--analog-surface-onyx-lo) 100%)`;
+    ? `linear-gradient(var(--analog-light-angle-wheel-face, 180deg), var(--analog-wheel-ridge-marked-hi) 0%, var(--analog-wheel-ridge-marked-mid) 52%, var(--analog-wheel-ridge-marked-lo) 100%)`
+    : `linear-gradient(var(--analog-light-angle-wheel-face, 180deg), var(--analog-wheel-ridge-unmarked-hi) 0%, var(--analog-wheel-ridge-unmarked-mid) 48%, var(--analog-wheel-ridge-unmarked-lo) 100%)`;
 }
 
 function getWheelLabelSlotOffsets(stepAngle: number) {
@@ -566,11 +566,11 @@ export const WheelSelect = React.forwardRef<HTMLDivElement, WheelSelectProps>(
                   'color-mix(in oklch, var(--analog-control-glass-border) 72%, transparent)',
                 background:
                   `linear-gradient(var(--analog-light-angle-wheel-face, 180deg), ` +
-                  `color-mix(in oklch, var(--analog-surface-onyx-hi) 74%, white 10%) 0%, ` +
-                  `var(--analog-surface-onyx-mid) 48%, ` +
-                  `var(--analog-surface-onyx-lo) 100%)`,
+                  `var(--analog-wheel-ridge-unmarked-hi) 0%, ` +
+                  `var(--analog-wheel-ridge-unmarked-mid) 48%, ` +
+                  `var(--analog-wheel-ridge-unmarked-lo) 100%)`,
                 boxShadow:
-                  'inset 0 0 0 1px rgba(0, 0, 0, 0.5), inset 10px 0 14px rgba(255,255,255,0.04), inset -10px 0 14px rgba(0,0,0,0.5)',
+                  'inset 0 0 0 1px rgb(var(--analog-shadow-rgb) / 0.5), inset 10px 0 14px rgb(var(--analog-highlight-rgb) / 0.04), inset -10px 0 14px rgb(var(--analog-shadow-rgb) / 0.5)',
               }}
             />
             <div className="analog-wheel-lighting" />
@@ -637,8 +637,7 @@ export const WheelSelect = React.forwardRef<HTMLDivElement, WheelSelectProps>(
                         insetBlock: 'calc(var(--spacing) * 0.25)',
                         insetInline: 'var(--analog-wheel-ridge-inset-inline)',
                         borderRadius: 'var(--analog-wheel-ridge-radius)',
-                        borderColor:
-                          'color-mix(in oklch, var(--analog-control-border-strong) 80%, black 20%)',
+                        borderColor: 'var(--analog-wheel-ridge-border)',
                         background: getWheelRidgeBackground(isMarked),
                       }}
                     />
@@ -682,8 +681,8 @@ export const WheelSelect = React.forwardRef<HTMLDivElement, WheelSelectProps>(
                         style={{
                           filter:
                             offset === 0
-                              ? 'drop-shadow(0 0 8px color-mix(in oklch, var(--analog-control-foreground) 18%, transparent)) drop-shadow(0 1px 1px rgba(0,0,0,0.68))'
-                              : 'drop-shadow(0 1px 1px rgba(0,0,0,0.7))',
+                              ? 'drop-shadow(0 0 8px color-mix(in oklch, var(--analog-control-foreground) 18%, transparent)) drop-shadow(0 1px 1px var(--analog-wheel-label-shadow-strong))'
+                              : 'drop-shadow(0 1px 1px var(--analog-wheel-label-shadow))',
                         }}
                       >
                         <WheelOptionLabel

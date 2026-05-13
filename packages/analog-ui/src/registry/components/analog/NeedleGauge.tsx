@@ -355,23 +355,23 @@ const getNeedleGaugeShellStyle = (variant: AnalogMaterialVariant): React.CSSProp
       borderColor: 'transparent',
       background: `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 90deg), var(--analog-surface-onyx-hi) 0%, var(--analog-surface-onyx-mid) 45%, var(--analog-surface-onyx-lo) 100%)`,
       boxShadow:
-        `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 0.25) rgba(255,255,255,calc(0.14 * var(--analog-light-power, 1))), ` +
-        `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(var(--analog-bevel-width, 4px) * 0.5) rgba(0,0,0,calc(0.8 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), ` +
-        `calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) 0 rgba(255,255,255,calc(0.08 * var(--analog-light-power, 1))), ` +
-        `0 calc(var(--analog-bevel-width, 4px) * 0.5) var(--analog-bevel-width, 4px) rgba(0,0,0,calc(0.9 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), ` +
-        `0 0 0 calc(var(--analog-bevel-width, 4px) * 0.25) rgba(0,0,0,calc(0.6 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
+        `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 0.25) rgb(var(--analog-highlight-rgb) / calc(0.14 * var(--analog-light-power, 1))), ` +
+        `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(var(--analog-bevel-width, 4px) * 0.5) rgb(var(--analog-shadow-rgb) / calc(0.8 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), ` +
+        `calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) 0 rgb(var(--analog-highlight-rgb) / calc(0.08 * var(--analog-light-power, 1))), ` +
+        `0 calc(var(--analog-bevel-width, 4px) * 0.5) var(--analog-bevel-width, 4px) rgb(var(--analog-shadow-rgb) / calc(0.9 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), ` +
+        `0 0 0 calc(var(--analog-bevel-width, 4px) * 0.25) rgb(var(--analog-shadow-rgb) / calc(0.6 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
     };
   }
 
   return {
     borderColor: 'transparent',
-    background: `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 90deg), color-mix(in oklch, var(--analog-surface-metal-hi) 82%, white 10%) 0%, var(--analog-surface-metal-hi) 18%, var(--analog-surface-metal-mid) 52%, var(--analog-surface-metal-lo) 100%)`,
+    background: `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 90deg), color-mix(in oklch, var(--analog-surface-metal-hi) 82%, var(--analog-highlight-color) 10%) 0%, var(--analog-surface-metal-hi) 18%, var(--analog-surface-metal-mid) 52%, var(--analog-surface-metal-lo) 100%)`,
     boxShadow:
-      `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 0.25) rgba(255,255,255,calc(0.95 * var(--analog-light-power, 1))), ` +
-      `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(var(--analog-bevel-width, 4px) * 0.5) rgba(0,0,0,calc(0.25 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), ` +
-      `calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) 0 rgba(255,255,255,calc(0.18 * var(--analog-light-power, 1))), ` +
-      `0 calc(var(--analog-bevel-width, 4px) * 0.5) var(--analog-bevel-width, 4px) rgba(0,0,0,calc(0.5 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), ` +
-      `0 0 0 calc(var(--analog-bevel-width, 4px) * 0.25) rgba(0,0,0,calc(0.1 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
+      `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 0.25) rgb(var(--analog-highlight-rgb) / calc(0.95 * var(--analog-light-power, 1))), ` +
+      `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(var(--analog-bevel-width, 4px) * 0.5) rgb(var(--analog-shadow-rgb) / calc(0.25 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), ` +
+      `calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) 0 rgb(var(--analog-highlight-rgb) / calc(0.18 * var(--analog-light-power, 1))), ` +
+      `0 calc(var(--analog-bevel-width, 4px) * 0.5) var(--analog-bevel-width, 4px) rgb(var(--analog-shadow-rgb) / calc(0.5 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), ` +
+      `0 0 0 calc(var(--analog-bevel-width, 4px) * 0.25) rgb(var(--analog-shadow-rgb) / calc(0.1 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
   };
 };
 
@@ -401,7 +401,7 @@ function DefaultNeedleGaugeScale({
           startAngle + sweepAngle,
         )}
         fill="none"
-        stroke="color-mix(in oklch, var(--analog-surface-raised) 48%, black 52%)"
+        stroke="color-mix(in oklch, var(--analog-surface-raised) 48%, var(--analog-shadow-color) 52%)"
         strokeWidth="11"
         strokeLinecap="round"
         opacity="0.72"
@@ -800,14 +800,14 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
         clipPath: 'polygon(46% 0%, 54% 0%, 68% 82%, 50% 100%, 32% 82%)',
         background:
           needleVariant === 'chrome'
-            ? `linear-gradient(calc(var(--analog-light-angle-pointer, 180deg) - ${displayNeedleAngle}deg - 90deg), color-mix(in oklch, var(--analog-surface-metal-hi) 82%, white 18%) 0%, var(--analog-surface-metal-mid) 42%, var(--analog-surface-metal-lo) 100%)`
-            : `linear-gradient(calc(var(--analog-light-angle-pointer, 180deg) - ${displayNeedleAngle}deg - 90deg), var(--analog-emissive-core) 0%, var(--analog-emissive-base) 42%, color-mix(in oklch, var(--analog-emissive-base) 56%, black 44%) 100%)`,
+            ? `linear-gradient(calc(var(--analog-light-angle-pointer, 180deg) - ${displayNeedleAngle}deg - 90deg), color-mix(in oklch, var(--analog-surface-metal-hi) 82%, var(--analog-highlight-color) 18%) 0%, var(--analog-surface-metal-mid) 42%, var(--analog-surface-metal-lo) 100%)`
+            : `linear-gradient(calc(var(--analog-light-angle-pointer, 180deg) - ${displayNeedleAngle}deg - 90deg), var(--analog-emissive-core) 0%, var(--analog-emissive-base) 42%, color-mix(in oklch, var(--analog-emissive-base) 56%, var(--analog-shadow-color) 44%) 100%)`,
         boxShadow:
           needleVariant === 'chrome'
-            ? `inset 1px 0 1px rgba(255,255,255,calc(0.56 * var(--analog-light-power, 1))), inset -1px 0 1px rgba(0,0,0,calc(0.38 * var(--analog-light-power, 1)))`
-            : `inset 1px 0 1px rgba(255,255,255,calc(0.42 * var(--analog-light-power, 1))), inset -1px 0 1px rgba(0,0,0,calc(0.46 * var(--analog-light-power, 1))), 0 0 10px color-mix(in oklch, var(--analog-emissive-glow) 28%, transparent)`,
+            ? `inset 1px 0 1px rgb(var(--analog-highlight-rgb) / calc(0.56 * var(--analog-light-power, 1))), inset -1px 0 1px rgb(var(--analog-shadow-rgb) / calc(0.38 * var(--analog-light-power, 1)))`
+            : `inset 1px 0 1px rgb(var(--analog-highlight-rgb) / calc(0.42 * var(--analog-light-power, 1))), inset -1px 0 1px rgb(var(--analog-shadow-rgb) / calc(0.46 * var(--analog-light-power, 1))), 0 0 10px color-mix(in oklch, var(--analog-emissive-glow) 28%, transparent)`,
         filter:
-          'drop-shadow(calc(sin(var(--analog-light-angle-pointer, 180deg)) * var(--analog-bevel-width, 4px) * 0.5) calc(cos(var(--analog-light-angle-pointer, 180deg)) * var(--analog-bevel-width, 4px) * -0.5) calc(var(--analog-bevel-width, 4px) * 0.75) rgba(0,0,0,calc(0.72 * var(--analog-shadow-depth, 1))))',
+          'drop-shadow(calc(sin(var(--analog-light-angle-pointer, 180deg)) * var(--analog-bevel-width, 4px) * 0.5) calc(cos(var(--analog-light-angle-pointer, 180deg)) * var(--analog-bevel-width, 4px) * -0.5) calc(var(--analog-bevel-width, 4px) * 0.75) rgb(var(--analog-shadow-rgb) / calc(0.72 * var(--analog-shadow-depth, 1))))',
       },
     });
     const hubChildren = (
@@ -878,8 +878,8 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
       className: cn('absolute inset-0 z-40 pointer-events-none', lensClassName),
       style: {
         background:
-          `linear-gradient(calc(var(--analog-light-angle-lens, 180deg) - 18deg), rgba(255,255,255,calc(0.22 * var(--analog-light-power, 1))) 0%, rgba(255,255,255,0.06) 18%, transparent 42%, rgba(0,0,0,calc(0.28 * var(--analog-light-power, 1))) 100%), ` +
-          `radial-gradient(ellipse at 34% 12%, rgba(255,255,255,calc(0.2 * var(--analog-light-power, 1))) 0%, transparent 38%)`,
+          `linear-gradient(calc(var(--analog-light-angle-lens, 180deg) - 18deg), rgb(var(--analog-highlight-rgb) / calc(0.22 * var(--analog-light-power, 1))) 0%, rgb(var(--analog-highlight-rgb) / 0.06) 18%, transparent 42%, rgb(var(--analog-shadow-rgb) / calc(0.28 * var(--analog-light-power, 1))) 100%), ` +
+          `radial-gradient(ellipse at 34% 12%, rgb(var(--analog-highlight-rgb) / calc(0.2 * var(--analog-light-power, 1))) 0%, transparent 38%)`,
         mixBlendMode: 'screen',
         opacity: 0.72,
       },
@@ -919,7 +919,7 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
               data-slot="needle-gauge-slot-glare"
               className="pointer-events-none absolute inset-0"
               style={{
-                background: `linear-gradient(var(--analog-light-angle-lens, 180deg), rgba(255,255,255,calc(0.08 * var(--analog-light-power, 1))) 0%, rgba(255,255,255,0.02) 24%, transparent 48%, rgba(0,0,0,calc(0.18 * var(--analog-light-power, 1))) 100%)`,
+                background: `linear-gradient(var(--analog-light-angle-lens, 180deg), rgb(var(--analog-highlight-rgb) / calc(0.08 * var(--analog-light-power, 1))) 0%, rgb(var(--analog-highlight-rgb) / 0.02) 24%, transparent 48%, rgb(var(--analog-shadow-rgb) / calc(0.18 * var(--analog-light-power, 1))) 100%)`,
               }}
             />
             <div
@@ -928,10 +928,10 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
               style={{
                 boxShadow:
                   `0 0 0 1px color-mix(in oklch, var(--analog-control-border-strong) 48%, transparent), ` +
-                  `inset calc(sin(var(--analog-light-angle-track, 180deg)) * 1px) calc(cos(var(--analog-light-angle-track, 180deg)) * -1px) 0 rgba(255,255,255,calc(0.12 * var(--analog-light-power, 1))), ` +
-                  `inset calc(sin(var(--analog-light-angle-track, 180deg)) * -2px) calc(cos(var(--analog-light-angle-track, 180deg)) * 2px) 5px rgba(0,0,0,calc(0.58 * var(--analog-light-power, 1))), ` +
-                  `calc(sin(var(--analog-light-angle-track, 180deg)) * 1px) calc(cos(var(--analog-light-angle-track, 180deg)) * -1px) 0 rgba(255,255,255,calc(0.1 * var(--analog-light-power, 1))), ` +
-                  `0 6px 16px rgba(0,0,0,calc(0.52 * var(--analog-light-power, 1)))`,
+                  `inset calc(sin(var(--analog-light-angle-track, 180deg)) * 1px) calc(cos(var(--analog-light-angle-track, 180deg)) * -1px) 0 rgb(var(--analog-highlight-rgb) / calc(0.12 * var(--analog-light-power, 1))), ` +
+                  `inset calc(sin(var(--analog-light-angle-track, 180deg)) * -2px) calc(cos(var(--analog-light-angle-track, 180deg)) * 2px) 5px rgb(var(--analog-shadow-rgb) / calc(0.58 * var(--analog-light-power, 1))), ` +
+                  `calc(sin(var(--analog-light-angle-track, 180deg)) * 1px) calc(cos(var(--analog-light-angle-track, 180deg)) * -1px) 0 rgb(var(--analog-highlight-rgb) / calc(0.1 * var(--analog-light-power, 1))), ` +
+                  `0 6px 16px rgb(var(--analog-shadow-rgb) / calc(0.52 * var(--analog-light-power, 1)))`,
               }}
             >
               <div
@@ -939,12 +939,12 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
                 className="absolute inset-0"
                 style={{
                   background:
-                    `radial-gradient(ellipse at 50% 92%, rgba(255,255,255,calc(0.08 * var(--analog-light-power, 1))) 0%, transparent 42%), ` +
-                    `linear-gradient(var(--analog-light-angle-track, 180deg), rgba(255,255,255,calc(0.08 * var(--analog-light-power, 1))) 0%, rgba(255,255,255,0.02) 30%, rgba(0,0,0,calc(0.58 * var(--analog-light-power, 1))) 100%), ` +
+                    `radial-gradient(ellipse at 50% 92%, rgb(var(--analog-highlight-rgb) / calc(0.08 * var(--analog-light-power, 1))) 0%, transparent 42%), ` +
+                    `linear-gradient(var(--analog-light-angle-track, 180deg), rgb(var(--analog-highlight-rgb) / calc(0.08 * var(--analog-light-power, 1))) 0%, rgb(var(--analog-highlight-rgb) / 0.02) 30%, rgb(var(--analog-shadow-rgb) / calc(0.58 * var(--analog-light-power, 1))) 100%), ` +
                     `var(--analog-surface-cavity)`,
                   boxShadow:
-                    `inset calc(sin(var(--analog-light-angle-track, 180deg)) * -6px) calc(cos(var(--analog-light-angle-track, 180deg)) * 6px) 18px rgba(0,0,0,calc(0.72 * var(--analog-light-power, 1))), ` +
-                    `inset calc(sin(var(--analog-light-angle-track, 180deg)) * 1px) calc(cos(var(--analog-light-angle-track, 180deg)) * -1px) 0 rgba(255,255,255,calc(0.08 * var(--analog-light-power, 1)))`,
+                    `inset calc(sin(var(--analog-light-angle-track, 180deg)) * -6px) calc(cos(var(--analog-light-angle-track, 180deg)) * 6px) 18px rgb(var(--analog-shadow-rgb) / calc(0.72 * var(--analog-light-power, 1))), ` +
+                    `inset calc(sin(var(--analog-light-angle-track, 180deg)) * 1px) calc(cos(var(--analog-light-angle-track, 180deg)) * -1px) 0 rgb(var(--analog-highlight-rgb) / calc(0.08 * var(--analog-light-power, 1)))`,
                 }}
               />
               <div

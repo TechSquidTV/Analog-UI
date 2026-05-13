@@ -115,7 +115,7 @@ const singleFaceShadow = (
     'calc(var(--analog-bevel-width, 4px) * 1.5)',
     'calc(var(--analog-bevel-width, 4px) * 3.75)',
     'calc(var(--analog-bevel-width, 4px) * -1)',
-    `rgba(0,0,0,calc(${dropAlpha} * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
+    `rgb(var(--analog-shadow-rgb) / calc(${dropAlpha} * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
   );
 
   return [
@@ -125,16 +125,16 @@ const singleFaceShadow = (
       raisedSide,
       'calc(var(--analog-bevel-width, 4px) * 0.5)',
       'calc(var(--analog-bevel-width, 4px) * 1.5)',
-      `rgba(255,255,255,calc(var(--analog-rocker-highlight-alpha) * var(--analog-light-power, 1)))`,
+      `rgb(var(--analog-highlight-rgb) / calc(var(--analog-rocker-highlight-alpha) * var(--analog-light-power, 1)))`,
     ),
     axisInset(
       orientation,
       raisedSide === 'start' ? 'end' : 'start',
       'calc(var(--analog-bevel-width, 4px) * 1.5)',
       'calc(var(--analog-bevel-width, 4px) * 3)',
-      `rgba(0,0,0,calc(${oppositeShadowAlpha} * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
+      `rgb(var(--analog-shadow-rgb) / calc(${oppositeShadowAlpha} * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
     ),
-    `inset 0 calc(var(--analog-bevel-width, 4px) * 0.25) calc(var(--analog-bevel-width, 4px) * 0.75) rgba(255,255,255,calc(var(--analog-rocker-top-highlight-alpha) * var(--analog-light-power, 1)))`,
+    `inset 0 calc(var(--analog-bevel-width, 4px) * 0.25) calc(var(--analog-bevel-width, 4px) * 0.75) rgb(var(--analog-highlight-rgb) / calc(var(--analog-rocker-top-highlight-alpha) * var(--analog-light-power, 1)))`,
   ].join(', ');
 };
 
@@ -210,8 +210,8 @@ const GripRidges = ({
           style={{
             background: `linear-gradient(${isHorizontal ? 'to right' : 'to bottom'}, var(--analog-rocker-ridge-edge-tone), var(--analog-rocker-ridge-center-tone) 50%, var(--analog-rocker-ridge-edge-tone))`,
             boxShadow: isHorizontal
-              ? `calc(var(--analog-bevel-width, 4px) * 0.25) 0 calc(var(--analog-bevel-width, 4px) * 0.25) rgba(255,255,255,calc(${ridgeHighlightAlpha} * var(--analog-light-power, 1))), calc(var(--analog-bevel-width, 4px) * -0.25) 0 calc(var(--analog-bevel-width, 4px) * 0.5) rgba(0,0,0,calc(${ridgeShadowAlpha} * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`
-              : `0 calc(var(--analog-bevel-width, 4px) * 0.25) calc(var(--analog-bevel-width, 4px) * 0.25) rgba(255,255,255,calc(${ridgeHighlightAlpha} * var(--analog-light-power, 1))), 0 calc(var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 0.5) rgba(0,0,0,calc(${ridgeShadowAlpha} * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
+              ? `calc(var(--analog-bevel-width, 4px) * 0.25) 0 calc(var(--analog-bevel-width, 4px) * 0.25) rgb(var(--analog-highlight-rgb) / calc(${ridgeHighlightAlpha} * var(--analog-light-power, 1))), calc(var(--analog-bevel-width, 4px) * -0.25) 0 calc(var(--analog-bevel-width, 4px) * 0.5) rgb(var(--analog-shadow-rgb) / calc(${ridgeShadowAlpha} * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`
+              : `0 calc(var(--analog-bevel-width, 4px) * 0.25) calc(var(--analog-bevel-width, 4px) * 0.25) rgb(var(--analog-highlight-rgb) / calc(${ridgeHighlightAlpha} * var(--analog-light-power, 1))), 0 calc(var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 0.5) rgb(var(--analog-shadow-rgb) / calc(${ridgeShadowAlpha} * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
           }}
         />
       ))}
@@ -271,14 +271,14 @@ function RockerOverlay({
       <div
         className="absolute inset-0 z-[2] pointer-events-none"
         style={{
-          background: `linear-gradient(${axisGradientAngle(orientation)}, rgba(255,255,255,calc(${sheenHighlightAlpha} * var(--analog-light-power, 1))) 0%, rgba(255,255,255,0.02) 38%, rgba(255,255,255,0) 56%, rgba(0,0,0,calc(${sheenShadowAlpha} * var(--analog-light-power, 1))) 100%)`,
+          background: `linear-gradient(${axisGradientAngle(orientation)}, rgb(var(--analog-highlight-rgb) / calc(${sheenHighlightAlpha} * var(--analog-light-power, 1))) 0%, rgb(var(--analog-highlight-rgb) / 0.02) 38%, transparent 56%, rgb(var(--analog-shadow-rgb) / calc(${sheenShadowAlpha} * var(--analog-light-power, 1))) 100%)`,
         }}
       />
       <div
         className="absolute inset-0 z-[3] pointer-events-none"
         style={{
           mixBlendMode: cssVariableBlendMode('var(--analog-rocker-glare-blend)'),
-          background: `linear-gradient(${crossAxisGradientAngle(orientation)}, transparent 4%, rgba(255,255,255,calc(${glareEdgeAlpha} * 0.85 * var(--analog-light-power, 1))) 24%, rgba(255,255,255,calc(${glareMidAlpha} * var(--analog-light-power, 1))) 40%, rgba(255,255,255,calc(${glareCoreAlpha} * 0.72 * var(--analog-light-power, 1))) 50%, rgba(255,255,255,calc(${glareMidAlpha} * var(--analog-light-power, 1))) 60%, rgba(255,255,255,calc(${glareEdgeAlpha} * 0.85 * var(--analog-light-power, 1))) 76%, transparent 96%), radial-gradient(110% 72% at 50% 24%, rgba(255,255,255,calc(${glareMidAlpha} * var(--analog-light-power, 1))) 0%, rgba(255,255,255,calc(${glareEdgeAlpha} * var(--analog-light-power, 1))) 42%, transparent 78%)`,
+          background: `linear-gradient(${crossAxisGradientAngle(orientation)}, transparent 4%, rgb(var(--analog-highlight-rgb) / calc(${glareEdgeAlpha} * 0.85 * var(--analog-light-power, 1))) 24%, rgb(var(--analog-highlight-rgb) / calc(${glareMidAlpha} * var(--analog-light-power, 1))) 40%, rgb(var(--analog-highlight-rgb) / calc(${glareCoreAlpha} * 0.72 * var(--analog-light-power, 1))) 50%, rgb(var(--analog-highlight-rgb) / calc(${glareMidAlpha} * var(--analog-light-power, 1))) 60%, rgb(var(--analog-highlight-rgb) / calc(${glareEdgeAlpha} * 0.85 * var(--analog-light-power, 1))) 76%, transparent 96%), radial-gradient(110% 72% at 50% 24%, rgb(var(--analog-highlight-rgb) / calc(${glareMidAlpha} * var(--analog-light-power, 1))) 0%, rgb(var(--analog-highlight-rgb) / calc(${glareEdgeAlpha} * var(--analog-light-power, 1))) 42%, transparent 78%)`,
           filter: 'blur(calc(var(--analog-bevel-width, 4px) * 0.3375))',
         }}
       />
@@ -287,7 +287,7 @@ function RockerOverlay({
         <div
           className={cn(
             'absolute z-[4]',
-            'bg-black/10',
+            'bg-[var(--analog-seam-shadow)]',
             orientation === 'horizontal'
               ? 'top-0 bottom-0 left-1/2 -ml-[1px] w-[2px]'
               : 'left-0 right-0 top-1/2 -mt-[1px] h-[2px]',
@@ -295,8 +295,8 @@ function RockerOverlay({
           style={{
             boxShadow:
               orientation === 'horizontal'
-                ? `1px 0 0 rgba(255,255,255,calc(0.1 * var(--analog-light-power, 1)))`
-                : `0 1px 0 rgba(255,255,255,calc(0.1 * var(--analog-light-power, 1)))`,
+                ? `1px 0 0 rgb(var(--analog-highlight-rgb) / calc(0.1 * var(--analog-light-power, 1)))`
+                : `0 1px 0 rgb(var(--analog-highlight-rgb) / calc(0.1 * var(--analog-light-power, 1)))`,
           }}
         />
       ) : null}

@@ -26,8 +26,8 @@ const wheelReadoutGlassStyle: React.CSSProperties = {
 
 function getWheelRidgeBackground(isMarked: boolean) {
   return isMarked
-    ? `linear-gradient(var(--analog-light-angle-wheel-face, 180deg), color-mix(in oklch, var(--analog-surface-metal-hi) 78%, white 22%) 0%, var(--analog-surface-metal-mid) 52%, var(--analog-surface-metal-lo) 100%)`
-    : `linear-gradient(var(--analog-light-angle-wheel-face, 180deg), color-mix(in oklch, var(--analog-surface-onyx-hi) 74%, white 10%) 0%, var(--analog-surface-onyx-mid) 48%, var(--analog-surface-onyx-lo) 100%)`;
+    ? `linear-gradient(var(--analog-light-angle-wheel-face, 180deg), var(--analog-wheel-ridge-marked-hi) 0%, var(--analog-wheel-ridge-marked-mid) 52%, var(--analog-wheel-ridge-marked-lo) 100%)`
+    : `linear-gradient(var(--analog-light-angle-wheel-face, 180deg), var(--analog-wheel-ridge-unmarked-hi) 0%, var(--analog-wheel-ridge-unmarked-mid) 48%, var(--analog-wheel-ridge-unmarked-lo) 100%)`;
 }
 
 export interface WheelNumberProps extends React.ComponentPropsWithoutRef<typeof NumberField.Root> {
@@ -175,15 +175,15 @@ export const WheelNumber = React.forwardRef<HTMLDivElement, WheelNumberProps>(
             borderColor: 'var(--analog-control-border)',
             backgroundColor: 'var(--analog-control-surface)',
             boxShadow:
-              `inset calc(sin(var(--analog-light-angle-surface, 180deg)) * -1px) calc(cos(var(--analog-light-angle-surface, 180deg)) * 1px) 3px rgba(0,0,0,calc(0.8 * var(--analog-light-power, 1))), ` +
-              `calc(sin(var(--analog-light-angle-surface, 180deg)) * 1px) calc(cos(var(--analog-light-angle-surface, 180deg)) * -1px) 0 rgba(255,255,255,calc(0.04 * var(--analog-light-power, 1)))`,
+              `inset calc(sin(var(--analog-light-angle-surface, 180deg)) * -1px) calc(cos(var(--analog-light-angle-surface, 180deg)) * 1px) 3px rgb(var(--analog-shadow-rgb) / calc(0.8 * var(--analog-light-power, 1))), ` +
+              `calc(sin(var(--analog-light-angle-surface, 180deg)) * 1px) calc(cos(var(--analog-light-angle-surface, 180deg)) * -1px) 0 rgb(var(--analog-highlight-rgb) / calc(0.04 * var(--analog-light-power, 1)))`,
           }}
         >
-          <NumberField.Decrement className="flex size-8 cursor-pointer items-center justify-center rounded-[var(--analog-radius-micro)] text-[var(--analog-control-foreground-muted)] transition-all outline-none hover:bg-[var(--analog-control-surface-strong)] hover:text-[var(--analog-control-foreground)] hover:shadow-[0_1px_2px_rgba(0,0,0,0.5)] active:bg-[var(--analog-surface-cavity-strong)] active:shadow-none">
+          <NumberField.Decrement className="flex size-8 cursor-pointer items-center justify-center rounded-[var(--analog-radius-micro)] text-[var(--analog-control-foreground-muted)] transition-all outline-none hover:bg-[var(--analog-control-surface-strong)] hover:text-[var(--analog-control-foreground)] hover:shadow-[0_1px_2px_var(--analog-control-shadow)] active:bg-[var(--analog-surface-cavity-strong)] active:shadow-none">
             <MinusIcon className="size-4 pointer-events-none" />
           </NumberField.Decrement>
           <NumberField.Input className="min-w-0 flex-1 bg-transparent px-2 text-center font-mono text-sm font-bold text-[var(--analog-control-foreground)] tabular-nums outline-none selection:bg-[var(--analog-control-selection)] selection:text-[var(--analog-control-foreground)]" />
-          <NumberField.Increment className="flex size-8 cursor-pointer items-center justify-center rounded-[var(--analog-radius-micro)] text-[var(--analog-control-foreground-muted)] transition-all outline-none hover:bg-[var(--analog-control-surface-strong)] hover:text-[var(--analog-control-foreground)] hover:shadow-[0_1px_2px_rgba(0,0,0,0.5)] active:bg-[var(--analog-surface-cavity-strong)] active:shadow-none">
+          <NumberField.Increment className="flex size-8 cursor-pointer items-center justify-center rounded-[var(--analog-radius-micro)] text-[var(--analog-control-foreground-muted)] transition-all outline-none hover:bg-[var(--analog-control-surface-strong)] hover:text-[var(--analog-control-foreground)] hover:shadow-[0_1px_2px_var(--analog-control-shadow)] active:bg-[var(--analog-surface-cavity-strong)] active:shadow-none">
             <PlusIcon className="size-4 pointer-events-none" />
           </NumberField.Increment>
         </NumberField.Group>
@@ -202,8 +202,11 @@ export const WheelNumber = React.forwardRef<HTMLDivElement, WheelNumberProps>(
               perspective: 800,
             }}
           >
-            <NumberField.ScrubAreaCursor className="drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] z-50">
-              <CursorGrowIcon className="fill-[var(--analog-surface-cavity-strong)] text-[var(--analog-control-foreground)]" />
+            <NumberField.ScrubAreaCursor
+              className="z-50"
+              style={{ filter: 'drop-shadow(0 1px 1px var(--analog-wheel-cursor-shadow))' }}
+            >
+              <CursorGrowIcon className="text-[var(--analog-wheel-cursor-stroke)]" />
             </NumberField.ScrubAreaCursor>
 
             <div className="analog-wheel-lighting" />
@@ -236,7 +239,7 @@ export const WheelNumber = React.forwardRef<HTMLDivElement, WheelNumberProps>(
                 const angle = (i / 40) * 360;
                 const radius = 100;
 
-                // Paint every 10th ridge with a white stripe for speed reference
+                // Paint every 10th ridge with a highlight stripe for speed reference
                 const isMarked = i % 10 === 0;
 
                 return (
@@ -252,8 +255,7 @@ export const WheelNumber = React.forwardRef<HTMLDivElement, WheelNumberProps>(
                     <div
                       className="absolute inset-x-2 inset-y-[1px] rounded-[1.5px] border-b"
                       style={{
-                        borderColor:
-                          'color-mix(in oklch, var(--analog-control-border-strong) 80%, black 20%)',
+                        borderColor: 'var(--analog-wheel-ridge-border)',
                         background: getWheelRidgeBackground(isMarked),
                       }}
                     />
@@ -275,8 +277,8 @@ function CursorGrowIcon(props: React.ComponentProps<'svg'>) {
       width="26"
       height="14"
       viewBox="0 0 24 14"
-      fill="black"
-      stroke="white"
+      fill="var(--analog-wheel-cursor-fill)"
+      stroke="var(--analog-wheel-cursor-stroke)"
       xmlns="http://www.w3.org/2000/svg"
       {...props}
     >

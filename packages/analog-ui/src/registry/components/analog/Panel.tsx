@@ -51,7 +51,7 @@ const Screw = ({
   const resolvedVariant = useAnalogMaterialVariant(variant);
   const holeColor =
     resolvedVariant === 'black'
-      ? 'color-mix(in oklch, var(--analog-surface-onyx-lo) 82%, black)'
+      ? 'color-mix(in oklch, var(--analog-surface-onyx-lo) 82%, var(--analog-shadow-color))'
       : 'var(--analog-screw-hole)';
   const shadowColor =
     resolvedVariant === 'black'
@@ -81,7 +81,7 @@ const Screw = ({
         style={{
           boxShadow:
             `inset calc(sin(var(--analog-light-angle-screw, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-screw, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 0.25) color-mix(in oklch, var(--analog-control-foreground) 40%, transparent), ` +
-            `calc(sin(var(--analog-light-angle-screw, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-screw, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 1.5) rgba(0, 0, 0, calc(0.8 * var(--analog-shadow-depth, 1)))`,
+            `calc(sin(var(--analog-light-angle-screw, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-screw, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 1.5) rgb(var(--analog-shadow-rgb) / calc(0.8 * var(--analog-shadow-depth, 1)))`,
         }}
       >
         {hole === 'slot' && (
@@ -173,21 +173,21 @@ const Panel = React.forwardRef<HTMLDivElement, PanelProps>(
             ? {
                 background:
                   `linear-gradient(calc(var(--analog-light-angle-panel, 180deg) - 90deg), ` +
-                  `rgba(255,255,255,calc(0.03 * var(--analog-light-power, 1))), ` +
-                  `rgba(255,255,255,0) 45%, ` +
-                  `rgba(0,0,0,calc(0.22 * var(--analog-light-power, 1))))` +
+                  `rgb(var(--analog-highlight-rgb) / calc(0.03 * var(--analog-light-power, 1))), ` +
+                  `rgb(var(--analog-highlight-rgb) / 0) 45%, ` +
+                  `rgb(var(--analog-shadow-rgb) / calc(0.22 * var(--analog-light-power, 1))))` +
                   `, var(--analog-surface-panel)`,
                 boxShadow:
-                  `inset calc(sin(var(--analog-light-angle-panel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-panel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 0.25) rgba(255, 255, 255, calc(0.07 * var(--analog-light-power, 1))), ` +
-                  `calc(sin(var(--analog-light-angle-panel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-panel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) 0 rgba(255, 255, 255, calc(0.04 * var(--analog-light-power, 1))), ` +
-                  `0 var(--analog-bevel-width, 4px) calc(var(--analog-bevel-width, 4px) * 3) rgba(0, 0, 0, calc(0.5 * var(--analog-shadow-depth, 1)))`,
+                  `inset calc(sin(var(--analog-light-angle-panel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-panel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 0.25) rgb(var(--analog-highlight-rgb) / calc(0.07 * var(--analog-light-power, 1))), ` +
+                  `calc(sin(var(--analog-light-angle-panel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-panel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) 0 rgb(var(--analog-highlight-rgb) / calc(0.04 * var(--analog-light-power, 1))), ` +
+                  `0 var(--analog-bevel-width, 4px) calc(var(--analog-bevel-width, 4px) * 3) rgb(var(--analog-shadow-rgb) / calc(0.5 * var(--analog-shadow-depth, 1)))`,
               }
             : {
                 background:
                   `radial-gradient(circle at center, ` +
                   `color-mix(in oklch, var(--analog-control-surface-strong) var(--analog-panel-hotspot-mix, 72%), var(--analog-surface-panel)) 0%, ` +
                   `var(--analog-panel-edge-surface) var(--analog-panel-hotspot-stop, 72%))`,
-                boxShadow: `0 calc(var(--analog-bevel-width, 4px) * 0.5) calc(var(--analog-bevel-width, 4px) * 1.5) rgba(0, 0, 0, calc(0.28 * var(--analog-shadow-depth, 1)))`,
+                boxShadow: `0 calc(var(--analog-bevel-width, 4px) * 0.5) calc(var(--analog-bevel-width, 4px) * 1.5) rgb(var(--analog-shadow-rgb) / calc(0.28 * var(--analog-shadow-depth, 1)))`,
               }),
         }}
         {...props}

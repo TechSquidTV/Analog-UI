@@ -128,10 +128,10 @@ export const Indicator = React.forwardRef<HTMLDivElement, IndicatorProps>(
               borderRadius: radius,
               background: isChrome
                 ? `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 90deg), var(--analog-surface-metal-hi), var(--analog-surface-metal-mid) 40%, var(--analog-surface-metal-hi) 60%, var(--analog-surface-metal-lo))`
-                : `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 90deg), var(--analog-surface-onyx-hi), var(--analog-surface-onyx-lo) 40%, var(--analog-surface-onyx-mid) 60%, color-mix(in oklch, var(--analog-surface-onyx-lo) 82%, black))`,
+                : `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 90deg), var(--analog-surface-onyx-hi), var(--analog-surface-onyx-lo) 40%, var(--analog-surface-onyx-mid) 60%, color-mix(in oklch, var(--analog-surface-onyx-lo) 82%, var(--analog-shadow-color)))`,
               boxShadow: isChrome
-                ? `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.5) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.5) calc(var(--analog-bevel-width, 4px) * 0.75) rgba(255,255,255,calc(1.2 * var(--analog-light-power, 1))), inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.75) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.75) var(--analog-bevel-width, 4px) rgba(0,0,0,calc(0.4 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) 0 rgba(255,255,255,calc(0.18 * var(--analog-light-power, 1))), 0 var(--analog-bevel-width, 4px) calc(var(--analog-bevel-width, 4px) * 1.5) rgba(0,0,0,calc(0.6 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), 0 0 0 calc(var(--analog-bevel-width, 4px) * 0.25) rgba(0,0,0,calc(0.15 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`
-                : `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 0.5) rgba(255,255,255,calc(0.15 * var(--analog-light-power, 1))), inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.5) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.5) calc(var(--analog-bevel-width, 4px) * 0.75) rgba(0,0,0,calc(0.8 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) 0 rgba(255,255,255,calc(0.08 * var(--analog-light-power, 1))), 0 calc(var(--analog-bevel-width, 4px) * 0.75) calc(var(--analog-bevel-width, 4px) * 1.25) rgba(0,0,0,calc(0.9 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), 0 0 0 calc(var(--analog-bevel-width, 4px) * 0.25) rgba(0,0,0,calc(0.6 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
+                ? `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.5) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.5) calc(var(--analog-bevel-width, 4px) * 0.75) rgb(var(--analog-highlight-rgb) / calc(1.2 * var(--analog-light-power, 1))), inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.75) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.75) var(--analog-bevel-width, 4px) rgb(var(--analog-shadow-rgb) / calc(0.4 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) 0 rgb(var(--analog-highlight-rgb) / calc(0.18 * var(--analog-light-power, 1))), 0 var(--analog-bevel-width, 4px) calc(var(--analog-bevel-width, 4px) * 1.5) rgb(var(--analog-shadow-rgb) / calc(0.6 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), 0 0 0 calc(var(--analog-bevel-width, 4px) * 0.25) rgb(var(--analog-shadow-rgb) / calc(0.15 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`
+                : `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 0.5) rgb(var(--analog-highlight-rgb) / calc(0.15 * var(--analog-light-power, 1))), inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.5) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.5) calc(var(--analog-bevel-width, 4px) * 0.75) rgb(var(--analog-shadow-rgb) / calc(0.8 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) 0 rgb(var(--analog-highlight-rgb) / calc(0.08 * var(--analog-light-power, 1))), 0 calc(var(--analog-bevel-width, 4px) * 0.75) calc(var(--analog-bevel-width, 4px) * 1.25) rgb(var(--analog-shadow-rgb) / calc(0.9 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), 0 0 0 calc(var(--analog-bevel-width, 4px) * 0.25) rgb(var(--analog-shadow-rgb) / calc(0.6 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
             }}
           />
         )}
@@ -146,9 +146,9 @@ export const Indicator = React.forwardRef<HTMLDivElement, IndicatorProps>(
             backgroundColor: palette.bg,
             boxShadow: hasBezel
               ? `
-              inset calc(sin(var(--analog-light-angle-lens, 180deg)) * var(--analog-bevel-width, 4px) * -1) calc(cos(var(--analog-light-angle-lens, 180deg)) * var(--analog-bevel-width, 4px)) calc(var(--analog-bevel-width, 4px) * 2) rgba(0,0,0,calc(0.9 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))),
-              inset calc(sin(var(--analog-light-angle-lens, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(cos(var(--analog-light-angle-lens, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(var(--analog-bevel-width, 4px) * 0.5) rgba(0,0,0,calc(1 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))),
-              calc(sin(var(--analog-light-angle-lens, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-lens, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) 0 rgba(255,255,255,calc(${isChrome ? 0.6 : 0.2} * var(--analog-light-power, 1)))
+              inset calc(sin(var(--analog-light-angle-lens, 180deg)) * var(--analog-bevel-width, 4px) * -1) calc(cos(var(--analog-light-angle-lens, 180deg)) * var(--analog-bevel-width, 4px)) calc(var(--analog-bevel-width, 4px) * 2) rgb(var(--analog-shadow-rgb) / calc(0.9 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))),
+              inset calc(sin(var(--analog-light-angle-lens, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(cos(var(--analog-light-angle-lens, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(var(--analog-bevel-width, 4px) * 0.5) rgb(var(--analog-shadow-rgb) / calc(1 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))),
+              calc(sin(var(--analog-light-angle-lens, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-lens, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) 0 rgb(var(--analog-highlight-rgb) / calc(${isChrome ? 0.6 : 0.2} * var(--analog-light-power, 1)))
             `
               : undefined,
           }}
@@ -159,9 +159,9 @@ export const Indicator = React.forwardRef<HTMLDivElement, IndicatorProps>(
             style={{
               backgroundImage:
                 shape === 'square'
-                  ? `linear-gradient(45deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 25%, rgba(255,255,255,0) 50%, rgba(255,255,255,0.2) 75%, rgba(255,255,255,0) 100%)`
-                  : `repeating-conic-gradient(from 0deg, rgba(255,255,255,0) 0deg, rgba(255,255,255,0.4) 15deg, rgba(255,255,255,0) 30deg), 
-                repeating-radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.1) 10%, rgba(0,0,0,0) 20%)`,
+                  ? `linear-gradient(45deg, transparent 0%, var(--analog-lens-facet-highlight) 25%, transparent 50%, var(--analog-lens-facet-highlight) 75%, transparent 100%)`
+                  : `repeating-conic-gradient(from 0deg, transparent 0deg, var(--analog-lens-facet-highlight-strong) 15deg, transparent 30deg),
+                repeating-radial-gradient(circle at 50% 50%, transparent 0%, var(--analog-lens-facet-shadow) 10%, transparent 20%)`,
             }}
           />
 
@@ -170,7 +170,7 @@ export const Indicator = React.forwardRef<HTMLDivElement, IndicatorProps>(
             className="absolute inset-0 opacity-60 mix-blend-screen z-20"
             style={{
               borderRadius: shape === 'square' ? '8%' : '50%',
-              background: `radial-gradient(circle at ${lensGlintPosition.x}% ${lensGlintPosition.y}%, rgba(255,255,255,calc(0.72 * var(--analog-light-power, 1))) 0%, rgba(255,255,255,calc(0.34 * var(--analog-light-power, 1))) 16%, rgba(255,255,255,0) 40%)`,
+              background: `radial-gradient(circle at ${lensGlintPosition.x}% ${lensGlintPosition.y}%, rgb(var(--analog-highlight-rgb) / calc(0.72 * var(--analog-light-power, 1))) 0%, rgb(var(--analog-highlight-rgb) / calc(0.34 * var(--analog-light-power, 1))) 16%, transparent 40%)`,
             }}
           />
 
@@ -180,7 +180,7 @@ export const Indicator = React.forwardRef<HTMLDivElement, IndicatorProps>(
             style={{
               borderRadius: shape === 'square' ? '8%' : '50%',
               background:
-                'radial-gradient(circle at 50% 50%, transparent 40%, rgba(0,0,0,0.6) 100%)',
+                'radial-gradient(circle at 50% 50%, transparent 40%, var(--analog-lens-dome-shadow) 100%)',
             }}
           />
 
@@ -200,7 +200,8 @@ export const Indicator = React.forwardRef<HTMLDivElement, IndicatorProps>(
               className="absolute inset-0 mix-blend-overlay"
               style={{
                 borderRadius: shape === 'square' ? '8%' : '50%',
-                background: `radial-gradient(circle at 50% 40%, rgba(255,255,255,0.3) 0%, transparent 50%)`,
+                background:
+                  'radial-gradient(circle at 50% 40%, var(--analog-lens-core-glint) 0%, transparent 50%)',
               }}
             />
           </div>

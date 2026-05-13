@@ -363,10 +363,10 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
                     'color-mix(in oklch, var(--analog-control-border-strong) 65%, transparent)',
                   background:
                     `linear-gradient(calc(var(--analog-light-angle-pointer, 180deg) - ${rotationAngle}deg - 45deg), ` +
-                    `color-mix(in oklch, var(--analog-surface-metal-hi) 78%, white 22%) 0%, ` +
+                    `color-mix(in oklch, var(--analog-surface-metal-hi) 78%, var(--analog-highlight-color) 22%) 0%, ` +
                     `var(--analog-surface-metal-mid) 40%, ` +
                     `var(--analog-surface-metal-lo) 100%)`,
-                  boxShadow: `inset calc(sin(${pointerBevelAngle}) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(${pointerBevelAngle}) * var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 0.5) rgba(255,255,255,calc(0.6 * var(--analog-light-power, 1))), inset calc(sin(${pointerBevelAngle}) * var(--analog-bevel-width, 4px) * -0.25) calc(cos(${pointerBevelAngle}) * var(--analog-bevel-width, 4px) * 0.25) calc(var(--analog-bevel-width, 4px) * 0.5) rgba(0,0,0,calc(0.5 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), calc(sin(${pointerBevelAngle}) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(${pointerBevelAngle}) * var(--analog-bevel-width, 4px) * -0.25) var(--analog-bevel-width, 4px) rgba(0,0,0,calc(0.6 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
+                  boxShadow: `inset calc(sin(${pointerBevelAngle}) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(${pointerBevelAngle}) * var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 0.5) rgb(var(--analog-highlight-rgb) / calc(0.6 * var(--analog-light-power, 1))), inset calc(sin(${pointerBevelAngle}) * var(--analog-bevel-width, 4px) * -0.25) calc(cos(${pointerBevelAngle}) * var(--analog-bevel-width, 4px) * 0.25) calc(var(--analog-bevel-width, 4px) * 0.5) rgb(var(--analog-shadow-rgb) / calc(0.5 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), calc(sin(${pointerBevelAngle}) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(${pointerBevelAngle}) * var(--analog-bevel-width, 4px) * -0.25) var(--analog-bevel-width, 4px) rgb(var(--analog-shadow-rgb) / calc(0.6 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
                 }}
               >
                 <div
@@ -439,7 +439,11 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
                         in2="offset-blur"
                         result="inverse"
                       />
-                      <feFlood floodColor="black" floodOpacity="0.7" result="color" />
+                      <feFlood
+                        floodColor="var(--analog-shadow-color)"
+                        floodOpacity="0.7"
+                        result="color"
+                      />
                       <feComposite operator="in" in="color" in2="inverse" result="shadow" />
                       <feComposite operator="over" in="shadow" in2="SourceGraphic" />
                     </filter>
@@ -448,7 +452,7 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
                         cx="50"
                         cy="50"
                         r="46"
-                        stroke="white"
+                        stroke="var(--analog-mask-fill)"
                         strokeWidth="6.5"
                         fill="none"
                         pathLength="360"

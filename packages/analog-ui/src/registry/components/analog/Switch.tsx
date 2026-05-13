@@ -111,14 +111,14 @@ export const Switch = React.forwardRef<HTMLElement, SwitchProps>(
                 />
 
                 {/* Concentric rings to make it look machined */}
-                <div className="absolute inset-[2px] rounded-full border border-black/10 z-[2]" />
-                <div className="absolute inset-[4px] rounded-full border border-black/10 z-[2]" />
+                <div className="absolute inset-[2px] rounded-full border border-[color:var(--analog-seam-shadow)] z-[2]" />
+                <div className="absolute inset-[4px] rounded-full border border-[color:var(--analog-seam-shadow)] z-[2]" />
 
                 {/* Subtle edge highlight */}
                 <div
                   className="absolute inset-0 rounded-full z-[3]"
                   style={{
-                    boxShadow: `inset calc(sin(var(--analog-light-angle-thumb, 180deg)) * 2px) calc(cos(var(--analog-light-angle-thumb, 180deg)) * -2px) 2px rgba(255,255,255,calc(0.8 * var(--analog-light-power, 1)))`,
+                    boxShadow: `inset calc(sin(var(--analog-light-angle-thumb, 180deg)) * 2px) calc(cos(var(--analog-light-angle-thumb, 180deg)) * -2px) 2px rgb(var(--analog-highlight-rgb) / calc(0.8 * var(--analog-light-power, 1)))`,
                   }}
                 />
               </div>

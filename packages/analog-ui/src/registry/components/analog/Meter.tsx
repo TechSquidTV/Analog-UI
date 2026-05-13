@@ -297,34 +297,34 @@ const getMeterGroupShellStyle = (variant: MeterGroupVariant): React.CSSPropertie
     case 'chrome':
       return {
         borderColor: 'transparent',
-        background: `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 90deg), color-mix(in oklch, var(--analog-surface-metal-hi) 82%, white 10%) 0%, var(--analog-surface-metal-hi) 18%, var(--analog-surface-metal-mid) 52%, var(--analog-surface-metal-lo) 100%)`,
+        background: `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 90deg), color-mix(in oklch, var(--analog-surface-metal-hi) 82%, var(--analog-highlight-color) 10%) 0%, var(--analog-surface-metal-hi) 18%, var(--analog-surface-metal-mid) 52%, var(--analog-surface-metal-lo) 100%)`,
         boxShadow:
-          `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 0.25) rgba(255,255,255,calc(0.95 * var(--analog-light-power, 1))), ` +
-          `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(var(--analog-bevel-width, 4px) * 0.5) rgba(0,0,0,calc(0.25 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), ` +
-          `calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) 0 rgba(255,255,255,calc(0.18 * var(--analog-light-power, 1))), ` +
-          `0 calc(var(--analog-bevel-width, 4px) * 0.5) var(--analog-bevel-width, 4px) rgba(0,0,0,calc(0.5 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), ` +
-          `0 0 0 calc(var(--analog-bevel-width, 4px) * 0.25) rgba(0,0,0,calc(0.1 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
+          `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 0.25) rgb(var(--analog-highlight-rgb) / calc(0.95 * var(--analog-light-power, 1))), ` +
+          `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(var(--analog-bevel-width, 4px) * 0.5) rgb(var(--analog-shadow-rgb) / calc(0.25 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), ` +
+          `calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) 0 rgb(var(--analog-highlight-rgb) / calc(0.18 * var(--analog-light-power, 1))), ` +
+          `0 calc(var(--analog-bevel-width, 4px) * 0.5) var(--analog-bevel-width, 4px) rgb(var(--analog-shadow-rgb) / calc(0.5 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), ` +
+          `0 0 0 calc(var(--analog-bevel-width, 4px) * 0.25) rgb(var(--analog-shadow-rgb) / calc(0.1 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
       };
     case 'black':
       return {
         borderColor: 'transparent',
         background: `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 90deg), var(--analog-surface-onyx-hi) 0%, var(--analog-surface-onyx-mid) 45%, var(--analog-surface-onyx-lo) 100%)`,
         boxShadow:
-          `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 0.25) rgba(255,255,255,calc(0.14 * var(--analog-light-power, 1))), ` +
-          `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(var(--analog-bevel-width, 4px) * 0.5) rgba(0,0,0,calc(0.8 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), ` +
-          `calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) 0 rgba(255,255,255,calc(0.08 * var(--analog-light-power, 1))), ` +
-          `0 calc(var(--analog-bevel-width, 4px) * 0.5) var(--analog-bevel-width, 4px) rgba(0,0,0,calc(0.9 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), ` +
-          `0 0 0 calc(var(--analog-bevel-width, 4px) * 0.25) rgba(0,0,0,calc(0.6 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
+          `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 0.25) rgb(var(--analog-highlight-rgb) / calc(0.14 * var(--analog-light-power, 1))), ` +
+          `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(var(--analog-bevel-width, 4px) * 0.5) rgb(var(--analog-shadow-rgb) / calc(0.8 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), ` +
+          `calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) 0 rgb(var(--analog-highlight-rgb) / calc(0.08 * var(--analog-light-power, 1))), ` +
+          `0 calc(var(--analog-bevel-width, 4px) * 0.5) var(--analog-bevel-width, 4px) rgb(var(--analog-shadow-rgb) / calc(0.9 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), ` +
+          `0 0 0 calc(var(--analog-bevel-width, 4px) * 0.25) rgb(var(--analog-shadow-rgb) / calc(0.6 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
       };
     case 'panel':
     default:
       return {
         borderColor: 'transparent',
-        background: `linear-gradient(calc(var(--analog-light-angle-panel, 180deg) - 90deg), rgba(255,255,255,calc(0.03 * var(--analog-light-power, 1))) 0%, rgba(255,255,255,0) 45%, rgba(0,0,0,calc(0.22 * var(--analog-light-power, 1))) 100%), var(--analog-surface-panel)`,
+        background: `linear-gradient(calc(var(--analog-light-angle-panel, 180deg) - 90deg), rgb(var(--analog-highlight-rgb) / calc(0.03 * var(--analog-light-power, 1))) 0%, rgb(var(--analog-highlight-rgb) / 0) 45%, rgb(var(--analog-shadow-rgb) / calc(0.22 * var(--analog-light-power, 1))) 100%), var(--analog-surface-panel)`,
         boxShadow:
-          `inset calc(sin(var(--analog-light-angle-panel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-panel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 0.25) rgba(255, 255, 255, calc(0.07 * var(--analog-light-power, 1))), ` +
-          `calc(sin(var(--analog-light-angle-panel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-panel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) 0 rgba(255,255,255,calc(0.04 * var(--analog-light-power, 1))), ` +
-          `0 var(--analog-bevel-width, 4px) calc(var(--analog-bevel-width, 4px) * 3) rgba(0, 0, 0, calc(0.5 * var(--analog-shadow-depth, 1))), ` +
+          `inset calc(sin(var(--analog-light-angle-panel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-panel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 0.25) rgb(var(--analog-highlight-rgb) / calc(0.07 * var(--analog-light-power, 1))), ` +
+          `calc(sin(var(--analog-light-angle-panel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-panel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) 0 rgb(var(--analog-highlight-rgb) / calc(0.04 * var(--analog-light-power, 1))), ` +
+          `0 var(--analog-bevel-width, 4px) calc(var(--analog-bevel-width, 4px) * 3) rgb(var(--analog-shadow-rgb) / calc(0.5 * var(--analog-shadow-depth, 1))), ` +
           `0 0 0 1px color-mix(in oklch, var(--analog-surface-raised) 38%, transparent)`,
       };
   }
@@ -649,7 +649,7 @@ export const Meter = React.forwardRef<HTMLDivElement, MeterProps>(
       tone,
       className: cn('absolute inset-0 pointer-events-none z-30', lensClassName),
       style: {
-        background: `linear-gradient(var(--analog-light-angle-lens, 180deg), rgba(255,255,255,calc(0.15 * var(--analog-light-power, 1))) 0%, transparent 50%, rgba(0,0,0,calc(0.5 * var(--analog-light-power, 1))) 100%)`,
+        background: `linear-gradient(var(--analog-light-angle-lens, 180deg), rgb(var(--analog-highlight-rgb) / calc(0.15 * var(--analog-light-power, 1))) 0%, transparent 50%, rgb(var(--analog-shadow-rgb) / calc(0.5 * var(--analog-light-power, 1))) 100%)`,
         mixBlendMode: colors.isDisplay ? 'soft-light' : 'overlay',
         opacity: colors.isDisplay ? 0.3 : 1,
       },
@@ -771,7 +771,7 @@ export const MeterGroup = React.forwardRef<HTMLDivElement, MeterGroupProps>(
               <div
                 className="pointer-events-none absolute inset-0"
                 style={{
-                  background: `linear-gradient(var(--analog-light-angle-lens, 180deg), rgba(255,255,255,calc(0.08 * var(--analog-light-power, 1))) 0%, rgba(255,255,255,0.02) 24%, transparent 48%, rgba(0,0,0,calc(0.18 * var(--analog-light-power, 1))) 100%)`,
+                  background: `linear-gradient(var(--analog-light-angle-lens, 180deg), rgb(var(--analog-highlight-rgb) / calc(0.08 * var(--analog-light-power, 1))) 0%, rgb(var(--analog-highlight-rgb) / 0.02) 24%, transparent 48%, rgb(var(--analog-shadow-rgb) / calc(0.18 * var(--analog-light-power, 1))) 100%)`,
                 }}
               />
               <div
