@@ -1,3 +1,6 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+
 const RAW_FINISH_PATTERNS = [
   {
     pattern: /\brgba\s*\(/gi,
@@ -38,6 +41,20 @@ const CSS_ONLY_PATTERNS = [
   },
 ];
 
+const ANALOG_TOKEN_REFERENCE_PATTERN = /var\(\s*(--analog-[A-Za-z0-9_-]+)/g;
+const ANALOG_TOKEN_DEFINITION_PATTERNS = [
+  /(--analog-[A-Za-z0-9_-]+)\s*:/g,
+  /['"](--analog-[A-Za-z0-9_-]+)['"]\s*:/g,
+];
+const DEFAULT_ALLOWED_TOKEN_PATTERNS = [
+  /^--analog-light-angle-[A-Za-z0-9_-]+$/u,
+  /^--analog-light-power$/u,
+];
+const FINISH_CHANNEL_PATTERN = /rgb\(\s*var\(--analog-(?:highlight|shadow)-rgb\)/iu;
+const LIGHTING_CONTEXT_PATTERN =
+  /useAnalogLighting\s*\(|--analog-light-power\b|--analog-light-angle-[A-Za-z0-9_-]+\b/u;
+const themeTokenCache = new Map();
+
 function getSourceCode(context) {
   return context.sourceCode ?? context.getSourceCode();
 }
@@ -53,6 +70,81 @@ function getPatternExcerpt(text, match) {
 
 function isCssSource(filename) {
   return /\.css(?:\.js)?$/u.test(filename);
+}
+
+function collectAnalogTokenDefinitions(text) {
+  const tokens = new Set();
+
+  for (const pattern of ANALOG_TOKEN_DEFINITION_PATTERNS) {
+    pattern.lastIndex = 0;
+
+    for (const match of text.matchAll(pattern)) {
+      tokens.add(match[1]);
+    }
+  }
+
+  return tokens;
+}
+
+function collectAnalogTokenReferences(text) {
+  const references = [];
+  ANALOG_TOKEN_REFERENCE_PATTERN.lastIndex = 0;
+
+  for (const match of text.matchAll(ANALOG_TOKEN_REFERENCE_PATTERN)) {
+    references.push({
+      token: match[1],
+      start: (match.index ?? 0) + match[0].indexOf(match[1]),
+    });
+  }
+
+  return references;
+}
+
+function readThemeTokens(themeFile) {
+  if (!themeFile) {
+    return new Set();
+  }
+
+  const resolvedThemeFile = resolve(process.cwd(), themeFile);
+
+  if (themeTokenCache.has(resolvedThemeFile)) {
+    return themeTokenCache.get(resolvedThemeFile);
+  }
+
+  let tokens = new Set();
+
+  try {
+    tokens = collectAnalogTokenDefinitions(readFileSync(resolvedThemeFile, 'utf8'));
+  } catch {
+    tokens = new Set();
+  }
+
+  themeTokenCache.set(resolvedThemeFile, tokens);
+  return tokens;
+}
+
+function getTokenRuleOptions(context) {
+  const options = context.options[0] ?? {};
+  const optionTokens = Array.isArray(options.tokens) ? options.tokens : [];
+  const optionAllowedPatterns = Array.isArray(options.allowedPatterns)
+    ? options.allowedPatterns
+    : [];
+
+  return {
+    knownTokens: new Set([...readThemeTokens(options.themeFile), ...optionTokens]),
+    allowedPatterns: [
+      ...DEFAULT_ALLOWED_TOKEN_PATTERNS,
+      ...optionAllowedPatterns.map((pattern) => new RegExp(pattern, 'u')),
+    ],
+  };
+}
+
+function isAllowedToken(token, knownTokens, localTokens, allowedPatterns) {
+  return (
+    knownTokens.has(token) ||
+    localTokens.has(token) ||
+    allowedPatterns.some((pattern) => pattern.test(token))
+  );
 }
 
 function findMatches(text, filename) {
@@ -198,6 +290,98 @@ const noRawFinishColors = {
   },
 };
 
+const noUnknownAnalogTokens = {
+  meta: {
+    type: 'problem',
+    docs: {
+      description: 'Disallow references to undefined Analog CSS tokens.',
+    },
+    schema: [
+      {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          themeFile: { type: 'string' },
+          tokens: {
+            type: 'array',
+            items: { type: 'string' },
+          },
+          allowedPatterns: {
+            type: 'array',
+            items: { type: 'string' },
+          },
+        },
+      },
+    ],
+  },
+  create(context) {
+    const sourceCode = getSourceCode(context);
+    const { knownTokens, allowedPatterns } = getTokenRuleOptions(context);
+
+    return {
+      Program() {
+        const text = sourceCode.getText();
+        const localTokens = collectAnalogTokenDefinitions(text);
+        const reportedTokens = new Set();
+
+        for (const { token, start } of collectAnalogTokenReferences(text)) {
+          if (
+            reportedTokens.has(token) ||
+            isAllowedToken(token, knownTokens, localTokens, allowedPatterns)
+          ) {
+            continue;
+          }
+
+          reportedTokens.add(token);
+          context.report({
+            loc: {
+              start: sourceCode.getLocFromIndex(start),
+              end: sourceCode.getLocFromIndex(start + token.length),
+            },
+            message: `Define "${token}" in theme.css, declare it locally, or add an explicit allow pattern before referencing it.`,
+          });
+        }
+      },
+    };
+  },
+};
+
+const requireLightingForFinishChannels = {
+  meta: {
+    type: 'problem',
+    docs: {
+      description:
+        'Require Analog highlight/shadow finish channels to participate in the lighting system.',
+    },
+    schema: [],
+  },
+  create(context) {
+    const sourceCode = getSourceCode(context);
+
+    return {
+      Program() {
+        const text = sourceCode.getText();
+        const match = text.match(FINISH_CHANNEL_PATTERN);
+
+        if (!match || LIGHTING_CONTEXT_PATTERN.test(text)) {
+          return;
+        }
+
+        const start = match.index ?? 0;
+
+        context.report({
+          loc: {
+            start: sourceCode.getLocFromIndex(start),
+            end: sourceCode.getLocFromIndex(start + match[0].length),
+          },
+          message:
+            'Finish recipes using Analog highlight/shadow channels should include useAnalogLighting(), --analog-light-power, or --analog-light-angle-* context.',
+        });
+      },
+    };
+  },
+};
+
 const cssTextProcessor = {
   meta: {
     name: 'analog-design/css-text',
@@ -220,5 +404,7 @@ export default {
   },
   rules: {
     'no-raw-finish-colors': noRawFinishColors,
+    'no-unknown-analog-tokens': noUnknownAnalogTokens,
+    'require-lighting-for-finish-channels': requireLightingForFinishChannels,
   },
 };

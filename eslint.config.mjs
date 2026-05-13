@@ -3,11 +3,15 @@ import globals from 'globals';
 import astro from 'eslint-plugin-astro';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
+import { fileURLToPath } from 'node:url';
 import tseslint from 'typescript-eslint';
 import analogDesign from './tools/eslint-plugin-analog-design/index.mjs';
 
 const reactFiles = ['apps/www/src/**/*.{jsx,tsx}', 'packages/analog-ui/src/**/*.{jsx,tsx}'];
 const analogComponentFiles = ['packages/analog-ui/src/registry/components/analog/**/*.{ts,tsx}'];
+const analogThemeFile = fileURLToPath(
+  new URL('./packages/analog-ui/src/theme.css', import.meta.url),
+);
 
 export default tseslint.config(
   {
@@ -63,6 +67,7 @@ export default tseslint.config(
       'eslint.config.mjs',
       'packages/analog-ui/scripts/**/*.mjs',
       'packages/analog-ui/tsup.config.ts',
+      'tools/**/*.mjs',
     ],
     languageOptions: {
       globals: {
@@ -98,6 +103,8 @@ export default tseslint.config(
     },
     rules: {
       'analog-design/no-raw-finish-colors': 'error',
+      'analog-design/no-unknown-analog-tokens': ['error', { themeFile: analogThemeFile }],
+      'analog-design/require-lighting-for-finish-channels': 'error',
     },
   },
   {
@@ -108,6 +115,8 @@ export default tseslint.config(
     processor: analogDesign.processors['css-text'],
     rules: {
       'analog-design/no-raw-finish-colors': 'error',
+      'analog-design/no-unknown-analog-tokens': ['error', { themeFile: analogThemeFile }],
+      'analog-design/require-lighting-for-finish-channels': 'error',
     },
   },
 );

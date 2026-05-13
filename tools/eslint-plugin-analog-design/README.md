@@ -22,3 +22,14 @@ Examples that should use theme or Analog tokens instead:
 
 `theme.css` is not linted by this rule because it is the canonical place where
 source token values and derived token recipes are declared.
+
+### `analog-design/no-unknown-analog-tokens`
+
+Flags `var(--analog-...)` references that are not declared in `theme.css`, declared
+locally in the same file, or explicitly allowed as runtime lighting tokens.
+
+### `analog-design/require-lighting-for-finish-channels`
+
+Flags files that use `--analog-highlight-rgb` or `--analog-shadow-rgb` channels
+without any lighting context. A file passes when it uses `useAnalogLighting(...)`,
+`--analog-light-power`, or a `--analog-light-angle-*` material channel.

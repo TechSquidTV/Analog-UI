@@ -161,6 +161,7 @@
     var(--analog-surface-cavity-strong) 74%,
     black 26%
   );
+  --analog-gauge-center-inset: calc(var(--spacing) * 6);
   --analog-shadow-depth: 0.9;
   --analog-bevel-width: calc(var(--spacing) * 1);
   --analog-grain-opacity: 0.36;
