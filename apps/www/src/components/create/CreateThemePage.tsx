@@ -445,6 +445,63 @@ const derivedVars = [
     'color-mix(in oklch, var(--analog-surface-cavity) 78%, black 22%)',
   ],
   ['--analog-surface-raised', 'color-mix(in oklch, var(--analog-surface-panel) 78%, white 8%)'],
+  ['--analog-material-hi', 'var(--analog-surface-metal-hi)'],
+  ['--analog-material-mid', 'var(--analog-surface-metal-mid)'],
+  ['--analog-material-lo', 'var(--analog-surface-metal-lo)'],
+  [
+    '--analog-material-border',
+    'color-mix(in oklch, var(--analog-surface-metal-lo) 34%, transparent)',
+  ],
+  [
+    '--analog-material-border-strong',
+    'color-mix(in oklch, var(--analog-surface-metal-lo) 52%, transparent)',
+  ],
+  ['--analog-control-foreground', 'var(--foreground)'],
+  [
+    '--analog-control-foreground-muted',
+    'color-mix(in oklch, var(--muted-foreground) 88%, var(--foreground) 12%)',
+  ],
+  [
+    '--analog-control-foreground-subtle',
+    'color-mix(in oklch, var(--muted-foreground) 72%, var(--foreground) 28%)',
+  ],
+  [
+    '--analog-material-foreground',
+    'color-mix(in oklch, var(--analog-surface-metal-lo) 42%, var(--analog-control-foreground) 58%)',
+  ],
+  ['--analog-annotation', 'color-mix(in oklch, var(--foreground) 62%, var(--muted-foreground))'],
+  ['--analog-legend', 'color-mix(in oklch, var(--foreground) 48%, var(--muted-foreground))'],
+  [
+    '--analog-telemetry-label',
+    'color-mix(in oklch, var(--foreground) 34%, var(--muted-foreground))',
+  ],
+  ['--analog-telemetry-value', 'color-mix(in oklch, var(--accent) 62%, var(--foreground))'],
+  ['--analog-control-surface', 'color-mix(in oklch, var(--card) 84%, var(--foreground) 16%)'],
+  [
+    '--analog-control-surface-strong',
+    'color-mix(in oklch, var(--card) 72%, var(--foreground) 28%)',
+  ],
+  ['--analog-control-border', 'color-mix(in oklch, var(--border) 70%, var(--foreground) 30%)'],
+  [
+    '--analog-control-border-strong',
+    'color-mix(in oklch, var(--border) 52%, var(--foreground) 48%)',
+  ],
+  ['--analog-control-selection', 'color-mix(in oklch, var(--accent) 78%, var(--foreground) 22%)'],
+  ['--analog-control-glass', 'color-mix(in oklch, var(--foreground) 5%, transparent)'],
+  ['--analog-control-glass-border', 'color-mix(in oklch, var(--border) 68%, transparent)'],
+  [
+    '--analog-panel-border',
+    'color-mix(in oklch, var(--border) 62%, var(--analog-surface-raised) 38%)',
+  ],
+  ['--analog-panel-foreground', 'var(--card-foreground)'],
+  [
+    '--analog-panel-muted',
+    'color-mix(in oklch, var(--muted-foreground) 82%, var(--foreground) 18%)',
+  ],
+  [
+    '--analog-screw-hole',
+    'color-mix(in oklch, var(--analog-surface-cavity-strong) 72%, black 28%)',
+  ],
   ['--analog-tone-chart-1', 'var(--chart-1)'],
   ['--analog-tone-chart-2', 'var(--chart-2)'],
   ['--analog-tone-chart-3', 'var(--chart-3)'],
@@ -1096,13 +1153,7 @@ function ThemeWorkbench({
         </div>
       </PanelContent>
       <PanelFooter className="grid grid-cols-2 gap-3 px-5 pb-5">
-        <PushButton
-          type="button"
-          width="100%"
-          height="2.75rem"
-          variant="black"
-          onClick={onReset}
-        >
+        <PushButton type="button" width="100%" height="2.75rem" variant="black" onClick={onReset}>
           Reset
         </PushButton>
         <PushButton type="button" width="100%" height="2.75rem" onClick={onExport}>
@@ -1116,7 +1167,7 @@ function ThemeWorkbench({
 function ControlLabel({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between gap-3">
-      <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#8f8f89]">
+      <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--analog-panel-muted)]">
         {label}
       </span>
       <span className="font-mono text-xs text-[var(--accent)]">{value}</span>
@@ -1150,7 +1201,7 @@ function RackPreview() {
       <PanelHeader className="gap-5 p-5 md:p-7">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
-            <div className="text-[10px] font-semibold uppercase tracking-[0.34em] text-[#85857d]">
+            <div className="text-[10px] font-semibold uppercase tracking-[0.34em] text-[var(--analog-panel-muted)]">
               Theme Lab
             </div>
             <PanelTitle className="mt-3 text-3xl uppercase tracking-[0.18em] md:text-4xl">
@@ -1160,7 +1211,7 @@ function RackPreview() {
           <PanelAction className="flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-2">
               <Indicator isOn={power} tone="success" size="xs" />
-              <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#a2a29a]">
+              <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--analog-panel-muted)]">
                 Power
               </span>
             </div>
