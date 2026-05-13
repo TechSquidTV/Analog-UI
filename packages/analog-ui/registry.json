@@ -171,6 +171,17 @@
           },
           "[data-analog-tone=\"chart-5\"]": {
             "--analog-tone-current": "var(--analog-tone-chart-5)"
+          },
+          "[data-analog-tone]": {
+            "--analog-emissive-base": "var(--analog-tone-current)",
+            "--analog-emissive-core": "color-mix(in oklch, var(--analog-tone-current) 36%, white 64%)",
+            "--analog-emissive-glow": "color-mix(in oklch, var(--analog-tone-current) 78%, white)",
+            "--analog-emissive-surface": "color-mix(in oklch, var(--analog-tone-current) 34%, black 66%)",
+            "--analog-emissive-edge": "color-mix(in oklch, var(--analog-tone-current) 62%, black 38%)",
+            "--analog-display-glow": "var(--analog-tone-current)",
+            "--analog-display-fill": "color-mix(in oklch, var(--analog-tone-current) 84%, white 16%)",
+            "--analog-display-ink": "color-mix(in oklch, var(--analog-tone-current) 18%, black 82%)",
+            "--analog-display-legend": "color-mix(in oklch, var(--analog-tone-current) 30%, black 70%)"
           }
         },
         "@layer components": {

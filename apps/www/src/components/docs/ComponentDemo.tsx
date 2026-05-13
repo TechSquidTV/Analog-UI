@@ -856,7 +856,23 @@ function IndicatorDemo({ mode }: { mode: DemoMode }) {
   const tones = ['destructive', 'warning', 'success', 'info', 'neutral'] as const;
   const [isOn, setIsOn] = useState(true);
   const [toneIndex, setToneIndex] = useState(1);
+  const handledTonePointerRef = useRef(false);
   const tone = tones[toneIndex];
+  const controlSize = { width: '7.5rem', height: '2.75rem' };
+  const cycleTone = () => {
+    setToneIndex((current) => (current + 1) % tones.length);
+  };
+  const handleTonePointerUp = () => {
+    handledTonePointerRef.current = true;
+    cycleTone();
+    window.setTimeout(() => {
+      handledTonePointerRef.current = false;
+    }, 120);
+  };
+  const handleToneClick = () => {
+    if (handledTonePointerRef.current) return;
+    cycleTone();
+  };
 
   return (
     <DemoStage
@@ -867,7 +883,9 @@ function IndicatorDemo({ mode }: { mode: DemoMode }) {
             label="State"
             value={
               <PushToggle
-                className="h-10 w-24"
+                type="button"
+                width={controlSize.width}
+                height={controlSize.height}
                 indicatorTone={tone}
                 pressed={isOn}
                 variant={isOn ? 'chrome' : 'black'}
@@ -882,11 +900,12 @@ function IndicatorDemo({ mode }: { mode: DemoMode }) {
             value={
               <PushButton
                 type="button"
-                width="5.5rem"
-                height="2.5rem"
+                width={controlSize.width}
+                height={controlSize.height}
                 extrusionLayers={18}
                 variant="black"
-                onClick={() => setToneIndex((current) => (current + 1) % tones.length)}
+                onPointerUp={handleTonePointerUp}
+                onClick={handleToneClick}
               >
                 {tone}
               </PushButton>
