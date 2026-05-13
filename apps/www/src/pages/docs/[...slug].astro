@@ -1,7 +1,9 @@
 ---
 import { render } from 'astro:content';
 
+import ComponentsIndex from '../../components/docs/ComponentsIndex.astro';
 import DocsLayout from '../../layouts/DocsLayout.astro';
+import { getComponentCategorySections } from '../../lib/components';
 import { getDocBySlug, getDocHref, getDocsEntries, getDocsNavigation } from '../../lib/docs';
 
 export async function getStaticPaths() {
@@ -20,8 +22,23 @@ if (!entry) {
   throw new Error(`Missing doc entry for slug "${Astro.params.slug}".`);
 }
 
-const { Content, headings } = await render(entry);
+const { Content, headings: renderedHeadings } = await render(entry);
 const navigation = await getDocsNavigation();
+const isComponentsIndex = entry.id === 'components';
+const headings = isComponentsIndex
+  ? [
+      ...getComponentCategorySections().map((section) => ({
+        depth: 2,
+        slug: section.category,
+        text: section.label,
+      })),
+      {
+        depth: 2,
+        slug: 'examples-and-install-commands',
+        text: 'Examples And Install Commands',
+      },
+    ]
+  : renderedHeadings;
 ---
 
 <DocsLayout
@@ -32,4 +49,5 @@ const navigation = await getDocsNavigation();
   headings={headings}
 >
   <Content />
+  {isComponentsIndex ? <ComponentsIndex /> : null}
 </DocsLayout>

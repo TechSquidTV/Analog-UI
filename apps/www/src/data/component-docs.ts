@@ -1,4 +1,4 @@
-import type { BlockName } from './block-catalog';
+import type { ComponentName } from './component-catalog';
 
 export interface ComponentApiProp {
   name: string;
@@ -53,7 +53,7 @@ const classNameProp = {
   description: 'Adds classes to the outer component shell.',
 };
 
-export const componentDocs: Record<BlockName, ComponentPageDoc> = {
+export const componentDocs: Record<ComponentName, ComponentPageDoc> = {
   dial: {
     usageIntro:
       'Use Dial for encoder-style rotation by default, or pass min and max to make it behave like a bounded knob.',
@@ -2473,6 +2473,6 @@ export function RockerThumbSurfaceExample() {
   },
 };
 
-export function getComponentPageDoc(name: BlockName) {
+export function getComponentPageDoc(name: ComponentName) {
   return componentDocs[name];
 }

@@ -1,0 +1,68 @@
+---
+import { getComponentCategorySections } from '../../lib/components';
+
+const sections = getComponentCategorySections();
+
+function renderMaterialLogic(value: string) {
+  return value.replace(/`([^`]+)`/g, '<code>$1</code>');
+}
+---
+
+{
+  sections.map((section) => (
+    <>
+      <h2 id={section.category}>{section.label}</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th>Material Logic</th>
+          </tr>
+        </thead>
+        <tbody>
+          {section.entries.map((entry) => (
+            <tr>
+              <td>
+                <a class="font-semibold text-white hover:text-[#f3d48a]" href={entry.href}>
+                  {entry.title}
+                </a>
+                <div class="mt-1 text-xs leading-5 text-[#8a8a8a]">{entry.summary}</div>
+              </td>
+              <td set:html={renderMaterialLogic(entry.materialLogic)} />
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </>
+  ))
+}
+
+<h2 id="examples-and-install-commands">Examples And Install Commands</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Route</th>
+      <th>Role</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <a href="/docs/components/dial"><code>/docs/components/[name]</code></a>
+      </td>
+      <td>Core component presentation.</td>
+    </tr>
+    <tr>
+      <td>
+        <a href="/view/dial"><code>/view/[name]</code></a>
+      </td>
+      <td>Showcase surfaces.</td>
+    </tr>
+    <tr>
+      <td>
+        <a href="/docs/registry"><code>/docs/registry</code></a>
+      </td>
+      <td>shadcn-compatible registry.</td>
+    </tr>
+  </tbody>
+</table>

@@ -1,6 +1,6 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 
-import { getBlockEntries } from './blocks';
+import { getComponentEntries } from './components';
 
 type DocEntry = CollectionEntry<'docs'>;
 
@@ -81,7 +81,7 @@ export async function getDocsNavigation() {
           },
         ]
       : []),
-    ...getBlockEntries().map((entry) => ({
+    ...getComponentEntries().map((entry) => ({
       href: getComponentDocHref(entry.name),
       label: entry.title,
     })),

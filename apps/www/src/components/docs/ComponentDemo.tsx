@@ -35,12 +35,12 @@ import {
 } from '../../../../../packages/analog-ui/src/index';
 import { cn } from '../../../../../packages/analog-ui/src/lib/utils';
 import { RockerThumbSurface } from '../../../../../packages/analog-ui/src/registry/components/analog/RockerThumbSurface';
-import type { BlockName } from '../../data/block-catalog';
+import type { ComponentName } from '../../data/component-catalog';
 
 type DemoMode = 'compact' | 'full';
 
-interface BlockDemoProps {
-  name: BlockName;
+interface ComponentDemoProps {
+  name: ComponentName;
   mode?: DemoMode;
 }
 
@@ -1054,7 +1054,7 @@ function RockerThumbSurfaceDemo({ mode }: { mode: DemoMode }) {
   );
 }
 
-export default function BlockDemo({ name, mode = 'full' }: BlockDemoProps) {
+export default function ComponentDemo({ name, mode = 'full' }: ComponentDemoProps) {
   switch (name) {
     case 'dial':
       return <DialDemo mode={mode} />;

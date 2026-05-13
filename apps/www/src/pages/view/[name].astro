@@ -1,21 +1,21 @@
 ---
-import BlockDemo from '../../components/blocks/BlockDemo';
+import ComponentDemo from '../../components/docs/ComponentDemo';
 import ComponentDependencyCards from '../../components/docs/ComponentDependencyCards.astro';
 import ComponentInstallCode from '../../components/docs/ComponentInstallCode.astro';
 import SiteLayout from '../../layouts/SiteLayout.astro';
-import { getAllBlockNames, getBlockEntry } from '../../lib/blocks';
+import { getAllComponentNames, getComponentEntry } from '../../lib/components';
 import { PushButton } from '../../../../../packages/analog-ui/src/index';
 
 export function getStaticPaths() {
-  return getAllBlockNames().map((name) => ({
+  return getAllComponentNames().map((name) => ({
     params: { name },
   }));
 }
 
-const entry = getBlockEntry(Astro.params.name ?? '');
+const entry = getComponentEntry(Astro.params.name ?? '');
 
 if (!entry) {
-  throw new Error(`Missing block entry for "${Astro.params.name}".`);
+  throw new Error(`Missing component entry for "${Astro.params.name}".`);
 }
 ---
 
@@ -55,7 +55,7 @@ if (!entry) {
       </aside>
 
       <div class="section-panel min-w-0 overflow-hidden p-5 md:p-8">
-        <BlockDemo name={entry.name} mode="full" client:load />
+        <ComponentDemo name={entry.name} mode="full" client:load />
       </div>
     </div>
   </section>

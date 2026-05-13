@@ -3,7 +3,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
 
-import { blockCatalog, type BlockName } from '../data/block-catalog';
+import { componentCatalog, type ComponentName } from '../data/component-catalog';
 import {
   componentDocs,
   type ComponentApiProp,
@@ -273,7 +273,7 @@ function splitManualPropName(name: string) {
     .filter(Boolean);
 }
 
-function findManualSection(name: BlockName, title: string) {
+function findManualSection(name: ComponentName, title: string) {
   const manualSections = componentDocs[name].api;
   return (
     manualSections.find((section) => section.title === title) ??
@@ -282,7 +282,7 @@ function findManualSection(name: BlockName, title: string) {
 }
 
 function findManualProp(
-  name: BlockName,
+  name: ComponentName,
   section: ComponentApiSection | undefined,
   propName: string,
 ) {
@@ -324,7 +324,7 @@ function isManualPropCovered(manualProp: ComponentApiProp, generatedProps: Compo
     : generatedNames.has(manualProp.name);
 }
 
-function mergeWithManualDocs(name: BlockName, sections: ExtractedSection[]) {
+function mergeWithManualDocs(name: ComponentName, sections: ExtractedSection[]) {
   const manualSections = componentDocs[name].api;
   const generatedSections = sections.map((section) => {
     const manualSection = findManualSection(name, section.title);
@@ -375,7 +375,7 @@ export function componentApiLoader() {
     const registry = readRegistry();
     const registryItems = new Map(registry.items.map((item) => [item.name, item]));
 
-    return (Object.keys(blockCatalog) as BlockName[]).map((name) => {
+    return (Object.keys(componentCatalog) as ComponentName[]).map((name) => {
       const registryItem = registryItems.get(name);
 
       if (!registryItem) {

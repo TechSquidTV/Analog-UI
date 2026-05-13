@@ -1,9 +1,9 @@
 ---
 import HomePage from '../components/home/HomePage';
 import SiteLayout from '../layouts/SiteLayout.astro';
-import { getBlockEntries } from '../lib/blocks';
+import { getComponentEntries } from '../lib/components';
 
-const componentCount = getBlockEntries().length;
+const componentCount = getComponentEntries().length;
 const componentCountLabel = `${Math.floor(componentCount / 5) * 5}+`;
 ---
 
