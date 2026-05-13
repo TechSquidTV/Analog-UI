@@ -2,6 +2,15 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { SurfaceButton } from './SurfaceButton';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
+import {
+  clamp,
+  getArcRatioFromPoint,
+  normalizeRatio,
+  polarPoint,
+  resolveRadialMarks,
+  valueToAngle,
+  type RadialPoint,
+} from './radial';
 
 const FLUTED_LAYER_PATH =
   'M155 1q29 34 72 34l25 31c-6 28 0 57 18 78l-9 39a93 93 0 0 0-50 63l-36 17a92 92 0 0 0-80 0l-36-17q-10-43-50-63l-8-39q26-34 17-78c11-12 15-18 25-31 28 0 55-13 72-35z';
@@ -24,6 +33,62 @@ export interface RotarySwitchMark {
   position?: number;
 }
 
+export interface RotarySwitchResolvedMark extends RotarySwitchMark {
+  ratio: number;
+  angle: number;
+  labelPosition: RadialPoint;
+}
+
+export interface RotarySwitchResolvedDetent {
+  value: number;
+  ratio: number;
+  angle: number;
+  isSelected: boolean;
+  lineStart: RadialPoint;
+  lineEnd: RadialPoint;
+}
+
+export interface RotarySwitchRenderState {
+  value: number;
+  min: number;
+  max: number;
+  ratio: number;
+  startAngle: number;
+  sweepAngle: number;
+  rotationAngle: number;
+  knobRotation: number;
+  disabled: boolean | undefined;
+}
+
+export interface RotarySwitchRenderKnobProps extends RotarySwitchRenderState {
+  className: string;
+  style: React.CSSProperties;
+  children: React.ReactNode;
+}
+
+export interface RotarySwitchRenderPointerProps extends RotarySwitchRenderState {
+  className: string;
+  style: React.CSSProperties;
+}
+
+export interface RotarySwitchRenderCapProps extends RotarySwitchRenderState {
+  lighting: AnalogLightingConfig<'surface'> | undefined;
+  containerClassName: string;
+  surfaceContainerClassName: string;
+  surfaceClassName: string;
+  surfaceStyle: React.CSSProperties;
+}
+
+export interface RotarySwitchRenderMarkProps extends RotarySwitchRenderState {
+  mark: RotarySwitchResolvedMark;
+  className: string;
+}
+
+export interface RotarySwitchRenderDetentProps extends RotarySwitchRenderState {
+  detent: RotarySwitchResolvedDetent;
+  className: string;
+}
+
 export interface RotarySwitchProps extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
   'defaultValue' | 'onChange'
@@ -40,15 +105,11 @@ export interface RotarySwitchProps extends Omit<
   marks?: readonly RotarySwitchMark[];
   showMarks?: boolean;
   showDetents?: boolean;
-}
-
-function clamp(value: number, min: number, max: number) {
-  return Math.min(max, Math.max(min, value));
-}
-
-function getRangeRatio(value: number, min: number, range: number) {
-  if (range === 0) return 0;
-  return clamp((value - min) / range, 0, 1);
+  renderKnob?: (props: RotarySwitchRenderKnobProps) => React.ReactNode;
+  renderPointer?: (props: RotarySwitchRenderPointerProps) => React.ReactNode;
+  renderCap?: (props: RotarySwitchRenderCapProps) => React.ReactNode;
+  renderMark?: (props: RotarySwitchRenderMarkProps) => React.ReactNode;
+  renderDetent?: (props: RotarySwitchRenderDetentProps) => React.ReactNode;
 }
 
 function getScalarValue(value: number | readonly number[] | undefined) {
@@ -60,27 +121,194 @@ function normalizeSwitchValue(value: number, min: number, max: number) {
   return clamp(Math.round(value), min, max);
 }
 
-function getArcRatioFromPoint(
-  clientX: number,
-  clientY: number,
-  rect: DOMRect,
-  startAngle: number,
-  sweepAngle: number,
-) {
-  if (sweepAngle === 0) return 0;
+function DefaultRotarySwitchDetent({ detent, className }: RotarySwitchRenderDetentProps) {
+  return (
+    <line
+      data-slot="rotary-switch-detent"
+      className={className}
+      x1={detent.lineStart.x}
+      y1={detent.lineStart.y}
+      x2={detent.lineEnd.x}
+      y2={detent.lineEnd.y}
+      stroke={
+        detent.isSelected
+          ? 'color-mix(in oklch, var(--analog-surface-metal-hi) 84%, var(--analog-highlight-color) 16%)'
+          : 'var(--analog-telemetry-label)'
+      }
+      strokeWidth={detent.isSelected ? 1.2 : 0.75}
+      strokeLinecap="round"
+      style={{ opacity: detent.isSelected ? 0.95 : 0.62 }}
+    />
+  );
+}
 
-  const centerX = rect.left + rect.width / 2;
-  const centerY = rect.top + rect.height / 2;
-  const angle = (Math.atan2(clientY - centerY, clientX - centerX) * 180) / Math.PI;
-  const normalizedAngle = ((angle - startAngle + 360) % 360) % 360;
+function DefaultRotarySwitchMark({ mark, className }: RotarySwitchRenderMarkProps) {
+  return (
+    <text
+      data-slot="rotary-switch-mark"
+      className={className}
+      x={mark.labelPosition.x}
+      y={mark.labelPosition.y}
+      fill="var(--analog-legend)"
+      fontSize="4.6"
+      fontFamily="var(--font-mono)"
+      fontWeight="700"
+      textAnchor="middle"
+      dominantBaseline="central"
+      style={{ opacity: 0.78 }}
+    >
+      {mark.label}
+    </text>
+  );
+}
 
-  if (normalizedAngle <= sweepAngle) {
-    return clamp(normalizedAngle / sweepAngle, 0, 1);
-  }
+function DefaultRotarySwitchPointer({ className, style }: RotarySwitchRenderPointerProps) {
+  return <div className={className} data-slot="rotary-switch-pointer" style={style} />;
+}
 
-  const distanceToStart = Math.min(normalizedAngle, 360 - normalizedAngle);
-  const distanceToEnd = Math.abs(normalizedAngle - sweepAngle);
-  return distanceToStart < distanceToEnd ? 0 : 1;
+function DefaultRotarySwitchKnob({
+  knobRotation,
+  className,
+  style,
+  children,
+}: RotarySwitchRenderKnobProps) {
+  const flutedLightingTransform = `rotate(${-knobRotation}deg)`;
+  const flutedBevelAngle = `calc(var(--analog-light-angle-bezel, 180deg) - ${knobRotation}deg)`;
+  const flutedEdgeFilter =
+    `drop-shadow(calc(sin(${flutedBevelAngle}) * 0.55px) calc(cos(${flutedBevelAngle}) * -0.55px) 0 rgb(var(--analog-highlight-rgb) / calc(0.1 * var(--analog-light-power, 1)))) ` +
+    `drop-shadow(calc(sin(${flutedBevelAngle}) * -1.2px) calc(cos(${flutedBevelAngle}) * 1.2px) 1.6px rgb(var(--analog-shadow-rgb) / calc(0.58 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))))`;
+
+  return (
+    <div
+      aria-hidden="true"
+      className={className}
+      data-slot="rotary-switch-knob-stack"
+      style={style}
+    >
+      <div
+        className="absolute -inset-[3.5%] rounded-full"
+        data-slot="rotary-switch-backing"
+        style={{
+          background:
+            `radial-gradient(circle at 42% 28%, color-mix(in oklch, var(--analog-surface-onyx-mid) 52%, var(--analog-highlight-color) 3%) 0%, transparent 34%), ` +
+            `linear-gradient(calc(var(--analog-light-angle-track, 180deg) - 90deg), color-mix(in oklch, var(--analog-surface-onyx-hi) 28%, var(--analog-shadow-color) 72%) 0%, var(--analog-surface-onyx-mid) 36%, var(--analog-surface-onyx-lo) 100%)`,
+          boxShadow:
+            `inset calc(sin(var(--analog-light-angle-track, 180deg)) * 1px) calc(cos(var(--analog-light-angle-track, 180deg)) * -1px) 0 rgb(var(--analog-highlight-rgb) / calc(0.07 * var(--analog-light-power, 1))), ` +
+            `inset calc(sin(var(--analog-light-angle-track, 180deg)) * -5px) calc(cos(var(--analog-light-angle-track, 180deg)) * 5px) 16px rgb(var(--analog-shadow-rgb) / calc(0.72 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
+        }}
+      />
+
+      <div
+        className="absolute inset-[5%]"
+        data-slot="rotary-switch-fluted-rotor"
+        style={{
+          transform: `rotate(${knobRotation}deg)`,
+          transformOrigin: '50% 50%',
+          transition: 'transform 90ms cubic-bezier(0.2, 0, 0, 1)',
+          willChange: 'transform',
+        }}
+      >
+        <div
+          className="absolute inset-0 overflow-hidden"
+          data-slot="rotary-switch-fluted-body"
+          style={{
+            ...FLUTED_LAYER_MASK_STYLE,
+            boxShadow:
+              `inset calc(sin(${flutedBevelAngle}) * 2px) calc(cos(${flutedBevelAngle}) * -2px) 3px rgb(var(--analog-highlight-rgb) / calc(0.12 * var(--analog-light-power, 1))), ` +
+              `inset calc(sin(${flutedBevelAngle}) * -8px) calc(cos(${flutedBevelAngle}) * 8px) 18px rgb(var(--analog-shadow-rgb) / calc(0.76 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
+          }}
+        >
+          <div
+            className="absolute -inset-[22%]"
+            data-slot="rotary-switch-fluted-body-lighting"
+            style={{
+              transform: flutedLightingTransform,
+              transformOrigin: '50% 50%',
+              background:
+                `radial-gradient(circle at 38% 22%, rgb(var(--analog-highlight-rgb) / calc(0.13 * var(--analog-light-power, 1))) 0%, transparent 32%), ` +
+                `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 90deg), var(--analog-surface-onyx-hi) 0%, var(--analog-surface-onyx-mid) 44%, var(--analog-surface-onyx-lo) 100%)`,
+            }}
+          />
+        </div>
+        <div
+          className="absolute inset-0 overflow-hidden opacity-70 mix-blend-screen"
+          data-slot="rotary-switch-fluted-gloss"
+          style={{
+            ...FLUTED_LAYER_MASK_STYLE,
+          }}
+        >
+          <div
+            className="absolute -inset-[22%]"
+            data-slot="rotary-switch-fluted-gloss-lighting"
+            style={{
+              transform: flutedLightingTransform,
+              transformOrigin: '50% 50%',
+              background: `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 112deg), rgb(var(--analog-highlight-rgb) / calc(0.15 * var(--analog-light-power, 1))) 0%, rgb(var(--analog-highlight-rgb) / 0.02) 31%, transparent 52%, rgb(var(--analog-shadow-rgb) / calc(0.42 * var(--analog-light-power, 1))) 100%)`,
+            }}
+          />
+        </div>
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 270 264"
+          className="pointer-events-none absolute inset-0 overflow-visible"
+          data-slot="rotary-switch-fluted-edge"
+          style={{ filter: flutedEdgeFilter }}
+        >
+          <path
+            d={FLUTED_LAYER_PATH}
+            fill="none"
+            stroke="rgb(var(--analog-shadow-rgb) / 0.38)"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="4.5"
+          />
+          <path
+            d={FLUTED_LAYER_PATH}
+            fill="none"
+            stroke="color-mix(in oklch, var(--analog-surface-metal-hi) 42%, transparent)"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="1.2"
+            style={{ mixBlendMode: 'screen' }}
+          />
+        </svg>
+        <div
+          className="absolute inset-[31%] rounded-full"
+          data-slot="rotary-switch-center-shadow"
+          style={{
+            background:
+              'radial-gradient(circle, var(--analog-surface-cavity) 0%, var(--analog-surface-cavity-strong) 100%)',
+            boxShadow:
+              'inset 0 0 0 1px rgb(var(--analog-shadow-rgb) / 0.82), inset 0 0 14px rgb(var(--analog-shadow-rgb) / 0.72)',
+          }}
+        />
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function DefaultRotarySwitchCap({
+  knobRotation,
+  lighting,
+  containerClassName,
+  surfaceContainerClassName,
+  surfaceClassName,
+  surfaceStyle,
+}: RotarySwitchRenderCapProps) {
+  return (
+    <div className={containerClassName} data-slot="rotary-switch-cap">
+      <SurfaceButton
+        rotation={knobRotation}
+        lighting={lighting}
+        containerClassName={surfaceContainerClassName}
+        className={surfaceClassName}
+        style={surfaceStyle}
+        disabled
+        tabIndex={-1}
+      />
+    </div>
+  );
 }
 
 export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
@@ -99,6 +327,11 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
       marks,
       showMarks = marks !== undefined,
       showDetents = true,
+      renderKnob,
+      renderPointer,
+      renderCap,
+      renderMark,
+      renderDetent,
       style,
       tabIndex,
       onPointerDown,
@@ -113,7 +346,7 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
     const resolvedMin = Math.round(Math.min(min, max));
     const resolvedMax = Math.round(Math.max(min, max));
     const range = resolvedMax - resolvedMin;
-    const resolvedSweepAngle = Math.min(359.999, Math.max(0, sweepAngle));
+    const resolvedSweepAngle = clamp(sweepAngle, 0, 359.999);
     const lightingStyle = useAnalogLighting(['surface', 'bezel', 'pointer', 'track'], lighting);
     const surfaceLighting = lighting?.surface ? { surface: lighting.surface } : undefined;
     const isControlled = value !== undefined;
@@ -263,12 +496,27 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
 
       return Array.from({ length: range + 1 }, (_, index) => {
         const value = resolvedMin + index;
+        const ratio = normalizeRatio(value, resolvedMin, resolvedMax);
+        const angle = valueToAngle(value, resolvedMin, resolvedMax, startAngle, resolvedSweepAngle);
+
         return {
           value,
-          ratio: getRangeRatio(value, resolvedMin, range),
+          ratio,
+          angle,
+          isSelected: value === currentValue,
+          lineStart: polarPoint(51.5, angle),
+          lineEnd: polarPoint(57, angle),
         };
       });
-    }, [range, resolvedMin, showDetents]);
+    }, [
+      currentValue,
+      range,
+      resolvedMax,
+      resolvedMin,
+      resolvedSweepAngle,
+      showDetents,
+      startAngle,
+    ]);
 
     const resolvedMarks = React.useMemo(() => {
       if (!showMarks) return [];
@@ -281,23 +529,89 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
           position: detent.ratio,
         }));
 
-      return sourceMarks.map((mark) => ({
+      return resolveRadialMarks(sourceMarks, {
+        min: resolvedMin,
+        max: resolvedMax,
+        startAngle,
+        sweepAngle: resolvedSweepAngle,
+      }).map((mark) => ({
         ...mark,
-        ratio:
-          mark.position !== undefined
-            ? clamp(mark.position, 0, 1)
-            : getRangeRatio(mark.value, resolvedMin, range),
+        labelPosition: polarPoint(65, mark.angle),
       }));
-    }, [detents, marks, range, resolvedMin, showMarks]);
+    }, [detents, marks, resolvedMax, resolvedMin, resolvedSweepAngle, showMarks, startAngle]);
 
-    const ratio = getRangeRatio(currentValue, resolvedMin, range);
-    const rotationAngle = startAngle + ratio * resolvedSweepAngle;
+    const ratio = normalizeRatio(currentValue, resolvedMin, resolvedMax);
+    const rotationAngle = valueToAngle(
+      currentValue,
+      resolvedMin,
+      resolvedMax,
+      startAngle,
+      resolvedSweepAngle,
+    );
     const knobRotation = rotationAngle + 90;
-    const flutedLightingTransform = `rotate(${-knobRotation}deg)`;
-    const flutedBevelAngle = `calc(var(--analog-light-angle-bezel, 180deg) - ${knobRotation}deg)`;
-    const flutedEdgeFilter =
-      `drop-shadow(calc(sin(${flutedBevelAngle}) * 0.55px) calc(cos(${flutedBevelAngle}) * -0.55px) 0 rgb(var(--analog-highlight-rgb) / calc(0.1 * var(--analog-light-power, 1)))) ` +
-      `drop-shadow(calc(sin(${flutedBevelAngle}) * -1.2px) calc(cos(${flutedBevelAngle}) * 1.2px) 1.6px rgb(var(--analog-shadow-rgb) / calc(0.58 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))))`;
+    const renderState: RotarySwitchRenderState = {
+      value: currentValue,
+      min: resolvedMin,
+      max: resolvedMax,
+      ratio,
+      startAngle,
+      sweepAngle: resolvedSweepAngle,
+      rotationAngle,
+      knobRotation,
+      disabled,
+    };
+    const pointerNode = renderPointer?.({
+      ...renderState,
+      className: 'absolute left-1/2 top-[5%] h-[28%] w-[4.5%] -translate-x-1/2 rounded-full',
+      style: {
+        background:
+          'linear-gradient(calc(var(--analog-light-angle-pointer, 180deg) - 90deg), var(--analog-surface-metal-hi) 0%, var(--analog-surface-metal-mid) 58%, var(--analog-surface-metal-lo) 100%)',
+        boxShadow:
+          '0 0 0 1px var(--analog-material-border-strong), 0 0 5px rgb(var(--analog-highlight-rgb) / 0.14), inset 0 0 1px rgb(var(--analog-highlight-rgb) / 0.82)',
+      },
+    }) ?? (
+      <DefaultRotarySwitchPointer
+        {...renderState}
+        className="absolute left-1/2 top-[5%] h-[28%] w-[4.5%] -translate-x-1/2 rounded-full"
+        style={{
+          background:
+            'linear-gradient(calc(var(--analog-light-angle-pointer, 180deg) - 90deg), var(--analog-surface-metal-hi) 0%, var(--analog-surface-metal-mid) 58%, var(--analog-surface-metal-lo) 100%)',
+          boxShadow:
+            '0 0 0 1px var(--analog-material-border-strong), 0 0 5px rgb(var(--analog-highlight-rgb) / 0.14), inset 0 0 1px rgb(var(--analog-highlight-rgb) / 0.82)',
+        }}
+      />
+    );
+    const knobNode = renderKnob?.({
+      ...renderState,
+      className: 'pointer-events-none absolute inset-[8%] z-20 overflow-visible',
+      style: {},
+      children: pointerNode,
+    }) ?? (
+      <DefaultRotarySwitchKnob
+        {...renderState}
+        className="pointer-events-none absolute inset-[8%] z-20 overflow-visible"
+        style={{}}
+      >
+        {pointerNode}
+      </DefaultRotarySwitchKnob>
+    );
+    const capNode = renderCap?.({
+      ...renderState,
+      lighting: surfaceLighting,
+      containerClassName: 'pointer-events-none absolute inset-[27%] z-30 rounded-full',
+      surfaceContainerClassName: 'h-full w-full pointer-events-none',
+      surfaceClassName: 'analog-dial-surface no-chamfer h-full w-full pointer-events-none',
+      surfaceStyle: { pointerEvents: 'none' },
+    }) ?? (
+      <DefaultRotarySwitchCap
+        {...renderState}
+        lighting={surfaceLighting}
+        containerClassName="pointer-events-none absolute inset-[27%] z-30 rounded-full"
+        surfaceContainerClassName="h-full w-full pointer-events-none"
+        surfaceClassName="analog-dial-surface no-chamfer h-full w-full pointer-events-none"
+        surfaceStyle={{ pointerEvents: 'none' }}
+      />
+    );
 
     return (
       <div
@@ -333,190 +647,29 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
           className="pointer-events-none absolute inset-0 z-40 h-full w-full overflow-visible"
           data-slot="rotary-switch-scale"
         >
-          {detents.map((detent) => {
-            const angle = startAngle + detent.ratio * resolvedSweepAngle;
-            const radians = (angle * Math.PI) / 180;
-            const isSelected = detent.value === currentValue;
-            const lineStartX = 50 + Math.cos(radians) * 51.5;
-            const lineStartY = 50 + Math.sin(radians) * 51.5;
-            const lineEndX = 50 + Math.cos(radians) * 57;
-            const lineEndY = 50 + Math.sin(radians) * 57;
+          {detents.map((detent) => (
+            <React.Fragment key={detent.value}>
+              {renderDetent?.({
+                ...renderState,
+                detent,
+                className: '',
+              }) ?? <DefaultRotarySwitchDetent {...renderState} detent={detent} className="" />}
+            </React.Fragment>
+          ))}
 
-            return (
-              <line
-                key={detent.value}
-                data-slot="rotary-switch-detent"
-                x1={lineStartX}
-                y1={lineStartY}
-                x2={lineEndX}
-                y2={lineEndY}
-                stroke={
-                  isSelected
-                    ? 'color-mix(in oklch, var(--analog-surface-metal-hi) 84%, var(--analog-highlight-color) 16%)'
-                    : 'var(--analog-telemetry-label)'
-                }
-                strokeWidth={isSelected ? 1.2 : 0.75}
-                strokeLinecap="round"
-                style={{ opacity: isSelected ? 0.95 : 0.62 }}
-              />
-            );
-          })}
-
-          {resolvedMarks.map((mark) => {
-            const angle = startAngle + mark.ratio * resolvedSweepAngle;
-            const radians = (angle * Math.PI) / 180;
-            const labelX = 50 + Math.cos(radians) * 65;
-            const labelY = 50 + Math.sin(radians) * 65;
-
-            return (
-              <text
-                key={`${mark.value}-${String(mark.label)}`}
-                data-slot="rotary-switch-mark"
-                x={labelX}
-                y={labelY}
-                fill="var(--analog-legend)"
-                fontSize="4.6"
-                fontFamily="var(--font-mono)"
-                fontWeight="700"
-                textAnchor="middle"
-                dominantBaseline="central"
-                style={{ opacity: 0.78 }}
-              >
-                {mark.label}
-              </text>
-            );
-          })}
+          {resolvedMarks.map((mark, index) => (
+            <React.Fragment key={`${mark.value}-${String(mark.label)}-${index}`}>
+              {renderMark?.({
+                ...renderState,
+                mark,
+                className: '',
+              }) ?? <DefaultRotarySwitchMark {...renderState} mark={mark} className="" />}
+            </React.Fragment>
+          ))}
         </svg>
 
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-[8%] z-20 overflow-visible"
-          data-slot="rotary-switch-knob-stack"
-        >
-          <div
-            className="absolute -inset-[3.5%] rounded-full"
-            data-slot="rotary-switch-backing"
-            style={{
-              background:
-                `radial-gradient(circle at 42% 28%, color-mix(in oklch, var(--analog-surface-onyx-mid) 52%, var(--analog-highlight-color) 3%) 0%, transparent 34%), ` +
-                `linear-gradient(calc(var(--analog-light-angle-track, 180deg) - 90deg), color-mix(in oklch, var(--analog-surface-onyx-hi) 28%, var(--analog-shadow-color) 72%) 0%, var(--analog-surface-onyx-mid) 36%, var(--analog-surface-onyx-lo) 100%)`,
-              boxShadow:
-                `inset calc(sin(var(--analog-light-angle-track, 180deg)) * 1px) calc(cos(var(--analog-light-angle-track, 180deg)) * -1px) 0 rgb(var(--analog-highlight-rgb) / calc(0.07 * var(--analog-light-power, 1))), ` +
-                `inset calc(sin(var(--analog-light-angle-track, 180deg)) * -5px) calc(cos(var(--analog-light-angle-track, 180deg)) * 5px) 16px rgb(var(--analog-shadow-rgb) / calc(0.72 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
-            }}
-          />
-
-          <div
-            className="absolute inset-[5%]"
-            data-slot="rotary-switch-fluted-rotor"
-            style={{
-              transform: `rotate(${knobRotation}deg)`,
-              transformOrigin: '50% 50%',
-              transition: 'transform 90ms cubic-bezier(0.2, 0, 0, 1)',
-              willChange: 'transform',
-            }}
-          >
-            <div
-              className="absolute inset-0 overflow-hidden"
-              data-slot="rotary-switch-fluted-body"
-              style={{
-                ...FLUTED_LAYER_MASK_STYLE,
-                boxShadow:
-                  `inset calc(sin(${flutedBevelAngle}) * 2px) calc(cos(${flutedBevelAngle}) * -2px) 3px rgb(var(--analog-highlight-rgb) / calc(0.12 * var(--analog-light-power, 1))), ` +
-                  `inset calc(sin(${flutedBevelAngle}) * -8px) calc(cos(${flutedBevelAngle}) * 8px) 18px rgb(var(--analog-shadow-rgb) / calc(0.76 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
-              }}
-            >
-              <div
-                className="absolute -inset-[22%]"
-                data-slot="rotary-switch-fluted-body-lighting"
-                style={{
-                  transform: flutedLightingTransform,
-                  transformOrigin: '50% 50%',
-                  background:
-                    `radial-gradient(circle at 38% 22%, rgb(var(--analog-highlight-rgb) / calc(0.13 * var(--analog-light-power, 1))) 0%, transparent 32%), ` +
-                    `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 90deg), var(--analog-surface-onyx-hi) 0%, var(--analog-surface-onyx-mid) 44%, var(--analog-surface-onyx-lo) 100%)`,
-                }}
-              />
-            </div>
-            <div
-              className="absolute inset-0 overflow-hidden opacity-70 mix-blend-screen"
-              data-slot="rotary-switch-fluted-gloss"
-              style={{
-                ...FLUTED_LAYER_MASK_STYLE,
-              }}
-            >
-              <div
-                className="absolute -inset-[22%]"
-                data-slot="rotary-switch-fluted-gloss-lighting"
-                style={{
-                  transform: flutedLightingTransform,
-                  transformOrigin: '50% 50%',
-                  background: `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 112deg), rgb(var(--analog-highlight-rgb) / calc(0.15 * var(--analog-light-power, 1))) 0%, rgb(var(--analog-highlight-rgb) / 0.02) 31%, transparent 52%, rgb(var(--analog-shadow-rgb) / calc(0.42 * var(--analog-light-power, 1))) 100%)`,
-                }}
-              />
-            </div>
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 270 264"
-              className="pointer-events-none absolute inset-0 overflow-visible"
-              data-slot="rotary-switch-fluted-edge"
-              style={{ filter: flutedEdgeFilter }}
-            >
-              <path
-                d={FLUTED_LAYER_PATH}
-                fill="none"
-                stroke="rgb(var(--analog-shadow-rgb) / 0.38)"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="4.5"
-              />
-              <path
-                d={FLUTED_LAYER_PATH}
-                fill="none"
-                stroke="color-mix(in oklch, var(--analog-surface-metal-hi) 42%, transparent)"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="1.2"
-                style={{ mixBlendMode: 'screen' }}
-              />
-            </svg>
-            <div
-              className="absolute inset-[31%] rounded-full"
-              data-slot="rotary-switch-center-shadow"
-              style={{
-                background:
-                  'radial-gradient(circle, var(--analog-surface-cavity) 0%, var(--analog-surface-cavity-strong) 100%)',
-                boxShadow:
-                  'inset 0 0 0 1px rgb(var(--analog-shadow-rgb) / 0.82), inset 0 0 14px rgb(var(--analog-shadow-rgb) / 0.72)',
-              }}
-            />
-            <div
-              className="absolute left-1/2 top-[5%] h-[28%] w-[4.5%] -translate-x-1/2 rounded-full"
-              data-slot="rotary-switch-pointer"
-              style={{
-                background:
-                  'linear-gradient(calc(var(--analog-light-angle-pointer, 180deg) - 90deg), var(--analog-surface-metal-hi) 0%, var(--analog-surface-metal-mid) 58%, var(--analog-surface-metal-lo) 100%)',
-                boxShadow:
-                  '0 0 0 1px var(--analog-material-border-strong), 0 0 5px rgb(var(--analog-highlight-rgb) / 0.14), inset 0 0 1px rgb(var(--analog-highlight-rgb) / 0.82)',
-              }}
-            />
-          </div>
-        </div>
-
-        <div
-          className="pointer-events-none absolute inset-[27%] z-30 rounded-full"
-          data-slot="rotary-switch-cap"
-        >
-          <SurfaceButton
-            rotation={knobRotation}
-            lighting={surfaceLighting}
-            containerClassName="h-full w-full pointer-events-none"
-            className="analog-dial-surface no-chamfer h-full w-full pointer-events-none"
-            style={{ pointerEvents: 'none' }}
-            disabled
-            tabIndex={-1}
-          />
-        </div>
+        {knobNode}
+        {capNode}
       </div>
     );
   },

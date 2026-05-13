@@ -1038,6 +1038,46 @@ export function RotarySwitchExample() {
     />
   )
 }`,
+    composition: {
+      description:
+        'RotarySwitch owns the stepped slider behavior, detent math, and keyboard handling while exposing the selector hardware, cap, detents, and marks as replaceable layers.',
+      tree: `RotarySwitch
+|- Root / slider behavior
+|- Scale
+|  |- Detents (\`renderDetent\`)
+|  +- Marks (\`renderMark\`)
+|- Knob Stack (\`renderKnob\`)
+|  |- Fluted Rotor
+|  +- Pointer Stripe (\`renderPointer\`)
++- Center Cap (\`renderCap\`)
+   +- SurfaceButton`,
+      customizeTitle: 'Custom Pointer Stripe',
+      customizeDescription:
+        'Use renderPointer when the fluted selector and cap should stay intact but the position indicator needs a different material or readout color.',
+      customizeCode: `import { RotarySwitch } from "@/registry/components/analog/RotarySwitch"
+
+export function CustomPointerRotarySwitch() {
+  return (
+    <RotarySwitch
+      defaultValue={3}
+      min={0}
+      max={6}
+      renderPointer={({ className, style }) => (
+        <div
+          className={className}
+          style={{
+            ...style,
+            background:
+              "linear-gradient(180deg, rgb(186 230 253), rgb(14 165 233))",
+            boxShadow:
+              "0 0 0 1px rgba(125, 211, 252, 0.8), 0 0 12px rgba(56, 189, 248, 0.75)",
+          }}
+        />
+      )}
+    />
+  )
+}`,
+    },
     api: [
       {
         title: 'RotarySwitch',
@@ -1094,8 +1134,91 @@ export function RotarySwitchExample() {
             defaultValue: 'true',
             description: 'Controls whether integer detent ticks render around the arc.',
           },
+          {
+            name: 'renderKnob',
+            type: '(props: RotarySwitchRenderKnobProps) => React.ReactNode',
+            description: 'Replaces the fluted selector stack while keeping root behavior.',
+          },
+          {
+            name: 'renderPointer',
+            type: '(props: RotarySwitchRenderPointerProps) => React.ReactNode',
+            description: 'Replaces the rotating position stripe inside the selector.',
+          },
+          {
+            name: 'renderCap',
+            type: '(props: RotarySwitchRenderCapProps) => React.ReactNode',
+            description: 'Replaces the center cap surface.',
+          },
+          {
+            name: 'renderMark',
+            type: '(props: RotarySwitchRenderMarkProps) => React.ReactNode',
+            description: 'Replaces each resolved scale label around the selectable arc.',
+          },
+          {
+            name: 'renderDetent',
+            type: '(props: RotarySwitchRenderDetentProps) => React.ReactNode',
+            description: 'Replaces each integer detent tick.',
+          },
           lightingProp,
           classNameProp,
+        ],
+      },
+      {
+        title: 'RotarySwitchRenderState',
+        description: 'Shared resolved state passed to all RotarySwitch render slots.',
+        props: [
+          {
+            name: 'value / min / max / ratio',
+            type: 'number',
+            description: 'Resolved value state and normalized position.',
+          },
+          {
+            name: 'startAngle / sweepAngle',
+            type: 'number',
+            description: 'Resolved selectable arc geometry.',
+          },
+          {
+            name: 'rotationAngle / knobRotation',
+            type: 'number',
+            description: 'Pointer angle and visual knob rotation in degrees.',
+          },
+          {
+            name: 'disabled',
+            type: 'boolean | undefined',
+            description: 'Whether the switch is disabled.',
+          },
+        ],
+      },
+      {
+        title: 'RotarySwitchRenderMark',
+        description: 'Props passed to renderMark for each resolved scale label.',
+        props: [
+          {
+            name: 'mark',
+            type: 'RotarySwitchResolvedMark',
+            description: 'Original mark plus ratio, angle, and labelPosition.',
+          },
+          {
+            name: 'className',
+            type: 'string',
+            description: 'Classes for the default mark element.',
+          },
+        ],
+      },
+      {
+        title: 'RotarySwitchRenderDetent',
+        description: 'Props passed to renderDetent for each integer tick.',
+        props: [
+          {
+            name: 'detent',
+            type: 'RotarySwitchResolvedDetent',
+            description: 'Resolved value, ratio, angle, selection state, and tick endpoints.',
+          },
+          {
+            name: 'className',
+            type: 'string',
+            description: 'Classes for the default detent element.',
+          },
         ],
       },
     ],

@@ -5,6 +5,7 @@ import { useMergedRefs } from '@/lib/refs';
 import { useWheelInput } from '../../hooks/use-wheel-input';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 import { useAnalogMaterialVariant } from '../../hooks/analog-material-scope';
+import { angleToRatio, clamp, normalizeRatio, valueToAngle } from './radial';
 
 export interface DialRenderSurfaceProps {
   value: number;
@@ -74,10 +75,6 @@ export interface DialProps extends Omit<
   pointerClassName?: string;
   renderSurface?: (props: DialRenderSurfaceProps) => React.ReactNode;
   renderPointer?: (props: DialRenderPointerProps) => React.ReactNode;
-}
-
-function clamp(value: number, min: number, max: number) {
-  return Math.min(max, Math.max(min, value));
 }
 
 function roundToStep(value: number, min: number, step: number) {
@@ -203,10 +200,9 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
     const valueToRotation = React.useCallback(
       (nextValue: number) => {
         if (!isKnob || resolvedRange === 0) return nextValue;
-        const ratio = clamp((nextValue - resolvedMin) / resolvedRange, 0, 1);
-        return startAngle + ratio * resolvedSweepAngle;
+        return valueToAngle(nextValue, resolvedMin, resolvedMax, startAngle, resolvedSweepAngle);
       },
-      [isKnob, resolvedMin, resolvedRange, resolvedSweepAngle, startAngle],
+      [isKnob, resolvedMax, resolvedMin, resolvedRange, resolvedSweepAngle, startAngle],
     );
 
     const normalizeKnobValue = React.useCallback(
@@ -233,8 +229,7 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
     const rotationToValue = React.useCallback(
       (nextRotation: number, customStep = resolvedStep) => {
         if (!isKnob || resolvedRange === 0) return nextRotation;
-        const clampedRotation = clamp(nextRotation, startAngle, startAngle + resolvedSweepAngle);
-        const ratio = (clampedRotation - startAngle) / resolvedSweepAngle;
+        const ratio = angleToRatio(nextRotation, startAngle, resolvedSweepAngle);
         const nextValue = resolvedMin + ratio * resolvedRange;
         return normalizeKnobValue(nextValue, customStep);
       },
@@ -295,7 +290,7 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
     const revolutions = isKnob ? 0 : Math.floor(currentValue / 360);
     const valueRatio =
       isKnob && resolvedRange !== 0
-        ? clamp((currentValue - resolvedMin) / resolvedRange, 0, 1)
+        ? normalizeRatio(currentValue, resolvedMin, resolvedMax)
         : degrees / 360;
 
     useWheelInput(

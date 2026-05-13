@@ -487,6 +487,18 @@
       ]
     },
     {
+      "name": "radial-helpers",
+      "title": "Radial Helpers",
+      "type": "registry:ui",
+      "description": "Shared non-visual geometry helpers for radial controls, marks, and pointer interaction.",
+      "files": [
+        {
+          "path": "src/registry/components/analog/radial.ts",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "orientation",
       "title": "Analog Orientation Type",
       "type": "registry:ui",
@@ -558,6 +570,7 @@
         "surface-button",
         "use-analog-lighting",
         "analog-material-scope",
+        "radial-helpers",
         "use-wheel-input",
         "utils"
       ],
@@ -579,6 +592,7 @@
         "analog-tone",
         "surface-button",
         "use-analog-lighting",
+        "radial-helpers",
         "utils"
       ],
       "files": [
@@ -597,6 +611,7 @@
         "analog-foundation",
         "surface-button",
         "use-analog-lighting",
+        "radial-helpers",
         "utils"
       ],
       "files": [

@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { SurfaceButton } from './SurfaceButton';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 import type { AnalogTone } from './tone';
+import { clamp, normalizeRatio, polarPoint, resolveRadialMarks, type RadialPoint } from './radial';
 
 export interface GaugeMark {
   value: number;
@@ -11,10 +12,7 @@ export interface GaugeMark {
   position?: number;
 }
 
-export interface GaugePoint {
-  x: number;
-  y: number;
-}
+export type GaugePoint = RadialPoint;
 
 export interface GaugeResolvedMark extends GaugeMark {
   ratio: number;
@@ -96,29 +94,6 @@ export interface GaugeProps extends React.ComponentPropsWithoutRef<typeof Slider
   renderMark?: (props: GaugeRenderMarkProps) => React.ReactNode;
   renderPointer?: (props: GaugeRenderPointerProps) => React.ReactNode;
 }
-
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
-
-const roundSvgNumber = (value: number) => Number(value.toFixed(4));
-
-const normalizeRatio = (value: number, min: number, max: number) => {
-  const range = max - min;
-
-  if (range <= 0) {
-    return value >= max ? 1 : 0;
-  }
-
-  return clamp((value - min) / range, 0, 1);
-};
-
-const polarPoint = (radius: number, angle: number): GaugePoint => {
-  const radians = (angle * Math.PI) / 180;
-
-  return {
-    x: roundSvgNumber(50 + Math.cos(radians) * radius),
-    y: roundSvgNumber(50 + Math.sin(radians) * radius),
-  };
-};
 
 function DefaultGaugeTrack({ className, startAngle, sweepAngle, filterId }: GaugeRenderTrackProps) {
   return (
@@ -283,11 +258,16 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
         {...props}
         render={(rootProps, state) => {
           const val = state.values[0] ?? min;
-          const ratio = normalizeRatio(val, min, max);
+          const ratio = normalizeRatio(val, min, max, val >= max ? 1 : 0);
           const resolvedSweepAngle = clamp(sweepAngle, 0, 359.999);
           const rotationAngle = startAngle + ratio * resolvedSweepAngle;
           const resolvedCenterValue = centerValue ?? (min + max) / 2;
-          const centerRatio = normalizeRatio(resolvedCenterValue, min, max);
+          const centerRatio = normalizeRatio(
+            resolvedCenterValue,
+            min,
+            max,
+            resolvedCenterValue >= max ? 1 : 0,
+          );
           const fillStartRatio = fillMode === 'center' ? Math.min(ratio, centerRatio) : 0;
           const fillEndRatio = fillMode === 'center' ? Math.max(ratio, centerRatio) : ratio;
           const fillStart = fillStartRatio * resolvedSweepAngle;
@@ -297,25 +277,18 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
           const indicatorMaskId = `gauge-indicator-mask-${gaugeId}`;
           const indicatorNoiseId = `gauge-indicator-noise-${gaugeId}`;
           const resolvedMarks = showMarks
-            ? (marks ?? [])
-                .map((mark) => ({
-                  ...mark,
-                  ratio:
-                    mark.position !== undefined
-                      ? clamp(mark.position, 0, 1)
-                      : normalizeRatio(mark.value, min, max),
-                }))
-                .map((mark) => {
-                  const angle = startAngle + mark.ratio * resolvedSweepAngle;
-
-                  return {
-                    ...mark,
-                    angle,
-                    lineStart: polarPoint(39, angle),
-                    lineEnd: polarPoint(44, angle),
-                    labelPosition: polarPoint(33, angle),
-                  };
-                })
+            ? resolveRadialMarks(marks ?? [], {
+                min,
+                max,
+                startAngle,
+                sweepAngle: resolvedSweepAngle,
+                fallbackRatio: (mark) => (mark.value >= max ? 1 : 0),
+              }).map((mark) => ({
+                ...mark,
+                lineStart: polarPoint(39, mark.angle),
+                lineEnd: polarPoint(44, mark.angle),
+                labelPosition: polarPoint(33, mark.angle),
+              }))
             : [];
           const trackProps: GaugeRenderTrackProps = {
             value: val,
