@@ -116,10 +116,6 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
     const resolvedSweepAngle = Math.min(359.999, Math.max(0, sweepAngle));
     const lightingStyle = useAnalogLighting(['surface', 'bezel', 'pointer', 'track'], lighting);
     const surfaceLighting = lighting?.surface ? { surface: lighting.surface } : undefined;
-    const generatedId = React.useId().replace(/:/g, '');
-    const backingGradientId = `rotary-switch-backing-${generatedId}`;
-    const bodyGradientId = `rotary-switch-body-${generatedId}`;
-    const glossGradientId = `rotary-switch-gloss-${generatedId}`;
     const isControlled = value !== undefined;
     const [internalValue, setInternalValue] = React.useState(() =>
       normalizeSwitchValue(getScalarValue(defaultValue) ?? resolvedMin, resolvedMin, resolvedMax),
@@ -297,6 +293,11 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
     const ratio = getRangeRatio(currentValue, resolvedMin, range);
     const rotationAngle = startAngle + ratio * resolvedSweepAngle;
     const knobRotation = rotationAngle + 90;
+    const flutedLightingTransform = `rotate(${-knobRotation}deg)`;
+    const flutedBevelAngle = `calc(var(--analog-light-angle-bezel, 180deg) - ${knobRotation}deg)`;
+    const flutedEdgeFilter =
+      `drop-shadow(calc(sin(${flutedBevelAngle}) * 0.55px) calc(cos(${flutedBevelAngle}) * -0.55px) 0 rgba(255,255,255,calc(0.1 * var(--analog-light-power, 1)))) ` +
+      `drop-shadow(calc(sin(${flutedBevelAngle}) * -1.2px) calc(cos(${flutedBevelAngle}) * 1.2px) 1.6px rgba(0,0,0,calc(0.58 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))))`;
 
     return (
       <div
@@ -416,26 +417,69 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
             }}
           >
             <div
-              className="absolute inset-0"
+              className="absolute inset-0 overflow-hidden"
               data-slot="rotary-switch-fluted-body"
               style={{
                 ...FLUTED_LAYER_MASK_STYLE,
-                background:
-                  `radial-gradient(circle at 38% 22%, rgba(255,255,255,calc(0.13 * var(--analog-light-power, 1))) 0%, transparent 32%), ` +
-                  `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 90deg), var(--analog-surface-onyx-hi) 0%, var(--analog-surface-onyx-mid) 44%, var(--analog-surface-onyx-lo) 100%)`,
                 boxShadow:
-                  `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * 2px) calc(cos(var(--analog-light-angle-bezel, 180deg)) * -2px) 3px rgba(255,255,255,calc(0.12 * var(--analog-light-power, 1))), ` +
-                  `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * -8px) calc(cos(var(--analog-light-angle-bezel, 180deg)) * 8px) 18px rgba(0,0,0,calc(0.76 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
+                  `inset calc(sin(${flutedBevelAngle}) * 2px) calc(cos(${flutedBevelAngle}) * -2px) 3px rgba(255,255,255,calc(0.12 * var(--analog-light-power, 1))), ` +
+                  `inset calc(sin(${flutedBevelAngle}) * -8px) calc(cos(${flutedBevelAngle}) * 8px) 18px rgba(0,0,0,calc(0.76 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
               }}
-            />
+            >
+              <div
+                className="absolute -inset-[22%]"
+                data-slot="rotary-switch-fluted-body-lighting"
+                style={{
+                  transform: flutedLightingTransform,
+                  transformOrigin: '50% 50%',
+                  background:
+                    `radial-gradient(circle at 38% 22%, rgba(255,255,255,calc(0.13 * var(--analog-light-power, 1))) 0%, transparent 32%), ` +
+                    `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 90deg), var(--analog-surface-onyx-hi) 0%, var(--analog-surface-onyx-mid) 44%, var(--analog-surface-onyx-lo) 100%)`,
+                }}
+              />
+            </div>
             <div
-              className="absolute inset-0 opacity-70 mix-blend-screen"
+              className="absolute inset-0 overflow-hidden opacity-70 mix-blend-screen"
               data-slot="rotary-switch-fluted-gloss"
               style={{
                 ...FLUTED_LAYER_MASK_STYLE,
-                background: `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 112deg), rgba(255,255,255,calc(0.15 * var(--analog-light-power, 1))) 0%, rgba(255,255,255,0.02) 31%, transparent 52%, rgba(0,0,0,calc(0.42 * var(--analog-light-power, 1))) 100%)`,
               }}
-            />
+            >
+              <div
+                className="absolute -inset-[22%]"
+                data-slot="rotary-switch-fluted-gloss-lighting"
+                style={{
+                  transform: flutedLightingTransform,
+                  transformOrigin: '50% 50%',
+                  background: `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 112deg), rgba(255,255,255,calc(0.15 * var(--analog-light-power, 1))) 0%, rgba(255,255,255,0.02) 31%, transparent 52%, rgba(0,0,0,calc(0.42 * var(--analog-light-power, 1))) 100%)`,
+                }}
+              />
+            </div>
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 270 264"
+              className="pointer-events-none absolute inset-0 overflow-visible"
+              data-slot="rotary-switch-fluted-edge"
+              style={{ filter: flutedEdgeFilter }}
+            >
+              <path
+                d={FLUTED_LAYER_PATH}
+                fill="none"
+                stroke="rgba(0,0,0,0.38)"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="4.5"
+              />
+              <path
+                d={FLUTED_LAYER_PATH}
+                fill="none"
+                stroke="color-mix(in oklch, var(--analog-surface-metal-hi) 42%, transparent)"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="1.2"
+                style={{ mixBlendMode: 'screen' }}
+              />
+            </svg>
             <div
               className="absolute inset-[31%] rounded-full"
               data-slot="rotary-switch-center-shadow"
