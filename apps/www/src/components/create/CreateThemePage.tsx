@@ -1273,8 +1273,8 @@ function RackPreview() {
                 </div>
               </div>
 
-              <div className="grid gap-5 md:grid-cols-[1fr_auto] md:items-center">
-                <div className="grid gap-4">
+              <div className="grid gap-5 md:grid-cols-[minmax(0,1fr)_120px] md:items-center">
+                <div className="grid min-w-0 gap-8">
                   <ControlLabel label="Wet mix" value={`${mix > 0 ? '+' : ''}${mix} dB`} />
                   <Slider
                     value={mix}
@@ -1289,7 +1289,7 @@ function RackPreview() {
                   />
                 </div>
 
-                <div className="grid justify-items-center gap-3">
+                <div className="grid justify-items-center gap-3 md:w-[120px]">
                   <ControlLabel label="Circuit" value={mode === 'right' ? 'Wide' : 'Tight'} />
                   <Toggle
                     value={mode}
