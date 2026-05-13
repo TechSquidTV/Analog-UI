@@ -4,8 +4,10 @@ import astro from 'eslint-plugin-astro';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import tseslint from 'typescript-eslint';
+import analogDesign from './tools/eslint-plugin-analog-design/index.mjs';
 
 const reactFiles = ['apps/www/src/**/*.{jsx,tsx}', 'packages/analog-ui/src/**/*.{jsx,tsx}'];
+const analogComponentFiles = ['packages/analog-ui/src/registry/components/analog/**/*.{ts,tsx}'];
 
 export default tseslint.config(
   {
@@ -87,6 +89,25 @@ export default tseslint.config(
     rules: {
       'react/no-unescaped-entities': 'off',
       'react/prop-types': 'off',
+    },
+  },
+  {
+    files: analogComponentFiles,
+    plugins: {
+      'analog-design': analogDesign,
+    },
+    rules: {
+      'analog-design/no-raw-finish-colors': 'error',
+    },
+  },
+  {
+    files: ['packages/analog-ui/src/index.css'],
+    plugins: {
+      'analog-design': analogDesign,
+    },
+    processor: analogDesign.processors['css-text'],
+    rules: {
+      'analog-design/no-raw-finish-colors': 'error',
     },
   },
 );
