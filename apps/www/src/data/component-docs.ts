@@ -804,6 +804,216 @@ export function PushToggleExample() {
       },
     ],
   },
+  checkbox: {
+    usageIntro:
+      'Use Checkbox for form-native checked, unchecked, and mixed states when an option is included in a set.',
+    registryImportCode: registryImport(['Checkbox', 'CheckboxGroup'], 'Checkbox'),
+    packageImportCode: packageImport(['Checkbox', 'CheckboxGroup']),
+    usageCode: `<Checkbox name="routing" value="sidechain" defaultChecked>
+  Sidechain
+</Checkbox>`,
+    exampleCode: `"use client"
+
+import * as React from "react"
+import { Checkbox, CheckboxGroup } from "@/registry/components/analog/Checkbox"
+
+const options = ["monitor", "sidechain", "print"]
+
+export function CheckboxExample() {
+  const [value, setValue] = React.useState(["monitor", "sidechain"])
+
+  return (
+    <CheckboxGroup
+      aria-label="Routing options"
+      value={value}
+      onValueChange={setValue}
+      allValues={options}
+      tone="success"
+    >
+      <Checkbox parent>Route All</Checkbox>
+      <Checkbox name="routing" value="monitor">
+        Monitor
+      </Checkbox>
+      <Checkbox name="routing" value="sidechain">
+        Sidechain
+      </Checkbox>
+      <Checkbox name="routing" value="print">
+        Print
+      </Checkbox>
+    </CheckboxGroup>
+  )
+}`,
+    composition: {
+      description:
+        'Checkbox keeps Base UI checkbox and checkbox-group behavior while rendering each option as a flat rubber plunger whose face color and glow represent state.',
+      tree: `Checkbox
+|- Label Wrapper
+|- Control Shell / Surface Recess
+|  +- Root / Base UI checkbox behavior
+|     +- SquarePlunger
+|        +- Lit Face / Emissive Glow
++- Label Text
+
+CheckboxGroup
+|- Root / Base UI checkbox group behavior
++- Checkbox items`,
+      customizeTitle: 'Form Semantics',
+      customizeDescription:
+        'Use Checkbox when the state should submit with a form or belong to a multi-select set. Use PushToggle for command buttons, mode latches, and controls that should announce as pressed.',
+      customizeCode: `import { Checkbox, CheckboxGroup } from "@/registry/components/analog/Checkbox"
+
+export function RoutingChecklist() {
+  return (
+    <CheckboxGroup aria-label="Routing options" defaultValue={["monitor"]}>
+      <Checkbox name="routing" value="monitor" tone="success">
+        Monitor
+      </Checkbox>
+      <Checkbox name="routing" value="sidechain" tone="warning">
+        Sidechain
+      </Checkbox>
+      <Checkbox name="routing" value="print" tone="info">
+        Print
+      </Checkbox>
+    </CheckboxGroup>
+  )
+}`,
+    },
+    api: [
+      {
+        title: 'Checkbox',
+        description:
+        'A Base UI checkbox root styled as a square rubber plunger with label and form support.',
+        props: [
+          { name: 'checked', type: 'boolean', description: 'Controlled checked state.' },
+          {
+            name: 'defaultChecked',
+            type: 'boolean',
+            defaultValue: 'false',
+            description: 'Initial uncontrolled checked state.',
+          },
+          {
+            name: 'onCheckedChange',
+            type: '(checked: boolean) => void',
+            description: 'Receives checked state changes.',
+          },
+          {
+            name: 'indeterminate',
+            type: 'boolean',
+            defaultValue: 'false',
+            description: 'Renders a mixed state for parent or partial selections.',
+          },
+          {
+            name: 'name / value',
+            type: 'string',
+            description: 'Form field name and submitted value for checked options.',
+          },
+          {
+            name: 'parent',
+            type: 'boolean',
+            defaultValue: 'false',
+            description: 'Marks this checkbox as the parent controller inside a CheckboxGroup.',
+          },
+          {
+            name: 'variant',
+            type: '"rubber" | "chrome" | "black"',
+            defaultValue: '"rubber"',
+            description: 'Sets the plunger material finish. Checkbox defaults to flat white rubber.',
+          },
+          {
+            name: 'tone',
+            type: 'AnalogTone',
+            defaultValue: '"accent"',
+            description: 'Sets the optical tone used by the checked or mixed state.',
+          },
+          {
+            name: 'size',
+            type: 'React.CSSProperties["width"]',
+            defaultValue: '"2.75rem"',
+            description: 'Sets the square control footprint.',
+          },
+          {
+            name: 'labelPosition',
+            type: '"start" | "end" | "top" | "bottom"',
+            defaultValue: '"end"',
+            description: 'Places the text label around the square control.',
+          },
+          {
+            name: 'extrusionLayers',
+            type: 'number',
+            defaultValue: '18',
+            description: 'Controls rendered plunger depth.',
+          },
+          lightingProp,
+          classNameProp,
+        ],
+      },
+      {
+        title: 'CheckboxGroup',
+        description:
+          'A Base UI checkbox group with a recessed shell and shared visual defaults for child checkboxes.',
+        props: [
+          {
+            name: 'value',
+            type: 'string[]',
+            description: 'Controlled selected checkbox values.',
+          },
+          {
+            name: 'defaultValue',
+            type: 'string[]',
+            description: 'Initial uncontrolled selected values.',
+          },
+          {
+            name: 'onValueChange',
+            type: '(value: string[]) => void',
+            description: 'Receives the selected values when any child checkbox changes.',
+          },
+          {
+            name: 'allValues',
+            type: 'string[]',
+            description: 'All child values, used by Base UI for parent checkbox mixed states.',
+          },
+          {
+            name: 'orientation',
+            type: '"horizontal" | "vertical"',
+            defaultValue: '"vertical"',
+            description: 'Controls the group layout.',
+          },
+          {
+            name: 'variant',
+            type: '"rubber" | "chrome" | "black"',
+            defaultValue: '"rubber"',
+            description: 'Default plunger material finish for child checkboxes.',
+          },
+          {
+            name: 'tone',
+            type: 'AnalogTone',
+            defaultValue: '"accent"',
+            description: 'Default optical tone for child checkboxes.',
+          },
+          {
+            name: 'itemSize',
+            type: 'React.CSSProperties["width"]',
+            defaultValue: '"2.75rem"',
+            description: 'Default square footprint for child checkboxes.',
+          },
+          {
+            name: 'itemLabelPosition',
+            type: '"start" | "end" | "top" | "bottom"',
+            defaultValue: '"end"',
+            description: 'Default label placement for child checkboxes.',
+          },
+          {
+            name: 'extrusionLayers',
+            type: 'number',
+            defaultValue: '18',
+            description: 'Default rendered plunger depth for child checkboxes.',
+          },
+          lightingProp,
+          classNameProp,
+        ],
+      },
+    ],
+  },
   'toggle-button-group': {
     usageIntro:
       'Use ToggleButtonGroup for mutually exclusive push toggles with tone state feedback.',

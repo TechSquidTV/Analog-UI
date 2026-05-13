@@ -9,6 +9,8 @@ import {
 } from 'react';
 
 import {
+  Checkbox,
+  CheckboxGroup,
   Dial,
   Gauge,
   Indicator,
@@ -36,6 +38,17 @@ import {
 
 const algorithms = ['OPTO', 'FET', 'TAPE', 'BUS', 'CLIP'];
 const monitorModes = ['edit', 'mix', 'print'];
+const outputMatrixButtons: { value: string; label: string; tone: AnalogTone }[] = [
+  { value: 'pre', label: 'Pre meter tap', tone: 'info' },
+  { value: 'post', label: 'Post meter tap', tone: 'success' },
+  { value: 'sidechain', label: 'Sidechain send', tone: 'warning' },
+  { value: 'mono', label: 'Mono monitor sum', tone: 'neutral' },
+  { value: 'dim', label: 'Dim monitor', tone: 'warning' },
+  { value: 'mute', label: 'Mute monitor', tone: 'destructive' },
+  { value: 'limit', label: 'Limiter insert', tone: 'success' },
+  { value: 'print', label: 'Print bus feed', tone: 'info' },
+];
+const defaultOutputMatrixValue = ['post', 'sidechain', 'limit', 'print'];
 const METER_TICK_MS = 96;
 const METER_BALLISTICS = {
   attackMs: 70,
@@ -298,6 +311,7 @@ function MasterOutPanel({
 }: MasterOutPanelProps) {
   const meter = useStereoMeter(energy, active, suspendRef);
   const meterClip = active && (meter.lPeak > 82 || meter.rPeak > 82);
+  const [outputMatrixValue, setOutputMatrixValue] = useState(defaultOutputMatrixValue);
   const clipSentRef = useRef(false);
   const averageLevel = (meter.l + meter.r) / 2;
   const vuValue = active ? Math.min(3, -20 + averageLevel * 0.22) : -20;
@@ -370,6 +384,27 @@ function MasterOutPanel({
             tone={meterClip ? 'destructive' : 'info'}
             className="w-full [&>div]:w-full"
           />
+
+          <CheckboxGroup
+            aria-label="Output routing matrix"
+            orientation="horizontal"
+            value={outputMatrixValue}
+            onValueChange={setOutputMatrixValue}
+            itemSize="2.15rem"
+            extrusionLayers={14}
+            className="grid w-full grid-cols-4 gap-2 p-2"
+          >
+            {outputMatrixButtons.map((button) => (
+              <Checkbox
+                key={button.value}
+                name="output-routing"
+                aria-label={button.label}
+                value={button.value}
+                tone={button.tone}
+                className="justify-center"
+              />
+            ))}
+          </CheckboxGroup>
         </div>
       </div>
 

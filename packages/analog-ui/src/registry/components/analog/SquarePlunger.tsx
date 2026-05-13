@@ -3,13 +3,17 @@ import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { useAnalogMaterialVariant } from '../../hooks/analog-material-scope';
 
+export type SquarePlungerVariant = 'chrome' | 'black' | 'rubber';
+
 export interface SquarePlungerProps {
-  variant?: 'chrome' | 'black';
+  variant?: SquarePlungerVariant;
   isPressed: boolean;
   extrusionLayers?: number;
   children?: React.ReactNode;
   indicator?: React.ReactNode;
   className?: string;
+  faceClassName?: string;
+  faceStyle?: React.CSSProperties;
 }
 
 export const SquarePlunger = ({
@@ -19,9 +23,62 @@ export const SquarePlunger = ({
   children,
   indicator,
   className,
+  faceClassName,
+  faceStyle,
 }: SquarePlungerProps) => {
-  const resolvedVariant = useAnalogMaterialVariant(variant);
+  const inheritedVariant = useAnalogMaterialVariant(variant === 'rubber' ? undefined : variant);
+  const resolvedVariant = variant ?? inheritedVariant;
   const isChrome = resolvedVariant === 'chrome';
+  const isRubber = resolvedVariant === 'rubber';
+  const extrusionBackground = isChrome
+    ? 'var(--analog-surface-metal-mid)'
+    : isRubber
+      ? 'color-mix(in oklch, var(--analog-surface-metal-hi) 52%, var(--analog-highlight-color) 48%)'
+      : 'var(--analog-surface-onyx-lo)';
+  const extrusionHighlight = isChrome
+    ? 'var(--analog-extrusion-highlight)'
+    : isRubber
+      ? 'rgb(var(--analog-highlight-rgb) / calc(0.16 * var(--analog-light-power, 1)))'
+      : 'var(--analog-extrusion-highlight-muted)';
+  const extrusionShadow = isChrome
+    ? 'var(--analog-extrusion-shadow)'
+    : isRubber
+      ? 'rgb(var(--analog-shadow-rgb) / calc(0.18 * var(--analog-shadow-depth, 1)))'
+      : 'var(--analog-extrusion-shadow-strong)';
+  const faceBackground = isRubber
+    ? 'color-mix(in oklch, var(--analog-surface-metal-hi) 42%, var(--analog-highlight-color) 58%)'
+    : isChrome
+      ? `linear-gradient(calc(var(--analog-light-angle-surface, 180deg) - 180deg), var(--analog-surface-metal-hi), var(--analog-surface-metal-mid) 50%, var(--analog-surface-metal-lo))`
+      : `linear-gradient(calc(var(--analog-light-angle-surface, 180deg) - 180deg), var(--analog-surface-onyx-hi), var(--analog-surface-onyx-mid) 50%, var(--analog-surface-onyx-lo))`;
+  const faceShadow = isRubber
+    ? `
+      inset 0 1px 1px rgb(var(--analog-highlight-rgb) / calc(0.28 * var(--analog-light-power, 1))),
+      inset 0 -2px 6px rgb(var(--analog-shadow-rgb) / calc(0.14 * var(--analog-shadow-depth, 1))),
+      ${
+        isPressed
+          ? '0 calc(var(--analog-bevel-width, 4px) * 0.45) var(--analog-bevel-width, 4px)'
+          : '0 calc(var(--analog-bevel-width, 4px) * 3) calc(var(--analog-bevel-width, 4px) * 6)'
+      } rgb(var(--analog-shadow-rgb) / calc(0.42 * var(--analog-shadow-depth, 1)))
+    `
+    : isChrome
+      ? `
+      inset calc(sin(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * 0.75) calc(cos(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * -0.75) calc(var(--analog-bevel-width, 4px) * 0.5) rgb(var(--analog-highlight-rgb) / calc(1 * var(--analog-light-power, 1))),
+      inset calc(sin(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * -1.5) calc(cos(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * 1.5) calc(var(--analog-bevel-width, 4px) * 4) rgb(var(--analog-shadow-rgb) / calc(0.5 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))),
+      ${
+        isPressed
+          ? '0 calc(var(--analog-bevel-width, 4px) * 0.5) var(--analog-bevel-width, 4px)'
+          : '0 calc(var(--analog-bevel-width, 4px) * 3.75) calc(var(--analog-bevel-width, 4px) * 7.5)'
+      } rgb(var(--analog-shadow-rgb) / calc(0.7 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))
+    `
+      : `
+      inset calc(sin(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * 0.375) calc(cos(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * -0.375) calc(var(--analog-bevel-width, 4px) * 0.25) rgb(var(--analog-highlight-rgb) / calc(0.3 * var(--analog-light-power, 1))),
+      inset calc(sin(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * -0.75) calc(cos(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * 0.75) calc(var(--analog-bevel-width, 4px) * 3) rgb(var(--analog-shadow-rgb) / calc(0.95 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))),
+      ${
+        isPressed
+          ? '0 calc(var(--analog-bevel-width, 4px) * 0.75) calc(var(--analog-bevel-width, 4px) * 1.5)'
+          : '0 calc(var(--analog-bevel-width, 4px) * 4.5) calc(var(--analog-bevel-width, 4px) * 9)'
+      } rgb(var(--analog-shadow-rgb) / calc(0.9 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))
+    `;
 
   return (
     <motion.div
@@ -46,63 +103,44 @@ export const SquarePlunger = ({
         {[...Array(extrusionLayers)].map((_, index) => (
           <div
             key={`extrusion-${index}`}
-            className={cn(
-              'absolute inset-0',
-              isChrome
-                ? 'bg-[var(--analog-surface-metal-mid)]'
-                : 'bg-[var(--analog-surface-onyx-lo)]',
-            )}
+            className="absolute inset-0"
             style={{
+              background: extrusionBackground,
               transform: `translateZ(-${index + 1}px)`,
-              filter: `brightness(${Math.max(0.15, 1 - (index / extrusionLayers) * 1.2)})`,
-              borderLeft: isChrome
-                ? '1px solid var(--analog-extrusion-highlight)'
-                : '1px solid var(--analog-extrusion-highlight-muted)',
-              borderRight: isChrome
-                ? '1px solid var(--analog-extrusion-shadow)'
-                : '1px solid var(--analog-extrusion-shadow-strong)',
+              filter: `brightness(${
+                isRubber
+                  ? Math.max(0.62, 1 - (index / extrusionLayers) * 0.48)
+                  : Math.max(0.15, 1 - (index / extrusionLayers) * 1.2)
+              })`,
+              borderLeft: `1px solid ${extrusionHighlight}`,
+              borderRight: `1px solid ${extrusionShadow}`,
             }}
           />
         ))}
 
         {/* Main Face */}
         <div
-          className="absolute inset-0"
+          className={cn('absolute inset-0', faceClassName)}
           style={{
-            background: isChrome
-              ? `linear-gradient(calc(var(--analog-light-angle-surface, 180deg) - 180deg), var(--analog-surface-metal-hi), var(--analog-surface-metal-mid) 50%, var(--analog-surface-metal-lo))`
-              : `linear-gradient(calc(var(--analog-light-angle-surface, 180deg) - 180deg), var(--analog-surface-onyx-hi), var(--analog-surface-onyx-mid) 50%, var(--analog-surface-onyx-lo))`,
-            boxShadow: isChrome
-              ? `
-                inset calc(sin(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * 0.75) calc(cos(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * -0.75) calc(var(--analog-bevel-width, 4px) * 0.5) rgb(var(--analog-highlight-rgb) / calc(1 * var(--analog-light-power, 1))),
-                inset calc(sin(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * -1.5) calc(cos(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * 1.5) calc(var(--analog-bevel-width, 4px) * 4) rgb(var(--analog-shadow-rgb) / calc(0.5 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))),
-                ${
-                  isPressed
-                    ? '0 calc(var(--analog-bevel-width, 4px) * 0.5) var(--analog-bevel-width, 4px)'
-                    : '0 calc(var(--analog-bevel-width, 4px) * 3.75) calc(var(--analog-bevel-width, 4px) * 7.5)'
-                } rgb(var(--analog-shadow-rgb) / calc(0.7 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))
-              `
-              : `
-                inset calc(sin(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * 0.375) calc(cos(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * -0.375) calc(var(--analog-bevel-width, 4px) * 0.25) rgb(var(--analog-highlight-rgb) / calc(0.3 * var(--analog-light-power, 1))),
-                inset calc(sin(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * -0.75) calc(cos(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * 0.75) calc(var(--analog-bevel-width, 4px) * 3) rgb(var(--analog-shadow-rgb) / calc(0.95 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))),
-                ${
-                  isPressed
-                    ? '0 calc(var(--analog-bevel-width, 4px) * 0.75) calc(var(--analog-bevel-width, 4px) * 1.5)'
-                    : '0 calc(var(--analog-bevel-width, 4px) * 4.5) calc(var(--analog-bevel-width, 4px) * 9)'
-                } rgb(var(--analog-shadow-rgb) / calc(0.9 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))
-              `,
+            background: faceStyle?.background ?? faceBackground,
+            boxShadow: faceStyle?.boxShadow ?? faceShadow,
+            transition:
+              'background 180ms ease-out, box-shadow 180ms ease-out, filter 180ms ease-out',
+            ...faceStyle,
           }}
         >
-          <div
-            className={cn(
-              'analog-foil pointer-events-none absolute inset-0',
-              isChrome ? 'mix-blend-overlay' : 'mix-blend-soft-light filter grayscale',
-            )}
-            style={{
-              opacity: 'var(--analog-foil-opacity, 0.25)',
-              backgroundSize: '250%',
-            }}
-          />
+          {isRubber ? null : (
+            <div
+              className={cn(
+                'analog-foil pointer-events-none absolute inset-0',
+                isChrome ? 'mix-blend-overlay' : 'mix-blend-soft-light filter grayscale',
+              )}
+              style={{
+                opacity: 'var(--analog-foil-opacity, 0.25)',
+                backgroundSize: '250%',
+              }}
+            />
+          )}
 
           {indicator}
 
@@ -110,10 +148,12 @@ export const SquarePlunger = ({
           <div
             className="relative z-10 flex size-full items-center justify-center p-1 text-center text-[10px] font-bold tracking-[0.25em] whitespace-nowrap uppercase"
             style={{
-              color: isChrome
-                ? 'color-mix(in oklch, var(--analog-surface-metal-lo) 42%, var(--analog-control-foreground) 58%)'
-                : 'color-mix(in oklch, var(--analog-surface-metal-hi) 72%, var(--analog-highlight-color) 28%)',
-              filter: 'drop-shadow(0 2px 4px var(--analog-shadow-color))',
+              color: isRubber
+                ? 'color-mix(in oklch, var(--analog-surface-cavity) 72%, var(--analog-shadow-color) 28%)'
+                : isChrome
+                  ? 'color-mix(in oklch, var(--analog-surface-metal-lo) 42%, var(--analog-control-foreground) 58%)'
+                  : 'color-mix(in oklch, var(--analog-surface-metal-hi) 72%, var(--analog-highlight-color) 28%)',
+              filter: isRubber ? 'none' : 'drop-shadow(0 2px 4px var(--analog-shadow-color))',
             }}
           >
             {children}

@@ -28,6 +28,8 @@ import {
   PushToggle,
   ToggleButtonGroup,
   ToggleButtonGroupItem,
+  Checkbox,
+  CheckboxGroup,
   NeedleGauge,
   type AnalogTone,
   type NeedleGaugeScalePreset,
@@ -491,6 +493,69 @@ function ToggleButtonGroupDemo({ mode }: { mode: DemoMode }) {
             </ToggleButtonGroupItem>
           ) : null}
         </ToggleButtonGroup>
+      </div>
+    </DemoStage>
+  );
+}
+
+function CheckboxDemo({ mode }: { mode: DemoMode }) {
+  const options = ['monitor', 'sidechain', 'print'];
+  const [routing, setRouting] = useState<string[]>(['monitor', 'sidechain']);
+  const activeCount = routing.length;
+
+  return (
+    <DemoStage
+      mode={mode}
+      footer={
+        <>
+          <FooterItem label="Selected" value={`${activeCount}/${options.length}`} />
+          <FooterItem label="State" value={activeCount === options.length ? 'All' : 'Partial'} />
+          <FooterItem label="Semantics" value="Checkbox" />
+        </>
+      }
+    >
+      <div className="flex w-full flex-wrap items-center justify-center gap-10">
+        <CheckboxGroup
+          aria-label="Routing options"
+          value={routing}
+          onValueChange={setRouting}
+          allValues={options}
+          tone="success"
+        >
+          <Checkbox parent tone="warning">
+            Route All
+          </Checkbox>
+          <Checkbox name="routing" value="monitor">
+            Monitor
+          </Checkbox>
+          <Checkbox name="routing" value="sidechain">
+            Sidechain
+          </Checkbox>
+          <Checkbox name="routing" value="print" tone="info">
+            Print
+          </Checkbox>
+        </CheckboxGroup>
+
+        {mode === 'full' ? (
+          <CheckboxGroup
+            aria-label="Compact routing buttons"
+            orientation="horizontal"
+            itemLabelPosition="bottom"
+            itemSize="3.25rem"
+            value={routing}
+            onValueChange={setRouting}
+          >
+            <Checkbox name="routing" value="monitor">
+              Monitor
+            </Checkbox>
+            <Checkbox name="routing" value="sidechain" tone="warning">
+              Sidechain
+            </Checkbox>
+            <Checkbox name="routing" value="print" variant="black" tone="info">
+              Print
+            </Checkbox>
+          </CheckboxGroup>
+        ) : null}
       </div>
     </DemoStage>
   );
@@ -1045,6 +1110,8 @@ export default function ComponentDemo({ name, mode = 'full' }: ComponentDemoProp
       return <PushToggleDemo mode={mode} />;
     case 'toggle-button-group':
       return <ToggleButtonGroupDemo mode={mode} />;
+    case 'checkbox':
+      return <CheckboxDemo mode={mode} />;
     case 'switch':
       return <SwitchDemo mode={mode} />;
     case 'rotary-switch':

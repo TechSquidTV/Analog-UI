@@ -68,10 +68,19 @@ export const componentCatalog = {
     materialLogic:
       'For precision toggles and latching buttons, place tone indicators in the top-right corner.',
   },
+  checkbox: {
+    name: 'checkbox',
+    category: 'inputs',
+    order: 37,
+    summary:
+      'A form-native checkbox rendered as a flat rubber plunger with mixed-state support.',
+    materialLogic:
+      'Use checkboxes for included/excluded options and multi-select groups; use PushToggle for command or mode buttons.',
+  },
   'toggle-button-group': {
     name: 'toggle-button-group',
     category: 'inputs',
-    order: 37,
+    order: 38,
     summary: 'A selection group of push toggles with active tone feedback.',
     materialLogic:
       'Group related controls inside panels or equipment bays rather than floating them independently.',

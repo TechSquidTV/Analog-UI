@@ -840,7 +840,7 @@
       "name": "square-plunger",
       "title": "Square Plunger",
       "type": "registry:ui",
-      "description": "A reusable 3D square plunger surface with motion-driven physical displacement and machined lighting.",
+      "description": "A reusable 3D square plunger surface with motion-driven physical displacement and chrome, black, or rubber finishes.",
       "dependencies": ["motion"],
       "registryDependencies": ["analog-foundation", "analog-material-scope", "utils"],
       "files": [
@@ -888,6 +888,27 @@
       "files": [
         {
           "path": "src/registry/components/analog/PushToggle.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "checkbox",
+      "title": "Checkbox",
+      "type": "registry:ui",
+      "description": "A Base UI checkbox rendered as a square rubber plunger with form-native checked, mixed, and group semantics.",
+      "dependencies": ["@base-ui/react", "motion"],
+      "registryDependencies": [
+        "analog-foundation",
+        "analog-tone",
+        "use-analog-lighting",
+        "utils",
+        "orientation",
+        "square-plunger"
+      ],
+      "files": [
+        {
+          "path": "src/registry/components/analog/Checkbox.tsx",
           "type": "registry:ui"
         }
       ]

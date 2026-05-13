@@ -23,5 +23,6 @@ export * from './registry/components/analog/RockerSwitchGroup';
 export * from './registry/components/analog/PushButton';
 export * from './registry/components/analog/PushToggle';
 export * from './registry/components/analog/ToggleButtonGroup';
+export * from './registry/components/analog/Checkbox';
 export * from './registry/components/analog/WheelNumber';
 export * from './registry/components/analog/WheelSelect';
