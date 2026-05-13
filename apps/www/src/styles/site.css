@@ -153,9 +153,10 @@ a {
   }
 
   .docs-prose table {
-    @apply mt-4 block w-full max-w-full overflow-x-auto rounded-[var(--analog-radius-shell)] border border-white/10 bg-black/25 text-left text-sm;
+    @apply mt-4 w-full max-w-full overflow-hidden rounded-[var(--analog-radius-shell)] border border-white/10 bg-black/25 text-left text-sm;
     border-collapse: separate;
     border-spacing: 0;
+    display: table;
   }
 
   .docs-prose th {
