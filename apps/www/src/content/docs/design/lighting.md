@@ -7,7 +7,9 @@ navTitle: Lighting
 draft: false
 ---
 
-Analog UI lighting makes separate controls feel like one piece of hardware. A surface gets a shared light direction, then each material channel resolves its own angle and intensity from that scene.
+Analog UI lighting makes separate controls feel like one piece of hardware. A surface gets a shared scene direction, then each material channel resolves its own angle and intensity from that scene.
+
+Controls can render without a provider because the hooks fall back to a 180 degree light and `power={1}`. Add a provider when a panel, rack, or dense control bank should share one moving light source.
 
 ## Basic Setup
 
@@ -44,40 +46,53 @@ The provider supplies three runtime inputs:
 - `sourceAngle` is the live direction from the pointer, environment, or interaction model.
 - `power` scales highlight and shadow strength without changing the geometry of the light.
 
-`sourceAngle` and `power` can be numbers or Motion values.
+`baseAngle`, `sourceAngle`, and `power` can be numbers or Motion values. If `sourceAngle` is omitted, it falls back to `baseAngle`.
 
 ## Pointer Lighting
 
-`usePointerLighting` maps pointer position to a continuous light angle around the target surface.
+`usePointerLighting` maps pointer position to a continuous Motion value around the target surface.
 
 - Pass `targetRef` so light orbits the panel or control bank instead of the viewport.
+- Omit `targetRef` only when the viewport is intentionally the lit surface.
 - Use `influence` to blend the pointer angle back toward `baseAngle`.
 - Use `deadZoneRadius` to avoid noisy angle flips near the center.
+- Use `enabled={false}` to return to the base angle and detach pointer tracking.
 - Use `suspendRef` during heavy scrubbing if pointer lighting competes with drag interaction.
 
 At `influence: 1`, the returned light follows the pointer directly. Lower values keep the scene calmer.
+
+```tsx
+const isScrubbingRef = React.useRef(false);
+const sourceAngle = usePointerLighting({
+  baseAngle: 180,
+  influence: 0.55,
+  targetRef: panelRef,
+  suspendRef: isScrubbingRef,
+  deadZoneRadius: 12,
+});
+```
 
 ## Material Channels
 
 Components call `useAnalogLighting` for the visible material channels they render.
 
-| Channel   | Use It For                                   | Default Feel                      |
-| --------- | -------------------------------------------- | --------------------------------- |
-| `panel`   | Rack faces, macro containers, meter housings | Calm, broad movement              |
-| `screw`   | Screws and small hardware accents            | Sharper specular catches          |
-| `track`   | Recesses, rails, cavities, slots             | Dark, quiet movement              |
-| `wheel`   | Trim wheels, drums, number wheels            | Heavy but responsive              |
-| `bezel`   | Rings, trims, lamp housings                  | Crisp edge light                  |
-| `lens`    | Glass, jewels, optical inserts               | Eager glints and bloom            |
-| `thumb`   | Handles, rockers, caps, plungers             | Strong face and sidewall response |
-| `pointer` | Needles, dial pointers, indicators           | Direct light tracking             |
-| `surface` | General lit surfaces and custom controls     | Responsive default                |
+| Channel   | Use It For                                   | Default Travel | Default Feel                      |
+| --------- | -------------------------------------------- | -------------- | --------------------------------- |
+| `panel`   | Rack faces, macro containers, meter housings | `0.12`         | Calm, broad movement              |
+| `screw`   | Screws and small hardware accents            | `0.45`         | Sharper specular catches          |
+| `track`   | Recesses, rails, cavities, slots             | `0.14`         | Dark, quiet movement              |
+| `wheel`   | Trim wheels, drums, number wheels            | `0.3`          | Heavy but responsive              |
+| `bezel`   | Rings, trims, lamp housings                  | `0.5`          | Crisp edge light                  |
+| `lens`    | Glass, jewels, optical inserts               | `0.9`          | Eager glints and bloom            |
+| `thumb`   | Handles, rockers, caps, plungers             | `0.7`          | Strong face and sidewall response |
+| `pointer` | Needles, dial pointers, indicators           | `1`            | Direct light tracking             |
+| `surface` | General lit surfaces and custom controls     | `0.75`         | Responsive default                |
 
 Use the most specific channel that describes the material. A slider should not light its recessed track and moving thumb with the same response.
 
 ## Response Values
 
-Lighting responses can be numbers, presets, or response objects.
+Lighting responses can be numbers, presets, or response objects. Numbers are clamped from `0` to `1`; `0` stays on `baseAngle`, and `1` tracks `sourceAngle` directly.
 
 ```tsx
 <Dial
@@ -103,7 +118,13 @@ Response object fields:
 - `offset` rotates the resolved channel angle.
 - `constraint` limits motion to an arc with `{ anchor, arc, mode }`.
 
-Use `constraint.mode: "clamp"` for a hard stop and `constraint.mode: "fold"` when reflection should bounce inside the arc.
+Use `constraint.mode: "clamp"` for a hard stop and `constraint.mode: "fold"` when reflection should bounce inside the arc. If a constraint omits details, it defaults to `anchor: 180`, `arc: 180`, and `mode: "fold"`.
+
+```tsx
+type AnalogLightingConfig<Channel extends AnalogMaterialChannel> = Partial<
+  Record<Channel, number | 'fixed' | 'muted' | 'standard' | 'eager' | AnalogLightingResponse>
+>;
+```
 
 ## Provider Defaults
 
@@ -141,11 +162,11 @@ Use a component `lighting` prop when one control needs a local response:
 />
 ```
 
-Component overrides should describe material behavior, not visual decoration. If the component introduces a visible material channel, expose a typed `lighting` prop for it.
+Component overrides are merged channel-by-channel over provider defaults, then over the built-in channel defaults. They should describe material behavior, not visual decoration. If the component introduces a visible material channel, expose a typed `lighting` prop for it.
 
 ## CSS Authoring
 
-Use `useAnalogLighting` inside public components to resolve CSS variables for the channels you render:
+Use `useAnalogLighting` inside public components to resolve CSS variables for the channels you render. Route moving gradients, highlights, and shadows through those variables:
 
 ```tsx
 const lightingStyle = useAnalogLighting(['track', 'thumb'], lighting);
@@ -156,7 +177,8 @@ return (
       ...lightingStyle,
       background:
         'linear-gradient(var(--analog-light-angle-track, 180deg), var(--analog-surface-cavity), black)',
-      boxShadow: 'inset 0 1px 2px rgba(255, 255, 255, calc(0.12 * var(--analog-light-power, 1)))',
+      boxShadow:
+        'inset calc(sin(var(--analog-light-angle-track, 180deg)) * 1px) calc(cos(var(--analog-light-angle-track, 180deg)) * -1px) 2px rgba(255, 255, 255, calc(0.12 * var(--analog-light-power, 1)))',
     }}
   />
 );
@@ -165,11 +187,18 @@ return (
 Use `useAnalogLightStyle` when a component needs a secondary light variable for a custom layer:
 
 ```tsx
-const wheelFaceStyle = useAnalogLightStyle('wheel', {
-  varName: '--analog-light-angle-wheel-face',
-  offset: 18,
-});
+const wheelFaceStyle = useAnalogLightStyle(
+  'wheel',
+  {
+    varName: '--analog-light-angle-wheel-face',
+    offset: 18,
+    constraint: { anchor: 180, arc: 150, mode: 'fold' },
+  },
+  lighting?.wheel,
+);
 ```
+
+Use `useAnalogLightAngle` when an effect needs a numeric angle in JavaScript, such as placing a lens glint or computing a custom polar highlight.
 
 ## Lighting Rules
 
@@ -178,5 +207,8 @@ const wheelFaceStyle = useAnalogLightStyle('wheel', {
 - Keep tracks, cavities, and recesses quieter than exposed hardware.
 - Let panels move less than knobs, lamps, wheels, pointers, and thumbs.
 - Let lenses and emissive elements react more eagerly than structural surfaces.
+- Keep indicator emission centered. Move the lens glint, bezel, and recess reflections instead.
+- Keep printed legends, ticks, numerals, and icons readable; avoid rotating dramatic lighting across text.
 - Preserve shortest-path 360 degree rotation with no visible seam flip.
+- Shape material feel with `travel`, `offset`, and constraints instead of per-material lag.
 - Avoid hardcoded dynamic light angles in public components.
