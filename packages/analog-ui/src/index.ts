@@ -6,6 +6,8 @@ export * from './registry/hooks/use-wheel-input';
 export * from './registry/components/analog/tone';
 export * from './registry/components/analog/orientation';
 export * from './registry/components/analog/SurfaceButton';
+export * from './registry/components/analog/RockerThumbSurface';
+export * from './registry/components/analog/SquarePlunger';
 export * from './registry/components/analog/Dial';
 export * from './registry/components/analog/Gauge';
 export * from './registry/components/analog/RotarySwitch';

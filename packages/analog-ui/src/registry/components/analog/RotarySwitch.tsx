@@ -5,6 +5,18 @@ import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-an
 
 const FLUTED_LAYER_PATH =
   'M155 1q29 34 72 34l25 31c-6 28 0 57 18 78l-9 39a93 93 0 0 0-50 63l-36 17a92 92 0 0 0-80 0l-36-17q-10-43-50-63l-8-39q26-34 17-78c11-12 15-18 25-31 28 0 55-13 72-35z';
+const FLUTED_LAYER_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 270 264"><path fill="black" d="${FLUTED_LAYER_PATH}"/></svg>`;
+const FLUTED_LAYER_MASK = `url("data:image/svg+xml,${encodeURIComponent(FLUTED_LAYER_SVG)}")`;
+const FLUTED_LAYER_MASK_STYLE = {
+  WebkitMaskImage: FLUTED_LAYER_MASK,
+  maskImage: FLUTED_LAYER_MASK,
+  WebkitMaskPosition: 'center',
+  maskPosition: 'center',
+  WebkitMaskRepeat: 'no-repeat',
+  maskRepeat: 'no-repeat',
+  WebkitMaskSize: 'contain',
+  maskSize: 'contain',
+} as React.CSSProperties;
 
 export interface RotarySwitchMark {
   value: number;
@@ -22,7 +34,7 @@ export interface RotarySwitchProps extends Omit<
   disabled?: boolean;
   min?: number;
   max?: number;
-  lighting?: AnalogLightingConfig<'surface' | 'bezel' | 'pointer'>;
+  lighting?: AnalogLightingConfig<'surface' | 'bezel' | 'pointer' | 'track'>;
   startAngle?: number;
   sweepAngle?: number;
   marks?: readonly RotarySwitchMark[];
@@ -102,7 +114,7 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
     const resolvedMax = Math.round(Math.max(min, max));
     const range = resolvedMax - resolvedMin;
     const resolvedSweepAngle = Math.min(359.999, Math.max(0, sweepAngle));
-    const lightingStyle = useAnalogLighting(['surface', 'bezel', 'pointer'], lighting);
+    const lightingStyle = useAnalogLighting(['surface', 'bezel', 'pointer', 'track'], lighting);
     const surfaceLighting = lighting?.surface ? { surface: lighting.surface } : undefined;
     const generatedId = React.useId().replace(/:/g, '');
     const backingGradientId = `rotary-switch-backing-${generatedId}`;
@@ -294,6 +306,7 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
         aria-valuemax={resolvedMax}
         aria-valuenow={currentValue}
         aria-disabled={disabled || undefined}
+        aria-valuetext={String(currentValue)}
         tabIndex={disabled ? -1 : (tabIndex ?? 0)}
         {...props}
         className={cn(
@@ -311,11 +324,13 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerCancel}
         onKeyDown={handleKeyDown}
+        data-slot="rotary-switch"
       >
         <svg
           aria-hidden="true"
           viewBox="0 0 100 100"
           className="pointer-events-none absolute inset-0 z-40 h-full w-full overflow-visible"
+          data-slot="rotary-switch-scale"
         >
           {detents.map((detent) => {
             const angle = startAngle + detent.ratio * resolvedSweepAngle;
@@ -329,6 +344,7 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
             return (
               <line
                 key={detent.value}
+                data-slot="rotary-switch-detent"
                 x1={lineStartX}
                 y1={lineStartY}
                 x2={lineEndX}
@@ -354,6 +370,7 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
             return (
               <text
                 key={`${mark.value}-${String(mark.label)}`}
+                data-slot="rotary-switch-mark"
                 x={labelX}
                 y={labelY}
                 fill="var(--analog-legend)"
@@ -373,117 +390,76 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-[8%] z-20 overflow-visible"
+          data-slot="rotary-switch-knob-stack"
         >
-          <svg viewBox="0 0 270 264" className="h-full w-full overflow-visible">
-            <defs>
-              <radialGradient
-                id={backingGradientId}
-                cx="112"
-                cy="72"
-                r="180"
-                gradientUnits="userSpaceOnUse"
-              >
-                <stop
-                  offset="0%"
-                  stopColor="color-mix(in oklch, var(--analog-surface-onyx-mid) 54%, black 46%)"
-                />
-                <stop
-                  offset="58%"
-                  stopColor="color-mix(in oklch, var(--analog-surface-onyx-lo) 64%, black 36%)"
-                />
-                <stop offset="100%" stopColor="black" />
-              </radialGradient>
-              <radialGradient
-                id={bodyGradientId}
-                cx="108"
-                cy="68"
-                r="172"
-                gradientUnits="userSpaceOnUse"
-              >
-                <stop
-                  offset="0%"
-                  stopColor="color-mix(in oklch, var(--analog-surface-onyx-hi) 72%, white 8%)"
-                />
-                <stop
-                  offset="35%"
-                  stopColor="color-mix(in oklch, var(--analog-surface-onyx-mid) 78%, var(--analog-surface-onyx-hi) 22%)"
-                />
-                <stop
-                  offset="72%"
-                  stopColor="color-mix(in oklch, var(--analog-surface-onyx-lo) 90%, black 10%)"
-                />
-                <stop offset="100%" stopColor="black" />
-              </radialGradient>
-              <radialGradient
-                id={glossGradientId}
-                cx="84"
-                cy="36"
-                r="194"
-                gradientUnits="userSpaceOnUse"
-              >
-                <stop
-                  offset="0%"
-                  stopColor="rgba(255,255,255,calc(0.16 * var(--analog-light-power, 1)))"
-                />
-                <stop offset="46%" stopColor="rgba(255,255,255,0)" />
-                <stop
-                  offset="100%"
-                  stopColor="rgba(0,0,0,calc(0.42 * var(--analog-light-power, 1)))"
-                />
-              </radialGradient>
-            </defs>
+          <div
+            className="absolute -inset-[3.5%] rounded-full"
+            data-slot="rotary-switch-backing"
+            style={{
+              background:
+                `radial-gradient(circle at 42% 28%, color-mix(in oklch, var(--analog-surface-onyx-mid) 52%, white 3%) 0%, transparent 34%), ` +
+                `linear-gradient(calc(var(--analog-light-angle-track, 180deg) - 90deg), color-mix(in oklch, var(--analog-surface-onyx-hi) 28%, black 72%) 0%, var(--analog-surface-onyx-mid) 36%, var(--analog-surface-onyx-lo) 100%)`,
+              boxShadow:
+                `inset calc(sin(var(--analog-light-angle-track, 180deg)) * 1px) calc(cos(var(--analog-light-angle-track, 180deg)) * -1px) 0 rgba(255,255,255,calc(0.07 * var(--analog-light-power, 1))), ` +
+                `inset calc(sin(var(--analog-light-angle-track, 180deg)) * -5px) calc(cos(var(--analog-light-angle-track, 180deg)) * 5px) 16px rgba(0,0,0,calc(0.72 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
+            }}
+          />
 
-            <circle
-              cx="135"
-              cy="132"
-              r="145"
-              fill={`url(#${backingGradientId})`}
-              stroke="rgba(255,255,255,calc(0.045 * var(--analog-light-power, 1)))"
-              strokeWidth="1.2"
-            />
-
-            <g
+          <div
+            className="absolute inset-[5%]"
+            data-slot="rotary-switch-fluted-rotor"
+            style={{
+              transform: `rotate(${knobRotation}deg)`,
+              transformOrigin: '50% 50%',
+              transition: 'transform 90ms cubic-bezier(0.2, 0, 0, 1)',
+              willChange: 'transform',
+            }}
+          >
+            <div
+              className="absolute inset-0"
+              data-slot="rotary-switch-fluted-body"
               style={{
-                transform: `rotate(${knobRotation}deg) scale(0.9)`,
-                transformOrigin: '50% 50%',
-                transition: 'transform 90ms cubic-bezier(0.2, 0, 0, 1)',
-                willChange: 'transform',
+                ...FLUTED_LAYER_MASK_STYLE,
+                background:
+                  `radial-gradient(circle at 38% 22%, rgba(255,255,255,calc(0.13 * var(--analog-light-power, 1))) 0%, transparent 32%), ` +
+                  `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 90deg), var(--analog-surface-onyx-hi) 0%, var(--analog-surface-onyx-mid) 44%, var(--analog-surface-onyx-lo) 100%)`,
+                boxShadow:
+                  `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * 2px) calc(cos(var(--analog-light-angle-bezel, 180deg)) * -2px) 3px rgba(255,255,255,calc(0.12 * var(--analog-light-power, 1))), ` +
+                  `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * -8px) calc(cos(var(--analog-light-angle-bezel, 180deg)) * 8px) 18px rgba(0,0,0,calc(0.76 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
               }}
-            >
-              <path
-                d={FLUTED_LAYER_PATH}
-                fill={`url(#${bodyGradientId})`}
-                stroke="rgba(255,255,255,calc(0.14 * var(--analog-light-power, 1)))"
-                strokeLinejoin="round"
-                strokeWidth="2"
-              />
-
-              <path d={FLUTED_LAYER_PATH} fill={`url(#${glossGradientId})`} opacity="0.78" />
-
-              <line
-                x1={135}
-                y1={50}
-                x2={135}
-                y2={12}
-                stroke="rgba(255,255,255,0.9)"
-                strokeWidth="7"
-                strokeLinecap="round"
-              />
-
-              <circle cx="135" cy="132" r="83" fill="rgba(0,0,0,0.82)" />
-
-              <path
-                d={FLUTED_LAYER_PATH}
-                fill="none"
-                stroke="rgba(0,0,0,calc(0.64 * var(--analog-shadow-depth, 1)))"
-                strokeLinejoin="round"
-                strokeWidth="1.4"
-              />
-            </g>
-          </svg>
+            />
+            <div
+              className="absolute inset-0 opacity-70 mix-blend-screen"
+              data-slot="rotary-switch-fluted-gloss"
+              style={{
+                ...FLUTED_LAYER_MASK_STYLE,
+                background: `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 112deg), rgba(255,255,255,calc(0.15 * var(--analog-light-power, 1))) 0%, rgba(255,255,255,0.02) 31%, transparent 52%, rgba(0,0,0,calc(0.42 * var(--analog-light-power, 1))) 100%)`,
+              }}
+            />
+            <div
+              className="absolute inset-[31%] rounded-full"
+              data-slot="rotary-switch-center-shadow"
+              style={{
+                background: 'radial-gradient(circle, rgba(0,0,0,0.48) 0%, rgba(0,0,0,0.9) 100%)',
+                boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.82), inset 0 0 14px rgba(0,0,0,0.72)',
+              }}
+            />
+            <div
+              className="absolute left-1/2 top-[5%] h-[28%] w-[4.5%] -translate-x-1/2 rounded-full"
+              data-slot="rotary-switch-pointer"
+              style={{
+                background: `linear-gradient(calc(var(--analog-light-angle-pointer, 180deg) - 90deg), rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.72) 58%, rgba(0,0,0,0.34) 100%)`,
+                boxShadow:
+                  '0 0 0 1px rgba(0,0,0,0.3), 0 0 5px rgba(255,255,255,0.14), inset 0 0 1px rgba(255,255,255,0.82)',
+              }}
+            />
+          </div>
         </div>
 
-        <div className="pointer-events-none absolute inset-[27%] z-30 rounded-full">
+        <div
+          className="pointer-events-none absolute inset-[27%] z-30 rounded-full"
+          data-slot="rotary-switch-cap"
+        >
           <SurfaceButton
             rotation={knobRotation}
             lighting={surfaceLighting}

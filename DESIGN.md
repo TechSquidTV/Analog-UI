@@ -356,6 +356,104 @@ The shape language mixes long pill recesses with compact machined rectangles and
 
 Buttons, dials, sliders, wheels, toggles, switches, meters, and panels should all expose the same material logic.
 
+### Component Composition Architecture
+
+Analog UI should follow the shadcn-style expectation that distributed components are useful out of the box, open to modification after install, and predictable to compose. The default export for a control should stay polished and complete, but high-variance hardware parts must have a deliberate path for replacement.
+
+Use a three-layer model:
+
+- **Finished controls:** public components such as `Slider`, `Meter`, `NeedleGauge`, `Dial`, and `Switch` should render a complete Studio Hyper-Skeuomorphic control with sensible defaults. They remain the primary API for most consumers.
+- **Reusable analog parts:** stable physical pieces such as thumb shells, plungers, recesses, track slots, lenses, bezels, peak markers, scale renderers, and ballistics/scale hooks can be public registry items when they are useful outside a single component. Public parts must be registered, documented, and exported from the package barrel when package consumers are expected to compose with them.
+- **Targeted replacement slots:** finished controls may expose `render*` props for visual parts that users commonly customize. Add slots for meaningful hardware parts, not every decorative layer.
+
+Do not turn every component into a large compound API by default. Prefer compound subcomponents only when consumers naturally arrange children themselves, such as `PanelHeader` / `PanelContent` or `MeterGroup` / `MeterGroupChannel`. For controls with a fixed physical layout, prefer typed `render*` replacement points and reusable lower-level parts.
+
+### Slot API Rules
+
+Slot APIs should be small, stable, and aligned with Base UI composition conventions:
+
+- Use `renderPartName` for structural replacement, for example `renderThumb`, `renderTrack`, `renderIndicator`, `renderPeakMarker`, `renderScale`, or `renderLens`.
+- A render slot should receive the minimum useful part state: orientation, resolved value/range ratios, resolved marks or zones when relevant, `className`, `style`, and any accessibility or interaction props that must stay attached.
+- If a slot replaces a Base UI part, the returned element must receive the forwarded `ref` and spread the provided props on the interactive DOM node.
+- Cosmetic customization should stay on CSS variables, `tone`, `variant`, `lighting`, `className`, and `style` before introducing a slot.
+- Add `data-slot` attributes to stable public layers and slot defaults so installed code, docs, tests, and user overrides can refer to the same named parts.
+- Render slots must preserve the analog lighting contract. A custom slider thumb still receives `--analog-light-angle-thumb`; a custom meter lens still receives `--analog-light-angle-lens`.
+- Keep the finished control's default markup in the same file unless a part is intentionally reusable elsewhere.
+
+The customization ladder for every component should be:
+
+1. Configure public props such as `variant`, `tone`, `orientation`, `segments`, `marks`, `zones`, `scalePreset`, and `lighting`.
+2. Override CSS variables globally or on a local wrapper.
+3. Replace one visual part with a `render*` slot.
+4. Compose a custom control from Base UI primitives plus Analog UI parts and hooks.
+5. Edit the installed registry source when the desired hardware model is fundamentally different.
+
+### Composition Documentation
+
+Component docs must include a short **Composition** section for every component that has nested physical structure or child subcomponents. The section should show the tree of stable parts and name which pieces are configurable, swappable, or internal.
+
+Recommended examples:
+
+```txt
+Slider
+├── Root / Base UI slider behavior
+├── Scale Marks
+├── Track Recess
+│   ├── Track Slot
+│   └── Guide Line
+└── Thumb
+    └── RockerThumbSurface
+```
+
+```txt
+Dial
+├── Root / spinbutton behavior
+└── Surface (`renderSurface`)
+    ├── SurfaceButton
+    └── Pointer Mark (`renderPointer`)
+```
+
+```txt
+Meter
+├── Root / Base UI meter behavior
+├── Scale (`renderScale`)
+├── Track / Cavity (`renderTrack`)
+│   ├── Glow Layer
+│   ├── Indicator Fill (`renderIndicator`)
+│   ├── Peak Marker (`renderPeakMarker`)
+│   ├── Segment Grille (`renderSegments`)
+│   └── Lens Reflection (`renderLens`)
+└── MeterGroup helpers
+```
+
+```txt
+NeedleGauge
+├── Root / Base UI meter behavior
+├── Shell
+│   └── Slot / Face
+│       ├── Scale Artwork (`renderScale`)
+│       ├── Needle (`renderNeedle`)
+│       ├── Hub (`renderHub`)
+│       ├── Readout (`renderReadout`)
+│       └── Lens Reflection (`renderLens`)
+```
+
+```txt
+Gauge
+├── Root / Base UI slider behavior
+├── Hidden Slider Control
+├── Scale SVG
+│   ├── Track Arc (`renderTrack`)
+│   ├── Indicator Fill (`renderIndicator`)
+│   └── Marks (`renderMark`)
+└── Pointer (`renderPointer`)
+    └── SurfaceButton
+```
+
+Docs should also include a "Customize" or "Build Your Own" example when a component exposes reusable parts or render slots. That example should show how to replace one part without reimplementing the whole control.
+
+### Component Family Notes
+
 - **Anisotropic buttons and dials:** the main face uses `surface`; pointer lines, pips, or needles use `pointer`. Chamfers and knurled rims can stay on `surface` unless they need a distinctly heavier response.
 - **Sliders:** the rail, recess, and dust slot use `track`; the handle, cap, and grip ridges use `thumb`. The cavity should stay visually seated while the thumb carries the more active highlights.
 - **Toggle and switch controls:** the housing sits in `surface` or `track`; the moving paddle or rocker uses `thumb`; embedded lamps use `lens`. If there is a visible trim ring around the lamp, it should use `bezel`.

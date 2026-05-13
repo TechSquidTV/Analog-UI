@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { useAnalogMaterialVariant } from '../../hooks/analog-material-scope';
 
-interface SquarePlungerProps {
+export interface SquarePlungerProps {
   variant?: 'chrome' | 'black';
   isPressed: boolean;
   extrusionLayers?: number;

@@ -14,8 +14,19 @@ Use this skill to build or revise Analog UI components that feel tactile, machin
 1. Read the target component and one or two nearby components before editing so the new work matches existing registry patterns.
 2. Place distributed public components in `packages/analog-ui/src/registry/components/analog/`.
 3. Register every new public component in `packages/analog-ui/registry.json`.
-4. Keep registry components as self-contained as practical. Prefer headless behavior from `@base-ui/react` and animation from `motion`.
+4. Follow the Component Composition Architecture in `DESIGN.md`: finished controls by default, reusable analog parts when useful across controls, and targeted `render*` slots for high-variance hardware pieces.
 5. Use Tailwind CSS v4 utilities for layout, spacing, and structure. Use inline styles or CSS variables only when they are the clearest way to express lighting, material finish, or complex layered effects.
+
+## Composability Model
+
+- Finished controls such as `Slider`, `Meter`, `NeedleGauge`, `Dial`, and `Switch` should remain polished, complete, install-and-use components.
+- Promote stable physical pieces to reusable registry items only when they are valuable outside one component, such as thumb shells, plungers, track slots, lenses, bezels, peak markers, scale renderers, or ballistics/scale hooks.
+- Public reusable parts must be registered in `packages/analog-ui/registry.json`, documented in the website component docs, and exported from `packages/analog-ui/src/index.ts` when package consumers should compose with them.
+- Prefer typed `render*` slots for fixed-layout controls when users are likely to swap one hardware piece, for example `renderThumb`, `renderTrack`, `renderIndicator`, `renderPeakMarker`, `renderScale`, or `renderLens`.
+- Prefer compound subcomponents only when consumers naturally arrange children themselves, such as panel sections or meter group channels.
+- Add stable `data-slot` attributes to public layers and slot defaults.
+- Keep cosmetic tuning on CSS variables, `tone`, `variant`, `lighting`, `className`, and `style` before introducing a slot.
+- Component docs must include the composition tree and a focused customization example when a component exposes reusable parts or render slots.
 
 ## Lighting System
 
@@ -61,7 +72,11 @@ style={{
 
 - Place new public components in `packages/analog-ui/src/registry/components/analog/`.
 - Register new public components in `packages/analog-ui/registry.json`.
+- Export reusable public parts from `packages/analog-ui/src/index.ts` when package consumers should compose with them.
 - Build interactive behavior on BaseUI primitives when applicable.
+- Preserve finished-control defaults while adding targeted composition points.
+- Add `data-slot` attributes to stable public layers.
+- Update component docs with composition and customization guidance for new slots or reusable parts.
 - Use Tailwind CSS v4 for structure and spacing.
 - Drive light-reactive styles from `useAnalogLighting`, `--analog-light-power`, and the appropriate `--analog-light-angle-*` material channels.
 - Make the finished control feel tactile rather than flat.

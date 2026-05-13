@@ -20,7 +20,7 @@ const cssLength = (value: CssLength) => (typeof value === 'number' ? `${value}px
 const negativeCssLength = (value: CssLength) =>
   typeof value === 'number' ? `${-value}px` : `calc(${value} * -1)`;
 
-interface RockerThumbSurfaceProps {
+export interface RockerThumbSurfaceProps {
   className?: string;
   variant?: RockerVariant;
   orientation?: RockerOrientation;

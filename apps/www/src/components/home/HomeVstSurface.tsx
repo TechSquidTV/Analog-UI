@@ -1,4 +1,5 @@
 import {
+  startTransition,
   useEffect,
   useRef,
   useState,
@@ -8,6 +9,7 @@ import {
 } from 'react';
 
 import {
+  AnalogLightingProvider,
   Dial,
   Gauge,
   Indicator,
@@ -29,12 +31,20 @@ import {
   Toggle,
   ToggleButtonGroup,
   ToggleButtonGroupItem,
+  usePointerLighting,
   WheelNumber,
   type AnalogTone,
 } from '../../../../../packages/analog-ui/src/index';
 
 const algorithms = ['OPTO', 'FET', 'TAPE', 'BUS', 'CLIP'];
 const monitorModes = ['edit', 'mix', 'print'];
+const METER_TICK_MS = 96;
+const METER_BALLISTICS = {
+  attackMs: 70,
+  releaseMs: 180,
+  peakHoldMs: 0,
+  peakReleaseMs: 180,
+} as const;
 
 function useStereoMeter(energy: number, enabled: boolean, suspendRef?: RefObject<boolean>) {
   const [channels, setChannels] = useState({ l: 0, r: 0, lPeak: 0, rPeak: 0 });
@@ -60,42 +70,45 @@ function useStereoMeter(energy: number, enabled: boolean, suspendRef?: RefObject
     const tick = () => {
       if (suspendRef?.current) return;
 
-      setChannels((prev) => {
-        const base = 10 + energy * 44;
-        const burstChance = 0.11 + energy * 0.14;
-        const burstL = Math.random() < burstChance ? 12 + Math.random() * 30 : 0;
-        const burstR = Math.random() < burstChance ? 12 + Math.random() * 30 : 0;
-        const targetL = Math.min(100, base * (0.55 + Math.random() * 0.48) + burstL);
-        const targetR = Math.min(100, base * (0.5 + Math.random() * 0.5) + burstR);
-        const decay = Math.max(2.4, 5.2 - energy * 2.2);
+      startTransition(() => {
+        setChannels((prev) => {
+          const now = Date.now();
+          const base = 10 + energy * 44;
+          const burstChance = 0.11 + energy * 0.14;
+          const burstL = Math.random() < burstChance ? 12 + Math.random() * 30 : 0;
+          const burstR = Math.random() < burstChance ? 12 + Math.random() * 30 : 0;
+          const targetL = Math.min(100, base * (0.55 + Math.random() * 0.48) + burstL);
+          const targetR = Math.min(100, base * (0.5 + Math.random() * 0.5) + burstR);
+          const decay = Math.max(2.4, 5.2 - energy * 2.2);
 
-        const nextL = targetL > prev.l ? targetL : Math.max(0, prev.l - decay);
-        const nextR = targetR > prev.r ? targetR : Math.max(0, prev.r - decay);
+          const nextL = targetL > prev.l ? targetL : Math.max(0, prev.l - decay);
+          const nextR = targetR > prev.r ? targetR : Math.max(0, prev.r - decay);
 
-        if (nextL >= prev.lPeak) {
-          lPeakRef.current = nextL;
-          lPeakTime.current = Date.now();
-        } else if (Date.now() - lPeakTime.current > 1300) {
-          lPeakRef.current = Math.max(nextL, lPeakRef.current - 1.2);
-        }
+          if (nextL >= prev.lPeak) {
+            lPeakRef.current = nextL;
+            lPeakTime.current = now;
+          } else if (now - lPeakTime.current > 1300) {
+            lPeakRef.current = Math.max(nextL, lPeakRef.current - 1.2);
+          }
 
-        if (nextR >= prev.rPeak) {
-          rPeakRef.current = nextR;
-          rPeakTime.current = Date.now();
-        } else if (Date.now() - rPeakTime.current > 1300) {
-          rPeakRef.current = Math.max(nextR, rPeakRef.current - 1.2);
-        }
+          if (nextR >= prev.rPeak) {
+            rPeakRef.current = nextR;
+            rPeakTime.current = now;
+          } else if (now - rPeakTime.current > 1300) {
+            rPeakRef.current = Math.max(nextR, rPeakRef.current - 1.2);
+          }
 
-        return {
-          l: nextL,
-          r: nextR,
-          lPeak: lPeakRef.current,
-          rPeak: rPeakRef.current,
-        };
+          return {
+            l: nextL,
+            r: nextR,
+            lPeak: lPeakRef.current,
+            rPeak: rPeakRef.current,
+          };
+        });
       });
     };
 
-    const interval = window.setInterval(tick, 42);
+    const interval = window.setInterval(tick, METER_TICK_MS);
     return () => window.clearInterval(interval);
   }, [enabled, energy, suspendRef]);
 
@@ -138,10 +151,6 @@ interface MasterOutPanelProps {
   suspendRef?: RefObject<boolean>;
 }
 
-interface HomeVstSurfaceProps {
-  onScrubbingChange?: (isScrubbing: boolean) => void;
-}
-
 interface DemoSliderProps extends Omit<
   ComponentPropsWithoutRef<typeof Slider>,
   'value' | 'onValueChange'
@@ -156,6 +165,12 @@ interface ControlCellProps {
   value?: ReactNode;
   children: ReactNode;
   className?: string;
+}
+
+interface VstLightingZoneProps {
+  children: ReactNode;
+  className?: string;
+  suspendRef: RefObject<boolean>;
 }
 
 interface StatusLampProps {
@@ -241,6 +256,24 @@ function ControlCell({ label, value, children, className }: ControlCellProps) {
   );
 }
 
+function VstLightingZone({ children, className, suspendRef }: VstLightingZoneProps) {
+  const zoneRef = useRef<HTMLDivElement>(null);
+  const sourceAngle = usePointerLighting({
+    baseAngle: 180,
+    influence: 0.28,
+    suspendRef,
+    targetRef: zoneRef,
+  });
+
+  return (
+    <AnalogLightingProvider baseAngle={180} sourceAngle={sourceAngle} power={1}>
+      <div ref={zoneRef} className={className}>
+        {children}
+      </div>
+    </AnalogLightingProvider>
+  );
+}
+
 function DemoSlider({ value, onValueChange, onScrubbingChange, ...props }: DemoSliderProps) {
   const [localValue, setLocalValue] = useState(value);
 
@@ -314,6 +347,8 @@ function MasterOutPanel({
             label="Bus VU"
             unit="dB"
             needleTone={driveHot ? 'warning' : 'success'}
+            animationDuration={220}
+            spring={false}
           />
           <MeterGroup
             className="flex w-full justify-center"
@@ -327,6 +362,7 @@ function MasterOutPanel({
                 peakValue={meter.lPeak}
                 variant="metered"
                 segments={40}
+                ballistics={METER_BALLISTICS}
               />
             </MeterGroupChannel>
             <MeterGroupSeparator />
@@ -337,6 +373,7 @@ function MasterOutPanel({
                 peakValue={meter.rPeak}
                 variant="metered"
                 segments={40}
+                ballistics={METER_BALLISTICS}
               />
             </MeterGroupChannel>
           </MeterGroup>
@@ -362,7 +399,7 @@ function MasterOutPanel({
   );
 }
 
-export default function HomeVstSurface({ onScrubbingChange }: HomeVstSurfaceProps = {}) {
+export default function HomeVstSurface() {
   const surfaceRef = useRef<HTMLDivElement>(null);
   const isScrubbingRef = useRef(false);
   const isSurfaceVisible = useElementVisibility(surfaceRef, '160px 0px');
@@ -421,7 +458,6 @@ export default function HomeVstSurface({ onScrubbingChange }: HomeVstSurfaceProp
   const reduction = power ? Math.min(18, Math.max(0, energy * 15 + (driveHot ? 2.4 : 0))) : 0;
   const handleScrubbingChange = (isScrubbing: boolean) => {
     isScrubbingRef.current = isScrubbing;
-    onScrubbingChange?.(isScrubbing);
   };
 
   useEffect(() => {
@@ -484,7 +520,7 @@ export default function HomeVstSurface({ onScrubbingChange }: HomeVstSurfaceProp
         </div>
 
         <div className="grid gap-3 p-3 xl:grid-cols-[minmax(15rem,18rem)_minmax(0,1fr)_minmax(16rem,21rem)]">
-          <div className="grid min-w-0 gap-3">
+          <VstLightingZone className="grid min-w-0 gap-3" suspendRef={isScrubbingRef}>
             <div
               className="grid min-w-0 gap-3 rounded-[var(--analog-radius-window)] border border-white/[0.08] bg-black/20 p-3"
               style={{
@@ -615,9 +651,9 @@ export default function HomeVstSurface({ onScrubbingChange }: HomeVstSurfaceProp
                 />
               </RockerSwitchGroup>
             </div>
-          </div>
+          </VstLightingZone>
 
-          <div className="grid min-w-0 gap-3">
+          <VstLightingZone className="grid min-w-0 gap-3" suspendRef={isScrubbingRef}>
             <div className="grid min-w-0 gap-3 sm:grid-cols-3">
               <ControlCell label="Drive" value={`${driveDisplay}%`}>
                 <Dial value={drive} onChange={(next) => setDrive(next)} className="w-24 md:w-28" />
@@ -678,7 +714,7 @@ export default function HomeVstSurface({ onScrubbingChange }: HomeVstSurfaceProp
                   </ControlCell>
                 </div>
 
-                <div className="grid min-w-0 gap-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
+                <div className="grid min-w-0 gap-4">
                   <div className="min-w-0">
                     <div className="mb-3 flex items-center justify-between gap-3">
                       <HardwareLabel>Blend</HardwareLabel>
@@ -698,7 +734,7 @@ export default function HomeVstSurface({ onScrubbingChange }: HomeVstSurfaceProp
                     />
                   </div>
 
-                  <div className="flex items-center justify-between gap-4">
+                  <div className="flex min-w-0 items-center justify-between gap-4">
                     <HardwareLabel>Field {stereoMode}</HardwareLabel>
                     <Toggle
                       value={fieldMode}
@@ -814,19 +850,21 @@ export default function HomeVstSurface({ onScrubbingChange }: HomeVstSurfaceProp
                 </div>
               </div>
             </div>
-          </div>
+          </VstLightingZone>
 
-          <Panel variant="rack" screws screwHole="slot" className="h-full">
-            <PanelContent className="h-full p-0">
-              <MasterOutPanel
-                active={isMeterActive}
-                driveHot={driveHot}
-                energy={energy}
-                onClipChange={setMeterClip}
-                suspendRef={isScrubbingRef}
-              />
-            </PanelContent>
-          </Panel>
+          <VstLightingZone className="h-full min-w-0" suspendRef={isScrubbingRef}>
+            <Panel variant="rack" screws screwHole="slot" className="h-full">
+              <PanelContent className="h-full p-0">
+                <MasterOutPanel
+                  active={isMeterActive}
+                  driveHot={driveHot}
+                  energy={energy}
+                  onClipChange={setMeterClip}
+                  suspendRef={isScrubbingRef}
+                />
+              </PanelContent>
+            </Panel>
+          </VstLightingZone>
         </div>
 
         <div className="px-3 pb-3">

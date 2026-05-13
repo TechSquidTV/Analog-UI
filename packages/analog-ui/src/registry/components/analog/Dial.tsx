@@ -6,6 +6,45 @@ import { useWheelInput } from '../../hooks/use-wheel-input';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 import { useAnalogMaterialVariant } from '../../hooks/analog-material-scope';
 
+export interface DialRenderSurfaceProps {
+  value: number;
+  mode: 'encoder' | 'knob';
+  isKnob: boolean;
+  min: number;
+  max: number;
+  ratio: number;
+  degrees: number;
+  revolutions: number;
+  rotation: number;
+  variant: 'chrome' | 'black';
+  disabled: boolean | undefined;
+  isDragging: boolean;
+  className: string;
+  containerClassName: string;
+  style: React.CSSProperties;
+  children: React.ReactNode;
+}
+
+export interface DialRenderPointerProps {
+  value: number;
+  mode: 'encoder' | 'knob';
+  isKnob: boolean;
+  min: number;
+  max: number;
+  ratio: number;
+  degrees: number;
+  revolutions: number;
+  rotation: number;
+  variant: 'chrome' | 'black';
+  disabled: boolean | undefined;
+  isDragging: boolean;
+  pointerBevelAngle: string;
+  className: string;
+  style: React.CSSProperties;
+  highlightClassName: string;
+  highlightStyle: React.CSSProperties;
+}
+
 export interface DialProps extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
   'defaultValue' | 'onChange'
@@ -31,6 +70,10 @@ export interface DialProps extends Omit<
   sweepAngle?: number;
   detentValue?: number;
   detentThreshold?: number;
+  surfaceClassName?: string;
+  pointerClassName?: string;
+  renderSurface?: (props: DialRenderSurfaceProps) => React.ReactNode;
+  renderPointer?: (props: DialRenderPointerProps) => React.ReactNode;
 }
 
 function clamp(value: number, min: number, max: number) {
@@ -44,6 +87,56 @@ function roundToStep(value: number, min: number, step: number) {
 
 function roundDisplayValue(value: number) {
   return Math.round(value * 1000) / 1000;
+}
+
+function DefaultDialPointer({
+  rotation,
+  className,
+  style,
+  highlightClassName,
+  highlightStyle,
+}: DialRenderPointerProps) {
+  return (
+    <div
+      data-slot="dial-pointer-rotor"
+      className="absolute inset-0 rounded-full pointer-events-none"
+      style={{ transform: `rotate(${rotation}deg)` }}
+    >
+      <div data-slot="dial-pointer" className={className} style={style}>
+        <div
+          data-slot="dial-pointer-highlight"
+          className={highlightClassName}
+          style={highlightStyle}
+        />
+      </div>
+    </div>
+  );
+}
+
+function DefaultDialSurface({
+  disabled,
+  variant,
+  rotation,
+  containerClassName,
+  className,
+  style,
+  children,
+}: DialRenderSurfaceProps) {
+  return (
+    <SurfaceButton
+      data-slot="dial-surface"
+      disabled={disabled}
+      variant={variant}
+      rotation={rotation}
+      containerClassName={containerClassName}
+      className={className}
+      tabIndex={-1}
+      aria-hidden="true"
+      style={style}
+    >
+      {children}
+    </SurfaceButton>
+  );
 }
 
 export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
@@ -67,6 +160,10 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
       sweepAngle = 300,
       detentValue,
       detentThreshold,
+      surfaceClassName,
+      pointerClassName,
+      renderSurface,
+      renderPointer,
       style,
       onPointerDown,
       onPointerMove,
@@ -196,6 +293,10 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
     const pointerRotation = isKnob ? valueToRotation(currentValue) : currentValue;
     const degrees = ((pointerRotation % 360) + 360) % 360;
     const revolutions = isKnob ? 0 : Math.floor(currentValue / 360);
+    const valueRatio =
+      isKnob && resolvedRange !== 0
+        ? clamp((currentValue - resolvedMin) / resolvedRange, 0, 1)
+        : degrees / 360;
 
     useWheelInput(
       dialRef,
@@ -338,11 +439,123 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
       ? 'color-mix(in oklch, var(--analog-surface-metal-mid) 72%, var(--analog-surface-metal-hi) 28%)'
       : 'color-mix(in oklch, var(--analog-surface-metal-hi) 88%, white 12%)';
     const pointerBevelAngle = `calc(var(--analog-light-angle-pointer, 180deg) - ${pointerRotation}deg)`;
+    const pointerNode = renderPointer?.({
+      value: currentValue,
+      mode: resolvedMode,
+      isKnob,
+      min: resolvedMin,
+      max: resolvedMax,
+      ratio: valueRatio,
+      degrees,
+      revolutions,
+      rotation: pointerRotation,
+      variant: resolvedVariant,
+      disabled,
+      isDragging,
+      pointerBevelAngle,
+      className: cn('absolute left-1/2 -translate-x-1/2 rounded-full border', pointerClassName),
+      style: {
+        top: '12%',
+        width: '3%',
+        height: '24%',
+        borderColor: pointerBorderColor,
+        background: pointerBackground,
+        boxShadow: isBlack
+          ? `inset calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 1px rgba(255,255,255,calc(0.2 * var(--analog-light-power, 1))), inset calc(sin(${pointerBevelAngle}) * -1px) calc(cos(${pointerBevelAngle}) * 1px) 2px rgba(0,0,0,calc(0.8 * var(--analog-light-power, 1))), calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 4px rgba(0,0,0,calc(0.9 * var(--analog-light-power, 1)))`
+          : `inset calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 2px rgba(255,255,255,calc(0.6 * var(--analog-light-power, 1))), inset calc(sin(${pointerBevelAngle}) * -1px) calc(cos(${pointerBevelAngle}) * 1px) 2px rgba(0,0,0,calc(0.5 * var(--analog-light-power, 1))), calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 4px rgba(0,0,0,calc(0.6 * var(--analog-light-power, 1)))`,
+      },
+      highlightClassName: 'absolute rounded-full blur-[0.5px]',
+      highlightStyle: {
+        top: '10%',
+        left: '50%',
+        width: '30%',
+        height: '30%',
+        transform: 'translateX(-50%)',
+        opacity: 0.6,
+        backgroundColor: pointerHighlight,
+      },
+    }) ?? (
+      <DefaultDialPointer
+        value={currentValue}
+        mode={resolvedMode}
+        isKnob={isKnob}
+        min={resolvedMin}
+        max={resolvedMax}
+        ratio={valueRatio}
+        degrees={degrees}
+        revolutions={revolutions}
+        rotation={pointerRotation}
+        variant={resolvedVariant}
+        disabled={disabled}
+        isDragging={isDragging}
+        pointerBevelAngle={pointerBevelAngle}
+        className={cn('absolute left-1/2 -translate-x-1/2 rounded-full border', pointerClassName)}
+        style={{
+          top: '12%',
+          width: '3%',
+          height: '24%',
+          borderColor: pointerBorderColor,
+          background: pointerBackground,
+          boxShadow: isBlack
+            ? `inset calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 1px rgba(255,255,255,calc(0.2 * var(--analog-light-power, 1))), inset calc(sin(${pointerBevelAngle}) * -1px) calc(cos(${pointerBevelAngle}) * 1px) 2px rgba(0,0,0,calc(0.8 * var(--analog-light-power, 1))), calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 4px rgba(0,0,0,calc(0.9 * var(--analog-light-power, 1)))`
+            : `inset calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 2px rgba(255,255,255,calc(0.6 * var(--analog-light-power, 1))), inset calc(sin(${pointerBevelAngle}) * -1px) calc(cos(${pointerBevelAngle}) * 1px) 2px rgba(0,0,0,calc(0.5 * var(--analog-light-power, 1))), calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 4px rgba(0,0,0,calc(0.6 * var(--analog-light-power, 1)))`,
+        }}
+        highlightClassName="absolute rounded-full blur-[0.5px]"
+        highlightStyle={{
+          top: '10%',
+          left: '50%',
+          width: '30%',
+          height: '30%',
+          transform: 'translateX(-50%)',
+          opacity: 0.6,
+          backgroundColor: pointerHighlight,
+        }}
+      />
+    );
+    const surfaceNode = renderSurface?.({
+      value: currentValue,
+      mode: resolvedMode,
+      isKnob,
+      min: resolvedMin,
+      max: resolvedMax,
+      ratio: valueRatio,
+      degrees,
+      revolutions,
+      rotation: pointerRotation,
+      variant: resolvedVariant,
+      disabled,
+      isDragging,
+      containerClassName: 'w-full h-full',
+      className: cn('analog-dial-surface w-full h-full', surfaceClassName),
+      style: { pointerEvents: isDragging ? 'none' : 'auto' },
+      children: pointerNode,
+    }) ?? (
+      <DefaultDialSurface
+        value={currentValue}
+        mode={resolvedMode}
+        isKnob={isKnob}
+        min={resolvedMin}
+        max={resolvedMax}
+        ratio={valueRatio}
+        degrees={degrees}
+        revolutions={revolutions}
+        rotation={pointerRotation}
+        variant={resolvedVariant}
+        disabled={disabled}
+        isDragging={isDragging}
+        containerClassName="w-full h-full"
+        className={cn('analog-dial-surface w-full h-full', surfaceClassName)}
+        style={{ pointerEvents: isDragging ? 'none' : 'auto' }}
+      >
+        {pointerNode}
+      </DefaultDialSurface>
+    );
 
     return (
       <div
         {...props}
         ref={mergedRef}
+        data-slot="dial-root"
         data-analog-variant={resolvedVariant}
         className={cn(
           'mx-auto aspect-square max-w-full shrink-0 rounded-full touch-none',
@@ -377,48 +590,7 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
         onPointerCancel={handlePointerUp}
         onKeyDown={handleKeyDown}
       >
-        <SurfaceButton
-          disabled={disabled}
-          variant={resolvedVariant}
-          rotation={pointerRotation}
-          containerClassName="w-full h-full"
-          className="analog-dial-surface w-full h-full"
-          tabIndex={-1}
-          aria-hidden="true"
-          style={{ pointerEvents: isDragging ? 'none' : 'auto' }}
-        >
-          <div
-            className="absolute inset-0 rounded-full pointer-events-none"
-            style={{ transform: `rotate(${pointerRotation}deg)` }}
-          >
-            <div
-              className="absolute left-1/2 -translate-x-1/2 rounded-full border"
-              style={{
-                top: '12%',
-                width: '3%',
-                height: '24%',
-                borderColor: pointerBorderColor,
-                background: pointerBackground,
-                boxShadow: isBlack
-                  ? `inset calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 1px rgba(255,255,255,calc(0.2 * var(--analog-light-power, 1))), inset calc(sin(${pointerBevelAngle}) * -1px) calc(cos(${pointerBevelAngle}) * 1px) 2px rgba(0,0,0,calc(0.8 * var(--analog-light-power, 1))), calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 4px rgba(0,0,0,calc(0.9 * var(--analog-light-power, 1)))`
-                  : `inset calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 2px rgba(255,255,255,calc(0.6 * var(--analog-light-power, 1))), inset calc(sin(${pointerBevelAngle}) * -1px) calc(cos(${pointerBevelAngle}) * 1px) 2px rgba(0,0,0,calc(0.5 * var(--analog-light-power, 1))), calc(sin(${pointerBevelAngle}) * 1px) calc(cos(${pointerBevelAngle}) * -1px) 4px rgba(0,0,0,calc(0.6 * var(--analog-light-power, 1)))`,
-              }}
-            >
-              <div
-                className="absolute rounded-full blur-[0.5px]"
-                style={{
-                  top: '10%',
-                  left: '50%',
-                  width: '30%',
-                  height: '30%',
-                  transform: 'translateX(-50%)',
-                  opacity: 0.6,
-                  backgroundColor: pointerHighlight,
-                }}
-              />
-            </div>
-          </div>
-        </SurfaceButton>
+        {surfaceNode}
       </div>
     );
   },

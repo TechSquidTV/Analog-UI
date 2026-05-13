@@ -13,12 +13,21 @@ export interface ComponentApiSection {
   props: ComponentApiProp[];
 }
 
+interface ComponentCompositionDoc {
+  description: string;
+  tree: string;
+  customizeTitle?: string;
+  customizeDescription?: string;
+  customizeCode?: string;
+}
+
 interface ComponentPageDoc {
   usageIntro: string;
   registryImportCode: string;
   packageImportCode?: string;
   usageCode: string;
   exampleCode: string;
+  composition?: ComponentCompositionDoc;
   /** Editorial descriptions for generated API docs; source prop names, types, and defaults come from component-api-loader. */
   api: ComponentApiSection[];
 }
@@ -69,6 +78,38 @@ export function DialExample() {
     />
   )
 }`,
+    composition: {
+      description:
+        'Dial owns the spinbutton, pointer, keyboard, and wheel behavior while exposing the tactile surface and pointer mark as replaceable visual layers.',
+      tree: `Dial
+|- Root / spinbutton behavior
++- Surface (\`renderSurface\`)
+   |- SurfaceButton
+   +- Pointer Mark (\`renderPointer\`)`,
+      customizeTitle: 'Custom Pointer',
+      customizeDescription:
+        'Use renderPointer when the cap should stay intact but the pointer mark needs a different readout style.',
+      customizeCode: `import { Dial } from "@/registry/components/analog/Dial"
+
+export function CustomPointerDial() {
+  return (
+    <Dial
+      mode="knob"
+      defaultValue={42}
+      min={0}
+      max={100}
+      renderPointer={({ rotation }) => (
+        <div
+          className="absolute inset-0 rounded-full pointer-events-none"
+          style={{ transform: \`rotate(\${rotation}deg)\` }}
+        >
+          <div className="absolute left-1/2 top-[10%] h-[34%] w-[5%] -translate-x-1/2 rounded-full bg-cyan-200 shadow-[0_0_14px_rgba(125,211,252,0.9)]" />
+        </div>
+      )}
+    />
+  )
+}`,
+    },
     api: [
       {
         title: 'Dial',
@@ -126,8 +167,106 @@ export function DialExample() {
             defaultValue: '300',
             description: 'Degrees of travel for knob mode.',
           },
+          {
+            name: 'detentValue / detentThreshold',
+            type: 'number',
+            description: 'Optional snap point and threshold for knob mode.',
+          },
+          {
+            name: 'surfaceClassName / pointerClassName',
+            type: 'string',
+            description: 'Adds classes to the default cap surface or pointer mark.',
+          },
+          {
+            name: 'renderSurface',
+            type: '(props: DialRenderSurfaceProps) => React.ReactNode',
+            description:
+              'Replaces the tactile cap surface while keeping Dial behavior on the root.',
+          },
+          {
+            name: 'renderPointer',
+            type: '(props: DialRenderPointerProps) => React.ReactNode',
+            description: 'Replaces the rotating pointer mark inside the cap.',
+          },
           lightingProp,
           classNameProp,
+        ],
+      },
+      {
+        title: 'DialRenderSurface',
+        description: 'Props passed to renderSurface for the tactile cap layer.',
+        props: [
+          {
+            name: 'value / ratio',
+            type: 'number',
+            description: 'Resolved value and normalized position.',
+          },
+          {
+            name: 'mode / isKnob',
+            type: '"encoder" | "knob" / boolean',
+            description: 'Resolved travel mode.',
+          },
+          {
+            name: 'min / max',
+            type: 'number',
+            description: 'Resolved knob bounds.',
+          },
+          {
+            name: 'degrees / revolutions / rotation',
+            type: 'number',
+            description: 'Wrapped angle, encoder revolution count, and active rotation.',
+          },
+          {
+            name: 'variant / disabled / isDragging',
+            type: '"chrome" | "black" / boolean',
+            description: 'Resolved material and interaction state.',
+          },
+          {
+            name: 'containerClassName / className / style',
+            type: 'string / React.CSSProperties',
+            description: 'Default SurfaceButton layout and surface props.',
+          },
+          {
+            name: 'children',
+            type: 'React.ReactNode',
+            description: 'Default pointer mark to place inside a custom surface.',
+          },
+        ],
+      },
+      {
+        title: 'DialRenderPointer',
+        description: 'Props passed to renderPointer for the rotating pointer mark.',
+        props: [
+          {
+            name: 'value / ratio',
+            type: 'number',
+            description: 'Resolved value and normalized position.',
+          },
+          {
+            name: 'mode / isKnob',
+            type: '"encoder" | "knob" / boolean',
+            description: 'Resolved travel mode.',
+          },
+          {
+            name: 'degrees / revolutions / rotation',
+            type: 'number',
+            description: 'Wrapped angle, encoder revolution count, and active rotation.',
+          },
+          {
+            name: 'pointerBevelAngle',
+            type: 'string',
+            description: 'Light-relative angle used by the default bevel shading.',
+          },
+          {
+            name: 'className / style',
+            type: 'string / React.CSSProperties',
+            description: 'Default pointer mark classes and styles.',
+          },
+          {
+            name: 'highlightClassName / highlightStyle',
+            type: 'string / React.CSSProperties',
+            description: 'Default pointer highlight props.',
+          },
         ],
       },
     ],
@@ -160,6 +299,46 @@ export function SliderExample() {
     />
   )
 }`,
+    composition: {
+      description:
+        'Slider keeps Base UI behavior intact while exposing the physical scale, track, and thumb as stable parts.',
+      tree: `Slider
+|- Root / Base UI slider behavior
+|- Scale Marks
+|- Track Recess
+|  |- Track Slot
+|  +- Guide Line
++- Thumb
+   +- RockerThumbSurface`,
+      customizeTitle: 'Custom Thumb',
+      customizeDescription:
+        'Use renderThumb when the fader handle needs a different surface without rebuilding slider behavior.',
+      customizeCode: `import { Slider } from "@/registry/components/analog/Slider"
+import { RockerThumbSurface } from "@/registry/components/analog/RockerThumbSurface"
+
+export function CustomSliderThumb() {
+  return (
+    <Slider
+      defaultValue={0}
+      min={-40}
+      max={10}
+      className="w-full max-w-md"
+      renderThumb={({ className, orientation, variant, children }) => (
+        <RockerThumbSurface
+          className={className}
+          variant={variant}
+          orientation={orientation}
+          raisedSide="both"
+          extrusionLayers={10}
+        >
+          <div className="absolute inset-x-4 top-1/2 h-1 -translate-y-1/2 rounded-full bg-[var(--analog-control-foreground-subtle)]" />
+          {children}
+        </RockerThumbSurface>
+      )}
+    />
+  )
+}`,
+    },
     api: [
       {
         title: 'Slider',
@@ -206,8 +385,122 @@ export function SliderExample() {
             defaultValue: 'marks !== undefined',
             description: 'Controls whether marks are rendered.',
           },
+          {
+            name: 'trackClassName',
+            type: 'string',
+            description: 'Adds classes to the visual track recess rendered inside the slider.',
+          },
+          {
+            name: 'thumbClassName',
+            type: 'string',
+            description:
+              'Adds classes to the Base UI thumb wrapper for size or positioning tweaks.',
+          },
+          {
+            name: 'markClassName',
+            type: 'string',
+            description: 'Adds classes to each default scale mark.',
+          },
+          {
+            name: 'renderTrack',
+            type: '(props: SliderRenderTrackProps) => React.ReactNode',
+            description: 'Replaces the visual track while preserving slider behavior.',
+          },
+          {
+            name: 'renderThumb',
+            type: '(props: SliderRenderThumbProps) => React.ReactNode',
+            description: 'Replaces the visual thumb surface inside the Base UI thumb wrapper.',
+          },
+          {
+            name: 'renderMark',
+            type: '(props: SliderRenderMarkProps) => React.ReactNode',
+            description: 'Replaces individual scale mark labels.',
+          },
           lightingProp,
           classNameProp,
+        ],
+      },
+      {
+        title: 'SliderRenderTrack',
+        description: 'Props passed to renderTrack for the non-interactive visual track layer.',
+        props: [
+          {
+            name: 'orientation',
+            type: '"horizontal" | "vertical"',
+            description: 'Current slider travel axis.',
+          },
+          {
+            name: 'isVertical',
+            type: 'boolean',
+            description: 'Convenience boolean for orientation-specific layout.',
+          },
+          {
+            name: 'className',
+            type: 'string',
+            description: 'Default classes for the visual track recess.',
+          },
+        ],
+      },
+      {
+        title: 'SliderRenderThumb',
+        description: 'Props passed to renderThumb for the visual thumb surface.',
+        props: [
+          {
+            name: 'orientation',
+            type: '"horizontal" | "vertical"',
+            description: 'Current slider travel axis.',
+          },
+          {
+            name: 'isVertical',
+            type: 'boolean',
+            description: 'Convenience boolean for orientation-specific layout.',
+          },
+          {
+            name: 'variant',
+            type: '"chrome" | "black"',
+            description: 'Resolved material variant inherited by the slider.',
+          },
+          {
+            name: 'className',
+            type: 'string',
+            description: 'Default classes for the thumb surface shell.',
+          },
+          {
+            name: 'children',
+            type: 'React.ReactNode',
+            description: 'Default thumb overlay content such as the focus ring.',
+          },
+        ],
+      },
+      {
+        title: 'SliderRenderMark',
+        description: 'Props passed to renderMark for each scale mark label.',
+        props: [
+          {
+            name: 'mark',
+            type: 'SliderResolvedMark',
+            description: 'Resolved mark data including ratio and alignment.',
+          },
+          {
+            name: 'orientation',
+            type: '"horizontal" | "vertical"',
+            description: 'Current slider travel axis.',
+          },
+          {
+            name: 'isVertical',
+            type: 'boolean',
+            description: 'Convenience boolean for orientation-specific layout.',
+          },
+          {
+            name: 'className',
+            type: 'string',
+            description: 'Default classes for the scale mark.',
+          },
+          {
+            name: 'style',
+            type: 'React.CSSProperties',
+            description: 'Default absolute positioning style for the mark.',
+          },
         ],
       },
     ],
@@ -748,7 +1041,8 @@ export function RotarySwitchExample() {
     api: [
       {
         title: 'RotarySwitch',
-        description: 'A detented rotary selector with pointer, keyboard, and whole-integer updates.',
+        description:
+          'A detented rotary selector with pointer, keyboard, and whole-integer updates.',
         props: [
           {
             name: 'value',
@@ -959,6 +1253,46 @@ export function GaugeExample() {
     />
   )
 }`,
+    composition: {
+      description:
+        'Gauge keeps the Base UI slider behavior while exposing the radial track, illuminated indicator, scale marks, and center pointer as replaceable hardware layers.',
+      tree: `Gauge
+|- Root / Base UI slider behavior
+|- Hidden Slider Control
+|- Scale SVG
+|  |- Track Arc (\`renderTrack\`)
+|  |- Indicator Fill (\`renderIndicator\`)
+|  +- Marks (\`renderMark\`)
++- Pointer (\`renderPointer\`)
+   +- SurfaceButton`,
+      customizeTitle: 'Custom Pointer',
+      customizeDescription:
+        'Use renderPointer when the gauge needs a different knob or read pointer but should keep the same radial math, drag behavior, and keyboard semantics.',
+      customizeCode: `import { Gauge } from "@/registry/components/analog/Gauge"
+
+export function CustomPointerGauge() {
+  return (
+    <Gauge
+      defaultValue={64}
+      min={0}
+      max={100}
+      tone="success"
+      renderPointer={({ className, style, rotationAngle }) => (
+        <div className={className} style={style}>
+          <div className="relative h-full w-full rounded-full border border-emerald-300/35 bg-zinc-950 shadow-[inset_0_2px_10px_rgba(255,255,255,0.16),0_8px_24px_rgba(0,0,0,0.45)]">
+            <div
+              className="absolute inset-0"
+              style={{ transform: \`rotate(\${rotationAngle}deg)\` }}
+            >
+              <div className="absolute left-1/2 top-[12%] h-[30%] w-1 -translate-x-1/2 rounded-full bg-emerald-300 shadow-[0_0_12px_var(--analog-display-glow)]" />
+            </div>
+          </div>
+        </div>
+      )}
+    />
+  )
+}`,
+    },
     api: [
       {
         title: 'Gauge',
@@ -999,13 +1333,158 @@ export function GaugeExample() {
             description: 'Optional scale marks around the arc.',
           },
           {
+            name: 'showMarks',
+            type: 'boolean',
+            defaultValue: 'marks !== undefined',
+            description: 'Controls whether provided marks are rendered.',
+          },
+          {
             name: 'fillMode',
             type: '"start" | "center"',
             defaultValue: '"start"',
             description: 'Controls whether fill grows from the start or from centerValue.',
           },
+          {
+            name: 'centerValue',
+            type: 'number',
+            description: 'Value used as the fill origin when fillMode is "center".',
+          },
+          {
+            name: 'trackClassName / indicatorClassName / markClassName / pointerClassName',
+            type: 'string',
+            description: 'Adds classes to the default hardware layers.',
+          },
+          {
+            name: 'renderTrack',
+            type: '(props: GaugeRenderTrackProps) => React.ReactNode',
+            description: 'Replaces the background radial track arc.',
+          },
+          {
+            name: 'renderIndicator',
+            type: '(props: GaugeRenderIndicatorProps) => React.ReactNode',
+            description: 'Replaces the illuminated fill layer.',
+          },
+          {
+            name: 'renderMark',
+            type: '(props: GaugeRenderMarkProps) => React.ReactNode',
+            description: 'Replaces each resolved scale mark.',
+          },
+          {
+            name: 'renderPointer',
+            type: '(props: GaugeRenderPointerProps) => React.ReactNode',
+            description: 'Replaces the central pointer hardware.',
+          },
           lightingProp,
           classNameProp,
+        ],
+      },
+      {
+        title: 'GaugeRenderTrack',
+        description: 'Props passed to renderTrack for the background arc.',
+        props: [
+          {
+            name: 'value / min / max / ratio',
+            type: 'number',
+            description: 'Resolved value state and normalized position.',
+          },
+          {
+            name: 'startAngle / sweepAngle',
+            type: 'number',
+            description: 'Resolved radial geometry in degrees.',
+          },
+          {
+            name: 'filterId',
+            type: 'string',
+            description: 'Unique SVG filter id for the default inset shadow.',
+          },
+          {
+            name: 'tone / className',
+            type: 'AnalogTone / string',
+            description: 'Current tone and classes for the default slot.',
+          },
+        ],
+      },
+      {
+        title: 'GaugeRenderIndicator',
+        description: 'Props passed to renderIndicator for the illuminated fill layer.',
+        props: [
+          {
+            name: 'value / min / max / ratio',
+            type: 'number',
+            description: 'Resolved value state and normalized position.',
+          },
+          {
+            name: 'fillMode / centerValue',
+            type: '"start" | "center" / number',
+            description: 'Fill origin mode and resolved center value.',
+          },
+          {
+            name: 'fillStart / fillLength',
+            type: 'number',
+            description: 'Arc offsets in degrees for the active fill.',
+          },
+          {
+            name: 'maskId / noiseId',
+            type: 'string',
+            description: 'Unique SVG ids for matching the default fill mask and grain.',
+          },
+          {
+            name: 'glowColor / fillColor',
+            type: 'string',
+            description: 'Resolved display colors for the default indicator.',
+          },
+          {
+            name: 'tone / className',
+            type: 'AnalogTone / string',
+            description: 'Current tone and classes for the default slot.',
+          },
+        ],
+      },
+      {
+        title: 'GaugeRenderMark',
+        description: 'Props passed to renderMark for each resolved scale mark.',
+        props: [
+          {
+            name: 'mark',
+            type: 'GaugeResolvedMark',
+            description: 'Original mark plus ratio, angle, tick points, and label position.',
+          },
+          {
+            name: 'value / min / max / ratio',
+            type: 'number',
+            description: 'Resolved value state and normalized position.',
+          },
+          {
+            name: 'tone / className',
+            type: 'AnalogTone / string',
+            description: 'Current tone and classes for the default slot.',
+          },
+        ],
+      },
+      {
+        title: 'GaugeRenderPointer',
+        description: 'Props passed to renderPointer for the central hardware layer.',
+        props: [
+          {
+            name: 'value / min / max / ratio',
+            type: 'number',
+            description: 'Resolved value state and normalized position.',
+          },
+          {
+            name: 'rotationAngle / pointerBevelAngle',
+            type: 'number / string',
+            description: 'Resolved pointer rotation and light-relative bevel angle.',
+          },
+          {
+            name: 'className / style',
+            type: 'string / React.CSSProperties',
+            description: 'Positioning classes and inset style for the pointer slot.',
+          },
+          {
+            name: 'children',
+            type: 'React.ReactNode',
+            description: 'Default pointer indicator line, useful inside a custom shell.',
+          },
         ],
       },
     ],
@@ -1103,6 +1582,63 @@ export function NeedleGaugeExample() {
     />
   )
 }`,
+    composition: {
+      description:
+        'NeedleGauge keeps the Base UI meter semantics and spring motion while exposing the printed scale, needle, hub, readout, and lens as replaceable hardware layers.',
+      tree: `NeedleGauge
+|- Root / Base UI meter behavior
+|- Shell
+|  +- Slot / Face
+|     |- Scale Artwork
+|     |  |- Zones
+|     |  |- Ticks
+|     |  +- Marks
+|     |- Needle
+|     |- Hub
+|     |- Readout
+|     +- Lens`,
+      customizeTitle: 'Custom Needle',
+      customizeDescription:
+        'Use renderNeedle or renderHub when the gauge needs a different pointer style but should keep the same scale math, animation, and accessibility.',
+      customizeCode: `import { NeedleGauge } from "@/registry/components/analog/NeedleGauge"
+
+export function CustomNeedleGauge() {
+  return (
+    <NeedleGauge
+      value={-3}
+      scalePreset="vu"
+      label="OUTPUT"
+      unit="VU"
+      renderNeedle={({ className, style }) => (
+        <div
+          className={className}
+          style={{
+            ...style,
+            width: "0.32rem",
+            clipPath: "polygon(44% 0%, 56% 0%, 62% 88%, 50% 100%, 38% 88%)",
+            background:
+              "linear-gradient(calc(var(--analog-light-angle-pointer, 180deg) - 90deg), var(--analog-meter-zone-warning), var(--analog-emissive-core))",
+          }}
+        />
+      )}
+      renderHub={({ className, surfaceClassName, surfaceStyle, children }) => (
+        <div className={className}>
+          <div
+            className={surfaceClassName}
+            style={{
+              ...surfaceStyle,
+              boxShadow:
+                "inset 0 1px 1px rgba(255,255,255,0.45), 0 0 12px color-mix(in oklch, var(--analog-emissive-glow) 18%, transparent)",
+            }}
+          >
+            {children}
+          </div>
+        </div>
+      )}
+    />
+  )
+}`,
+    },
     api: [
       {
         title: 'NeedleGauge',
@@ -1153,8 +1689,164 @@ export function NeedleGaugeExample() {
             defaultValue: '"destructive"',
             description: 'Sets the tone-driven needle color.',
           },
+          {
+            name: 'scaleClassName / needleClassName / hubClassName',
+            type: 'string',
+            description: 'Adds classes to the default scale, needle, or hub layer.',
+          },
+          {
+            name: 'readoutClassName / lensClassName',
+            type: 'string',
+            description: 'Adds classes to the default readout or lens layer.',
+          },
+          {
+            name: 'renderScale',
+            type: '(props: NeedleGaugeRenderScaleProps) => React.ReactNode',
+            description:
+              'Replaces the scale artwork while receiving resolved marks, zones, and ticks.',
+          },
+          {
+            name: 'renderNeedle',
+            type: '(props: NeedleGaugeRenderNeedleProps) => React.ReactNode',
+            description: 'Replaces the animated needle layer.',
+          },
+          {
+            name: 'renderHub',
+            type: '(props: NeedleGaugeRenderHubProps) => React.ReactNode',
+            description: 'Replaces the center hub while receiving the default hub surface.',
+          },
+          {
+            name: 'renderReadout',
+            type: '(props: NeedleGaugeRenderReadoutProps) => React.ReactNode',
+            description: 'Replaces the label, value, and unit readout layer.',
+          },
+          {
+            name: 'renderLens',
+            type: '(props: NeedleGaugeRenderLensProps) => React.ReactNode',
+            description: 'Replaces the optical lens reflection layer.',
+          },
           lightingProp,
           classNameProp,
+        ],
+      },
+      {
+        title: 'NeedleGaugeRenderScale',
+        description: 'Props passed to renderScale for the printed gauge scale.',
+        props: [
+          {
+            name: 'value / min / max / ratio',
+            type: 'number',
+            description: 'Resolved value state and normalized position.',
+          },
+          {
+            name: 'startAngle / sweepAngle',
+            type: 'number',
+            description: 'Resolved arc geometry in degrees.',
+          },
+          {
+            name: 'geometry',
+            type: 'NeedleGaugeGeometry',
+            description: 'SVG layout geometry used by the default scale.',
+          },
+          {
+            name: 'marks / zones / minorTicks',
+            type: 'NeedleGaugeResolvedMark[] / NeedleGaugeResolvedZone[] / NeedleGaugeResolvedTick[]',
+            description: 'Resolved scale data ready for custom rendering.',
+          },
+          {
+            name: 'className',
+            type: 'string',
+            description: 'Default SVG scale classes.',
+          },
+        ],
+      },
+      {
+        title: 'NeedleGaugeRenderNeedle',
+        description: 'Props passed to renderNeedle for the animated pointer layer.',
+        props: [
+          {
+            name: 'needleAngle / needleRotation',
+            type: 'number',
+            description: 'Target absolute angle and CSS rotation.',
+          },
+          {
+            name: 'displayNeedleAngle / displayNeedleRotation',
+            type: 'number',
+            description: 'Animated angle and rotation currently displayed.',
+          },
+          {
+            name: 'transition',
+            type: 'string',
+            description: 'CSS transition used when spring animation is disabled.',
+          },
+          {
+            name: 'className / style',
+            type: 'string / React.CSSProperties',
+            description: 'Default needle classes and animated style.',
+          },
+        ],
+      },
+      {
+        title: 'NeedleGaugeRenderHub',
+        description: 'Props passed to renderHub for the center cap.',
+        props: [
+          {
+            name: 'variant',
+            type: 'AnalogMaterialVariant',
+            description: 'Resolved shell material variant.',
+          },
+          {
+            name: 'displayNeedleRotation / transition',
+            type: 'number / string',
+            description: 'Animated rotation state for synchronized hub effects.',
+          },
+          {
+            name: 'className / surfaceClassName / surfaceStyle',
+            type: 'string / string / React.CSSProperties',
+            description: 'Default hub wrapper and surface presentation.',
+          },
+          {
+            name: 'children',
+            type: 'React.ReactNode',
+            description: 'Default holographic hub layers.',
+          },
+        ],
+      },
+      {
+        title: 'NeedleGaugeRenderReadout',
+        description: 'Props passed to renderReadout for label and value text.',
+        props: [
+          {
+            name: 'label / unit / formattedValue',
+            type: 'React.ReactNode',
+            description: 'Resolved readout content.',
+          },
+          {
+            name: 'showValue',
+            type: 'boolean',
+            description: 'Whether the value should render.',
+          },
+          {
+            name: 'className / labelClassName / valueClassName / unitClassName',
+            type: 'string',
+            description: 'Default readout classes.',
+          },
+        ],
+      },
+      {
+        title: 'NeedleGaugeRenderLens',
+        description: 'Props passed to renderLens for the optical glass layer.',
+        props: [
+          {
+            name: 'variant / tone',
+            type: 'AnalogMaterialVariant / AnalogTone',
+            description: 'Resolved shell material and needle tone.',
+          },
+          {
+            name: 'className / style',
+            type: 'string / React.CSSProperties',
+            description: 'Default lens classes and lighting style.',
+          },
         ],
       },
     ],
@@ -1193,6 +1885,65 @@ export function MeterExample() {
     </MeterGroup>
   )
 }`,
+    composition: {
+      description:
+        'Meter keeps the calibrated Base UI meter behavior while exposing the channel display as interchangeable physical layers.',
+      tree: `Meter
+|- Root / Base UI meter behavior
+|- Scale
+|- Track / Cavity
+|  |- Glow
+|  |- Indicator
+|  |  |- Fill
+|  |  +- Noise
+|  |- Peak Marker
+|  |- Segment Grille
+|  +- Lens
++- MeterGroup helpers`,
+      customizeTitle: 'Custom VU Channel',
+      customizeDescription:
+        'Use the render slots when a VU-style channel needs a custom fill, peak treatment, or glass layer without rebuilding ballistics and scale behavior.',
+      customizeCode: `import { Meter } from "@/registry/components/analog/Meter"
+
+export function CustomVuMeter() {
+  return (
+    <Meter
+      value={-3}
+      peakValue={1}
+      min={-20}
+      max={3}
+      orientation="vertical"
+      scalePreset="vu"
+      showScale
+      segments={26}
+      renderIndicator={({ className, style, fillStyle, children }) => (
+        <div className={className} style={style}>
+          <div
+            className="absolute inset-x-[2px] inset-y-0 rounded-full"
+            style={{
+              ...fillStyle,
+              background:
+                "linear-gradient(to top, var(--analog-meter-zone-success) 0%, var(--analog-meter-zone-success) 70%, var(--analog-meter-zone-warning) 86%, var(--analog-meter-zone-destructive) 100%)",
+            }}
+          />
+          {children}
+        </div>
+      )}
+      renderLens={({ className, style }) => (
+        <div
+          className={className}
+          style={{
+            ...style,
+            opacity: 0.62,
+            background:
+              "linear-gradient(var(--analog-light-angle-lens, 180deg), rgba(255,255,255,0.22), transparent 42%, rgba(0,0,0,0.38))",
+          }}
+        />
+      )}
+    />
+  )
+}`,
+    },
     api: [
       {
         title: 'Meter',
@@ -1227,7 +1978,6 @@ export function MeterExample() {
           {
             name: 'segments',
             type: 'number',
-            defaultValue: '32',
             description: 'Number of rendered meter segments.',
           },
           {
@@ -1241,8 +1991,204 @@ export function MeterExample() {
             type: 'MeterBallistics',
             description: 'Controls meter attack, release, and peak hold timing.',
           },
+          {
+            name: 'scaleClassName / scaleMarkClassName',
+            type: 'string',
+            description: 'Adds classes to the default scale container or individual scale marks.',
+          },
+          {
+            name: 'trackClassName',
+            type: 'string',
+            description: 'Adds classes to the default meter track cavity.',
+          },
+          {
+            name: 'indicatorClassName',
+            type: 'string',
+            description: 'Adds classes to the default clipped indicator layer.',
+          },
+          {
+            name: 'peakMarkerClassName',
+            type: 'string',
+            description: 'Adds classes to the default peak marker.',
+          },
+          {
+            name: 'segmentsClassName / lensClassName',
+            type: 'string',
+            description: 'Adds classes to the default segment grille or lens reflection.',
+          },
+          {
+            name: 'renderScale',
+            type: '(props: MeterRenderScaleProps) => React.ReactNode',
+            description: 'Replaces the scale layer while receiving resolved marks and side.',
+          },
+          {
+            name: 'renderTrack',
+            type: '(props: MeterRenderTrackProps) => React.ReactNode',
+            description: 'Replaces the track cavity; render props.children to keep inner layers.',
+          },
+          {
+            name: 'renderIndicator',
+            type: '(props: MeterRenderIndicatorProps) => React.ReactNode',
+            description: 'Replaces the clipped lit fill and receives the default fill style.',
+          },
+          {
+            name: 'renderPeakMarker',
+            type: '(props: MeterRenderPeakMarkerProps) => React.ReactNode',
+            description: 'Replaces the held peak marker.',
+          },
+          {
+            name: 'renderSegments / renderLens',
+            type: '(props) => React.ReactNode',
+            description: 'Replaces the segment grille or optical lens layer.',
+          },
           lightingProp,
           classNameProp,
+        ],
+      },
+      {
+        title: 'MeterRenderScale',
+        description: 'Props passed to renderScale for the calibrated scale layer.',
+        props: [
+          {
+            name: 'orientation / isVertical',
+            type: '"horizontal" | "vertical" / boolean',
+            description: 'Current meter axis and convenience boolean.',
+          },
+          {
+            name: 'scaleSide',
+            type: '"leading" | "trailing"',
+            description: 'Resolved side for the scale labels.',
+          },
+          {
+            name: 'marks',
+            type: 'MeterResolvedMark[]',
+            description: 'Resolved marks including normalized ratio.',
+          },
+          {
+            name: 'className / markClassName',
+            type: 'string',
+            description: 'Default classes for the scale shell and mark labels.',
+          },
+        ],
+      },
+      {
+        title: 'MeterRenderTrack',
+        description: 'Props passed to renderTrack for the visual meter cavity.',
+        props: [
+          {
+            name: 'value / min / max',
+            type: 'number',
+            description: 'Resolved meter domain state.',
+          },
+          {
+            name: 'percentage / peakPercentage',
+            type: 'number / number | null',
+            description: 'Normalized fill and peak positions.',
+          },
+          {
+            name: 'className / style',
+            type: 'string / React.CSSProperties',
+            description: 'Default track classes and lighting style.',
+          },
+          {
+            name: 'children',
+            type: 'React.ReactNode',
+            description: 'Default glow, indicator, peak, segments, and lens layers.',
+          },
+        ],
+      },
+      {
+        title: 'MeterRenderIndicator',
+        description: 'Props passed to renderIndicator for the clipped fill layer.',
+        props: [
+          {
+            name: 'clipPath / transitionMs',
+            type: 'string / number',
+            description: 'Resolved clipping and ballistics timing.',
+          },
+          {
+            name: 'className / style',
+            type: 'string / React.CSSProperties',
+            description: 'Default indicator wrapper classes and clip style.',
+          },
+          {
+            name: 'fillClassName / fillStyle',
+            type: 'string / React.CSSProperties',
+            description: 'Default fill classes and zone gradient style.',
+          },
+          {
+            name: 'children',
+            type: 'React.ReactNode',
+            description: 'Default noise overlay.',
+          },
+        ],
+      },
+      {
+        title: 'MeterRenderPeakMarker',
+        description: 'Props passed to renderPeakMarker for the held peak indicator.',
+        props: [
+          {
+            name: 'orientation / isVertical',
+            type: '"horizontal" | "vertical" / boolean',
+            description: 'Current meter axis and convenience boolean.',
+          },
+          {
+            name: 'value / min / max',
+            type: 'number',
+            description: 'Resolved peak value and meter domain.',
+          },
+          {
+            name: 'percentage',
+            type: 'number',
+            description: 'Normalized peak position.',
+          },
+          {
+            name: 'className / style',
+            type: 'string / React.CSSProperties',
+            description: 'Default peak marker classes and resolved position style.',
+          },
+        ],
+      },
+      {
+        title: 'MeterRenderSegments',
+        description: 'Props passed to renderSegments for the segment grille overlay.',
+        props: [
+          {
+            name: 'orientation / isVertical',
+            type: '"horizontal" | "vertical" / boolean',
+            description: 'Current meter axis and convenience boolean.',
+          },
+          {
+            name: 'segments',
+            type: 'number',
+            description: 'Resolved segment count.',
+          },
+          {
+            name: 'className / style',
+            type: 'string / React.CSSProperties',
+            description: 'Default segment overlay classes and resolved grille style.',
+          },
+        ],
+      },
+      {
+        title: 'MeterRenderLens',
+        description: 'Props passed to renderLens for the optical glass layer.',
+        props: [
+          {
+            name: 'orientation / isVertical',
+            type: '"horizontal" | "vertical" / boolean',
+            description: 'Current meter axis and convenience boolean.',
+          },
+          {
+            name: 'variant / tone',
+            type: 'MeterVariant / AnalogTone',
+            description: 'Resolved meter finish and tone.',
+          },
+          {
+            name: 'className / style',
+            type: 'string / React.CSSProperties',
+            description: 'Default lens classes and lighting style.',
+          },
         ],
       },
       {
@@ -1471,6 +2417,7 @@ export function PanelExample() {
     usageIntro:
       'Use RockerThumbSurface when you need the same machined rocker shell used by sliders and switches.',
     registryImportCode: registryImport(['RockerThumbSurface'], 'RockerThumbSurface'),
+    packageImportCode: packageImport(['RockerThumbSurface']),
     usageCode: `<RockerThumbSurface
   className="h-9 w-[88px] rounded-sm"
   orientation="horizontal"

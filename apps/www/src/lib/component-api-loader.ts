@@ -325,6 +325,7 @@ function isManualPropCovered(manualProp: ComponentApiProp, generatedProps: Compo
 }
 
 function mergeWithManualDocs(name: BlockName, sections: ExtractedSection[]) {
+  const manualSections = componentDocs[name].api;
   const generatedSections = sections.map((section) => {
     const manualSection = findManualSection(name, section.title);
     const generatedProps = section.props.map((prop) => {
@@ -353,11 +354,20 @@ function mergeWithManualDocs(name: BlockName, sections: ExtractedSection[]) {
   });
 
   const generatedTitles = new Set(generatedSections.map((section) => section.title));
-  const manualOnlySections = componentDocs[name].api.filter(
+  const manualOnlySections = manualSections.filter(
     (section) => !generatedTitles.has(section.title),
   );
 
-  return [...generatedSections, ...manualOnlySections];
+  const orderedSections = [...generatedSections, ...manualOnlySections].sort((a, b) => {
+    const aManual = findManualSection(name, a.title);
+    const bManual = findManualSection(name, b.title);
+    const aIndex = aManual ? manualSections.indexOf(aManual) : Number.MAX_SAFE_INTEGER;
+    const bIndex = bManual ? manualSections.indexOf(bManual) : Number.MAX_SAFE_INTEGER;
+
+    return aIndex - bIndex;
+  });
+
+  return orderedSections;
 }
 
 export function componentApiLoader() {

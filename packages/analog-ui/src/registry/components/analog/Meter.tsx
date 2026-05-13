@@ -31,6 +31,80 @@ export interface MeterBallistics {
   peakReleaseMs?: number;
 }
 
+export interface MeterResolvedMark extends MeterMark {
+  ratio: number;
+}
+
+export interface MeterRenderScaleProps {
+  orientation: AnalogOrientation;
+  isVertical: boolean;
+  scaleSide: 'leading' | 'trailing';
+  marks: readonly MeterResolvedMark[];
+  className: string;
+  markClassName: string;
+}
+
+export interface MeterRenderTrackProps {
+  orientation: AnalogOrientation;
+  isVertical: boolean;
+  value: number;
+  min: number;
+  max: number;
+  percentage: number;
+  peakPercentage: number | null;
+  variant: MeterVariant;
+  tone: AnalogTone;
+  className: string;
+  style: React.CSSProperties;
+  children: React.ReactNode;
+}
+
+export interface MeterRenderIndicatorProps {
+  orientation: AnalogOrientation;
+  isVertical: boolean;
+  value: number;
+  min: number;
+  max: number;
+  percentage: number;
+  clipPath: string;
+  transitionMs: number;
+  variant: MeterVariant;
+  tone: AnalogTone;
+  className: string;
+  style: React.CSSProperties;
+  fillClassName: string;
+  fillStyle: React.CSSProperties;
+  children: React.ReactNode;
+}
+
+export interface MeterRenderPeakMarkerProps {
+  orientation: AnalogOrientation;
+  isVertical: boolean;
+  value: number;
+  min: number;
+  max: number;
+  percentage: number;
+  className: string;
+  style: React.CSSProperties;
+}
+
+export interface MeterRenderSegmentsProps {
+  orientation: AnalogOrientation;
+  isVertical: boolean;
+  segments: number;
+  className: string;
+  style: React.CSSProperties;
+}
+
+export interface MeterRenderLensProps {
+  orientation: AnalogOrientation;
+  isVertical: boolean;
+  variant: MeterVariant;
+  tone: AnalogTone;
+  className: string;
+  style: React.CSSProperties;
+}
+
 export interface MeterProps extends React.ComponentPropsWithoutRef<typeof BaseMeter.Root> {
   orientation?: AnalogOrientation;
   peakValue?: number | null;
@@ -44,6 +118,19 @@ export interface MeterProps extends React.ComponentPropsWithoutRef<typeof BaseMe
   scaleSide?: 'leading' | 'trailing';
   zones?: readonly MeterZone[];
   ballistics?: 'none' | 'vu' | 'ppm' | MeterBallistics;
+  scaleClassName?: string;
+  scaleMarkClassName?: string;
+  trackClassName?: string;
+  indicatorClassName?: string;
+  peakMarkerClassName?: string;
+  segmentsClassName?: string;
+  lensClassName?: string;
+  renderScale?: (props: MeterRenderScaleProps) => React.ReactNode;
+  renderTrack?: (props: MeterRenderTrackProps) => React.ReactNode;
+  renderIndicator?: (props: MeterRenderIndicatorProps) => React.ReactNode;
+  renderPeakMarker?: (props: MeterRenderPeakMarkerProps) => React.ReactNode;
+  renderSegments?: (props: MeterRenderSegmentsProps) => React.ReactNode;
+  renderLens?: (props: MeterRenderLensProps) => React.ReactNode;
 }
 
 export interface MeterGroupProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -243,6 +330,81 @@ const getMeterGroupShellStyle = (variant: MeterGroupVariant): React.CSSPropertie
   }
 };
 
+function DefaultMeterScale({
+  isVertical,
+  scaleSide,
+  marks,
+  className,
+  markClassName,
+}: MeterRenderScaleProps) {
+  if (!marks.length) return null;
+
+  return (
+    <div data-slot="meter-scale" className={className}>
+      {marks.map((mark) =>
+        isVertical ? (
+          <span
+            key={`${mark.value}-${String(mark.label)}`}
+            data-slot="meter-scale-mark"
+            className={cn(
+              'absolute w-full -translate-y-1/2',
+              scaleSide === 'leading' ? 'right-0 text-right' : 'left-0 text-left',
+              markClassName,
+            )}
+            style={{ top: `${(1 - mark.ratio) * 100}%` }}
+          >
+            {mark.label}
+          </span>
+        ) : (
+          <span
+            key={`${mark.value}-${String(mark.label)}`}
+            data-slot="meter-scale-mark"
+            className={cn('absolute -translate-x-1/2 text-center', markClassName)}
+            style={{ left: `${mark.ratio * 100}%` }}
+          >
+            {mark.label}
+          </span>
+        ),
+      )}
+    </div>
+  );
+}
+
+function DefaultMeterTrack({ className, style, children }: MeterRenderTrackProps) {
+  return (
+    <BaseMeter.Track data-slot="meter-track" className={className} style={style}>
+      {children}
+    </BaseMeter.Track>
+  );
+}
+
+function DefaultMeterIndicator({
+  className,
+  style,
+  fillClassName,
+  fillStyle,
+  children,
+}: MeterRenderIndicatorProps) {
+  return (
+    <BaseMeter.Indicator data-slot="meter-indicator" className={className} style={style}>
+      <div data-slot="meter-indicator-fill" className={fillClassName} style={fillStyle} />
+      {children}
+    </BaseMeter.Indicator>
+  );
+}
+
+function DefaultMeterPeakMarker({ className, style }: MeterRenderPeakMarkerProps) {
+  return <div data-slot="meter-peak-marker" className={className} style={style} />;
+}
+
+function DefaultMeterSegments({ className, style }: MeterRenderSegmentsProps) {
+  return <div data-slot="meter-segments" className={className} style={style} />;
+}
+
+function DefaultMeterLens({ className, style }: MeterRenderLensProps) {
+  return <div data-slot="meter-lens" className={className} style={style} />;
+}
+
 export const Meter = React.forwardRef<HTMLDivElement, MeterProps>(
   (
     {
@@ -262,6 +424,19 @@ export const Meter = React.forwardRef<HTMLDivElement, MeterProps>(
       scaleSide = 'leading',
       zones,
       ballistics = 'none',
+      scaleClassName,
+      scaleMarkClassName,
+      trackClassName,
+      indicatorClassName,
+      peakMarkerClassName,
+      segmentsClassName,
+      lensClassName,
+      renderScale,
+      renderTrack,
+      renderIndicator,
+      renderPeakMarker,
+      renderSegments,
+      renderLens,
       ...props
     },
     ref,
@@ -322,8 +497,9 @@ export const Meter = React.forwardRef<HTMLDivElement, MeterProps>(
         ? clampMeterPercentage(Math.max(currentValue, displayPeakValue), resolvedMin, resolvedMax)
         : null;
     const indicatorClipPath = getMeterIndicatorClipPath(isVertical, percentage);
-    const resolvedMarks = React.useMemo(() => {
-      if (!showScale) return [];
+    const shouldRenderScale = showScale || renderScale !== undefined;
+    const resolvedMarks = React.useMemo<MeterResolvedMark[]>(() => {
+      if (!shouldRenderScale) return [];
 
       const sourceMarks = marks ?? (scalePreset === 'linear' ? [] : defaultScaleMarks[scalePreset]);
 
@@ -334,7 +510,7 @@ export const Meter = React.forwardRef<HTMLDivElement, MeterProps>(
             ? Math.min(1, Math.max(0, mark.position))
             : clampMeterPercentage(mark.value, resolvedMin, resolvedMax) / 100,
       }));
-    }, [marks, resolvedMax, resolvedMin, scalePreset, showScale]);
+    }, [marks, resolvedMax, resolvedMin, scalePreset, shouldRenderScale]);
 
     const getVariantColors = (v: MeterVariant, isVert: boolean) => {
       const dir = isVert ? 'to top' : 'to right';
@@ -374,6 +550,152 @@ export const Meter = React.forwardRef<HTMLDivElement, MeterProps>(
       track: { travel: 1 },
       ...lighting,
     });
+    const scaleNode = shouldRenderScale
+      ? (renderScale ?? DefaultMeterScale)({
+          orientation,
+          isVertical,
+          scaleSide,
+          marks: resolvedMarks,
+          className: cn(
+            'pointer-events-none absolute text-[9px] font-mono text-[color:var(--analog-telemetry-label)] opacity-90',
+            isVertical
+              ? scaleSide === 'leading'
+                ? '-left-8 top-0 bottom-0 w-6'
+                : '-right-8 top-0 bottom-0 w-6'
+              : scaleSide === 'leading'
+                ? 'left-0 right-0 -top-6 h-4'
+                : 'left-0 right-0 -bottom-6 h-4',
+            scaleClassName,
+          ),
+          markClassName: cn(scaleMarkClassName),
+        })
+      : null;
+    const indicatorNode = (renderIndicator ?? DefaultMeterIndicator)({
+      orientation,
+      isVertical,
+      value: currentValue,
+      min: resolvedMin,
+      max: resolvedMax,
+      percentage,
+      clipPath: indicatorClipPath,
+      transitionMs,
+      variant,
+      tone,
+      className: cn(
+        'absolute inset-0 pointer-events-none !w-full !h-full z-10',
+        indicatorClassName,
+      ),
+      style: {
+        clipPath: indicatorClipPath,
+        transition: `clip-path ${transitionMs}ms ease-out`,
+      },
+      fillClassName: 'absolute inset-0',
+      fillStyle: {
+        background: zoneBackground,
+        boxShadow: colors.isDisplay
+          ? 'none'
+          : '0 0 4px color-mix(in oklch, var(--analog-control-foreground) 18%, transparent) inset',
+      },
+      children: (
+        <div
+          data-slot="meter-indicator-noise"
+          className="absolute inset-0 pointer-events-none mix-blend-screen z-20"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='discrete' tableValues='0 0 0 1 1'/%3E%3CfeFuncG type='discrete' tableValues='0 0 0 1 1'/%3E%3CfeFuncB type='discrete' tableValues='0 0 0 1 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+            opacity: `calc(var(--analog-grain-opacity) + (var(--analog-grain-opacity) * var(--analog-light-power, 1)))`,
+          }}
+        />
+      ),
+    });
+    const peakMarkerNode =
+      peakPercentage != null
+        ? (renderPeakMarker ?? DefaultMeterPeakMarker)({
+            orientation,
+            isVertical,
+            value: displayPeakValue ?? currentValue,
+            min: resolvedMin,
+            max: resolvedMax,
+            percentage: peakPercentage,
+            className: cn('absolute pointer-events-none z-30 rounded-full', peakMarkerClassName),
+            style: {
+              ...getPeakMarkerStyle(isVertical, peakPercentage),
+              background: colors.peak,
+              boxShadow: `0 0 calc(10px * var(--analog-bloom-strength, 0.7) * 1.428571) ${colors.peakGlow}`,
+              transition: `all ${effectiveBallistics.peakReleaseMs}ms ease-out`,
+            },
+          })
+        : null;
+    const segmentsNode =
+      segments !== undefined && segments > 0
+        ? (renderSegments ?? DefaultMeterSegments)({
+            orientation,
+            isVertical,
+            segments,
+            className: cn(
+              'absolute inset-0 pointer-events-none z-20 opacity-90',
+              segmentsClassName,
+            ),
+            style: {
+              background: isVertical
+                ? `repeating-linear-gradient(to bottom, transparent 0%, transparent calc(100% / ${segments} - 1.5px), var(--analog-meter-segment-divider) calc(100% / ${segments} - 1.5px), var(--analog-meter-segment-divider) calc(100% / ${segments}))`
+                : `repeating-linear-gradient(to right, transparent 0%, transparent calc(100% / ${segments} - 1.5px), var(--analog-meter-segment-divider) calc(100% / ${segments} - 1.5px), var(--analog-meter-segment-divider) calc(100% / ${segments}))`,
+            },
+          })
+        : null;
+    const lensNode = (renderLens ?? DefaultMeterLens)({
+      orientation,
+      isVertical,
+      variant,
+      tone,
+      className: cn('absolute inset-0 pointer-events-none z-30', lensClassName),
+      style: {
+        background: `linear-gradient(var(--analog-light-angle-lens, 180deg), rgba(255,255,255,calc(0.15 * var(--analog-light-power, 1))) 0%, transparent 50%, rgba(0,0,0,calc(0.5 * var(--analog-light-power, 1))) 100%)`,
+        mixBlendMode: colors.isDisplay ? 'soft-light' : 'overlay',
+        opacity: colors.isDisplay ? 0.3 : 1,
+      },
+    });
+    const trackNode = (renderTrack ?? DefaultMeterTrack)({
+      orientation,
+      isVertical,
+      value: currentValue,
+      min: resolvedMin,
+      max: resolvedMax,
+      percentage,
+      peakPercentage,
+      variant,
+      tone,
+      className: cn(
+        'relative overflow-hidden rounded-full analog-surface-recess-sm',
+        isVertical ? 'w-3 h-full' : 'w-full h-3',
+        trackClassName,
+      ),
+      style: trackLightingStyle,
+      children: (
+        <>
+          <div
+            data-slot="meter-glow"
+            className="absolute inset-0 pointer-events-none mix-blend-screen opacity-[0.40] z-0"
+            style={{
+              filter: 'blur(calc(6px * var(--analog-bloom-strength, 0.7) * 1.428571))',
+            }}
+          >
+            <div
+              data-slot="meter-glow-fill"
+              className="absolute inset-0"
+              style={{
+                clipPath: indicatorClipPath,
+                transition: `clip-path ${transitionMs}ms ease-out`,
+                background: zoneGlow,
+              }}
+            />
+          </div>
+          {indicatorNode}
+          {peakMarkerNode}
+          {segmentsNode}
+          {lensNode}
+        </>
+      ),
+    });
 
     return (
       <BaseMeter.Root
@@ -381,6 +703,7 @@ export const Meter = React.forwardRef<HTMLDivElement, MeterProps>(
         value={currentValue}
         min={resolvedMin}
         max={resolvedMax}
+        data-slot="meter-root"
         className={cn(
           'relative flex items-center justify-center',
           isVertical ? 'h-64 w-8 shrink-0 flex-col' : 'h-8 w-full min-w-0',
@@ -390,130 +713,8 @@ export const Meter = React.forwardRef<HTMLDivElement, MeterProps>(
         data-analog-tone={tone}
         {...props}
       >
-        {showScale ? (
-          <div
-            className={cn(
-              'pointer-events-none absolute text-[9px] font-mono text-[color:var(--analog-telemetry-label)] opacity-90',
-              isVertical
-                ? scaleSide === 'leading'
-                  ? '-left-8 top-0 bottom-0 w-6'
-                  : '-right-8 top-0 bottom-0 w-6'
-                : scaleSide === 'leading'
-                  ? 'left-0 right-0 -top-6 h-4'
-                  : 'left-0 right-0 -bottom-6 h-4',
-            )}
-          >
-            {resolvedMarks.map((mark) =>
-              isVertical ? (
-                <span
-                  key={`${mark.value}-${String(mark.label)}`}
-                  className={cn(
-                    'absolute w-full -translate-y-1/2',
-                    scaleSide === 'leading' ? 'right-0 text-right' : 'left-0 text-left',
-                  )}
-                  style={{ top: `${(1 - mark.ratio) * 100}%` }}
-                >
-                  {mark.label}
-                </span>
-              ) : (
-                <span
-                  key={`${mark.value}-${String(mark.label)}`}
-                  className="absolute -translate-x-1/2 text-center"
-                  style={{ left: `${mark.ratio * 100}%` }}
-                >
-                  {mark.label}
-                </span>
-              ),
-            )}
-          </div>
-        ) : null}
-
-        {/* Track / Cavity */}
-        <BaseMeter.Track
-          className={cn(
-            'relative overflow-hidden rounded-full analog-surface-recess-sm',
-            isVertical ? 'w-3 h-full' : 'w-full h-3',
-          )}
-          style={trackLightingStyle}
-        >
-          {/* GLOW LAYER */}
-          <div
-            className="absolute inset-0 pointer-events-none mix-blend-screen opacity-[0.40] z-0"
-            style={{ filter: 'blur(calc(6px * var(--analog-bloom-strength, 0.7) * 1.428571))' }}
-          >
-            <div
-              className="absolute inset-0"
-              style={{
-                clipPath: indicatorClipPath,
-                transition: `clip-path ${transitionMs}ms ease-out`,
-                background: zoneGlow,
-              }}
-            />
-          </div>
-
-          {/* Meter indicator layer */}
-          <BaseMeter.Indicator
-            className="absolute inset-0 pointer-events-none !w-full !h-full z-10"
-            style={{
-              clipPath: indicatorClipPath,
-              transition: `clip-path ${transitionMs}ms ease-out`,
-            }}
-          >
-            {/* Lit segments */}
-            <div
-              className="absolute inset-0"
-              style={{
-                background: zoneBackground,
-                boxShadow: colors.isDisplay
-                  ? 'none'
-                  : '0 0 4px color-mix(in oklch, var(--analog-control-foreground) 18%, transparent) inset',
-              }}
-            />
-
-            {/* Analog Noise Overlay (only on lit parts) */}
-            <div
-              className="absolute inset-0 pointer-events-none mix-blend-screen z-20"
-              style={{
-                backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='discrete' tableValues='0 0 0 1 1'/%3E%3CfeFuncG type='discrete' tableValues='0 0 0 1 1'/%3E%3CfeFuncB type='discrete' tableValues='0 0 0 1 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-                opacity: `calc(var(--analog-grain-opacity) + (var(--analog-grain-opacity) * var(--analog-light-power, 1)))`,
-              }}
-            />
-          </BaseMeter.Indicator>
-
-          {peakPercentage != null && (
-            <div
-              className="absolute pointer-events-none z-30 rounded-full"
-              style={{
-                ...getPeakMarkerStyle(isVertical, peakPercentage),
-                background: colors.peak,
-                boxShadow: `0 0 calc(10px * var(--analog-bloom-strength, 0.7) * 1.428571) ${colors.peakGlow}`,
-                transition: `all ${effectiveBallistics.peakReleaseMs}ms ease-out`,
-              }}
-            />
-          )}
-
-          {/* Segments Grille Overlay */}
-          {segments && (
-            <div
-              className="absolute inset-0 pointer-events-none z-20 opacity-90"
-              style={{
-                background: isVertical
-                  ? `repeating-linear-gradient(to bottom, transparent 0%, transparent calc(100% / ${segments} - 1.5px), var(--analog-meter-segment-divider) calc(100% / ${segments} - 1.5px), var(--analog-meter-segment-divider) calc(100% / ${segments}))`
-                  : `repeating-linear-gradient(to right, transparent 0%, transparent calc(100% / ${segments} - 1.5px), var(--analog-meter-segment-divider) calc(100% / ${segments} - 1.5px), var(--analog-meter-segment-divider) calc(100% / ${segments}))`,
-              }}
-            />
-          )}
-
-          {/* Inner glass reflection */}
-          <div
-            className="absolute inset-0 pointer-events-none z-30"
-            style={{
-              background: `linear-gradient(var(--analog-light-angle-lens, 180deg), rgba(255,255,255,calc(0.15 * var(--analog-light-power, 1))) 0%, transparent 50%, rgba(0,0,0,calc(0.5 * var(--analog-light-power, 1))) 100%)`,
-              mixBlendMode: colors.isDisplay ? 'soft-light' : 'overlay',
-              opacity: colors.isDisplay ? 0.3 : 1,
-            }}
-          />
-        </BaseMeter.Track>
+        {scaleNode}
+        {trackNode}
       </BaseMeter.Root>
     );
   },
@@ -542,6 +743,7 @@ export const MeterGroup = React.forwardRef<HTMLDivElement, MeterGroupProps>(
         <div
           ref={ref}
           role={role ?? 'group'}
+          data-slot="meter-group"
           data-orientation={orientation}
           className={cn(
             'relative inline-flex min-w-0 max-w-full rounded-[var(--analog-radius-panel)] border border-transparent p-[var(--spacing-track-padding)] text-[color:var(--analog-panel-foreground)]',
@@ -555,8 +757,12 @@ export const MeterGroup = React.forwardRef<HTMLDivElement, MeterGroupProps>(
           }}
           {...props}
         >
-          <div className="relative overflow-hidden rounded-[var(--analog-radius-shell)] analog-surface-recess p-[var(--spacing-track-padding)]">
+          <div
+            data-slot="meter-group-shell"
+            className="relative overflow-hidden rounded-[var(--analog-radius-shell)] analog-surface-recess p-[var(--spacing-track-padding)]"
+          >
             <div
+              data-slot="meter-group-slot"
               className={cn(
                 'relative overflow-hidden rounded-[var(--analog-radius-recess)] analog-track-slot analog-track-slot-unlit',
                 orientation === 'horizontal' ? 'px-3 py-3' : 'px-3 py-3',
@@ -592,7 +798,10 @@ export const MeterGroupChannel = React.forwardRef<HTMLDivElement, MeterGroupChan
       labelPosition ?? (group?.orientation === 'vertical' ? 'right' : 'bottom');
     const labelNode =
       label != null ? (
-        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.32em] text-[color:var(--analog-telemetry-label)]">
+        <span
+          data-slot="meter-group-channel-label"
+          className="font-mono text-[9px] font-bold uppercase tracking-[0.32em] text-[color:var(--analog-telemetry-label)]"
+        >
           {label}
         </span>
       ) : null;
@@ -600,6 +809,7 @@ export const MeterGroupChannel = React.forwardRef<HTMLDivElement, MeterGroupChan
     return (
       <div
         ref={ref}
+        data-slot="meter-group-channel"
         className={cn(
           'relative flex shrink-0 items-center justify-center',
           resolvedLabelPosition === 'top' && 'flex-col gap-3 px-3 pt-1 pb-2',
@@ -628,6 +838,7 @@ export const MeterGroupSeparator = React.forwardRef<HTMLDivElement, MeterGroupSe
       <div
         ref={ref}
         aria-hidden="true"
+        data-slot="meter-group-separator"
         className={cn(
           'relative shrink-0 overflow-hidden rounded-full analog-track-slot-guide opacity-80',
           isHorizontal ? 'mx-1 my-3 w-px self-stretch' : 'mx-3 my-1 h-px self-auto',

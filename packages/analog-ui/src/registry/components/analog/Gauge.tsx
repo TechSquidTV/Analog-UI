@@ -11,6 +11,73 @@ export interface GaugeMark {
   position?: number;
 }
 
+export interface GaugePoint {
+  x: number;
+  y: number;
+}
+
+export interface GaugeResolvedMark extends GaugeMark {
+  ratio: number;
+  angle: number;
+  lineStart: GaugePoint;
+  lineEnd: GaugePoint;
+  labelPosition: GaugePoint;
+}
+
+export interface GaugeRenderTrackProps {
+  value: number;
+  min: number;
+  max: number;
+  ratio: number;
+  startAngle: number;
+  sweepAngle: number;
+  filterId: string;
+  tone: AnalogTone;
+  className: string;
+}
+
+export interface GaugeRenderIndicatorProps {
+  value: number;
+  min: number;
+  max: number;
+  ratio: number;
+  startAngle: number;
+  sweepAngle: number;
+  fillMode: 'start' | 'center';
+  centerValue: number;
+  fillStart: number;
+  fillLength: number;
+  maskId: string;
+  noiseId: string;
+  tone: AnalogTone;
+  glowColor: string;
+  fillColor: string;
+  className: string;
+}
+
+export interface GaugeRenderMarkProps {
+  mark: GaugeResolvedMark;
+  value: number;
+  min: number;
+  max: number;
+  ratio: number;
+  tone: AnalogTone;
+  className: string;
+}
+
+export interface GaugeRenderPointerProps {
+  value: number;
+  min: number;
+  max: number;
+  ratio: number;
+  rotationAngle: number;
+  pointerBevelAngle: string;
+  tone: AnalogTone;
+  className: string;
+  style: React.CSSProperties;
+  children: React.ReactNode;
+}
+
 export interface GaugeProps extends React.ComponentPropsWithoutRef<typeof Slider.Root> {
   tone?: AnalogTone;
   lighting?: AnalogLightingConfig<'surface' | 'pointer' | 'lens'>;
@@ -20,6 +87,157 @@ export interface GaugeProps extends React.ComponentPropsWithoutRef<typeof Slider
   showMarks?: boolean;
   fillMode?: 'start' | 'center';
   centerValue?: number;
+  trackClassName?: string;
+  indicatorClassName?: string;
+  markClassName?: string;
+  pointerClassName?: string;
+  renderTrack?: (props: GaugeRenderTrackProps) => React.ReactNode;
+  renderIndicator?: (props: GaugeRenderIndicatorProps) => React.ReactNode;
+  renderMark?: (props: GaugeRenderMarkProps) => React.ReactNode;
+  renderPointer?: (props: GaugeRenderPointerProps) => React.ReactNode;
+}
+
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+
+const roundSvgNumber = (value: number) => Number(value.toFixed(4));
+
+const normalizeRatio = (value: number, min: number, max: number) => {
+  const range = max - min;
+
+  if (range <= 0) {
+    return value >= max ? 1 : 0;
+  }
+
+  return clamp((value - min) / range, 0, 1);
+};
+
+const polarPoint = (radius: number, angle: number): GaugePoint => {
+  const radians = (angle * Math.PI) / 180;
+
+  return {
+    x: roundSvgNumber(50 + Math.cos(radians) * radius),
+    y: roundSvgNumber(50 + Math.sin(radians) * radius),
+  };
+};
+
+function DefaultGaugeTrack({ className, startAngle, sweepAngle, filterId }: GaugeRenderTrackProps) {
+  return (
+    <circle
+      data-slot="gauge-track-arc"
+      className={className}
+      cx="50"
+      cy="50"
+      r="46"
+      stroke="var(--analog-surface-cavity-strong)"
+      strokeWidth="6"
+      fill="none"
+      pathLength="360"
+      strokeDasharray={`${sweepAngle} 360`}
+      transform={`rotate(${startAngle - 90} 50 50)`}
+      filter={`url(#${filterId})`}
+    />
+  );
+}
+
+function DefaultGaugeIndicator({
+  className,
+  startAngle,
+  fillStart,
+  fillLength,
+  maskId,
+  noiseId,
+  glowColor,
+  fillColor,
+}: GaugeRenderIndicatorProps) {
+  return (
+    <g data-slot="gauge-indicator" className={className}>
+      <circle
+        data-slot="gauge-indicator-glow"
+        cx="50"
+        cy="50"
+        r="46"
+        stroke={glowColor}
+        strokeWidth="8"
+        fill="none"
+        pathLength="360"
+        strokeDasharray={`${fillLength} 360`}
+        strokeDashoffset={-fillStart}
+        transform={`rotate(${startAngle - 90} 50 50)`}
+        style={{
+          filter: 'blur(calc(4px * var(--analog-bloom-strength, 0.7) * 1.428571))',
+          opacity: 'calc(0.5 * var(--analog-bloom-strength, 0.7) * 1.428571)',
+        }}
+      />
+
+      <g data-slot="gauge-indicator-fill" mask={`url(#${maskId})`}>
+        <rect x="0" y="0" width="100" height="100" fill={fillColor} />
+        <rect
+          data-slot="gauge-indicator-noise"
+          x="0"
+          y="0"
+          width="100"
+          height="100"
+          fill={`url(#${noiseId})`}
+          style={{
+            mixBlendMode: 'screen',
+            opacity: 'var(--analog-grain-opacity)',
+          }}
+        />
+      </g>
+    </g>
+  );
+}
+
+function DefaultGaugeMark({ mark, className }: GaugeRenderMarkProps) {
+  return (
+    <g data-slot="gauge-mark" className={className}>
+      <line
+        data-slot="gauge-mark-tick"
+        x1={mark.lineStart.x}
+        y1={mark.lineStart.y}
+        x2={mark.lineEnd.x}
+        y2={mark.lineEnd.y}
+        stroke="var(--analog-telemetry-label)"
+        strokeWidth="0.85"
+        style={{ opacity: 0.85 }}
+      />
+      <text
+        data-slot="gauge-mark-label"
+        x={mark.labelPosition.x}
+        y={mark.labelPosition.y}
+        fill="var(--analog-legend)"
+        fontSize="4"
+        fontFamily="var(--font-mono)"
+        textAnchor="middle"
+        dominantBaseline="central"
+      >
+        {mark.label}
+      </text>
+    </g>
+  );
+}
+
+function DefaultGaugePointer({
+  className,
+  style,
+  rotationAngle,
+  children,
+}: GaugeRenderPointerProps) {
+  return (
+    <div data-slot="gauge-pointer" className={className} style={style}>
+      <SurfaceButton
+        data-slot="gauge-pointer-surface"
+        rotation={rotationAngle}
+        containerClassName="w-full h-full pointer-events-none"
+        className="analog-dial-surface w-full h-full pointer-events-none"
+        style={{ pointerEvents: 'none' }}
+        disabled
+        tabIndex={-1}
+      >
+        {children}
+      </SurfaceButton>
+    </div>
+  );
 }
 
 export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
@@ -37,10 +255,19 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
       showMarks = marks !== undefined,
       fillMode = 'start',
       centerValue,
+      trackClassName,
+      indicatorClassName,
+      markClassName,
+      pointerClassName,
+      renderTrack,
+      renderIndicator,
+      renderMark,
+      renderPointer,
       ...props
     },
     ref,
   ) => {
+    const gaugeId = React.useId().replace(/:/g, '');
     const colors = {
       glow: 'var(--analog-display-glow)',
       bg: 'var(--analog-display-fill)',
@@ -56,33 +283,125 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
         {...props}
         render={(rootProps, state) => {
           const val = state.values[0] ?? min;
-          const range = max - min;
-          const ratio = range === 0 ? 0 : Math.min(1, Math.max(0, (val - min) / range));
-          const resolvedSweepAngle = Math.min(359.999, Math.max(0, sweepAngle));
+          const ratio = normalizeRatio(val, min, max);
+          const resolvedSweepAngle = clamp(sweepAngle, 0, 359.999);
           const rotationAngle = startAngle + ratio * resolvedSweepAngle;
           const resolvedCenterValue = centerValue ?? (min + max) / 2;
-          const centerRatio =
-            range === 0 ? 0 : Math.min(1, Math.max(0, (resolvedCenterValue - min) / range));
+          const centerRatio = normalizeRatio(resolvedCenterValue, min, max);
           const fillStartRatio = fillMode === 'center' ? Math.min(ratio, centerRatio) : 0;
           const fillEndRatio = fillMode === 'center' ? Math.max(ratio, centerRatio) : ratio;
           const fillStart = fillStartRatio * resolvedSweepAngle;
           const fillLength = Math.max(0, (fillEndRatio - fillStartRatio) * resolvedSweepAngle);
           const pointerBevelAngle = `calc(var(--analog-light-angle-pointer, 180deg) - ${rotationAngle}deg)`;
+          const insetShadowId = `gauge-inset-shadow-${gaugeId}`;
+          const indicatorMaskId = `gauge-indicator-mask-${gaugeId}`;
+          const indicatorNoiseId = `gauge-indicator-noise-${gaugeId}`;
           const resolvedMarks = showMarks
-            ? (marks ?? []).map((mark) => ({
-                ...mark,
-                ratio:
-                  mark.position !== undefined
-                    ? Math.min(1, Math.max(0, mark.position))
-                    : range === 0
-                      ? 0
-                      : Math.min(1, Math.max(0, (mark.value - min) / range)),
-              }))
+            ? (marks ?? [])
+                .map((mark) => ({
+                  ...mark,
+                  ratio:
+                    mark.position !== undefined
+                      ? clamp(mark.position, 0, 1)
+                      : normalizeRatio(mark.value, min, max),
+                }))
+                .map((mark) => {
+                  const angle = startAngle + mark.ratio * resolvedSweepAngle;
+
+                  return {
+                    ...mark,
+                    angle,
+                    lineStart: polarPoint(39, angle),
+                    lineEnd: polarPoint(44, angle),
+                    labelPosition: polarPoint(33, angle),
+                  };
+                })
             : [];
+          const trackProps: GaugeRenderTrackProps = {
+            value: val,
+            min,
+            max,
+            ratio,
+            startAngle,
+            sweepAngle: resolvedSweepAngle,
+            filterId: insetShadowId,
+            tone,
+            className: cn(trackClassName),
+          };
+          const indicatorProps: GaugeRenderIndicatorProps = {
+            value: val,
+            min,
+            max,
+            ratio,
+            startAngle,
+            sweepAngle: resolvedSweepAngle,
+            fillMode,
+            centerValue: resolvedCenterValue,
+            fillStart,
+            fillLength,
+            maskId: indicatorMaskId,
+            noiseId: indicatorNoiseId,
+            tone,
+            glowColor: colors.glow,
+            fillColor: colors.bg,
+            className: cn(indicatorClassName),
+          };
+          const pointerChildren = (
+            <div
+              data-slot="gauge-pointer-rotor"
+              className="absolute inset-0 rounded-full"
+              style={{ transform: `rotate(${rotationAngle}deg)` }}
+            >
+              <div
+                data-slot="gauge-pointer-line"
+                className="absolute left-1/2 -translate-x-1/2 rounded-full border"
+                style={{
+                  top: '12%',
+                  width: '3%',
+                  height: '24%',
+                  borderColor:
+                    'color-mix(in oklch, var(--analog-control-border-strong) 65%, transparent)',
+                  background:
+                    `linear-gradient(calc(var(--analog-light-angle-pointer, 180deg) - ${rotationAngle}deg - 45deg), ` +
+                    `color-mix(in oklch, var(--analog-surface-metal-hi) 78%, white 22%) 0%, ` +
+                    `var(--analog-surface-metal-mid) 40%, ` +
+                    `var(--analog-surface-metal-lo) 100%)`,
+                  boxShadow: `inset calc(sin(${pointerBevelAngle}) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(${pointerBevelAngle}) * var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 0.5) rgba(255,255,255,calc(0.6 * var(--analog-light-power, 1))), inset calc(sin(${pointerBevelAngle}) * var(--analog-bevel-width, 4px) * -0.25) calc(cos(${pointerBevelAngle}) * var(--analog-bevel-width, 4px) * 0.25) calc(var(--analog-bevel-width, 4px) * 0.5) rgba(0,0,0,calc(0.5 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), calc(sin(${pointerBevelAngle}) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(${pointerBevelAngle}) * var(--analog-bevel-width, 4px) * -0.25) var(--analog-bevel-width, 4px) rgba(0,0,0,calc(0.6 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
+                }}
+              >
+                <div
+                  data-slot="gauge-pointer-highlight"
+                  className="absolute rounded-full blur-[0.5px]"
+                  style={{
+                    top: '10%',
+                    left: '50%',
+                    width: '30%',
+                    height: '30%',
+                    backgroundColor: 'var(--analog-surface-metal-hi)',
+                    transform: `translateX(-50%)`,
+                    opacity: 0.6,
+                  }}
+                />
+              </div>
+            </div>
+          );
+          const pointerProps: GaugeRenderPointerProps = {
+            value: val,
+            min,
+            max,
+            ratio,
+            rotationAngle,
+            pointerBevelAngle,
+            tone,
+            className: cn('absolute pointer-events-none', pointerClassName),
+            style: { inset: 'var(--analog-gauge-center-inset, 1.5rem)' },
+            children: pointerChildren,
+          };
 
           return (
             <div
               {...rootProps}
+              data-slot="gauge-root"
               className={cn(
                 'relative mx-auto flex aspect-square w-full min-w-0 max-w-[12rem] items-center justify-center p-4',
                 className,
@@ -94,17 +413,24 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
               }}
             >
               {/* Invisible Linear Slider Control overlaying everything for interaction */}
-              <Slider.Control className="absolute inset-4 z-40 touch-none cursor-ew-resize">
-                <Slider.Track className="w-full h-full opacity-0">
-                  <Slider.Thumb className="w-8 h-full" />
+              <Slider.Control
+                data-slot="gauge-control"
+                className="absolute inset-4 z-40 touch-none cursor-ew-resize"
+              >
+                <Slider.Track data-slot="gauge-hidden-track" className="w-full h-full opacity-0">
+                  <Slider.Thumb data-slot="gauge-hidden-thumb" className="w-8 h-full" />
                 </Slider.Track>
               </Slider.Control>
 
-              <div className="absolute inset-0 pointer-events-none">
+              <div data-slot="gauge-scale" className="absolute inset-0 pointer-events-none">
                 {/* Background Cavity / Track */}
-                <svg viewBox="0 0 100 100" className="w-full h-full overflow-visible p-2">
-                  <defs>
-                    <filter id="gauge-inset-shadow">
+                <svg
+                  data-slot="gauge-svg"
+                  viewBox="0 0 100 100"
+                  className="w-full h-full overflow-visible p-2"
+                >
+                  <defs data-slot="gauge-definitions">
+                    <filter data-slot="gauge-inset-shadow" id={insetShadowId}>
                       <feOffset dx="0" dy="1" />
                       <feGaussianBlur stdDeviation="1" result="offset-blur" />
                       <feComposite
@@ -117,7 +443,7 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
                       <feComposite operator="in" in="color" in2="inverse" result="shadow" />
                       <feComposite operator="over" in="shadow" in2="SourceGraphic" />
                     </filter>
-                    <mask id="gauge-indicator-mask">
+                    <mask data-slot="gauge-indicator-mask" id={indicatorMaskId}>
                       <circle
                         cx="50"
                         cy="50"
@@ -132,7 +458,8 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
                       />
                     </mask>
                     <pattern
-                      id="gauge-indicator-noise"
+                      data-slot="gauge-indicator-noise-pattern"
+                      id={indicatorNoiseId}
                       x="0"
                       y="0"
                       width="24"
@@ -150,142 +477,39 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
                     </pattern>
                   </defs>
 
-                  {/* Track Background */}
-                  <circle
-                    cx="50"
-                    cy="50"
-                    r="46"
-                    stroke="var(--analog-surface-cavity-strong)"
-                    strokeWidth="6"
-                    fill="none"
-                    pathLength="360"
-                    strokeDasharray={`${resolvedSweepAngle} 360`}
-                    transform={`rotate(${startAngle - 90} 50 50)`}
-                    filter="url(#gauge-inset-shadow)"
-                  />
+                  {renderTrack?.(trackProps) ?? <DefaultGaugeTrack {...trackProps} />}
 
-                  {/* Indicator Glow */}
-                  <circle
-                    cx="50"
-                    cy="50"
-                    r="46"
-                    stroke={colors.glow}
-                    strokeWidth="8"
-                    fill="none"
-                    pathLength="360"
-                    strokeDasharray={`${fillLength} 360`}
-                    strokeDashoffset={-fillStart}
-                    transform={`rotate(${startAngle - 90} 50 50)`}
-                    style={{
-                      filter: 'blur(calc(4px * var(--analog-bloom-strength, 0.7) * 1.428571))',
-                      opacity: 'calc(0.5 * var(--analog-bloom-strength, 0.7) * 1.428571)',
-                    }}
-                  />
+                  {renderIndicator?.(indicatorProps) ?? (
+                    <DefaultGaugeIndicator {...indicatorProps} />
+                  )}
 
-                  {/* Indicator Foreground with Noise Masked */}
-                  <g mask="url(#gauge-indicator-mask)">
-                    <rect x="0" y="0" width="100" height="100" fill={colors.bg} />
-                    <rect
-                      x="0"
-                      y="0"
-                      width="100"
-                      height="100"
-                      fill="url(#gauge-indicator-noise)"
-                      style={{
-                        mixBlendMode: 'screen',
-                        opacity: 'var(--analog-grain-opacity)',
-                      }}
-                    />
-                  </g>
-
-                  {resolvedMarks.map((mark) => {
-                    const angle = startAngle + mark.ratio * resolvedSweepAngle;
-                    const radians = (angle * Math.PI) / 180;
-                    const lineStartX = 50 + Math.cos(radians) * 39;
-                    const lineStartY = 50 + Math.sin(radians) * 39;
-                    const lineEndX = 50 + Math.cos(radians) * 44;
-                    const lineEndY = 50 + Math.sin(radians) * 44;
-                    const labelX = 50 + Math.cos(radians) * 33;
-                    const labelY = 50 + Math.sin(radians) * 33;
-
-                    return (
-                      <g key={`${mark.value}-${String(mark.label)}`}>
-                        <line
-                          x1={lineStartX}
-                          y1={lineStartY}
-                          x2={lineEndX}
-                          y2={lineEndY}
-                          stroke="var(--analog-telemetry-label)"
-                          strokeWidth="0.85"
-                          style={{ opacity: 0.85 }}
+                  {resolvedMarks.map((mark, index) => (
+                    <React.Fragment key={`${mark.value}-${mark.position ?? mark.ratio}-${index}`}>
+                      {renderMark?.({
+                        mark,
+                        value: val,
+                        min,
+                        max,
+                        ratio,
+                        tone,
+                        className: cn(markClassName),
+                      }) ?? (
+                        <DefaultGaugeMark
+                          mark={mark}
+                          value={val}
+                          min={min}
+                          max={max}
+                          ratio={ratio}
+                          tone={tone}
+                          className={cn(markClassName)}
                         />
-                        <text
-                          x={labelX}
-                          y={labelY}
-                          fill="var(--analog-legend)"
-                          fontSize="4"
-                          fontFamily="var(--font-mono)"
-                          textAnchor="middle"
-                          dominantBaseline="central"
-                        >
-                          {mark.label}
-                        </text>
-                      </g>
-                    );
-                  })}
+                      )}
+                    </React.Fragment>
+                  ))}
                 </svg>
               </div>
 
-              {/* Central dial surface */}
-              <div
-                className="absolute pointer-events-none"
-                style={{ inset: 'var(--analog-gauge-center-inset, 1.5rem)' }}
-              >
-                <SurfaceButton
-                  rotation={rotationAngle}
-                  containerClassName="w-full h-full pointer-events-none"
-                  className="analog-dial-surface w-full h-full pointer-events-none"
-                  style={{ pointerEvents: 'none' }}
-                  disabled
-                  tabIndex={-1}
-                >
-                  <div
-                    className="absolute inset-0 rounded-full"
-                    style={{ transform: `rotate(${rotationAngle}deg)` }}
-                  >
-                    {/* Dial indicator line */}
-                    <div
-                      className="absolute left-1/2 -translate-x-1/2 rounded-full border"
-                      style={{
-                        top: '12%',
-                        width: '3%',
-                        height: '24%',
-                        borderColor:
-                          'color-mix(in oklch, var(--analog-control-border-strong) 65%, transparent)',
-                        background:
-                          `linear-gradient(calc(var(--analog-light-angle-pointer, 180deg) - ${rotationAngle}deg - 45deg), ` +
-                          `color-mix(in oklch, var(--analog-surface-metal-hi) 78%, white 22%) 0%, ` +
-                          `var(--analog-surface-metal-mid) 40%, ` +
-                          `var(--analog-surface-metal-lo) 100%)`,
-                        boxShadow: `inset calc(sin(${pointerBevelAngle}) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(${pointerBevelAngle}) * var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 0.5) rgba(255,255,255,calc(0.6 * var(--analog-light-power, 1))), inset calc(sin(${pointerBevelAngle}) * var(--analog-bevel-width, 4px) * -0.25) calc(cos(${pointerBevelAngle}) * var(--analog-bevel-width, 4px) * 0.25) calc(var(--analog-bevel-width, 4px) * 0.5) rgba(0,0,0,calc(0.5 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), calc(sin(${pointerBevelAngle}) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(${pointerBevelAngle}) * var(--analog-bevel-width, 4px) * -0.25) var(--analog-bevel-width, 4px) rgba(0,0,0,calc(0.6 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
-                      }}
-                    >
-                      <div
-                        className="absolute rounded-full blur-[0.5px]"
-                        style={{
-                          top: '10%',
-                          left: '50%',
-                          width: '30%',
-                          height: '30%',
-                          backgroundColor: 'var(--analog-surface-metal-hi)',
-                          transform: `translateX(-50%)`,
-                          opacity: 0.6,
-                        }}
-                      />
-                    </div>
-                  </div>
-                </SurfaceButton>
-              </div>
+              {renderPointer?.(pointerProps) ?? <DefaultGaugePointer {...pointerProps} />}
             </div>
           );
         }}

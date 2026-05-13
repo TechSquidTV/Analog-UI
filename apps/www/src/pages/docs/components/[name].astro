@@ -39,10 +39,25 @@ if (!componentApiDoc) {
 }
 
 const apiSections = componentApiDoc.data.sections;
+const compositionHeadings = componentDoc.composition
+  ? [
+      { depth: 2, slug: 'composition', text: 'Composition' },
+      ...(componentDoc.composition.customizeCode
+        ? [
+            {
+              depth: 3,
+              slug: 'customization',
+              text: componentDoc.composition.customizeTitle ?? 'Customize',
+            },
+          ]
+        : []),
+    ]
+  : [];
 const headings = [
   { depth: 2, slug: 'example', text: 'Live Example' },
   { depth: 2, slug: 'installation', text: 'Installation' },
   { depth: 2, slug: 'usage', text: 'Usage' },
+  ...compositionHeadings,
   { depth: 2, slug: 'api-reference', text: 'Props' },
   ...apiSections.map((section) => ({
     depth: 3,
@@ -131,6 +146,25 @@ const headings = [
 
   <h3>Basic usage</h3>
   <DocsCodeBlock code={componentDoc.usageCode} label="Code" />
+
+  {
+    componentDoc.composition ? (
+      <>
+        <h2 id="composition">Composition</h2>
+        <p>{componentDoc.composition.description}</p>
+        <DocsCodeBlock code={componentDoc.composition.tree} label="Tree" />
+        {componentDoc.composition.customizeCode ? (
+          <>
+            <h3 id="customization">{componentDoc.composition.customizeTitle ?? 'Customize'}</h3>
+            {componentDoc.composition.customizeDescription ? (
+              <p>{componentDoc.composition.customizeDescription}</p>
+            ) : null}
+            <DocsCodeBlock code={componentDoc.composition.customizeCode} label="Code" />
+          </>
+        ) : null}
+      </>
+    ) : null
+  }
 
   <h2 id="api-reference">Props</h2>
   <p>
