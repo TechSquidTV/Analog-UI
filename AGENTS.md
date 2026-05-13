@@ -20,3 +20,10 @@ When a task adds, removes, renames, or documents a public component:
 3. Do not reintroduce `block-catalog.ts`, `lib/blocks.ts`, `BlockDemo`, or other "block" naming for public components.
 4. Keep `/docs/components` tables generated through `apps/www/src/components/docs/ComponentsIndex.astro`.
 5. Avoid wrapping docs tables in `section-panel` inside another docs panel; use the shared docs table styling or a light table frame instead.
+
+When a task touches a public reusable analog part, such as a thumb shell, plunger, track slot, lens, bezel, peak marker, scale renderer, or other composable hardware piece:
+
+1. Keep it registered in `packages/analog-ui/registry.json` and exported from `packages/analog-ui/src/index.ts` when package consumers should compose with it.
+2. Do not add it to `apps/www/src/data/component-catalog.ts` unless it is intentionally promoted to a finished public component with its own `/docs/components` page and `/view` preview.
+3. Document reusable parts through the consuming component's Composition section, targeted `render*` slot examples, and registry documentation rather than presenting the part as a standalone component.
+4. Keep registry dependency relationships intact so finished controls can install their reusable parts automatically.

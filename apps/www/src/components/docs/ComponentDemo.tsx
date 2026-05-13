@@ -34,7 +34,6 @@ import {
   usePointerLighting,
 } from '../../../../../packages/analog-ui/src/index';
 import { cn } from '../../../../../packages/analog-ui/src/lib/utils';
-import { RockerThumbSurface } from '../../../../../packages/analog-ui/src/registry/components/analog/RockerThumbSurface';
 import type { ComponentName } from '../../data/component-catalog';
 
 type DemoMode = 'compact' | 'full';
@@ -1011,49 +1010,6 @@ function PanelDemo({ mode }: { mode: DemoMode }) {
   );
 }
 
-function RockerThumbSurfaceDemo({ mode }: { mode: DemoMode }) {
-  return (
-    <DemoStage
-      mode={mode}
-      footer={
-        <>
-          <FooterItem label="Usage" value="Slider + switch hardware" />
-          <FooterItem label="Variants" value="Chrome / Black" />
-        </>
-      }
-    >
-      <div className="flex flex-wrap items-center justify-center gap-12">
-        <div className="flex flex-col items-center gap-4">
-          <div className="rounded-full bg-black/40 p-3">
-            <RockerThumbSurface
-              className="h-9 w-[88px] rounded-sm"
-              variant="chrome"
-              orientation="horizontal"
-              raisedSide="both"
-            />
-          </div>
-          <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#686868]">
-            Horizontal
-          </span>
-        </div>
-        <div className="flex flex-col items-center gap-4">
-          <div className="rounded-full bg-black/40 p-3">
-            <RockerThumbSurface
-              className="h-[88px] w-9 rounded-sm"
-              variant="black"
-              orientation="vertical"
-              raisedSide="both"
-            />
-          </div>
-          <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#686868]">
-            Vertical
-          </span>
-        </div>
-      </div>
-    </DemoStage>
-  );
-}
-
 export default function ComponentDemo({ name, mode = 'full' }: ComponentDemoProps) {
   switch (name) {
     case 'dial':
@@ -1090,8 +1046,6 @@ export default function ComponentDemo({ name, mode = 'full' }: ComponentDemoProp
       return <IndicatorDemo mode={mode} />;
     case 'panel':
       return <PanelDemo mode={mode} />;
-    case 'rocker-thumb-surface':
-      return <RockerThumbSurfaceDemo mode={mode} />;
     default:
       return null;
   }

@@ -160,14 +160,6 @@ export const componentCatalog = {
     materialLogic:
       'The rack face uses `panel`; screws and hardware use `screw`; mounted control caps keep their own local channels.',
   },
-  'rocker-thumb-surface': {
-    name: 'rocker-thumb-surface',
-    category: 'surfaces',
-    order: 110,
-    summary:
-      'A reusable thumb shell used by sliders and switches to keep movement feeling machined.',
-    materialLogic: 'Handles, rockers, switch paddles, slider caps, and moving plungers.',
-  },
 } satisfies Record<string, ComponentCatalogItem>;
 
 export type ComponentName = keyof typeof componentCatalog;

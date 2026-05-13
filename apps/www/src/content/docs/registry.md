@@ -6,14 +6,14 @@ order: 40
 draft: false
 ---
 
-Analog UI publishes shadcn-compatible registry files for the shared foundation and each installable control.
+Analog UI publishes shadcn-compatible registry files for the shared foundation, installable controls, and reusable Analog UI parts.
 
 ## Registry Files
 
 - [`/r/registry.json`](/r/registry.json) lists every installable item
 - [`/r/analog-foundation.json`](/r/analog-foundation.json) provides the shared token and finish layer
 - [`/r/analog-tone.json`](/r/analog-tone.json) provides the shared semantic tone type
-- item files such as [`/r/dial.json`](/r/dial.json) or [`/r/panel.json`](/r/panel.json) install individual controls
+- item files such as [`/r/dial.json`](/r/dial.json), [`/r/panel.json`](/r/panel.json), or [`/r/rocker-thumb-surface.json`](/r/rocker-thumb-surface.json) install individual controls or reusable parts
 
 ## Install Pattern
 
@@ -34,7 +34,7 @@ The registry includes:
 - **Lib:** `utils`, `refs`, `angle-utils`, `wheel-interaction`
 - **Hooks:** `use-analog-lighting`, `analog-material-scope`, `use-pointer-lighting`, `use-wheel-input`
 - **Component helpers:** `analog-tone`
-- **Components and UI:** dials, meters, switches, wheels, panels, buttons, toggles, indicators, readouts, and thumb surfaces
+- **Controls and reusable UI parts:** dials, meters, switches, wheels, panels, buttons, toggles, indicators, readouts, and thumb surfaces
 
 Controls that support inherited material finishes pull in `analog-material-scope` automatically through their registry dependencies, so you only need to install it directly when composing your own subtree scopes.
 

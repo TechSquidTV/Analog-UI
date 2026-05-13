@@ -2413,64 +2413,6 @@ export function PanelExample() {
       },
     ],
   },
-  'rocker-thumb-surface': {
-    usageIntro:
-      'Use RockerThumbSurface when you need the same machined rocker shell used by sliders and switches.',
-    registryImportCode: registryImport(['RockerThumbSurface'], 'RockerThumbSurface'),
-    packageImportCode: packageImport(['RockerThumbSurface']),
-    usageCode: `<RockerThumbSurface
-  className="h-9 w-[88px] rounded-sm"
-  orientation="horizontal"
-  raisedSide="both"
-/>`,
-    exampleCode: `import { RockerThumbSurface } from "@/registry/components/analog/RockerThumbSurface"
-
-export function RockerThumbSurfaceExample() {
-  return (
-    <RockerThumbSurface
-      className="h-9 w-[88px] rounded-sm"
-      variant="chrome"
-      orientation="horizontal"
-      raisedSide="both"
-    />
-  )
-}`,
-    api: [
-      {
-        title: 'RockerThumbSurface',
-        description:
-          'A reusable static rocker shell for custom controls and internal component composition.',
-        props: [
-          {
-            name: 'variant',
-            type: '"chrome" | "black"',
-            defaultValue: 'inherited',
-            description: 'Sets the material finish.',
-          },
-          {
-            name: 'orientation',
-            type: '"horizontal" | "vertical"',
-            defaultValue: '"horizontal"',
-            description: 'Changes ridge and bevel direction.',
-          },
-          {
-            name: 'raisedSide',
-            type: '"start" | "end" | "both"',
-            defaultValue: '"start"',
-            description: 'Chooses which half of the rocker is raised.',
-          },
-          {
-            name: 'extrusionLayers',
-            type: 'number',
-            defaultValue: '24',
-            description: 'Controls rendered depth layers.',
-          },
-          { name: 'children', type: 'React.ReactNode', description: 'Optional face content.' },
-          classNameProp,
-        ],
-      },
-    ],
-  },
 };
 
 export function getComponentPageDoc(name: ComponentName) {
