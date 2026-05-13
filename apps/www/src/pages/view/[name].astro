@@ -21,7 +21,7 @@ if (!entry) {
 
 <SiteLayout title={`${entry.title} Preview`} description={entry.description}>
   <section class="site-frame pt-10 md:pt-12">
-    <PushButton href={entry.href} height="2.5rem" variant="black">
+    <PushButton client:load href={entry.href} height="2.5rem" variant="black">
       Back to component docs
     </PushButton>
 

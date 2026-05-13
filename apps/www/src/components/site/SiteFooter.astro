@@ -15,9 +15,13 @@ import { PushButton } from '../../../../../packages/analog-ui/src/index';
     </div>
 
     <div class="flex flex-wrap items-center gap-3">
-      <PushButton href="/docs" height="2.5rem" variant="black"> Read the docs </PushButton>
-      <PushButton href="/docs/components" height="2.5rem" variant="black"> Components </PushButton>
-      <PushButton href="/r/registry.json" height="2.5rem" variant="black">
+      <PushButton client:load href="/docs" height="2.5rem" variant="black">
+        Read the docs
+      </PushButton>
+      <PushButton client:load href="/docs/components" height="2.5rem" variant="black">
+        Components
+      </PushButton>
+      <PushButton client:load href="/r/registry.json" height="2.5rem" variant="black">
         Registry JSON
       </PushButton>
     </div>
