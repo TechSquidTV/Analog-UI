@@ -618,6 +618,7 @@
       "title": "Rotary Switch",
       "type": "registry:ui",
       "description": "A stepped integer rotary input with a seven-flute black selector ring, white index stripe, detent marks, and a machined Dial-style center cap.",
+      "dependencies": ["@base-ui/react"],
       "registryDependencies": [
         "analog-foundation",
         "surface-button",

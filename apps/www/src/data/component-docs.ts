@@ -1245,14 +1245,16 @@ export function RotarySwitchExample() {
       max={6}
       marks={marks}
       showMarks
+      aria-label="Channel selector"
     />
   )
 }`,
     composition: {
       description:
-        'RotarySwitch owns the stepped slider behavior, detent math, and keyboard handling while exposing the selector hardware, cap, detents, and marks as replaceable layers.',
+        'RotarySwitch keeps Base UI slider value, keyboard, and input semantics under the finished radial control while exposing the selector hardware, cap, detents, and marks as replaceable layers.',
       tree: `RotarySwitch
-|- Root / slider behavior
+|- Root / Base UI slider behavior
+|- Hidden Thumb Input / Base UI range semantics
 |- Scale
 |  |- Detents (\`renderDetent\`)
 |  +- Marks (\`renderMark\`)
@@ -1292,21 +1294,21 @@ export function CustomPointerRotarySwitch() {
       {
         title: 'RotarySwitch',
         description:
-          'A detented rotary selector with pointer, keyboard, and whole-integer updates.',
+          'A detented rotary selector with radial pointer travel, Base UI keyboard semantics, and whole-integer updates.',
         props: [
           {
             name: 'value',
-            type: 'number | number[]',
+            type: 'number | readonly number[]',
             description: 'Controlled switch value. Values are displayed as whole integers.',
           },
           {
             name: 'defaultValue',
-            type: 'number | number[]',
+            type: 'number | readonly number[]',
             description: 'Initial uncontrolled value.',
           },
           {
             name: 'onValueChange',
-            type: '(value: number | number[]) => void',
+            type: '(value: number) => void',
             description: 'Receives drag and keyboard updates.',
           },
           {

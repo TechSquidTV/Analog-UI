@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Slider as BaseSlider } from '@base-ui/react';
 import { cn } from '@/lib/utils';
 import { SurfaceButton } from './SurfaceButton';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
@@ -334,6 +335,9 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
       renderDetent,
       style,
       tabIndex,
+      'aria-label': ariaLabel,
+      'aria-labelledby': ariaLabelledBy,
+      'aria-valuetext': ariaValueText,
       onPointerDown,
       onPointerMove,
       onPointerUp,
@@ -392,6 +396,25 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
       [isControlled, onValueChange, resolvedMax, resolvedMin],
     );
 
+    const endPointerInteraction = React.useCallback(
+      (target?: HTMLElement | null, pointerId?: number) => {
+        const resolvedPointerId = pointerId ?? activePointerIdRef.current;
+
+        if (resolvedPointerId !== null && target?.hasPointerCapture(resolvedPointerId)) {
+          target.releasePointerCapture(resolvedPointerId);
+        }
+
+        activePointerIdRef.current = null;
+      },
+      [],
+    );
+
+    React.useEffect(() => {
+      if (disabled) {
+        endPointerInteraction(rootRef.current);
+      }
+    }, [disabled, endPointerInteraction]);
+
     const commitPointerValue = React.useCallback(
       (event: React.PointerEvent<HTMLDivElement>) => {
         const node = rootRef.current;
@@ -414,6 +437,8 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
       (event: React.PointerEvent<HTMLDivElement>) => {
         onPointerDown?.(event);
         if (event.defaultPrevented || disabled) return;
+        if (event.button !== 0) return;
+        if (activePointerIdRef.current !== null) return;
 
         activePointerIdRef.current = event.pointerId;
         event.currentTarget.setPointerCapture(event.pointerId);
@@ -427,13 +452,18 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
     const handlePointerMove = React.useCallback(
       (event: React.PointerEvent<HTMLDivElement>) => {
         onPointerMove?.(event);
-        if (event.defaultPrevented || disabled) return;
         if (activePointerIdRef.current !== event.pointerId) return;
+
+        if (disabled || event.buttons === 0) {
+          endPointerInteraction(event.currentTarget, event.pointerId);
+          return;
+        }
+        if (event.defaultPrevented) return;
 
         event.preventDefault();
         commitPointerValue(event);
       },
-      [commitPointerValue, disabled, onPointerMove],
+      [commitPointerValue, disabled, endPointerInteraction, onPointerMove],
     );
 
     const handlePointerUp = React.useCallback(
@@ -441,12 +471,9 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
         onPointerUp?.(event);
         if (activePointerIdRef.current !== event.pointerId) return;
 
-        activePointerIdRef.current = null;
-        if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-          event.currentTarget.releasePointerCapture(event.pointerId);
-        }
+        endPointerInteraction(event.currentTarget, event.pointerId);
       },
-      [onPointerUp],
+      [endPointerInteraction, onPointerUp],
     );
 
     const handlePointerCancel = React.useCallback(
@@ -454,41 +481,9 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
         onPointerCancel?.(event);
         if (activePointerIdRef.current !== event.pointerId) return;
 
-        activePointerIdRef.current = null;
-        if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-          event.currentTarget.releasePointerCapture(event.pointerId);
-        }
+        endPointerInteraction(event.currentTarget, event.pointerId);
       },
-      [onPointerCancel],
-    );
-
-    const handleKeyDown = React.useCallback(
-      (event: React.KeyboardEvent<HTMLDivElement>) => {
-        onKeyDown?.(event);
-        if (event.defaultPrevented || disabled) return;
-
-        switch (event.key) {
-          case 'ArrowRight':
-          case 'ArrowUp':
-            event.preventDefault();
-            commitValue(currentValueRef.current + 1);
-            break;
-          case 'ArrowLeft':
-          case 'ArrowDown':
-            event.preventDefault();
-            commitValue(currentValueRef.current - 1);
-            break;
-          case 'Home':
-            event.preventDefault();
-            commitValue(resolvedMin);
-            break;
-          case 'End':
-            event.preventDefault();
-            commitValue(resolvedMax);
-            break;
-        }
-      },
-      [commitValue, disabled, onKeyDown, resolvedMax, resolvedMin],
+      [endPointerInteraction, onPointerCancel],
     );
 
     const detents = React.useMemo(() => {
@@ -614,18 +609,19 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
     );
 
     return (
-      <div
+      <BaseSlider.Root
         ref={setRootRef}
-        role="slider"
-        aria-valuemin={resolvedMin}
-        aria-valuemax={resolvedMax}
-        aria-valuenow={currentValue}
-        aria-disabled={disabled || undefined}
-        aria-valuetext={String(currentValue)}
-        tabIndex={disabled ? -1 : (tabIndex ?? 0)}
+        value={currentValue}
+        min={resolvedMin}
+        max={resolvedMax}
+        step={1}
+        largeStep={1}
+        disabled={disabled}
+        aria-label={ariaLabel}
+        aria-labelledby={ariaLabelledBy}
         {...props}
         className={cn(
-          'relative mx-auto flex aspect-square w-full min-w-0 max-w-[14rem] touch-none select-none items-center justify-center p-7 outline-none',
+          'relative mx-auto flex aspect-square w-full min-w-0 max-w-[14rem] touch-none select-none items-center justify-center p-7 outline-none data-[focused]:ring-2 data-[focused]:ring-[var(--color-accent)]',
           disabled ? 'cursor-not-allowed opacity-50' : 'cursor-ew-resize opacity-100',
           className,
         )}
@@ -638,9 +634,25 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerCancel}
-        onKeyDown={handleKeyDown}
+        onKeyDown={onKeyDown}
+        onValueChange={(nextValue) => {
+          const scalarValue = getScalarValue(nextValue);
+
+          if (scalarValue !== undefined) {
+            commitValue(scalarValue);
+          }
+        }}
         data-slot="rotary-switch"
       >
+        <BaseSlider.Thumb
+          data-slot="rotary-switch-input"
+          className="pointer-events-none absolute z-50 size-12 opacity-0"
+          tabIndex={disabled ? -1 : (tabIndex ?? 0)}
+          aria-label={ariaLabel ?? 'Rotary switch'}
+          aria-labelledby={ariaLabelledBy}
+          getAriaValueText={(_, nextValue) => ariaValueText ?? String(nextValue)}
+        />
+
         <svg
           aria-hidden="true"
           viewBox="0 0 100 100"
@@ -670,7 +682,7 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
 
         {knobNode}
         {capNode}
-      </div>
+      </BaseSlider.Root>
     );
   },
 );

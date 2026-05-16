@@ -196,6 +196,7 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
     const centerRef = useRef({ x: 0, y: 0 });
     const lastAngleRef = useRef(0);
     const dragRotationRef = useRef(0);
+    const activePointerIdRef = useRef<number | null>(null);
 
     const valueToRotation = React.useCallback(
       (nextValue: number) => {
@@ -293,6 +294,23 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
         ? normalizeRatio(currentValue, resolvedMin, resolvedMax)
         : degrees / 360;
 
+    const endDrag = React.useCallback((target?: HTMLElement | null, pointerId?: number) => {
+      const resolvedPointerId = pointerId ?? activePointerIdRef.current;
+
+      if (resolvedPointerId !== null && target?.hasPointerCapture(resolvedPointerId)) {
+        target.releasePointerCapture(resolvedPointerId);
+      }
+
+      activePointerIdRef.current = null;
+      setIsDragging(false);
+    }, []);
+
+    React.useEffect(() => {
+      if (disabled) {
+        endDrag(dialRef.current);
+      }
+    }, [disabled, endDrag]);
+
     useWheelInput(
       dialRef,
       React.useCallback(
@@ -311,7 +329,10 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
       onPointerDown?.(event);
       if (event.defaultPrevented) return;
       if (disabled) return;
+      if (event.button !== 0) return;
+      if (activePointerIdRef.current !== null) return;
 
+      activePointerIdRef.current = event.pointerId;
       event.currentTarget.setPointerCapture(event.pointerId);
       event.currentTarget.focus();
       event.preventDefault();
@@ -334,8 +355,13 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
 
     const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
       onPointerMove?.(event);
+      if (activePointerIdRef.current !== event.pointerId) return;
+
+      if (disabled || event.buttons === 0) {
+        endDrag(event.currentTarget, event.pointerId);
+        return;
+      }
       if (event.defaultPrevented) return;
-      if (!isDragging || disabled) return;
 
       const dx = event.clientX - centerRef.current.x;
       const dy = event.clientY - centerRef.current.y;
@@ -372,12 +398,9 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
       } else {
         onPointerUp?.(event);
       }
-      if (event.defaultPrevented) return;
-      if (disabled) return;
-      setIsDragging(false);
-      if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-        event.currentTarget.releasePointerCapture(event.pointerId);
-      }
+      if (activePointerIdRef.current !== event.pointerId) return;
+
+      endDrag(event.currentTarget, event.pointerId);
     };
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
