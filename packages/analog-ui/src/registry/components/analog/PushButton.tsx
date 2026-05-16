@@ -8,9 +8,23 @@ import { SquarePlunger } from './SquarePlunger';
 type PushButtonElement = HTMLButtonElement | HTMLAnchorElement;
 type NativeButtonProps = Omit<
   React.ButtonHTMLAttributes<HTMLButtonElement>,
-  'height' | 'width' | 'onMouseDown' | 'onMouseUp' | 'onMouseLeave'
+  | 'height'
+  | 'width'
+  | 'onPointerDown'
+  | 'onPointerUp'
+  | 'onPointerCancel'
+  | 'onPointerLeave'
+  | 'onKeyDown'
+  | 'onKeyUp'
+  | 'onBlur'
+  | 'onMouseDown'
+  | 'onMouseUp'
+  | 'onMouseLeave'
 >;
 type PushButtonMouseHandler = React.MouseEventHandler<PushButtonElement>;
+type PushButtonPointerHandler = React.PointerEventHandler<PushButtonElement>;
+type PushButtonKeyboardHandler = React.KeyboardEventHandler<PushButtonElement>;
+type PushButtonFocusHandler = React.FocusEventHandler<PushButtonElement>;
 
 export interface PushButtonProps extends NativeButtonProps {
   variant?: 'chrome' | 'black';
@@ -20,6 +34,13 @@ export interface PushButtonProps extends NativeButtonProps {
   rel?: string;
   target?: React.HTMLAttributeAnchorTarget;
   download?: React.AnchorHTMLAttributes<HTMLAnchorElement>['download'];
+  onPointerDown?: PushButtonPointerHandler;
+  onPointerUp?: PushButtonPointerHandler;
+  onPointerCancel?: PushButtonPointerHandler;
+  onPointerLeave?: PushButtonPointerHandler;
+  onKeyDown?: PushButtonKeyboardHandler;
+  onKeyUp?: PushButtonKeyboardHandler;
+  onBlur?: PushButtonFocusHandler;
   onMouseDown?: PushButtonMouseHandler;
   onMouseUp?: PushButtonMouseHandler;
   onMouseLeave?: PushButtonMouseHandler;
@@ -44,9 +65,13 @@ export const PushButton = React.forwardRef<PushButtonElement, PushButtonProps>(
       lighting,
       extrusionLayers = 32,
       children,
-      onMouseDown,
-      onMouseUp,
-      onMouseLeave,
+      onPointerDown,
+      onPointerUp,
+      onPointerCancel,
+      onPointerLeave,
+      onKeyDown,
+      onKeyUp,
+      onBlur,
       ...props
     },
     ref,
@@ -59,23 +84,56 @@ export const PushButton = React.forwardRef<PushButtonElement, PushButtonProps>(
 
     const [isPressed, setIsPressed] = React.useState(false);
 
-    const handleMouseDown: PushButtonMouseHandler = (e) => {
+    const handlePointerDown: PushButtonPointerHandler = (e) => {
+      if (e.button !== 0) {
+        onPointerDown?.(e);
+        return;
+      }
+
       setIsPressed(true);
-      onMouseDown?.(e);
+      onPointerDown?.(e);
     };
 
-    const handleMouseUp: PushButtonMouseHandler = (e) => {
+    const handlePointerUp: PushButtonPointerHandler = (e) => {
       setIsPressed(false);
-      onMouseUp?.(e);
+      onPointerUp?.(e);
     };
 
-    const handleMouseLeave: PushButtonMouseHandler = (e) => {
+    const handlePointerCancel: PushButtonPointerHandler = (e) => {
       setIsPressed(false);
-      onMouseLeave?.(e);
+      onPointerCancel?.(e);
+    };
+
+    const handlePointerLeave: PushButtonPointerHandler = (e) => {
+      setIsPressed(false);
+      onPointerLeave?.(e);
+    };
+
+    const handleKeyDown: PushButtonKeyboardHandler = (e) => {
+      if (!e.repeat && (e.key === ' ' || e.key === 'Enter')) {
+        setIsPressed(true);
+      }
+
+      onKeyDown?.(e);
+    };
+
+    const handleKeyUp: PushButtonKeyboardHandler = (e) => {
+      if (e.key === ' ' || e.key === 'Enter') {
+        setIsPressed(false);
+      }
+
+      onKeyUp?.(e);
+    };
+
+    const handleBlur: PushButtonFocusHandler = (e) => {
+      setIsPressed(false);
+      onBlur?.(e);
     };
 
     const buttonProps = props as React.ComponentPropsWithoutRef<typeof Button>;
-    const linkProps = props as unknown as React.AnchorHTMLAttributes<HTMLAnchorElement>;
+    const renderLink = href ? (
+      <a href={href} target={target} rel={rel} download={download} />
+    ) : undefined;
 
     return (
       <div
@@ -95,51 +153,33 @@ export const PushButton = React.forwardRef<PushButtonElement, PushButtonProps>(
             {children}
           </span>
         ) : null}
-        {href ? (
-          <a
-            ref={mergedRef as React.Ref<HTMLAnchorElement>}
-            href={href}
-            target={target}
-            rel={rel}
-            download={download}
-            onMouseDown={handleMouseDown as React.MouseEventHandler<HTMLAnchorElement>}
-            onMouseUp={handleMouseUp as React.MouseEventHandler<HTMLAnchorElement>}
-            onMouseLeave={handleMouseLeave as React.MouseEventHandler<HTMLAnchorElement>}
-            className="absolute inset-1.5 appearance-none border-none bg-transparent p-0 outline-none select-none"
-            style={{ transformStyle: 'preserve-3d' }}
-            {...linkProps}
-          >
-            <SquarePlunger
-              variant={variant}
-              isPressed={isPressed}
-              extrusionLayers={extrusionLayers}
-            >
-              {children}
-            </SquarePlunger>
-          </a>
-        ) : (
-          <Button
-            ref={mergedRef as React.Ref<HTMLButtonElement>}
-            onMouseDown={
-              handleMouseDown as React.ComponentPropsWithoutRef<typeof Button>['onMouseDown']
-            }
-            onMouseUp={handleMouseUp as React.ComponentPropsWithoutRef<typeof Button>['onMouseUp']}
-            onMouseLeave={
-              handleMouseLeave as React.ComponentPropsWithoutRef<typeof Button>['onMouseLeave']
-            }
-            className="absolute inset-1.5 appearance-none border-none bg-transparent p-0 outline-none select-none"
-            style={{ transformStyle: 'preserve-3d' }}
-            {...buttonProps}
-          >
-            <SquarePlunger
-              variant={variant}
-              isPressed={isPressed}
-              extrusionLayers={extrusionLayers}
-            >
-              {children}
-            </SquarePlunger>
-          </Button>
-        )}
+        <Button
+          ref={mergedRef as React.Ref<HTMLElement>}
+          nativeButton={!href}
+          render={renderLink}
+          onPointerDown={
+            handlePointerDown as React.ComponentPropsWithoutRef<typeof Button>['onPointerDown']
+          }
+          onPointerUp={
+            handlePointerUp as React.ComponentPropsWithoutRef<typeof Button>['onPointerUp']
+          }
+          onPointerCancel={
+            handlePointerCancel as React.ComponentPropsWithoutRef<typeof Button>['onPointerCancel']
+          }
+          onPointerLeave={
+            handlePointerLeave as React.ComponentPropsWithoutRef<typeof Button>['onPointerLeave']
+          }
+          onKeyDown={handleKeyDown as React.ComponentPropsWithoutRef<typeof Button>['onKeyDown']}
+          onKeyUp={handleKeyUp as React.ComponentPropsWithoutRef<typeof Button>['onKeyUp']}
+          onBlur={handleBlur as React.ComponentPropsWithoutRef<typeof Button>['onBlur']}
+          className="absolute inset-1.5 appearance-none border-none bg-transparent p-0 outline-none select-none"
+          style={{ transformStyle: 'preserve-3d' }}
+          {...buttonProps}
+        >
+          <SquarePlunger variant={variant} isPressed={isPressed} extrusionLayers={extrusionLayers}>
+            {children}
+          </SquarePlunger>
+        </Button>
       </div>
     );
   },
