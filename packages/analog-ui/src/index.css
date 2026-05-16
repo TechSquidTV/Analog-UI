@@ -1,5 +1,5 @@
 @import './theme.css';
-@source "./**/*.{ts,tsx}";
+@source "./**/*.{ts,tsx,js,mjs}";
 
 @layer utilities {
 }
