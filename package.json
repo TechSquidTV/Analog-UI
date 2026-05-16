@@ -13,6 +13,7 @@
     "lint:analog-design": "node tools/eslint-plugin-analog-design/rule-tests.mjs",
     "lint:eslint": "turbo run lint:eslint",
     "registry:build": "pnpm --filter analog-ui registry:build",
+    "smoke:package": "pnpm --filter analog-ui smoke:package",
     "knip": "pnpm exec knip",
     "format": "pnpm exec prettier --write .",
     "format:check": "pnpm exec prettier --check .",

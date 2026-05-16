@@ -41,6 +41,7 @@
   "scripts": {
     "build": "tsup --config tsup.config.ts && node ./scripts/copy-assets.mjs",
     "dev": "pnpm run build && tsup --watch --config tsup.config.ts --onSuccess \"node ./scripts/copy-assets.mjs\"",
+    "smoke:package": "pnpm run build && node ./scripts/smoke-package.mjs",
     "lint": "pnpm run lint:eslint && pnpm run typecheck",
     "lint:eslint": "pnpm exec eslint .",
     "registry:build": "shadcn build ./registry.json --output ../../apps/www/src/public/r",
