@@ -122,7 +122,11 @@ export const ToggleButtonGroup = React.forwardRef<HTMLDivElement, ToggleButtonGr
           onValueChange={(nextValue, details) => {
             const selectedValue = nextValue[0] ?? '';
 
-            if (!allowEmpty && !selectedValue) return;
+            if (!allowEmpty && !selectedValue) {
+              details.cancel();
+              return;
+            }
+
             onValueChange?.(selectedValue, details);
           }}
           multiple={false}
