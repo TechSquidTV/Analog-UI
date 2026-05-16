@@ -23,6 +23,7 @@ export interface ToggleProps extends Omit<
   leftIndicatorActive?: 'auto' | 'always' | 'never';
   rightIndicatorActive?: 'auto' | 'always' | 'never';
   value?: ToggleValue;
+  defaultValue?: ToggleValue;
   onValueChange?: (val: ToggleValue) => void;
   lighting?: AnalogLightingConfig<'track' | 'thumb' | 'lens' | 'surface'>;
 }
@@ -61,7 +62,8 @@ export const Toggle = React.forwardRef<HTMLDivElement, ToggleProps>(
       rightIndicatorTone,
       leftIndicatorActive = 'auto',
       rightIndicatorActive = 'auto',
-      value = 'left',
+      value,
+      defaultValue = 'left',
       onValueChange,
       lighting,
       ...props
@@ -105,6 +107,8 @@ export const Toggle = React.forwardRef<HTMLDivElement, ToggleProps>(
     const resolvedVariant = useAnalogMaterialVariant(variant);
     const isChrome = resolvedVariant === 'chrome';
     const isVertical = orientation === 'vertical';
+    const groupValue = value === undefined ? undefined : [value];
+    const groupDefaultValue = value === undefined ? [defaultValue] : undefined;
     const lightingStyle = useAnalogLighting(['track', 'thumb', 'lens', 'surface'], lighting);
     const basePlateBackground = isChrome
       ? `linear-gradient(calc(var(--analog-light-angle-surface, 180deg) - 180deg), color-mix(in oklch, var(--analog-surface-metal-hi) 76%, var(--analog-highlight-color) 24%) 0%, var(--analog-surface-metal-mid) 42%, var(--analog-surface-metal-lo) 100%)`
@@ -113,6 +117,33 @@ export const Toggle = React.forwardRef<HTMLDivElement, ToggleProps>(
     // We dampen the glare movement significantly so it feels heavy and metallic
     const glareX = hoverState.isHovered ? hoverState.deltaX * 0.15 : 0;
     const glareY = hoverState.isHovered ? hoverState.deltaY * 0.15 : 0;
+    const renderIndicator = (side: ToggleValue, activeValue: ToggleValue) => {
+      const indicatorTone = side === 'left' ? leftIndicatorTone : rightIndicatorTone;
+      const indicatorActive = side === 'left' ? leftIndicatorActive : rightIndicatorActive;
+
+      if (!indicatorTone) return null;
+
+      return (
+        <div
+          className="absolute pointer-events-none"
+          style={getIndicatorPositionStyle(orientation, side)}
+        >
+          <Indicator
+            size="xs"
+            disableBezel
+            shape="round"
+            tone={indicatorTone}
+            isOn={
+              indicatorActive === 'always'
+                ? true
+                : indicatorActive === 'never'
+                  ? false
+                  : activeValue === side
+            }
+          />
+        </div>
+      );
+    };
 
     return (
       <BaseToggleGroup
@@ -134,13 +165,17 @@ export const Toggle = React.forwardRef<HTMLDivElement, ToggleProps>(
         }
         data-state={value}
         orientation={orientation}
-        value={value ? [value] : []}
-        onValueChange={(val) => {
-          // If the user clicks the currently active one, and `val` is empty array,
-          // do nothing to prevent deselection.
-          if (val.length > 0) {
-            onValueChange?.(val[0] as ToggleValue);
+        value={groupValue}
+        defaultValue={groupDefaultValue}
+        onValueChange={(val, details) => {
+          const selectedValue = val[0] as ToggleValue | undefined;
+
+          if (!selectedValue) {
+            details.cancel();
+            return;
           }
+
+          onValueChange?.(selectedValue);
         }}
         {...props}
       >
@@ -150,6 +185,7 @@ export const Toggle = React.forwardRef<HTMLDivElement, ToggleProps>(
             'absolute z-[10] opacity-0 cursor-pointer',
             isVertical ? 'left-0 right-0 top-0 h-1/2' : 'top-0 bottom-0 left-0 w-1/2',
           )}
+          data-analog-toggle-value="left"
         />
         <BaseToggle
           value="right"
@@ -157,6 +193,7 @@ export const Toggle = React.forwardRef<HTMLDivElement, ToggleProps>(
             'absolute z-[10] opacity-0 cursor-pointer',
             isVertical ? 'left-0 right-0 bottom-0 h-1/2' : 'top-0 bottom-0 right-0 w-1/2',
           )}
+          data-analog-toggle-value="right"
         />
 
         {/* Outer Bevel / Base Plate */}
@@ -174,57 +211,26 @@ export const Toggle = React.forwardRef<HTMLDivElement, ToggleProps>(
             className="absolute inset-[var(--spacing-track-padding)] rounded-[var(--analog-radius-recess)] analog-surface-recess"
             style={{ perspective: '800px' }}
           >
-            {/* Rocker Pivot Container */}
-            <RockerThumbSurface
-              className={cn(
-                'absolute rounded-[var(--analog-radius-window)]',
-                isVertical ? 'inset-x-[2px] inset-y-[6px]' : 'inset-y-[2px] inset-x-[6px]',
-              )}
-              variant={resolvedVariant}
-              orientation={orientation}
-              raisedSide={value === 'right' ? 'end' : 'start'}
-            >
+            {(['left', 'right'] as const).map((activeValue) => (
               <div
-                className="absolute pointer-events-none"
-                style={getIndicatorPositionStyle(orientation, 'left')}
+                key={activeValue}
+                className={cn(
+                  'analog-toggle-visual absolute pointer-events-none rounded-[var(--analog-radius-window)]',
+                  isVertical ? 'inset-x-[2px] inset-y-[6px]' : 'inset-y-[2px] inset-x-[6px]',
+                )}
+                data-analog-toggle-state={activeValue}
               >
-                {leftIndicatorTone ? (
-                  <Indicator
-                    size="xs"
-                    disableBezel
-                    shape="round"
-                    tone={leftIndicatorTone}
-                    isOn={
-                      leftIndicatorActive === 'always'
-                        ? true
-                        : leftIndicatorActive === 'never'
-                          ? false
-                          : value === 'left'
-                    }
-                  />
-                ) : null}
+                <RockerThumbSurface
+                  className="size-full rounded-[var(--analog-radius-window)]"
+                  variant={resolvedVariant}
+                  orientation={orientation}
+                  raisedSide={activeValue === 'right' ? 'end' : 'start'}
+                >
+                  {renderIndicator('left', activeValue)}
+                  {renderIndicator('right', activeValue)}
+                </RockerThumbSurface>
               </div>
-              <div
-                className="absolute pointer-events-none"
-                style={getIndicatorPositionStyle(orientation, 'right')}
-              >
-                {rightIndicatorTone ? (
-                  <Indicator
-                    size="xs"
-                    disableBezel
-                    shape="round"
-                    tone={rightIndicatorTone}
-                    isOn={
-                      rightIndicatorActive === 'always'
-                        ? true
-                        : rightIndicatorActive === 'never'
-                          ? false
-                          : value === 'right'
-                    }
-                  />
-                ) : null}
-              </div>
-            </RockerThumbSurface>
+            ))}
           </div>
         </div>
       </BaseToggleGroup>

@@ -164,6 +164,35 @@
     background-position: center;
   }
 
+  .analog-toggle-visual {
+    opacity: 0;
+    transition: opacity 0.12s ease-out;
+  }
+
+  .analog-toggle-visual[data-analog-toggle-state='left'] {
+    opacity: 1;
+  }
+
+  .analog-toggle:has([data-analog-toggle-value='left'][data-pressed])
+    .analog-toggle-visual[data-analog-toggle-state='left'] {
+    opacity: 1;
+  }
+
+  .analog-toggle:has([data-analog-toggle-value='left'][data-pressed])
+    .analog-toggle-visual[data-analog-toggle-state='right'] {
+    opacity: 0;
+  }
+
+  .analog-toggle:has([data-analog-toggle-value='right'][data-pressed])
+    .analog-toggle-visual[data-analog-toggle-state='left'] {
+    opacity: 0;
+  }
+
+  .analog-toggle:has([data-analog-toggle-value='right'][data-pressed])
+    .analog-toggle-visual[data-analog-toggle-state='right'] {
+    opacity: 1;
+  }
+
   .analog-wheel-lighting {
     position: absolute;
     inset: 0;
