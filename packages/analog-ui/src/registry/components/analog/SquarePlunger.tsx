@@ -45,11 +45,13 @@ export const SquarePlunger = ({
     : isRubber
       ? 'rgb(var(--analog-shadow-rgb) / calc(0.18 * var(--analog-shadow-depth, 1)))'
       : 'var(--analog-extrusion-shadow-strong)';
+  const thumbLightAngle =
+    'var(--analog-light-angle-thumb, var(--analog-light-angle-surface, 180deg))';
   const faceBackground = isRubber
     ? 'color-mix(in oklch, var(--analog-surface-metal-hi) 42%, var(--analog-highlight-color) 58%)'
     : isChrome
-      ? `linear-gradient(calc(var(--analog-light-angle-surface, 180deg) - 180deg), var(--analog-surface-metal-hi), var(--analog-surface-metal-mid) 50%, var(--analog-surface-metal-lo))`
-      : `linear-gradient(calc(var(--analog-light-angle-surface, 180deg) - 180deg), var(--analog-surface-onyx-hi), var(--analog-surface-onyx-mid) 50%, var(--analog-surface-onyx-lo))`;
+      ? `linear-gradient(calc(${thumbLightAngle} - 180deg), var(--analog-surface-metal-hi), var(--analog-surface-metal-mid) 50%, var(--analog-surface-metal-lo))`
+      : `linear-gradient(calc(${thumbLightAngle} - 180deg), var(--analog-surface-onyx-hi), var(--analog-surface-onyx-mid) 50%, var(--analog-surface-onyx-lo))`;
   const faceShadow = isRubber
     ? `
       inset 0 1px 1px rgb(var(--analog-highlight-rgb) / calc(0.28 * var(--analog-light-power, 1))),
@@ -62,8 +64,8 @@ export const SquarePlunger = ({
     `
     : isChrome
       ? `
-      inset calc(sin(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * 0.75) calc(cos(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * -0.75) calc(var(--analog-bevel-width, 4px) * 0.5) rgb(var(--analog-highlight-rgb) / calc(1 * var(--analog-light-power, 1))),
-      inset calc(sin(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * -1.5) calc(cos(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * 1.5) calc(var(--analog-bevel-width, 4px) * 4) rgb(var(--analog-shadow-rgb) / calc(0.5 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))),
+      inset calc(sin(${thumbLightAngle}) * var(--analog-bevel-width, 4px) * 0.75) calc(cos(${thumbLightAngle}) * var(--analog-bevel-width, 4px) * -0.75) calc(var(--analog-bevel-width, 4px) * 0.5) rgb(var(--analog-highlight-rgb) / calc(1 * var(--analog-light-power, 1))),
+      inset calc(sin(${thumbLightAngle}) * var(--analog-bevel-width, 4px) * -1.5) calc(cos(${thumbLightAngle}) * var(--analog-bevel-width, 4px) * 1.5) calc(var(--analog-bevel-width, 4px) * 4) rgb(var(--analog-shadow-rgb) / calc(0.5 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))),
       ${
         isPressed
           ? '0 calc(var(--analog-bevel-width, 4px) * 0.5) var(--analog-bevel-width, 4px)'
@@ -71,8 +73,8 @@ export const SquarePlunger = ({
       } rgb(var(--analog-shadow-rgb) / calc(0.7 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))
     `
       : `
-      inset calc(sin(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * 0.375) calc(cos(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * -0.375) calc(var(--analog-bevel-width, 4px) * 0.25) rgb(var(--analog-highlight-rgb) / calc(0.3 * var(--analog-light-power, 1))),
-      inset calc(sin(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * -0.75) calc(cos(var(--analog-light-angle-surface, 180deg)) * var(--analog-bevel-width, 4px) * 0.75) calc(var(--analog-bevel-width, 4px) * 3) rgb(var(--analog-shadow-rgb) / calc(0.95 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))),
+      inset calc(sin(${thumbLightAngle}) * var(--analog-bevel-width, 4px) * 0.375) calc(cos(${thumbLightAngle}) * var(--analog-bevel-width, 4px) * -0.375) calc(var(--analog-bevel-width, 4px) * 0.25) rgb(var(--analog-highlight-rgb) / calc(0.3 * var(--analog-light-power, 1))),
+      inset calc(sin(${thumbLightAngle}) * var(--analog-bevel-width, 4px) * -0.75) calc(cos(${thumbLightAngle}) * var(--analog-bevel-width, 4px) * 0.75) calc(var(--analog-bevel-width, 4px) * 3) rgb(var(--analog-shadow-rgb) / calc(0.95 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))),
       ${
         isPressed
           ? '0 calc(var(--analog-bevel-width, 4px) * 0.75) calc(var(--analog-bevel-width, 4px) * 1.5)'
@@ -82,6 +84,7 @@ export const SquarePlunger = ({
 
   return (
     <motion.div
+      data-slot="square-plunger"
       data-analog-variant={resolvedVariant}
       className={cn('absolute inset-0', className)}
       initial={false}
@@ -98,11 +101,16 @@ export const SquarePlunger = ({
       }}
       style={{ transformStyle: 'preserve-3d' }}
     >
-      <div className="relative size-full" style={{ transformStyle: 'preserve-3d' }}>
+      <div
+        data-slot="square-plunger-stack"
+        className="relative size-full"
+        style={{ transformStyle: 'preserve-3d' }}
+      >
         {/* Extrusion Layers */}
         {[...Array(extrusionLayers)].map((_, index) => (
           <div
             key={`extrusion-${index}`}
+            data-slot="square-plunger-extrusion-layer"
             className="absolute inset-0"
             style={{
               background: extrusionBackground,
@@ -120,6 +128,7 @@ export const SquarePlunger = ({
 
         {/* Main Face */}
         <div
+          data-slot="square-plunger-face"
           className={cn('absolute inset-0', faceClassName)}
           style={{
             background: faceStyle?.background ?? faceBackground,
@@ -131,6 +140,7 @@ export const SquarePlunger = ({
         >
           {isRubber ? null : (
             <div
+              data-slot="square-plunger-foil"
               className={cn(
                 'analog-foil pointer-events-none absolute inset-0',
                 isChrome ? 'mix-blend-overlay' : 'mix-blend-soft-light filter grayscale',
@@ -146,6 +156,7 @@ export const SquarePlunger = ({
 
           {/* Face Content */}
           <div
+            data-slot="square-plunger-content"
             className="relative z-10 flex size-full items-center justify-center p-1 text-center text-[10px] font-bold tracking-[0.25em] whitespace-nowrap uppercase"
             style={{
               color: isRubber

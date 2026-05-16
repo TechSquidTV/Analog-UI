@@ -167,11 +167,11 @@ export const Checkbox = React.forwardRef<HTMLElement, CheckboxProps>(
             };
 
             const handleKeyDown: React.KeyboardEventHandler<HTMLElement> = (event) => {
-              rootProps.onKeyDown?.(event);
-
-              if (canPress && isPressKey(event.key) && !event.repeat && !event.defaultPrevented) {
+              if (canPress && isPressKey(event.key) && !event.repeat) {
                 setIsPressing(true);
               }
+
+              rootProps.onKeyDown?.(event);
             };
 
             const handleKeyUp: React.KeyboardEventHandler<HTMLElement> = (event) => {

@@ -20,6 +20,8 @@ type NativeButtonProps = Omit<
   | 'onMouseDown'
   | 'onMouseUp'
   | 'onMouseLeave'
+  | 'className'
+  | 'style'
 >;
 type PushButtonMouseHandler = React.MouseEventHandler<PushButtonElement>;
 type PushButtonPointerHandler = React.PointerEventHandler<PushButtonElement>;
@@ -46,6 +48,10 @@ export interface PushButtonProps extends NativeButtonProps {
   onMouseLeave?: PushButtonMouseHandler;
   lighting?: AnalogLightingConfig<'surface' | 'track' | 'thumb'>;
   extrusionLayers?: number;
+  className?: string;
+  controlClassName?: string;
+  style?: React.CSSProperties;
+  controlStyle?: React.CSSProperties;
 }
 
 const sizingClassName =
@@ -55,6 +61,9 @@ export const PushButton = React.forwardRef<PushButtonElement, PushButtonProps>(
   (
     {
       className,
+      controlClassName,
+      style,
+      controlStyle,
       variant,
       width,
       height,
@@ -137,26 +146,30 @@ export const PushButton = React.forwardRef<PushButtonElement, PushButtonProps>(
 
     return (
       <div
+        data-slot="push-button"
         className={cn(
           'relative inline-flex min-w-14 shrink-0 items-center justify-center analog-surface-recess p-1.5',
           className,
         )}
         style={{
           ...lightingStyle,
+          ...style,
           width,
           height: resolvedHeight,
           perspective: '2400px',
         }}
       >
         {shouldRenderSizer ? (
-          <span aria-hidden="true" className={sizingClassName}>
+          <span aria-hidden="true" data-slot="push-button-sizer" className={sizingClassName}>
             {children}
           </span>
         ) : null}
         <Button
+          {...buttonProps}
           ref={mergedRef as React.Ref<HTMLElement>}
           nativeButton={!href}
           render={renderLink}
+          data-slot="push-button-root"
           onPointerDown={
             handlePointerDown as React.ComponentPropsWithoutRef<typeof Button>['onPointerDown']
           }
@@ -172,13 +185,25 @@ export const PushButton = React.forwardRef<PushButtonElement, PushButtonProps>(
           onKeyDown={handleKeyDown as React.ComponentPropsWithoutRef<typeof Button>['onKeyDown']}
           onKeyUp={handleKeyUp as React.ComponentPropsWithoutRef<typeof Button>['onKeyUp']}
           onBlur={handleBlur as React.ComponentPropsWithoutRef<typeof Button>['onBlur']}
-          className="absolute inset-1.5 appearance-none border-none bg-transparent p-0 outline-none select-none"
-          style={{ transformStyle: 'preserve-3d' }}
-          {...buttonProps}
+          className={cn(
+            'absolute inset-1.5 appearance-none border-none bg-transparent p-0 outline-none select-none',
+            controlClassName,
+          )}
+          style={{ ...controlStyle, transformStyle: 'preserve-3d' }}
         >
-          <SquarePlunger variant={variant} isPressed={isPressed} extrusionLayers={extrusionLayers}>
-            {children}
-          </SquarePlunger>
+          <span
+            data-slot="push-button-plunger"
+            className="pointer-events-none absolute inset-0"
+            style={{ transformStyle: 'preserve-3d' }}
+          >
+            <SquarePlunger
+              variant={variant}
+              isPressed={isPressed}
+              extrusionLayers={extrusionLayers}
+            >
+              {children}
+            </SquarePlunger>
+          </span>
         </Button>
       </div>
     );

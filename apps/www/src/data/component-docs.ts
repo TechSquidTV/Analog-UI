@@ -53,6 +53,24 @@ const classNameProp = {
   description: 'Adds classes to the outer component shell.',
 };
 
+const styleProp = {
+  name: 'style',
+  type: 'React.CSSProperties',
+  description: 'Adds inline styles to the outer component shell.',
+};
+
+const controlClassNameProp = {
+  name: 'controlClassName',
+  type: 'string',
+  description: 'Adds classes to the inner interactive control root.',
+};
+
+const controlStyleProp = {
+  name: 'controlStyle',
+  type: 'React.CSSProperties',
+  description: 'Adds inline styles to the inner interactive control root.',
+};
+
 export const componentDocs: Record<ComponentName, ComponentPageDoc> = {
   dial: {
     usageIntro:
@@ -687,6 +705,32 @@ export function PushButtonExample() {
     </PushButton>
   )
 }`,
+    composition: {
+      description:
+        'PushButton keeps Base UI button behavior on a transparent interactive root while the recessed shell and SquarePlunger carry the physical styling.',
+      tree: `PushButton
+|- Shell / Track Recess
+|- Root / Base UI button behavior
+|  +- Plunger Wrapper
+|     +- SquarePlunger
+|        |- Extrusion Layers
+|        +- Face / Content`,
+      customizeTitle: 'Shell Styling',
+      customizeDescription:
+        'Use className and style for the recessed shell. Use controlClassName and controlStyle only when the transparent interactive root needs adjustment.',
+      customizeCode: `import { PushButton } from "@/registry/components/analog/PushButton"
+
+export function StyledPushButton() {
+  return (
+    <PushButton
+      className="[--analog-bevel-width:5px]"
+      controlClassName="focus-visible:outline-2"
+    >
+      RUN
+    </PushButton>
+  )
+}`,
+    },
     api: [
       {
         title: 'PushButton',
@@ -724,6 +768,9 @@ export function PushButtonExample() {
           },
           lightingProp,
           classNameProp,
+          styleProp,
+          controlClassNameProp,
+          controlStyleProp,
         ],
       },
     ],
@@ -751,6 +798,35 @@ export function PushToggleExample() {
     </PushToggle>
   )
 }`,
+    composition: {
+      description:
+        'PushToggle keeps Base UI toggle behavior on a transparent interactive root while its latched state drives SquarePlunger depth and optional indicator feedback.',
+      tree: `PushToggle
+|- Shell / Track Recess
+|- Root / Base UI toggle behavior
+|  +- Plunger Wrapper
+|     +- SquarePlunger
+|        |- Extrusion Layers
+|        |- Indicator
+|        +- Face / Content`,
+      customizeTitle: 'Control Styling',
+      customizeDescription:
+        'Use className and style for the recessed shell. Use controlClassName and controlStyle only when the transparent interactive root needs adjustment.',
+      customizeCode: `import { PushToggle } from "@/registry/components/analog/PushToggle"
+
+export function StyledPushToggle() {
+  return (
+    <PushToggle
+      defaultPressed
+      indicatorTone="success"
+      className="[--analog-bevel-width:5px]"
+      controlClassName="focus-visible:outline-2"
+    >
+      ARM
+    </PushToggle>
+  )
+}`,
+    },
     api: [
       {
         title: 'PushToggle',
@@ -800,6 +876,9 @@ export function PushToggleExample() {
           },
           lightingProp,
           classNameProp,
+          styleProp,
+          controlClassNameProp,
+          controlStyleProp,
         ],
       },
     ],
@@ -882,7 +961,7 @@ export function RoutingChecklist() {
       {
         title: 'Checkbox',
         description:
-        'A Base UI checkbox root styled as a square rubber plunger with label and form support.',
+          'A Base UI checkbox root styled as a square rubber plunger with label and form support.',
         props: [
           { name: 'checked', type: 'boolean', description: 'Controlled checked state.' },
           {
@@ -917,7 +996,8 @@ export function RoutingChecklist() {
             name: 'variant',
             type: '"rubber" | "chrome" | "black"',
             defaultValue: '"rubber"',
-            description: 'Sets the plunger material finish. Checkbox defaults to flat white rubber.',
+            description:
+              'Sets the plunger material finish. Checkbox defaults to flat white rubber.',
           },
           {
             name: 'tone',
@@ -945,6 +1025,22 @@ export function RoutingChecklist() {
           },
           lightingProp,
           classNameProp,
+          styleProp,
+          {
+            name: 'controlClassName',
+            type: 'string',
+            description: 'Adds classes to the square visual control shell.',
+          },
+          {
+            name: 'controlStyle',
+            type: 'React.CSSProperties',
+            description: 'Adds inline styles to the square visual control shell.',
+          },
+          {
+            name: 'labelClassName',
+            type: 'string',
+            description: 'Adds classes to the visible checkbox label.',
+          },
         ],
       },
       {
