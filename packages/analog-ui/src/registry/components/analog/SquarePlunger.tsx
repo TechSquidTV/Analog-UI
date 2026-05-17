@@ -81,6 +81,16 @@ export const SquarePlunger = ({
           : '0 calc(var(--analog-bevel-width, 4px) * 4.5) calc(var(--analog-bevel-width, 4px) * 9)'
       } rgb(var(--analog-shadow-rgb) / calc(0.9 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))
     `;
+  const contentColor = isRubber
+    ? 'var(--analog-plunger-label-rubber)'
+    : isChrome
+      ? 'var(--analog-plunger-label-chrome)'
+      : 'var(--analog-plunger-label-black)';
+  const contentFilter = isRubber
+    ? 'none'
+    : isChrome
+      ? 'drop-shadow(0 1px 1px rgb(var(--analog-highlight-rgb) / calc(0.32 * var(--analog-light-power, 1))))'
+      : 'drop-shadow(0 2px 4px var(--analog-shadow-color))';
 
   return (
     <motion.div
@@ -159,12 +169,8 @@ export const SquarePlunger = ({
             data-slot="square-plunger-content"
             className="relative z-10 flex size-full items-center justify-center p-1 text-center text-[10px] font-bold tracking-[0.25em] whitespace-nowrap uppercase"
             style={{
-              color: isRubber
-                ? 'color-mix(in oklch, var(--analog-surface-cavity) 72%, var(--analog-shadow-color) 28%)'
-                : isChrome
-                  ? 'color-mix(in oklch, var(--analog-surface-metal-lo) 42%, var(--analog-control-foreground) 58%)'
-                  : 'color-mix(in oklch, var(--analog-surface-metal-hi) 72%, var(--analog-highlight-color) 28%)',
-              filter: isRubber ? 'none' : 'drop-shadow(0 2px 4px var(--analog-shadow-color))',
+              color: contentColor,
+              filter: contentFilter,
             }}
           >
             {children}

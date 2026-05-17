@@ -11,6 +11,34 @@ import type { AnalogOrientation } from './orientation';
 import type { AnalogTone } from './tone';
 
 type ToggleValue = 'left' | 'right';
+type ToggleGroupRootRender = React.ComponentPropsWithoutRef<typeof BaseToggleGroup>['render'];
+type ToggleGroupRootRenderProps = React.HTMLAttributes<HTMLDivElement> & {
+  ref?: React.Ref<HTMLDivElement>;
+};
+
+function renderToggleGroupRootWithoutAriaOrientation(
+  render?: ToggleGroupRootRender,
+): NonNullable<ToggleGroupRootRender> {
+  const rootRender: NonNullable<ToggleGroupRootRender> = (renderProps, state) => {
+    const { ['aria-orientation']: _ariaOrientation, ...rootProps } =
+      renderProps as ToggleGroupRootRenderProps;
+
+    if (typeof render === 'function') {
+      return render(rootProps, state);
+    }
+
+    if (React.isValidElement(render)) {
+      return React.cloneElement(
+        render as React.ReactElement<Record<string, unknown>>,
+        rootProps as Record<string, unknown>,
+      );
+    }
+
+    return <div {...rootProps} />;
+  };
+
+  return rootRender;
+}
 
 export interface ToggleProps extends Omit<
   React.ComponentPropsWithoutRef<typeof BaseToggleGroup>,
@@ -18,6 +46,8 @@ export interface ToggleProps extends Omit<
 > {
   variant?: 'chrome' | 'black';
   orientation?: AnalogOrientation;
+  leftAriaLabel?: string;
+  rightAriaLabel?: string;
   leftIndicatorTone?: AnalogTone;
   rightIndicatorTone?: AnalogTone;
   leftIndicatorActive?: 'auto' | 'always' | 'never';
@@ -58,6 +88,8 @@ export const Toggle = React.forwardRef<HTMLDivElement, ToggleProps>(
       className,
       variant,
       orientation = 'horizontal',
+      leftAriaLabel = 'Left toggle option',
+      rightAriaLabel = 'Right toggle option',
       leftIndicatorTone,
       rightIndicatorTone,
       leftIndicatorActive = 'auto',
@@ -66,6 +98,7 @@ export const Toggle = React.forwardRef<HTMLDivElement, ToggleProps>(
       defaultValue = 'left',
       onValueChange,
       lighting,
+      render,
       ...props
     },
     ref,
@@ -112,6 +145,10 @@ export const Toggle = React.forwardRef<HTMLDivElement, ToggleProps>(
     const lightingStyle = useAnalogLighting(['track', 'thumb', 'lens', 'surface'], lighting, {
       targetRef: internalRef,
     });
+    const renderRoot = React.useMemo(
+      () => renderToggleGroupRootWithoutAriaOrientation(render),
+      [render],
+    );
     const basePlateBackground = isChrome
       ? `linear-gradient(calc(var(--analog-light-angle-surface, 180deg) - 180deg), color-mix(in oklch, var(--analog-surface-metal-hi) 76%, var(--analog-highlight-color) 24%) 0%, var(--analog-surface-metal-mid) 42%, var(--analog-surface-metal-lo) 100%)`
       : `linear-gradient(calc(var(--analog-light-angle-surface, 180deg) - 180deg), color-mix(in oklch, var(--analog-surface-onyx-hi) 72%, var(--analog-surface-metal-lo) 28%) 0%, var(--analog-surface-onyx-mid) 46%, var(--analog-surface-onyx-lo) 100%)`;
@@ -150,6 +187,7 @@ export const Toggle = React.forwardRef<HTMLDivElement, ToggleProps>(
     return (
       <BaseToggleGroup
         ref={mergedRef}
+        render={renderRoot}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         className={cn(
@@ -183,6 +221,7 @@ export const Toggle = React.forwardRef<HTMLDivElement, ToggleProps>(
       >
         <BaseToggle
           value="left"
+          aria-label={leftAriaLabel}
           className={cn(
             'absolute z-[10] opacity-0 cursor-pointer',
             isVertical ? 'left-0 right-0 top-0 h-1/2' : 'top-0 bottom-0 left-0 w-1/2',
@@ -191,6 +230,7 @@ export const Toggle = React.forwardRef<HTMLDivElement, ToggleProps>(
         />
         <BaseToggle
           value="right"
+          aria-label={rightAriaLabel}
           className={cn(
             'absolute z-[10] opacity-0 cursor-pointer',
             isVertical ? 'left-0 right-0 bottom-0 h-1/2' : 'top-0 bottom-0 right-0 w-1/2',

@@ -18,6 +18,35 @@ type ToggleButtonGroupItemRenderProps = React.HTMLAttributes<HTMLElement> & {
   ref?: React.Ref<HTMLElement>;
 };
 
+type ToggleGroupRootRender = React.ComponentPropsWithoutRef<typeof BaseToggleGroup>['render'];
+type ToggleGroupRootRenderProps = React.HTMLAttributes<HTMLDivElement> & {
+  ref?: React.Ref<HTMLDivElement>;
+};
+
+function renderToggleGroupRootWithoutAriaOrientation(
+  render?: ToggleGroupRootRender,
+): NonNullable<ToggleGroupRootRender> {
+  const rootRender: NonNullable<ToggleGroupRootRender> = (renderProps, state) => {
+    const { ['aria-orientation']: _ariaOrientation, ...rootProps } =
+      renderProps as ToggleGroupRootRenderProps;
+
+    if (typeof render === 'function') {
+      return render(rootProps, state);
+    }
+
+    if (React.isValidElement(render)) {
+      return React.cloneElement(
+        render as React.ReactElement<Record<string, unknown>>,
+        rootProps as Record<string, unknown>,
+      );
+    }
+
+    return <div {...rootProps} />;
+  };
+
+  return rootRender;
+}
+
 type ToggleIndicatorState = 'auto' | 'always' | 'never';
 type ToggleButtonVariant = 'chrome' | 'black';
 
@@ -91,6 +120,7 @@ export const ToggleButtonGroup = React.forwardRef<HTMLDivElement, ToggleButtonGr
       itemHeight = '3.5rem',
       lighting,
       style,
+      render,
       ...props
     },
     ref,
@@ -100,6 +130,10 @@ export const ToggleButtonGroup = React.forwardRef<HTMLDivElement, ToggleButtonGr
     const lightingStyle = useAnalogLighting(['track', 'surface', 'thumb', 'lens'], lighting, {
       targetRef: internalRef,
     });
+    const renderRoot = React.useMemo(
+      () => renderToggleGroupRootWithoutAriaOrientation(render),
+      [render],
+    );
     const contextValue = React.useMemo<ToggleButtonGroupContextValue>(
       () => ({
         variant,
@@ -115,6 +149,7 @@ export const ToggleButtonGroup = React.forwardRef<HTMLDivElement, ToggleButtonGr
       <ToggleButtonGroupContext.Provider value={contextValue}>
         <BaseToggleGroup
           ref={mergedRef}
+          render={renderRoot}
           className={cn(
             'inline-flex min-w-0 shrink-0 rounded-[var(--analog-radius-panel)] analog-surface-recess p-1.5',
             orientation === 'vertical' ? 'flex-col gap-1.5' : 'flex-row flex-wrap gap-1.5',

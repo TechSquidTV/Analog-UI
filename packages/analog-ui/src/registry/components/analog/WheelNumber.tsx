@@ -49,6 +49,8 @@ export const WheelNumber = React.forwardRef<HTMLDivElement, WheelNumberProps>(
   (
     {
       className,
+      'aria-label': ariaLabel,
+      'aria-labelledby': ariaLabelledBy,
       value,
       defaultValue,
       onValueChange,
@@ -187,7 +189,11 @@ export const WheelNumber = React.forwardRef<HTMLDivElement, WheelNumberProps>(
           <NumberField.Decrement className="flex size-8 cursor-pointer items-center justify-center rounded-[var(--analog-radius-micro)] text-[var(--analog-control-foreground-muted)] transition-all outline-none hover:bg-[var(--analog-control-surface-strong)] hover:text-[var(--analog-control-foreground)] hover:shadow-[0_1px_2px_var(--analog-control-shadow)] active:bg-[var(--analog-surface-cavity-strong)] active:shadow-none">
             <MinusIcon className="size-4 pointer-events-none" />
           </NumberField.Decrement>
-          <NumberField.Input className="min-w-0 flex-1 bg-transparent px-2 text-center font-mono text-sm font-bold text-[var(--analog-control-foreground)] tabular-nums outline-none selection:bg-[var(--analog-control-selection)] selection:text-[var(--analog-control-foreground)]" />
+          <NumberField.Input
+            aria-label={ariaLabel ?? (ariaLabelledBy ? undefined : 'Analog number wheel')}
+            aria-labelledby={ariaLabelledBy}
+            className="min-w-0 flex-1 bg-transparent px-2 text-center font-mono text-sm font-bold text-[var(--analog-control-foreground)] tabular-nums outline-none selection:bg-[var(--analog-control-selection)] selection:text-[var(--analog-control-foreground)]"
+          />
           <NumberField.Increment className="flex size-8 cursor-pointer items-center justify-center rounded-[var(--analog-radius-micro)] text-[var(--analog-control-foreground-muted)] transition-all outline-none hover:bg-[var(--analog-control-surface-strong)] hover:text-[var(--analog-control-foreground)] hover:shadow-[0_1px_2px_var(--analog-control-shadow)] active:bg-[var(--analog-surface-cavity-strong)] active:shadow-none">
             <PlusIcon className="size-4 pointer-events-none" />
           </NumberField.Increment>

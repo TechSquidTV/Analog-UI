@@ -372,6 +372,8 @@ export const Meter = React.forwardRef<HTMLDivElement, MeterProps>(
   (
     {
       className,
+      'aria-label': ariaLabel,
+      'aria-labelledby': ariaLabelledBy,
       orientation = 'vertical',
       peakValue = null,
       value,
@@ -666,6 +668,8 @@ export const Meter = React.forwardRef<HTMLDivElement, MeterProps>(
         value={currentValue}
         min={resolvedMin}
         max={resolvedMax}
+        aria-label={ariaLabel ?? (ariaLabelledBy ? undefined : 'Level meter')}
+        aria-labelledby={ariaLabelledBy}
         data-slot="meter-root"
         className={cn(
           'relative flex items-center justify-center',

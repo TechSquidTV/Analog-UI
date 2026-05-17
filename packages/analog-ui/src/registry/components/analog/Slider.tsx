@@ -50,6 +50,8 @@ export interface SliderProps extends Omit<
 > {
   variant?: 'chrome' | 'black';
   orientation?: AnalogOrientation;
+  getAriaLabel?: (index: number) => string;
+  getAriaValueText?: (formattedValue: string, value: number, index: number) => string;
   lighting?: AnalogLightingConfig<'track' | 'thumb'>;
   marks?: readonly SliderMark[];
   showMarks?: boolean;
@@ -101,6 +103,8 @@ export const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
   (
     {
       className,
+      'aria-label': ariaLabel,
+      'aria-labelledby': ariaLabelledBy,
       variant,
       orientation = 'horizontal',
       lighting,
@@ -114,6 +118,8 @@ export const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
       renderTrack,
       renderThumb,
       renderMark,
+      getAriaLabel,
+      getAriaValueText,
       ...props
     },
     ref,
@@ -129,6 +135,10 @@ export const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
       targetRef: controlRef,
     });
     const sliderRange = max - min;
+    const getThumbAriaLabel = React.useCallback(
+      (index: number) => getAriaLabel?.(index) ?? ariaLabel ?? 'Analog slider',
+      [ariaLabel, getAriaLabel],
+    );
     const resolvedMarks = React.useMemo<SliderResolvedMark[]>(() => {
       if (!showMarks || !marks?.length) return [];
 
@@ -154,6 +164,8 @@ export const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
         orientation={orientation}
         min={min}
         max={max}
+        aria-label={ariaLabel ?? (ariaLabelledBy ? undefined : 'Analog slider')}
+        aria-labelledby={ariaLabelledBy}
         data-slot="slider-root"
         data-analog-variant={resolvedVariant}
         {...props}
@@ -276,6 +288,10 @@ export const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
 
             <BaseSlider.Thumb
               data-slot="slider-thumb"
+              getAriaLabel={
+                getAriaLabel || ariaLabel || !ariaLabelledBy ? getThumbAriaLabel : undefined
+              }
+              getAriaValueText={getAriaValueText}
               className={cn(
                 'absolute pointer-events-auto outline-none select-none transform-gpu data-[orientation=horizontal]:top-0 data-[orientation=horizontal]:h-8 data-[orientation=horizontal]:w-[72px] data-[orientation=horizontal]:-translate-y-1/2 data-[orientation=vertical]:left-0 data-[orientation=vertical]:h-[72px] data-[orientation=vertical]:w-8 data-[orientation=vertical]:-translate-x-1/2',
                 thumbClassName,

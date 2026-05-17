@@ -18,6 +18,9 @@ colors:
   legend: '#888888'
   telemetry-label: '#555555'
   telemetry-value: '#5B5B5B'
+  plunger-label-chrome: '#202020'
+  plunger-label-black: '#D8D8D8'
+  plunger-label-rubber: '#111111'
   tone-primary: '#D8D8D8'
   tone-secondary: '#5B5B5B'
   tone-accent: '#8C8C8C'
@@ -183,6 +186,7 @@ The palette is anchored in black chassis surfaces, gunmetal mid-tones, and brigh
 - **Chrome (`#E5E5E5`, `#B5B5B5`, `#8A8A8A`)** is reserved for machined faces, dials, and premium hardware.
 - **Black material (`#3A3A3A`, `#242424`, `#151515`)** is for stealth variants and heavy-duty controls.
 - **Annotation and legend grays** stay split by role: `legend` for printed markings, `annotation` for supporting copy, `telemetry-label` for scale ticks, and `telemetry-value` for live readouts.
+- **Plunger labels** use finish-specific recipe tokens so printed legends invert with the material: dark on chrome and rubber, light on black.
 - **Tone colors** should feel emissive and concentrated when they pass through optics, with brighter cores than housings.
 
 ## Token Architecture
@@ -198,7 +202,7 @@ Analog UI layers tactile hardware tokens on top of the host theme without invent
 Recommended token tiers:
 
 - **Host semantic tokens:** `--background`, `--foreground`, `--card`, `--card-foreground`, `--popover`, `--popover-foreground`, `--primary`, `--primary-foreground`, `--secondary`, `--secondary-foreground`, `--muted`, `--muted-foreground`, `--accent`, `--accent-foreground`, `--destructive`, `--destructive-foreground`, `--border`, `--input`, `--ring`, and `--chart-*`.
-- **Analog material tokens:** `--analog-surface-*`, `--analog-shadow-*`, `--analog-grain-*`, `--analog-track-*`, `--analog-bevel-*`.
+- **Analog material tokens:** `--analog-surface-*`, `--analog-shadow-*`, `--analog-grain-*`, `--analog-track-*`, `--analog-bevel-*`, and finish-specific label recipes such as `--analog-plunger-label-*`.
 - **Analog tone tokens:** `--analog-tone-primary`, `--analog-tone-secondary`, `--analog-tone-accent`, `--analog-tone-destructive`, `--analog-tone-success`, `--analog-tone-warning`, `--analog-tone-info`, `--analog-tone-neutral`, and `--analog-tone-chart-1` through `--analog-tone-chart-5`.
 - **Analog optical slot tokens:** `--analog-tone-current`, `--analog-emissive-base`, `--analog-emissive-core`, `--analog-emissive-glow`, `--analog-emissive-surface`, `--analog-emissive-edge`, `--analog-display-fill`, `--analog-display-ink`, and `--analog-display-legend`.
 - **Runtime lighting tokens:** `--analog-light-power` and `--analog-light-angle-*`.
@@ -222,7 +226,7 @@ Implementation rules:
 
 - `@theme inline` should map host semantic tokens first, then canonical `--color-analog-*` mappings for current Analog tokens.
 - `:root` and `.dark` should define Analog UI defaults so the package demo works out of the box, and those defaults must be expressed through semantic shadcn-compatible tokens.
-- Component code should prefer `var(--analog-...)` tokens for material recipes and reserve literal color ramps for one-off prototypes only.
+- Component code should prefer `var(--analog-...)` tokens for material recipes and reserve literal color ramps for one-off prototypes only. Keep printed label contrast in derived recipe tokens, not inline component color mixes.
 - Removed names are removed completely. Do not keep aliases for `lcd-*`, old physical hue names, or old zone color tokens.
 
 ### Component Tone API

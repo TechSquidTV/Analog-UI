@@ -73,6 +73,21 @@
     var(--analog-surface-metal-lo) 42%,
     var(--analog-control-foreground) 58%
   );
+  --analog-plunger-label-chrome: color-mix(
+    in oklch,
+    var(--analog-surface-onyx-lo) 78%,
+    var(--analog-shadow-color) 22%
+  );
+  --analog-plunger-label-black: color-mix(
+    in oklch,
+    var(--analog-surface-metal-hi) 72%,
+    var(--analog-highlight-color) 28%
+  );
+  --analog-plunger-label-rubber: color-mix(
+    in oklch,
+    var(--analog-surface-cavity) 72%,
+    var(--analog-shadow-color) 28%
+  );
   --analog-annotation: color-mix(in oklch, var(--foreground) 62%, var(--muted-foreground));
   --analog-legend: color-mix(in oklch, var(--foreground) 48%, var(--muted-foreground));
   --analog-telemetry-label: color-mix(in oklch, var(--foreground) 34%, var(--muted-foreground));
