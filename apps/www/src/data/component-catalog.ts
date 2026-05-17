@@ -72,8 +72,7 @@ export const componentCatalog = {
     name: 'checkbox',
     category: 'inputs',
     order: 37,
-    summary:
-      'A form-native checkbox rendered as a flat rubber plunger with mixed-state support.',
+    summary: 'A form-native checkbox rendered as a flat rubber plunger with mixed-state support.',
     materialLogic:
       'Use checkboxes for included/excluded options and multi-select groups; use PushToggle for command or mode buttons.',
   },

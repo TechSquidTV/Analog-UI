@@ -61,6 +61,7 @@
     "perf:harness": "vite --config ./perf/vite.config.ts",
     "perf:ui": "playwright test --config ./playwright.perf.config.ts",
     "perf:ui:headed": "playwright test --config ./playwright.perf.config.ts --headed",
+    "publish:check": "pnpm run build && node ./scripts/smoke-package.mjs && node ./scripts/check-package-size.mjs && node ./scripts/check-treeshaking.mjs",
     "smoke:package": "pnpm run build && node ./scripts/smoke-package.mjs",
     "size:package": "pnpm run build && node ./scripts/check-package-size.mjs",
     "treeshake": "pnpm run build && node ./scripts/check-treeshaking.mjs",

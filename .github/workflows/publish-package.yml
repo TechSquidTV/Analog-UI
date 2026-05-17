@@ -44,16 +44,15 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           registry-url: https://registry.npmjs.org
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
+          package-manager-cache: false
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build package
-        run: pnpm --filter analog-ui build
-
       - name: Prepare publish metadata
+        env:
+          GITHUB_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          PUBLISH_REQUESTED: ${{ inputs.publish || false }}
         run: |
           node --input-type=module <<'JS'
           import { readFileSync, writeFileSync } from 'node:fs';
@@ -61,6 +60,15 @@ jobs:
           const packagePath = 'packages/analog-ui/package.json';
           const packageJson = JSON.parse(readFileSync(packagePath, 'utf8'));
           const repositoryUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}`;
+          const isManualPublish =
+            process.env.GITHUB_EVENT_NAME === 'workflow_dispatch' &&
+            process.env.PUBLISH_REQUESTED === 'true';
+
+          if (isManualPublish && process.env.GITHUB_REF_NAME !== process.env.GITHUB_DEFAULT_BRANCH) {
+            throw new Error(
+              `Manual npm publish must run from "${process.env.GITHUB_DEFAULT_BRANCH}", received "${process.env.GITHUB_REF_NAME}".`,
+            );
+          }
 
           if (process.env.GITHUB_EVENT_NAME === 'release') {
             const allowedTags = [
@@ -89,17 +97,21 @@ jobs:
           packageJson.bugs ??= { url: `${repositoryUrl}/issues` };
           packageJson.homepage ??= `${repositoryUrl}#readme`;
           packageJson.publishConfig = {
-            access: 'public',
-            provenance: true,
             ...packageJson.publishConfig,
+            access: 'public',
           };
+          delete packageJson.publishConfig.provenance;
 
           writeFileSync(packagePath, `${JSON.stringify(packageJson, null, 2)}\n`);
           JS
 
-      - name: Inspect package contents
-        run: pnpm --filter analog-ui pack --dry-run
+      - name: Verify publish artifact
+        run: pnpm --filter analog-ui publish:check
+
+      - name: Publish to npm with provenance
+        if: (github.event_name == 'release' || inputs.publish) && !github.event.repository.private
+        run: pnpm --filter analog-ui publish --access public --provenance --no-git-checks
 
       - name: Publish to npm
-        if: github.event_name == 'release' || inputs.publish
-        run: pnpm --filter analog-ui publish --access public --provenance --no-git-checks
+        if: (github.event_name == 'release' || inputs.publish) && github.event.repository.private
+        run: pnpm --filter analog-ui publish --access public --no-git-checks

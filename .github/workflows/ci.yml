@@ -52,3 +52,6 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+      - name: Check package publish artifact
+        run: pnpm --filter analog-ui publish:check
