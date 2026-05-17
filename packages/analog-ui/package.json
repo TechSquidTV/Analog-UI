@@ -30,10 +30,6 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
-    "./demo": {
-      "types": "./dist/demo.d.ts",
-      "import": "./dist/demo.js"
-    },
     "./components/*": {
       "types": "./dist/registry/components/analog/*.d.ts",
       "import": "./dist/registry/components/analog/*.js"

@@ -4,7 +4,12 @@ import { extname, join, relative } from 'node:path';
 
 const sourceDir = 'src';
 const entryExtensions = new Set(['.ts', '.tsx']);
-const excludedEntries = new Set(['main.tsx']);
+const excludedEntries = new Set([
+  'App.tsx',
+  'components/ComponentShowcase.tsx',
+  'demo.ts',
+  'main.tsx',
+]);
 
 function collectEntries(dir: string): Record<string, string> {
   const entries: Record<string, string> = {};

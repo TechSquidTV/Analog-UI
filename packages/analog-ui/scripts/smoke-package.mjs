@@ -16,8 +16,6 @@ const requiredTarballEntries = [
   'package/dist/index.js',
   'package/dist/index.d.ts',
   'package/dist/index.css',
-  'package/dist/demo.js',
-  'package/dist/demo.d.ts',
   'package/dist/registry/components/analog/Slider.js',
   'package/dist/registry/components/analog/Slider.d.ts',
   'package/dist/registry/hooks/use-pointer-lighting.js',
@@ -68,7 +66,6 @@ const require = createRequire(import.meta.url);
 const analogUi = await import('analog-ui');
 const sliderModule = await import('analog-ui/components/Slider');
 const pointerLightingModule = await import('analog-ui/hooks/use-pointer-lighting');
-await import('analog-ui/demo');
 
 for (const subpath of [
   'analog-ui/styles.css',
