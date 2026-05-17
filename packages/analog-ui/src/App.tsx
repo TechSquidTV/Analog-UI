@@ -193,6 +193,12 @@ export default function App() {
         surfaceRef,
         strength: mouseInfluence,
       }}
+      motionLighting={{
+        enabled: true,
+        strength: 0.5,
+        maxTilt: 34,
+        powerRange: [0.96, 1.08],
+      }}
     >
       <div
         ref={surfaceRef}

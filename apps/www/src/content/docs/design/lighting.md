@@ -1,19 +1,19 @@
 ---
 title: Lighting
-description: How Analog UI resolves shared and component-relative light direction, material channels, and component material overrides.
+description: How Analog UI resolves shared, component-relative, and device-tilt light direction, material channels, and component material overrides.
 section: design
 order: 21
 navTitle: Lighting
 draft: false
 ---
 
-Analog UI lighting makes separate controls feel like one piece of hardware. A surface gets a shared scene direction, and it can optionally add component-relative pointer lighting so each control reacts from its own screen-space center.
+Analog UI lighting makes separate controls feel like one piece of hardware. A surface gets a shared scene direction, and it can optionally add component-relative pointer lighting or device-tilt lighting so controls react to the actual surface in front of the user.
 
 Controls can render without a provider because the hooks fall back to a 180 degree light and `power={1}`. Add a provider when a panel, rack, or dense control bank should share a scene, react to pointer movement, or define scene-wide material behavior.
 
 ## Basic Setup
 
-Wrap a panel or control bank in `AnalogLightingProvider`. Use `localLighting` when pointer movement should feel like a local light moving across actual controls on the surface.
+Wrap a panel or control bank in `AnalogLightingProvider`. Use `localLighting` when pointer movement should feel like a local light moving across actual controls on the surface. Add `motionLighting` when mobile tilt should steer the same scene light.
 
 ```tsx
 'use client';
@@ -29,6 +29,7 @@ export function ConsoleStrip() {
       baseAngle={180}
       power={1}
       localLighting={{ enabled: true, surfaceRef, strength: 0.7 }}
+      motionLighting={{ enabled: true }}
     >
       <Panel ref={surfaceRef} variant="rack">
         <Dial />
@@ -45,8 +46,9 @@ The provider supplies shared runtime inputs and an optional local pointer engine
 - `sourceAngle` is the live direction from the pointer, environment, or interaction model.
 - `power` scales highlight and shadow strength without changing the geometry of the light.
 - `localLighting` enables component-relative pointer lighting without changing individual component APIs.
+- `motionLighting` enables device-tilt lighting without changing individual component APIs.
 
-`baseAngle`, `sourceAngle`, and `power` can be numbers or Motion values. If `sourceAngle` is omitted, it falls back to `baseAngle`. If `localLighting` is omitted or disabled, no local pointer listeners, observers, or animation-frame work are installed.
+`baseAngle`, `sourceAngle`, and `power` can be numbers or Motion values. If `sourceAngle` is omitted, it falls back to `baseAngle`. If `localLighting` or `motionLighting` are omitted or disabled, their pointer, sensor, observer, and animation-frame work is not installed.
 
 ## Shared Pointer Lighting
 
@@ -114,6 +116,51 @@ pointer loop and use the shared scene angle. A single component can opt out with
 | `maxRadius`      | Maximum outer radius as a target-diagonal multiplier    | `7`      |
 | `deadZone`       | Center hold radius as a target-diagonal multiplier      | `0.06`   |
 | `responsiveness` | Angle smoothing per pointer frame, from `0` through `1` | `0.42`   |
+
+## Device Tilt Lighting
+
+Use provider-level `motionLighting` when a mobile surface should react to physical device tilt. The provider listens for `deviceorientation`, stores only the latest sensor values, and updates the shared `sourceAngle` and `power` once per animation frame.
+
+```tsx
+<AnalogLightingProvider
+  baseAngle={180}
+  power={1}
+  motionLighting={{
+    enabled: true,
+    maxTilt: 34,
+    strength: 0.52,
+    powerRange: [0.96, 1.08],
+  }}
+>
+  <Panel>{children}</Panel>
+</AnalogLightingProvider>
+```
+
+On browsers that require sensor permission, Analog UI requests access on the first pointer or keyboard interaction after `motionLighting` is enabled. Call `requestAnalogMotionLightingPermission()` from your own button if you want to control that moment yourself, and set `requestPermission: "none"` on the provider.
+
+`motionLighting` accepts:
+
+| Option              | Use It For                                                  | Default            |
+| ------------------- | ----------------------------------------------------------- | ------------------ |
+| `enabled`           | Attaching or detaching device-orientation lighting          | `false`            |
+| `maxTilt`           | Device degrees that map to full normalized tilt             | `34`               |
+| `strength`          | Maximum tilt influence before material travel applies       | `0.52`             |
+| `deadZone`          | Normalized tilt that holds the base angle against drift     | `0.08`             |
+| `responsiveness`    | Angle and power smoothing per sensor frame, from `0` to `1` | `0.18`             |
+| `powerRange`        | Power multipliers from flat through fully tilted            | `[0.96, 1.08]`     |
+| `requestPermission` | Sensor permission timing: `"on-interaction"` or `"none"`    | `"on-interaction"` |
+
+```tsx
+type AnalogMotionLightingConfig = {
+  enabled?: boolean;
+  maxTilt?: number;
+  strength?: number;
+  deadZone?: number;
+  responsiveness?: number;
+  powerRange?: readonly [number, number];
+  requestPermission?: 'on-interaction' | 'none';
+};
+```
 
 ## Material Channels
 

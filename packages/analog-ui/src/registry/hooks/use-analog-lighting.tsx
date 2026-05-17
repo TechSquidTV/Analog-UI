@@ -1,10 +1,11 @@
 import * as React from 'react';
-import type { MotionValue } from 'motion/react';
+import { useMotionValue, type MotionValue } from 'motion/react';
 import {
   advanceContinuousAngle,
   blendAngleTowardSource,
   constrainAngleToArc,
   type AnalogLightConstraintMode,
+  vectorToLightingAngle,
 } from '../../lib/angle-utils';
 
 export const ANALOG_LIGHTING_PRESETS = {
@@ -90,6 +91,39 @@ export interface AnalogLocalLightingConfig {
   responsiveness?: number;
 }
 
+export type AnalogMotionLightingPermissionMode = 'on-interaction' | 'none';
+
+export interface AnalogMotionLightingConfig {
+  /**
+   * Enables device-orientation lighting. When false, no device motion listeners or RAF work run.
+   */
+  enabled?: boolean;
+  /**
+   * Device tilt in degrees that maps to full influence.
+   */
+  maxTilt?: number;
+  /**
+   * Maximum influence of the tilt angle before material channel travel is applied.
+   */
+  strength?: number;
+  /**
+   * Normalized tilt magnitude that holds the base angle to avoid noisy sensor drift.
+   */
+  deadZone?: number;
+  /**
+   * Angle and power response per device-orientation frame. 1 follows directly.
+   */
+  responsiveness?: number;
+  /**
+   * Multipliers applied to provider power from flat through fully tilted.
+   */
+  powerRange?: readonly [number, number];
+  /**
+   * iOS requires sensor permission from a user gesture. on-interaction requests on first tap/key.
+   */
+  requestPermission?: AnalogMotionLightingPermissionMode;
+}
+
 export interface UseAnalogLightingOptions {
   targetRef?: React.RefObject<HTMLElement | null>;
   local?: boolean;
@@ -143,6 +177,7 @@ export interface AnalogLightingProviderProps {
   power?: number | MotionValue<number>;
   materials?: Partial<Record<AnalogMaterialChannel, AnalogLightingSetting>>;
   localLighting?: boolean | AnalogLocalLightingConfig;
+  motionLighting?: boolean | AnalogMotionLightingConfig;
 }
 
 const AnalogLightingContext = React.createContext<AnalogLightingContextValue | null>(null);
@@ -182,6 +217,16 @@ interface ResolvedAnalogLocalLightingConfig {
   responsiveness: number;
 }
 
+interface ResolvedAnalogMotionLightingConfig {
+  enabled: boolean;
+  maxTilt: number;
+  strength: number;
+  deadZone: number;
+  responsiveness: number;
+  powerRange: readonly [number, number];
+  requestPermission: AnalogMotionLightingPermissionMode;
+}
+
 interface AnalogLightingScene {
   baseAngle: number;
   sourceAngle: number;
@@ -199,6 +244,79 @@ const DEFAULT_LOCAL_LIGHTING_CONFIG: ResolvedAnalogLocalLightingConfig = {
   deadZone: 0.06,
   responsiveness: 0.42,
 };
+
+const DEFAULT_MOTION_LIGHTING_CONFIG: ResolvedAnalogMotionLightingConfig = {
+  enabled: false,
+  maxTilt: 34,
+  strength: 0.52,
+  deadZone: 0.08,
+  responsiveness: 0.18,
+  powerRange: [0.96, 1.08],
+  requestPermission: 'on-interaction',
+};
+
+type AnalogDeviceOrientationEventConstructor = typeof DeviceOrientationEvent & {
+  requestPermission?: () => Promise<PermissionState>;
+};
+
+type AnalogDeviceOrientationListener = (event: DeviceOrientationEvent) => void;
+
+const analogDeviceOrientationListeners = new Set<AnalogDeviceOrientationListener>();
+let analogDeviceOrientationCleanup: (() => void) | null = null;
+let analogMotionPermissionPromise: Promise<boolean> | null = null;
+
+function getDeviceOrientationEventConstructor() {
+  if (typeof window === 'undefined' || typeof window.DeviceOrientationEvent === 'undefined') {
+    return null;
+  }
+
+  return window.DeviceOrientationEvent as AnalogDeviceOrientationEventConstructor;
+}
+
+function handleAnalogDeviceOrientation(event: DeviceOrientationEvent) {
+  for (const listener of analogDeviceOrientationListeners) {
+    listener(event);
+  }
+}
+
+function addAnalogDeviceOrientationListener(listener: AnalogDeviceOrientationListener) {
+  if (typeof window === 'undefined') return () => {};
+
+  analogDeviceOrientationListeners.add(listener);
+
+  if (!analogDeviceOrientationCleanup) {
+    window.addEventListener('deviceorientation', handleAnalogDeviceOrientation, { passive: true });
+    analogDeviceOrientationCleanup = () => {
+      window.removeEventListener('deviceorientation', handleAnalogDeviceOrientation);
+    };
+  }
+
+  return () => {
+    analogDeviceOrientationListeners.delete(listener);
+
+    if (analogDeviceOrientationListeners.size === 0 && analogDeviceOrientationCleanup) {
+      analogDeviceOrientationCleanup();
+      analogDeviceOrientationCleanup = null;
+    }
+  };
+}
+
+export function requestAnalogMotionLightingPermission() {
+  if (typeof window === 'undefined') return Promise.resolve(false);
+
+  const OrientationEventConstructor = getDeviceOrientationEventConstructor();
+
+  if (!OrientationEventConstructor) return Promise.resolve(false);
+  if (typeof OrientationEventConstructor.requestPermission !== 'function') {
+    return Promise.resolve(true);
+  }
+
+  analogMotionPermissionPromise ??= OrientationEventConstructor.requestPermission()
+    .then((state) => state === 'granted')
+    .catch(() => false);
+
+  return analogMotionPermissionPromise;
+}
 
 function isMotionValue(value: unknown): value is MotionValue<number> {
   return (
@@ -229,6 +347,18 @@ function clampResponsive(value: number | undefined, fallback: number) {
   return typeof value === 'number' && Number.isFinite(value) ? clamp01(value) : fallback;
 }
 
+function clampPowerRange(
+  value: readonly [number, number] | undefined,
+  fallback: readonly [number, number],
+): readonly [number, number] {
+  if (!value) return fallback;
+
+  const first = Number.isFinite(value[0]) ? Math.max(0, value[0]) : fallback[0];
+  const second = Number.isFinite(value[1]) ? Math.max(0, value[1]) : fallback[1];
+
+  return first <= second ? [first, second] : [second, first];
+}
+
 function resolveLocalLightingConfig(
   value: boolean | AnalogLocalLightingConfig | undefined,
 ): ResolvedAnalogLocalLightingConfig {
@@ -253,6 +383,31 @@ function resolveLocalLightingConfig(
       value.responsiveness,
       DEFAULT_LOCAL_LIGHTING_CONFIG.responsiveness,
     ),
+  };
+}
+
+function resolveMotionLightingConfig(
+  value: boolean | AnalogMotionLightingConfig | undefined,
+): ResolvedAnalogMotionLightingConfig {
+  if (value === true) {
+    return { ...DEFAULT_MOTION_LIGHTING_CONFIG, enabled: true };
+  }
+
+  if (!value || value.enabled === false) {
+    return DEFAULT_MOTION_LIGHTING_CONFIG;
+  }
+
+  return {
+    enabled: true,
+    maxTilt: Math.max(1, clampPositive(value.maxTilt, DEFAULT_MOTION_LIGHTING_CONFIG.maxTilt)),
+    strength: clampResponsive(value.strength, DEFAULT_MOTION_LIGHTING_CONFIG.strength),
+    deadZone: clampResponsive(value.deadZone, DEFAULT_MOTION_LIGHTING_CONFIG.deadZone),
+    responsiveness: clampResponsive(
+      value.responsiveness,
+      DEFAULT_MOTION_LIGHTING_CONFIG.responsiveness,
+    ),
+    powerRange: clampPowerRange(value.powerRange, DEFAULT_MOTION_LIGHTING_CONFIG.powerRange),
+    requestPermission: value.requestPermission ?? DEFAULT_MOTION_LIGHTING_CONFIG.requestPermission,
   };
 }
 
@@ -291,6 +446,33 @@ function getViewportRect(): DOMRect {
     width: window.innerWidth,
     height: window.innerHeight,
     toJSON: () => ({}),
+  };
+}
+
+function getScreenOrientationAngle() {
+  const screenAngle = window.screen?.orientation?.angle;
+
+  if (typeof screenAngle === 'number' && Number.isFinite(screenAngle)) {
+    return screenAngle;
+  }
+
+  const legacyOrientation = (window as Window & { orientation?: number }).orientation;
+
+  return typeof legacyOrientation === 'number' && Number.isFinite(legacyOrientation)
+    ? legacyOrientation
+    : 0;
+}
+
+function rotateCartesian(x: number, y: number, degrees: number) {
+  if (degrees === 0) return { x, y };
+
+  const radians = (-degrees * Math.PI) / 180;
+  const sin = Math.sin(radians);
+  const cos = Math.cos(radians);
+
+  return {
+    x: x * cos - y * sin,
+    y: x * sin + y * cos,
   };
 }
 
@@ -754,6 +936,236 @@ function useAnalogLocalLightingController({
   );
 }
 
+function useAnalogMotionLighting({
+  baseAngle,
+  sourceAngle,
+  power,
+  motionLighting,
+}: {
+  baseAngle: AnalogLightingInputValue;
+  sourceAngle: AnalogLightingInputValue;
+  power: AnalogLightingInputValue;
+  motionLighting: boolean | AnalogMotionLightingConfig | undefined;
+}) {
+  const config = resolveMotionLightingConfig(motionLighting);
+  const fallbackSourceAngle = readLightingInput(sourceAngle, readLightingInput(baseAngle, 180));
+  const fallbackPower = readLightingInput(power, 1);
+  const sourceAngleValue = useMotionValue(fallbackSourceAngle);
+  const powerValue = useMotionValue(fallbackPower);
+  const configRef = React.useRef(config);
+  const sceneInputsRef = React.useRef({
+    baseAngle,
+    sourceAngle,
+    power,
+  });
+  const latestTiltRef = React.useRef<{ x: number; y: number; magnitude: number } | null>(null);
+  const previousRawTiltAngleRef = React.useRef<number | null>(null);
+  const continuousTiltAngleRef = React.useRef(fallbackSourceAngle);
+  const animationFrameRef = React.useRef<number | null>(null);
+
+  configRef.current = config;
+  sceneInputsRef.current = {
+    baseAngle,
+    sourceAngle,
+    power,
+  };
+
+  const readScene = React.useCallback(() => {
+    const inputs = sceneInputsRef.current;
+    const resolvedBaseAngle = readLightingInput(inputs.baseAngle, 180);
+
+    return {
+      baseAngle: resolvedBaseAngle,
+      sourceAngle: readLightingInput(inputs.sourceAngle, resolvedBaseAngle),
+      power: readLightingInput(inputs.power, 1),
+    };
+  }, []);
+
+  const writeFallbackScene = React.useCallback(() => {
+    const scene = readScene();
+
+    sourceAngleValue.set(scene.sourceAngle);
+    powerValue.set(scene.power);
+  }, [powerValue, readScene, sourceAngleValue]);
+
+  const processMotionLighting = React.useCallback(() => {
+    animationFrameRef.current = null;
+
+    if (!configRef.current.enabled) return;
+
+    const resolvedConfig = configRef.current;
+    const scene = readScene();
+    const tilt = latestTiltRef.current;
+    let targetAngle = scene.sourceAngle;
+    let targetPower = scene.power;
+
+    if (tilt && tilt.magnitude > resolvedConfig.deadZone) {
+      const rawTiltAngle = vectorToLightingAngle(tilt.x, tilt.y);
+      const tiltAmount = smoothstep(resolvedConfig.deadZone, 1, tilt.magnitude);
+      const influence = resolvedConfig.strength * tiltAmount;
+      const [minPower, maxPower] = resolvedConfig.powerRange;
+
+      continuousTiltAngleRef.current =
+        previousRawTiltAngleRef.current === null
+          ? rawTiltAngle
+          : advanceContinuousAngle(
+              continuousTiltAngleRef.current,
+              rawTiltAngle,
+              previousRawTiltAngleRef.current,
+            );
+      previousRawTiltAngleRef.current = rawTiltAngle;
+      targetAngle = blendAngleTowardSource(
+        scene.sourceAngle,
+        continuousTiltAngleRef.current,
+        influence,
+      );
+      targetPower = scene.power * (minPower + (maxPower - minPower) * tiltAmount);
+    }
+
+    const responsiveness = resolvedConfig.responsiveness;
+    const currentAngle = sourceAngleValue.get();
+    const currentPower = powerValue.get();
+
+    sourceAngleValue.set(advanceSmoothedAngle(currentAngle, targetAngle, responsiveness));
+    powerValue.set(currentPower + (targetPower - currentPower) * responsiveness);
+  }, [powerValue, readScene, sourceAngleValue]);
+
+  const scheduleMotionLighting = React.useCallback(() => {
+    if (!configRef.current.enabled || animationFrameRef.current !== null) return;
+
+    animationFrameRef.current = window.requestAnimationFrame(processMotionLighting);
+  }, [processMotionLighting]);
+
+  const resolveTilt = React.useCallback((event: DeviceOrientationEvent) => {
+    if (event.beta === null || event.gamma === null) return null;
+
+    const resolvedConfig = configRef.current;
+    const maxTilt = Math.max(1, resolvedConfig.maxTilt);
+    const rawX = Math.max(-1, Math.min(1, event.gamma / maxTilt));
+    const rawY = Math.max(-1, Math.min(1, event.beta / maxTilt));
+    const rotated = rotateCartesian(rawX, rawY, getScreenOrientationAngle());
+    const magnitude = clamp01(Math.hypot(rotated.x, rotated.y));
+
+    if (magnitude <= 1e-6) return null;
+
+    return {
+      x: rotated.x,
+      y: rotated.y,
+      magnitude,
+    };
+  }, []);
+
+  React.useEffect(() => {
+    if (!config.enabled) {
+      latestTiltRef.current = null;
+      previousRawTiltAngleRef.current = null;
+
+      if (animationFrameRef.current !== null) {
+        window.cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = null;
+      }
+
+      writeFallbackScene();
+      return;
+    }
+
+    const OrientationEventConstructor = getDeviceOrientationEventConstructor();
+
+    if (!OrientationEventConstructor) {
+      writeFallbackScene();
+      return;
+    }
+
+    let cleanupMotionListener: (() => void) | null = null;
+    let isDisposed = false;
+    const handleOrientation = (event: DeviceOrientationEvent) => {
+      const tilt = resolveTilt(event);
+
+      if (!tilt) return;
+
+      latestTiltRef.current = tilt;
+      scheduleMotionLighting();
+    };
+    const installMotionListener = () => {
+      if (isDisposed || cleanupMotionListener) return;
+
+      cleanupMotionListener = addAnalogDeviceOrientationListener(handleOrientation);
+    };
+    const requestAndInstall = () => {
+      const latestConstructor = getDeviceOrientationEventConstructor();
+
+      if (!latestConstructor) return;
+
+      if (typeof latestConstructor.requestPermission !== 'function') {
+        installMotionListener();
+        return;
+      }
+
+      if (configRef.current.requestPermission === 'none') {
+        installMotionListener();
+        return;
+      }
+
+      void requestAnalogMotionLightingPermission().then((granted) => {
+        if (granted) installMotionListener();
+      });
+    };
+
+    if (
+      typeof OrientationEventConstructor.requestPermission === 'function' &&
+      config.requestPermission === 'on-interaction'
+    ) {
+      window.addEventListener('pointerdown', requestAndInstall, { once: true, passive: true });
+      window.addEventListener('keydown', requestAndInstall, { once: true });
+    } else {
+      requestAndInstall();
+    }
+
+    scheduleMotionLighting();
+
+    return () => {
+      isDisposed = true;
+
+      if (animationFrameRef.current !== null) {
+        window.cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = null;
+      }
+
+      cleanupMotionListener?.();
+      window.removeEventListener('pointerdown', requestAndInstall);
+      window.removeEventListener('keydown', requestAndInstall);
+    };
+  }, [
+    config.enabled,
+    config.requestPermission,
+    resolveTilt,
+    scheduleMotionLighting,
+    writeFallbackScene,
+  ]);
+
+  React.useEffect(() => {
+    if (config.enabled) {
+      scheduleMotionLighting();
+    } else {
+      writeFallbackScene();
+    }
+  });
+
+  return React.useMemo(
+    () =>
+      config.enabled
+        ? {
+            sourceAngle: sourceAngleValue,
+            power: powerValue,
+          }
+        : {
+            sourceAngle,
+            power,
+          },
+    [config.enabled, power, powerValue, sourceAngle, sourceAngleValue],
+  );
+}
+
 export function AnalogLightingProvider({
   children,
   baseAngle = 180,
@@ -761,6 +1173,7 @@ export function AnalogLightingProvider({
   power = 1,
   materials,
   localLighting,
+  motionLighting,
 }: AnalogLightingProviderProps) {
   const mergedMaterials = React.useMemo(() => {
     const next: Partial<Record<AnalogMaterialChannel, ResolvedAnalogLightingResponse>> = {};
@@ -776,11 +1189,17 @@ export function AnalogLightingProvider({
 
     return next;
   }, [materials]);
-  const resolvedSourceAngle = sourceAngle ?? baseAngle;
+  const sceneSourceAngle = sourceAngle ?? baseAngle;
+  const motionLightingScene = useAnalogMotionLighting({
+    baseAngle,
+    sourceAngle: sceneSourceAngle,
+    power,
+    motionLighting,
+  });
   const localLightingController = useAnalogLocalLightingController({
     baseAngle,
-    sourceAngle: resolvedSourceAngle,
-    power,
+    sourceAngle: motionLightingScene.sourceAngle,
+    power: motionLightingScene.power,
     materials: mergedMaterials,
     localLighting,
   });
@@ -788,12 +1207,18 @@ export function AnalogLightingProvider({
   const value = React.useMemo(
     () => ({
       baseAngle,
-      sourceAngle: resolvedSourceAngle,
-      power,
+      sourceAngle: motionLightingScene.sourceAngle,
+      power: motionLightingScene.power,
       materials: mergedMaterials,
       localLighting: localLightingController,
     }),
-    [baseAngle, localLightingController, mergedMaterials, power, resolvedSourceAngle],
+    [
+      baseAngle,
+      localLightingController,
+      mergedMaterials,
+      motionLightingScene.power,
+      motionLightingScene.sourceAngle,
+    ],
   );
 
   return <AnalogLightingContext.Provider value={value}>{children}</AnalogLightingContext.Provider>;

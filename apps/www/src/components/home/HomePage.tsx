@@ -15,6 +15,7 @@ export default function HomePage({ componentCountLabel }: HomePageProps) {
       baseAngle={180}
       power={1}
       localLighting={{ enabled: true, surfaceRef: homeRef, strength: 0.72 }}
+      motionLighting={{ enabled: true, strength: 0.46 }}
     >
       <div ref={homeRef}>
         <section className="site-frame pt-10 text-center md:pt-16">

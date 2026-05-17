@@ -40,4 +40,4 @@ Controls that support inherited material finishes pull in `analog-material-scope
 
 Controls that expose `tone` pull in `analog-tone` automatically. Install it directly only when you are composing your own component around the same semantic color roles.
 
-Controls that participate in provider-level `localLighting` pull in `use-analog-lighting` through their registry dependencies. Install that hook directly only when you are authoring a custom component that should register its own local lighting target.
+Controls that participate in provider-level `localLighting` or `motionLighting` pull in `use-analog-lighting` through their registry dependencies. Install that hook directly only when you are authoring a custom component that should register its own local lighting target or motion-lit surface.

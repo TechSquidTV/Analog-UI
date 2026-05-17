@@ -345,6 +345,29 @@ function LocalLightingCase() {
   );
 }
 
+function MotionLightingCase() {
+  return (
+    <AnalogLightingProvider
+      baseAngle={180}
+      power={1}
+      motionLighting={{
+        enabled: true,
+        requestPermission: 'none',
+      }}
+    >
+      <div className="perf-lighting-surface" data-perf-target="lighting-surface">
+        <Panel className="perf-lighting-stage" screws={false} variant="rack">
+          <div className="perf-lighting-controls">
+            <Dial value={35} />
+            <Switch checked aria-label="Motion lighting switch" />
+            <LCDDisplay value="TILT" />
+          </div>
+        </Panel>
+      </div>
+    </AnalogLightingProvider>
+  );
+}
+
 function WheelCleanupCase() {
   const [mounted, setMounted] = useState(true);
 
@@ -388,6 +411,7 @@ function PerfCase() {
 
   if (caseName === 'pointer-lighting') return <PointerLightingCase />;
   if (caseName === 'local-lighting') return <LocalLightingCase />;
+  if (caseName === 'motion-lighting') return <MotionLightingCase />;
   if (caseName === 'wheel-cleanup') return <WheelCleanupCase />;
 
   return <SliderDragCase />;

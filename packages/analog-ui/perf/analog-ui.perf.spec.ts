@@ -160,6 +160,37 @@ test('local component lighting coalesces pointer moves without pointer-time layo
   expect(pointerMetrics.rafScheduled).toBeLessThanOrEqual(2);
 });
 
+test('motion lighting coalesces device orientation events without layout reads', async ({
+  page,
+}) => {
+  await openPerfCase(page, 'motion-lighting');
+  await waitForFrames(page, 3);
+
+  const motionMetrics = await page.evaluate(async () => {
+    window.__analogPerf.resetMetrics();
+
+    for (let index = 0; index < 240; index += 1) {
+      const event = new Event('deviceorientation') as DeviceOrientationEvent;
+
+      Object.defineProperty(event, 'beta', {
+        value: 12 + (index % 12),
+      });
+      Object.defineProperty(event, 'gamma', {
+        value: -10 + (index % 20),
+      });
+      window.dispatchEvent(event);
+    }
+
+    await new Promise((resolve) => window.setTimeout(resolve, 50));
+
+    return window.__analogPerf.getMetrics();
+  });
+
+  expect(motionMetrics.rectReads).toBe(0);
+  expect(motionMetrics.rafExecuted).toBeGreaterThanOrEqual(1);
+  expect(motionMetrics.rafScheduled).toBeLessThanOrEqual(2);
+});
+
 test('Slider drag stays within the interaction frame budget', async ({ page }) => {
   await openPerfCase(page, 'slider-drag');
 

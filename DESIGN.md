@@ -305,6 +305,7 @@ Analog UI lighting is driven by three runtime inputs:
 - `sourceAngle` is the live direction from the environment, cursor, or another interaction model.
 - `power` scales highlight and shadow intensity without changing the geometric direction of the light.
 - `localLighting` optionally turns pointer movement into component-relative source angles while preserving the same material channel model.
+- `motionLighting` optionally turns device tilt into the scene source angle and a subtle power multiplier for mobile surfaces.
 
 Rules for moving light:
 
@@ -312,6 +313,7 @@ Rules for moving light:
 - Component-relative lighting should be enabled at the provider/surface level, measure target bounds outside pointer movement, and resolve each target from its own screen-space center.
 - Local lighting falloff should be based on the lit surface and target dimensions rather than fixed pixels, so the same control behaves correctly in a compact demo, a rack panel, and a full viewport.
 - Disabling or omitting `localLighting` must detach pointer listeners, observers, and RAF work; individual components can opt out with `lighting={{ local: false }}`.
+- Device tilt lighting must stay provider-level, coalesce sensor events with `requestAnimationFrame`, avoid layout reads, and request browser sensor permission only after an explicit user interaction.
 - `influence` should only blend the live source back toward the base direction. At `1`, the light should track the live source directly with no hidden damping.
 - If the pointer passes through the exact angular singularity at the center of a surface, prefer a tiny dead zone or a brief hold instead of easing the entire orbit.
 - Per-material feel should come from `travel`, `offset`, and optional arc constraints rather than ad hoc lag.
