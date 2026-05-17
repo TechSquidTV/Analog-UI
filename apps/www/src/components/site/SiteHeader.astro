@@ -12,6 +12,7 @@ const links = [
   { href: '/docs', label: 'Docs', width: '5rem' },
   { href: '/docs/components', label: 'Components', width: '7.75rem' },
 ];
+const githubHref = 'https://github.com/TechSquidTV/Analog-UI';
 
 const activeHref = links
   .filter((link) => pathname === link.href || pathname.startsWith(`${link.href}/`))
@@ -39,7 +40,12 @@ const activeHref = links
     </a>
 
     <nav class="flex w-full justify-center sm:w-auto sm:justify-end">
-      <SiteNavToggleGroup client:load links={links} activeHref={activeHref} />
+      <SiteNavToggleGroup
+        client:load
+        links={links}
+        activeHref={activeHref}
+        githubHref={githubHref}
+      />
     </nav>
   </div>
 </header>

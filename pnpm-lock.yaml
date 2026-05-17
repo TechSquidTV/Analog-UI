@@ -71,6 +71,9 @@ importers:
       geist:
         specifier: 1.7.0
         version: 1.7.0(next@16.2.4(@babel/core@7.29.0)(@playwright/test@1.60.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))
+      lucide-react:
+        specifier: ^0.546.0
+        version: 0.546.0(react@19.2.5)
       react:
         specifier: ^19.0.1
         version: 19.2.5

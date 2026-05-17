@@ -1,8 +1,10 @@
 import { navigate } from 'astro:transitions/client';
+import { StarIcon } from 'lucide-react';
 import { type MouseEvent, useEffect, useRef, useState } from 'react';
 
 import {
   AnalogLightingProvider,
+  PushButton,
   ToggleButtonGroup,
   ToggleButtonGroupItem,
   usePointerLighting,
@@ -17,11 +19,16 @@ interface SiteNavLink {
 interface SiteNavToggleGroupProps {
   links: SiteNavLink[];
   activeHref?: string;
+  githubHref: string;
 }
 
 const navPressDelayMs = 140;
 
-export default function SiteNavToggleGroup({ links, activeHref }: SiteNavToggleGroupProps) {
+export default function SiteNavToggleGroup({
+  links,
+  activeHref,
+  githubHref,
+}: SiteNavToggleGroupProps) {
   const navRef = useRef<HTMLDivElement>(null);
   const navigationTimeoutRef = useRef<number | undefined>(undefined);
   const [selectedHref, setSelectedHref] = useState(activeHref);
@@ -79,7 +86,7 @@ export default function SiteNavToggleGroup({ links, activeHref }: SiteNavToggleG
 
   return (
     <AnalogLightingProvider baseAngle={180} sourceAngle={sourceAngle} power={1}>
-      <div ref={navRef} className="flex flex-wrap items-center">
+      <div ref={navRef} className="flex flex-wrap items-center justify-center gap-3 sm:justify-end">
         <ToggleButtonGroup
           value={selectedHref}
           aria-label="Primary navigation"
@@ -107,6 +114,24 @@ export default function SiteNavToggleGroup({ links, activeHref }: SiteNavToggleG
             );
           })}
         </ToggleButtonGroup>
+        <PushButton
+          href={githubHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          height="2.5rem"
+          width="9rem"
+          variant="black"
+          aria-label="Star Analog UI on GitHub"
+        >
+          <span className="flex items-center gap-1.5">
+            <StarIcon
+              aria-hidden="true"
+              className="size-3.5 shrink-0 text-[var(--analog-tone-success)]"
+              strokeWidth={2.35}
+            />
+            <span className="tracking-[0.14em]">GitHub</span>
+          </span>
+        </PushButton>
       </div>
     </AnalogLightingProvider>
   );
