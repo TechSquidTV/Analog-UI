@@ -13,6 +13,15 @@
     "components"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TechSquidTV/Analog-UI.git",
+    "directory": "packages/analog-ui"
+  },
+  "bugs": {
+    "url": "https://github.com/TechSquidTV/Analog-UI/issues"
+  },
+  "homepage": "https://analogui.com",
   "type": "module",
   "sideEffects": [
     "**/*.css"

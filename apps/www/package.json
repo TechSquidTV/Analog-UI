@@ -2,6 +2,14 @@
   "name": "analog-ui-www",
   "private": true,
   "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TechSquidTV/Analog-UI.git",
+    "directory": "apps/www"
+  },
+  "bugs": {
+    "url": "https://github.com/TechSquidTV/Analog-UI/issues"
+  },
   "type": "module",
   "scripts": {
     "dev": "pnpm --filter analog-ui registry:build && astro dev --host 0.0.0.0 --port 3000",
