@@ -10,4 +10,5 @@ mkdirSync(distDir, { recursive: true });
 rmSync(resolve(distDir, 'texture.png'), { force: true });
 copyFileSync(resolve(packageDir, 'src/index.css'), resolve(distDir, 'index.css'));
 copyFileSync(resolve(packageDir, 'src/theme.css'), resolve(distDir, 'theme.css'));
+copyFileSync(resolve(packageDir, 'src/components.css'), resolve(distDir, 'components.css'));
 copyFileSync(resolve(packageDir, 'src/texture.webp'), resolve(distDir, 'texture.webp'));

@@ -16,6 +16,8 @@ const requiredTarballEntries = [
   'package/dist/index.js',
   'package/dist/index.d.ts',
   'package/dist/index.css',
+  'package/dist/theme.css',
+  'package/dist/components.css',
   'package/dist/registry/components/analog/Slider.js',
   'package/dist/registry/components/analog/Slider.d.ts',
   'package/dist/registry/hooks/use-pointer-lighting.js',
@@ -67,7 +69,12 @@ const analogUi = await import('analog-ui');
 const sliderModule = await import('analog-ui/components/Slider');
 const pointerLightingModule = await import('analog-ui/hooks/use-pointer-lighting');
 
-for (const subpath of ['analog-ui/styles.css', 'analog-ui/components.json']) {
+for (const subpath of [
+  'analog-ui/styles.css',
+  'analog-ui/theme.css',
+  'analog-ui/components.css',
+  'analog-ui/components.json',
+]) {
   const resolved = require.resolve(subpath);
   if (!existsSync(resolved)) {
     throw new Error(\`Resolved \${subpath} to missing file: \${resolved}\`);

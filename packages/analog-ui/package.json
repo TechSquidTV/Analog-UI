@@ -42,6 +42,8 @@
       "import": "./dist/lib/*.js"
     },
     "./styles.css": "./dist/index.css",
+    "./theme.css": "./dist/theme.css",
+    "./components.css": "./dist/components.css",
     "./components.json": "./components.json"
   },
   "scripts": {
