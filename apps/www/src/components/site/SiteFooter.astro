@@ -14,16 +14,28 @@ import { PushButton } from '../../../../../packages/analog-ui/src/index';
       </div>
     </div>
 
-    <div class="flex flex-wrap items-center gap-3">
-      <PushButton client:load href="/docs" height="2.5rem" variant="black">
-        Read the docs
-      </PushButton>
-      <PushButton client:load href="/docs/components" height="2.5rem" variant="black">
-        Components
-      </PushButton>
-      <PushButton client:load href="/r/registry.json" height="2.5rem" variant="black">
-        Registry JSON
-      </PushButton>
+    <div class="flex flex-col gap-3 md:items-end">
+      <div class="flex flex-wrap items-center gap-3 md:justify-end">
+        <PushButton client:load href="/docs" height="2.5rem" variant="black">
+          Read the docs
+        </PushButton>
+        <PushButton client:load href="/docs/components" height="2.5rem" variant="black">
+          Components
+        </PushButton>
+        <PushButton client:load href="/r/registry.json" height="2.5rem" variant="black">
+          Registry JSON
+        </PushButton>
+      </div>
+      <div class="text-[#8e8e8e] md:text-right">
+        Built by
+        <a
+          href="https://techsquidtv.com/follow/"
+          class="text-white transition hover:text-[#c9ff66]"
+          rel="me"
+        >
+          TechSquidTV
+        </a>
+      </div>
     </div>
   </div>
 </footer>
