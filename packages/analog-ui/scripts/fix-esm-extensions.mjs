@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 const scriptsDir = resolve(fileURLToPath(import.meta.url), '..');
 const packageDir = resolve(scriptsDir, '..');
 const distDir = resolve(packageDir, 'dist');
-const importExportPattern = /((?:import|export)\s+(?:[^'"]*?\s+from\s+)?['"])(\.[^'"]+?)(['"])/g;
+const importExportPattern = /((?:import|export)(?:[^'"\n;]*?from)?\s*['"])(\.[^'"]+?)(['"])/g;
 
 function hasKnownExtension(specifier) {
   return extname(specifier) !== '';

@@ -8,8 +8,8 @@ const scriptsDir = dirname(fileURLToPath(import.meta.url));
 const packageDir = resolve(scriptsDir, '..');
 const distIndex = resolve(packageDir, 'dist/index.js');
 
-const maxPackedBytes = readBudget('ANALOG_UI_MAX_PACKED_BYTES', 180_000);
-const maxUnpackedBytes = readBudget('ANALOG_UI_MAX_UNPACKED_BYTES', 700_000);
+const maxPackedBytes = readBudget('ANALOG_UI_MAX_PACKED_BYTES', 115_000);
+const maxUnpackedBytes = readBudget('ANALOG_UI_MAX_UNPACKED_BYTES', 350_000);
 
 function readBudget(name, fallback) {
   const value = process.env[name];
