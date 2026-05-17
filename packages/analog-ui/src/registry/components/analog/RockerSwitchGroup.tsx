@@ -35,6 +35,14 @@ export interface RockerSwitchGroupItemProps extends Omit<ToggleProps, 'className
   toggleClassName?: string;
 }
 
+function getAccessibleLabelText(label: React.ReactNode) {
+  if (typeof label === 'string' || typeof label === 'number') {
+    return String(label);
+  }
+
+  return undefined;
+}
+
 export const RockerSwitchGroup = React.forwardRef<HTMLDivElement, RockerSwitchGroupProps>(
   (
     {
@@ -96,6 +104,8 @@ export const RockerSwitchGroupItem = React.forwardRef<HTMLDivElement, RockerSwit
       variant,
       leftIndicatorTone,
       rightIndicatorTone,
+      leftAriaLabel,
+      rightAriaLabel,
       ...props
     },
     ref,
@@ -108,6 +118,15 @@ export const RockerSwitchGroupItem = React.forwardRef<HTMLDivElement, RockerSwit
       rightIndicatorTone ?? context?.rightIndicatorTone ?? 'success';
     const isLabelInline = labelPosition === 'start' || labelPosition === 'end';
     const shouldLabelRenderFirst = labelPosition === 'start' || labelPosition === 'top';
+    const accessibleLabel = getAccessibleLabelText(label);
+    const leftPositionLabel = resolvedOrientation === 'vertical' ? 'top' : 'left';
+    const rightPositionLabel = resolvedOrientation === 'vertical' ? 'bottom' : 'right';
+    const resolvedLeftAriaLabel =
+      leftAriaLabel ??
+      (accessibleLabel ? `${accessibleLabel} ${leftPositionLabel} option` : undefined);
+    const resolvedRightAriaLabel =
+      rightAriaLabel ??
+      (accessibleLabel ? `${accessibleLabel} ${rightPositionLabel} option` : undefined);
 
     const labelNode = label ? (
       <span className="font-mono text-[10px] font-bold uppercase leading-none tracking-[0.22em] text-[var(--analog-telemetry-label)]">
@@ -121,6 +140,8 @@ export const RockerSwitchGroupItem = React.forwardRef<HTMLDivElement, RockerSwit
         variant={resolvedVariant}
         leftIndicatorTone={resolvedLeftIndicatorTone}
         rightIndicatorTone={resolvedRightIndicatorTone}
+        leftAriaLabel={resolvedLeftAriaLabel}
+        rightAriaLabel={resolvedRightAriaLabel}
         {...props}
       />
     );

@@ -76,7 +76,10 @@ export interface GaugeRenderPointerProps {
   children: React.ReactNode;
 }
 
-export interface GaugeProps extends React.ComponentPropsWithoutRef<typeof Slider.Root> {
+export interface GaugeProps extends Omit<
+  React.ComponentPropsWithoutRef<typeof Slider.Root>,
+  'render'
+> {
   tone?: AnalogTone;
   lighting?: AnalogLightingConfig<'surface' | 'pointer' | 'lens'>;
   startAngle?: number;

@@ -538,6 +538,7 @@
       "title": "Rocker Thumb Surface",
       "type": "registry:ui",
       "description": "A reusable tactile thumb shell for sliders and switches with machined analog lighting treatment.",
+      "docs": "Reusable analog part for rocker-style thumbs in Slider, Toggle, and custom installed controls. Props: variant, orientation, raisedSide, extrusionLayers, children, className, and style. The part expects thumb lighting variables from its parent and is documented through consuming component composition examples rather than a standalone component page.",
       "registryDependencies": [
         "analog-foundation",
         "analog-material-scope",
@@ -556,6 +557,7 @@
       "title": "Surface Button",
       "type": "registry:ui",
       "description": "A metallic button surface with foil reflections, material variants, and pointer-responsive glare.",
+      "docs": "Reusable analog part for tactile circular or cap-like surfaces in Dial, Gauge, RotarySwitch, and Panel hardware. Props: children, containerClassName, disabled, rotation, variant, lighting, className, and style; remaining div attributes are forwarded to the surface root. Use containerClassName for the wrapper and className/style for the lit surface itself.",
       "dependencies": ["@base-ui/react", "motion"],
       "registryDependencies": [
         "analog-foundation",
@@ -578,6 +580,7 @@
       "description": "A tactile rotary control that can behave as an endless encoder or a bounded knob with sweep, steps, and detents.",
       "registryDependencies": [
         "analog-foundation",
+        "refs",
         "surface-button",
         "use-analog-lighting",
         "analog-material-scope",
@@ -638,7 +641,13 @@
       "title": "LCD Display",
       "type": "registry:ui",
       "description": "A seven-segment readout with tone-driven lens glow, static screen texture, and shadowed vintage numerals.",
-      "registryDependencies": ["analog-foundation", "analog-tone", "use-analog-lighting", "utils"],
+      "registryDependencies": [
+        "analog-foundation",
+        "analog-tone",
+        "refs",
+        "use-analog-lighting",
+        "utils"
+      ],
       "files": [
         {
           "path": "src/registry/components/analog/LCDDisplay.tsx",
@@ -655,6 +664,7 @@
       "registryDependencies": [
         "analog-foundation",
         "analog-tone",
+        "refs",
         "use-analog-lighting",
         "analog-material-scope",
         "radial-helpers",
@@ -676,6 +686,7 @@
       "registryDependencies": [
         "analog-foundation",
         "analog-tone",
+        "refs",
         "use-analog-lighting",
         "utils",
         "orientation"
@@ -737,6 +748,7 @@
       "registryDependencies": [
         "analog-foundation",
         "analog-tone",
+        "refs",
         "use-analog-lighting",
         "analog-material-scope",
         "utils"
@@ -805,6 +817,7 @@
       "dependencies": ["@base-ui/react", "motion", "lucide-react"],
       "registryDependencies": [
         "analog-foundation",
+        "refs",
         "use-analog-lighting",
         "use-wheel-input",
         "utils",
@@ -843,6 +856,7 @@
       "title": "Square Plunger",
       "type": "registry:ui",
       "description": "A reusable 3D square plunger surface with motion-driven physical displacement and chrome, black, or rubber finishes.",
+      "docs": "Reusable analog part for push buttons, push toggles, checkbox plungers, and toggle-button groups. Props: isPressed, variant, extrusionLayers, children, indicator, className, style, faceClassName, and faceStyle. It renders stable square-plunger data slots and expects thumb/surface lighting variables from its parent shell.",
       "dependencies": ["motion"],
       "registryDependencies": ["analog-foundation", "analog-material-scope", "utils"],
       "files": [
@@ -903,6 +917,7 @@
       "registryDependencies": [
         "analog-foundation",
         "analog-tone",
+        "refs",
         "use-analog-lighting",
         "utils",
         "orientation",
@@ -945,6 +960,7 @@
       "description": "An industrial rack-style panel container with optional screws and structured layout slots.",
       "registryDependencies": [
         "analog-foundation",
+        "refs",
         "surface-button",
         "use-analog-lighting",
         "analog-material-scope",

@@ -163,6 +163,12 @@ export function CustomPointerDial() {
             description: 'Sets the material finish.',
           },
           {
+            name: 'disabled',
+            type: 'boolean',
+            defaultValue: 'false',
+            description: 'Disables pointer, wheel, and keyboard interaction.',
+          },
+          {
             name: 'min / max',
             type: 'number',
             defaultValue: '0 / 100',
@@ -173,6 +179,11 @@ export function CustomPointerDial() {
             type: 'number',
             defaultValue: '1 or 15',
             description: 'Keyboard and wheel increment.',
+          },
+          {
+            name: 'fineStep / coarseStep',
+            type: 'number',
+            description: 'Alt and shift keyboard or wheel increments.',
           },
           {
             name: 'startAngle',
@@ -221,14 +232,14 @@ export function CustomPointerDial() {
             description: 'Resolved value and normalized position.',
           },
           {
+            name: 'min / max',
+            type: 'number',
+            description: 'Resolved knob domain bounds.',
+          },
+          {
             name: 'mode / isKnob',
             type: '"encoder" | "knob" / boolean',
             description: 'Resolved travel mode.',
-          },
-          {
-            name: 'min / max',
-            type: 'number',
-            description: 'Resolved knob bounds.',
           },
           {
             name: 'degrees / revolutions / rotation',
@@ -262,6 +273,11 @@ export function CustomPointerDial() {
             description: 'Resolved value and normalized position.',
           },
           {
+            name: 'min / max',
+            type: 'number',
+            description: 'Resolved knob domain bounds.',
+          },
+          {
             name: 'mode / isKnob',
             type: '"encoder" | "knob" / boolean',
             description: 'Resolved travel mode.',
@@ -270,6 +286,11 @@ export function CustomPointerDial() {
             name: 'degrees / revolutions / rotation',
             type: 'number',
             description: 'Wrapped angle, encoder revolution count, and active rotation.',
+          },
+          {
+            name: 'variant / disabled / isDragging',
+            type: '"chrome" | "black" / boolean',
+            description: 'Resolved material and interaction state.',
           },
           {
             name: 'pointerBevelAngle',
@@ -286,6 +307,44 @@ export function CustomPointerDial() {
             type: 'string / React.CSSProperties',
             description: 'Default pointer highlight props.',
           },
+        ],
+      },
+      {
+        title: 'SurfaceButton',
+        description:
+          'Reusable cap surface used by Dial, Gauge, RotarySwitch, and Panel hardware layers.',
+        props: [
+          {
+            name: 'children',
+            type: 'React.ReactNode',
+            description: 'Content rendered above the foil, glare, and texture layers.',
+          },
+          {
+            name: 'containerClassName',
+            type: 'string',
+            description: 'Adds classes to the wrapper around the lit surface root.',
+          },
+          {
+            name: 'disabled',
+            type: 'boolean',
+            defaultValue: 'false',
+            description: 'Sets aria-disabled on the surface root.',
+          },
+          {
+            name: 'rotation',
+            type: 'number',
+            defaultValue: '0',
+            description: 'Rotates the foil and texture treatment in degrees.',
+          },
+          {
+            name: 'variant',
+            type: '"chrome" | "black"',
+            defaultValue: 'inherited',
+            description: 'Sets the material finish.',
+          },
+          lightingProp,
+          classNameProp,
+          styleProp,
         ],
       },
     ],
@@ -502,6 +561,44 @@ export function CustomSliderThumb() {
         ],
       },
       {
+        title: 'RockerThumbSurface',
+        description:
+          'Reusable tactile thumb shell used by Slider, Toggle, and custom rocker-style controls.',
+        props: [
+          {
+            name: 'variant',
+            type: '"chrome" | "black"',
+            defaultValue: 'inherited',
+            description: 'Sets the material finish.',
+          },
+          {
+            name: 'orientation',
+            type: '"horizontal" | "vertical"',
+            defaultValue: '"horizontal"',
+            description: 'Controls the bevel, ridge, and raised-side axis.',
+          },
+          {
+            name: 'raisedSide',
+            type: '"start" | "end" | "both"',
+            defaultValue: '"start"',
+            description: 'Chooses which side of the rocker appears raised.',
+          },
+          {
+            name: 'extrusionLayers',
+            type: 'number',
+            defaultValue: '24',
+            description: 'Controls the rendered thumb depth layers.',
+          },
+          {
+            name: 'children',
+            type: 'React.ReactNode',
+            description: 'Optional content layered inside the thumb surface.',
+          },
+          classNameProp,
+          styleProp,
+        ],
+      },
+      {
         title: 'SliderRenderMark',
         description: 'Props passed to renderMark for each scale mark label.',
         props: [
@@ -568,6 +665,12 @@ export function ToggleExample() {
             description: 'Controlled selected side.',
           },
           {
+            name: 'defaultValue',
+            type: '"left" | "right"',
+            defaultValue: '"left"',
+            description: 'Initial uncontrolled selected side.',
+          },
+          {
             name: 'onValueChange',
             type: '(value: "left" | "right") => void',
             description: 'Receives the next selected side.',
@@ -604,6 +707,7 @@ export function ToggleExample() {
           },
           lightingProp,
           classNameProp,
+          styleProp,
         ],
       },
     ],
@@ -685,7 +789,8 @@ export function RockerSwitchGroupExample() {
           {
             name: 'label',
             type: 'React.ReactNode',
-            description: 'Short hardware label rendered beside the rocker.',
+            description:
+              'Short hardware label rendered beside the rocker. String and number labels also seed default accessible labels for the nested toggle targets.',
           },
           {
             name: 'labelPosition',
@@ -701,7 +806,13 @@ export function RockerSwitchGroupExample() {
           {
             name: 'value / onValueChange',
             type: 'Toggle value props',
-            description: 'Passes through to the nested Toggle.',
+            description: 'Passes through controlled value handling to the nested Toggle.',
+          },
+          {
+            name: 'defaultValue / indicator / aria props',
+            type: 'ToggleProps',
+            description:
+              'Passes through defaultValue, indicator tone or active props, aria labels, lighting, and other Toggle props.',
           },
           classNameProp,
         ],
@@ -773,6 +884,28 @@ export function StyledPushButton() {
             description: 'Sets the plunger footprint height.',
           },
           {
+            name: 'href / target / rel / download',
+            type: 'string / HTMLAttributeAnchorTarget / string / AnchorHTMLAttributes["download"]',
+            description: 'Renders the button as a link and forwards anchor metadata.',
+          },
+          {
+            name: 'onPointerDown / onPointerUp / onPointerCancel / onPointerLeave',
+            type: 'React.PointerEventHandler<HTMLButtonElement | HTMLAnchorElement>',
+            description:
+              'Pointer event handlers forwarded to the interactive root while preserving pressed-depth feedback.',
+          },
+          {
+            name: 'onKeyDown / onKeyUp / onBlur',
+            type: 'React keyboard/focus handlers',
+            description:
+              'Keyboard and blur handlers forwarded to the interactive root while preserving pressed-depth feedback.',
+          },
+          {
+            name: 'onMouseDown / onMouseUp / onMouseLeave',
+            type: 'React.MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>',
+            description: 'Mouse event handlers forwarded to the interactive root.',
+          },
+          {
             name: 'extrusionLayers',
             type: 'number',
             defaultValue: '32',
@@ -788,6 +921,52 @@ export function StyledPushButton() {
           styleProp,
           controlClassNameProp,
           controlStyleProp,
+        ],
+      },
+      {
+        title: 'SquarePlunger',
+        description:
+          'Reusable 3D plunger surface used by push buttons, push toggles, checkboxes, and toggle-button groups.',
+        props: [
+          {
+            name: 'isPressed',
+            type: 'boolean',
+            description: 'Controls the plunger travel depth and tilt state.',
+          },
+          {
+            name: 'variant',
+            type: '"chrome" | "black" | "rubber"',
+            defaultValue: 'inherited',
+            description: 'Sets the plunger face and extrusion material.',
+          },
+          {
+            name: 'extrusionLayers',
+            type: 'number',
+            defaultValue: '32',
+            description: 'Controls the rendered depth layers.',
+          },
+          {
+            name: 'children',
+            type: 'React.ReactNode',
+            description: 'Face content rendered above the material treatment.',
+          },
+          {
+            name: 'indicator',
+            type: 'React.ReactNode',
+            description: 'Optional status indicator rendered on the plunger face.',
+          },
+          classNameProp,
+          styleProp,
+          {
+            name: 'faceClassName',
+            type: 'string',
+            description: 'Adds classes to the top face layer.',
+          },
+          {
+            name: 'faceStyle',
+            type: 'React.CSSProperties',
+            description: 'Overrides or extends the top face background and shadow.',
+          },
         ],
       },
     ],
@@ -890,6 +1069,11 @@ export function StyledPushToggle() {
             type: 'number',
             defaultValue: '32',
             description: 'Controls the rendered depth layers.',
+          },
+          {
+            name: 'children',
+            type: 'React.ReactNode',
+            description: 'Plunger face content.',
           },
           lightingProp,
           classNameProp,
@@ -1002,6 +1186,11 @@ export function RoutingChecklist() {
             name: 'name / value',
             type: 'string',
             description: 'Form field name and submitted value for checked options.',
+          },
+          {
+            name: 'children',
+            type: 'React.ReactNode',
+            description: 'Visible checkbox label content.',
           },
           {
             name: 'parent',
@@ -1123,6 +1312,7 @@ export function RoutingChecklist() {
           },
           lightingProp,
           classNameProp,
+          styleProp,
         ],
       },
     ],
@@ -1181,8 +1371,8 @@ export function ToggleButtonGroupExample() {
           },
           {
             name: 'onValueChange',
-            type: '(value: string) => void',
-            description: 'Receives the next selected item value.',
+            type: '(value: string, details: ToggleButtonGroupChangeDetails) => void',
+            description: 'Receives the next selected item value and Base UI change details.',
           },
           {
             name: 'orientation',
@@ -1220,8 +1410,15 @@ export function ToggleButtonGroupExample() {
             defaultValue: '"3.5rem"',
             description: 'Default item height for child toggles.',
           },
+          {
+            name: 'extrusionLayers',
+            type: 'number',
+            defaultValue: '32',
+            description: 'Default rendered plunger depth for child toggles.',
+          },
           lightingProp,
           classNameProp,
+          styleProp,
         ],
       },
       {
@@ -1237,6 +1434,11 @@ export function ToggleButtonGroupExample() {
             name: 'href',
             type: 'string',
             description: 'Renders the item as a link while preserving toggle styling.',
+          },
+          {
+            name: 'target / rel / download',
+            type: 'HTMLAttributeAnchorTarget / string / AnchorHTMLAttributes["download"]',
+            description: 'Anchor metadata forwarded when href is provided.',
           },
           {
             name: 'width / height',
@@ -1267,6 +1469,11 @@ export function ToggleButtonGroupExample() {
             type: 'number',
             defaultValue: '32',
             description: 'Controls rendered plunger depth.',
+          },
+          {
+            name: 'children',
+            type: 'React.ReactNode',
+            description: 'Plunger face content.',
           },
           lightingProp,
           classNameProp,
@@ -1425,6 +1632,12 @@ export function CustomPointerRotarySwitch() {
             description: 'Receives drag and keyboard updates.',
           },
           {
+            name: 'disabled',
+            type: 'boolean',
+            defaultValue: 'false',
+            description: 'Disables drag, pointer, and keyboard interaction.',
+          },
+          {
             name: 'min / max',
             type: 'number',
             defaultValue: '0 / 6',
@@ -1515,6 +1728,50 @@ export function CustomPointerRotarySwitch() {
         ],
       },
       {
+        title: 'RotarySwitchRenderKnob',
+        description: 'Props passed to renderKnob for the full fluted selector stack.',
+        props: [
+          {
+            name: 'className / style',
+            type: 'string / React.CSSProperties',
+            description: 'Default selector stack classes and transform styles.',
+          },
+          {
+            name: 'children',
+            type: 'React.ReactNode',
+            description: 'Default pointer and cap layers to place inside a custom knob.',
+          },
+        ],
+      },
+      {
+        title: 'RotarySwitchRenderPointer',
+        description: 'Props passed to renderPointer for the rotating position stripe.',
+        props: [
+          {
+            name: 'className / style',
+            type: 'string / React.CSSProperties',
+            description: 'Default pointer stripe classes and styles.',
+          },
+        ],
+      },
+      {
+        title: 'RotarySwitchRenderCap',
+        description: 'Props passed to renderCap for the center cap surface.',
+        props: [
+          lightingProp,
+          {
+            name: 'containerClassName / surfaceContainerClassName / surfaceClassName',
+            type: 'string',
+            description: 'Default cap wrapper and SurfaceButton classes.',
+          },
+          {
+            name: 'surfaceStyle',
+            type: 'React.CSSProperties',
+            description: 'Default SurfaceButton style for the center cap.',
+          },
+        ],
+      },
+      {
         title: 'RotarySwitchRenderMark',
         description: 'Props passed to renderMark for each resolved scale label.',
         props: [
@@ -1591,6 +1848,21 @@ export function WheelSelectExample() {
             description: 'Controlled selected index alternative.',
           },
           {
+            name: 'defaultSelectedIndex',
+            type: 'number',
+            description: 'Initial uncontrolled selected index.',
+          },
+          {
+            name: 'onSelectedIndexChange',
+            type: '(index: number) => void',
+            description: 'Receives selected index changes alongside value updates.',
+          },
+          {
+            name: 'getOptionLabel',
+            type: '(index: number) => string | undefined',
+            description: 'Generates labels for index-backed wheel options.',
+          },
+          {
             name: 'minIndex / maxIndex',
             type: 'number',
             description: 'Bounds for generated index labels.',
@@ -1645,8 +1917,8 @@ export function WheelNumberExample() {
           { name: 'defaultValue', type: 'number', description: 'Initial uncontrolled value.' },
           {
             name: 'onValueChange',
-            type: '(value: number | null) => void',
-            description: 'Receives value changes.',
+            type: '(value: number | null, details: NumberField.ChangeEventDetails) => void',
+            description: 'Receives value changes and Base UI change details.',
           },
           { name: 'min / max', type: 'number', description: 'Optional numeric bounds.' },
           {
@@ -1758,6 +2030,12 @@ export function CustomPointerGauge() {
             description: 'Receives drag and keyboard updates.',
           },
           {
+            name: 'min / max',
+            type: 'number',
+            defaultValue: '0 / 100',
+            description: 'Slider domain mapped onto the radial gauge.',
+          },
+          {
             name: 'tone',
             type: 'AnalogTone',
             defaultValue: '"success"',
@@ -1867,6 +2145,11 @@ export function CustomPointerGauge() {
             description: 'Fill origin mode and resolved center value.',
           },
           {
+            name: 'startAngle / sweepAngle',
+            type: 'number',
+            description: 'Resolved radial geometry in degrees.',
+          },
+          {
             name: 'fillStart / fillLength',
             type: 'number',
             description: 'Arc offsets in degrees for the active fill.',
@@ -1922,6 +2205,11 @@ export function CustomPointerGauge() {
             name: 'rotationAngle / pointerBevelAngle',
             type: 'number / string',
             description: 'Resolved pointer rotation and light-relative bevel angle.',
+          },
+          {
+            name: 'tone',
+            type: 'AnalogTone',
+            description: 'Current tone for pointer-aware custom hardware.',
           },
           {
             name: 'className / style',
@@ -2111,14 +2399,37 @@ export function CustomNeedleGauge() {
             defaultValue: '"linear"',
             description: 'Preset marks and range behavior.',
           },
+          {
+            name: 'startAngle / sweepAngle',
+            type: 'number',
+            defaultValue: '195 / 150',
+            description: 'Arc geometry for the printed scale and needle travel.',
+          },
           { name: 'marks', type: 'NeedleGaugeMark[]', description: 'Custom printed scale marks.' },
           {
             name: 'zones',
             type: 'NeedleGaugeZone[]',
             description: 'Colored range bands behind the scale.',
           },
+          {
+            name: 'minorTickCount',
+            type: 'number',
+            defaultValue: '40',
+            description: 'Number of minor tick marks between the major scale artwork.',
+          },
           { name: 'label', type: 'React.ReactNode', description: 'Optional center label.' },
           { name: 'unit', type: 'React.ReactNode', description: 'Optional unit label.' },
+          {
+            name: 'showValue',
+            type: 'boolean',
+            defaultValue: 'true',
+            description: 'Controls whether the numeric readout renders.',
+          },
+          {
+            name: 'valueFormatter',
+            type: '(value: number) => React.ReactNode',
+            description: 'Formats the numeric value shown in the readout.',
+          },
           {
             name: 'variant',
             type: '"chrome" | "black"',
@@ -2136,6 +2447,18 @@ export function CustomNeedleGauge() {
             type: 'AnalogTone',
             defaultValue: '"destructive"',
             description: 'Sets the tone-driven needle color.',
+          },
+          {
+            name: 'animationDuration',
+            type: 'number',
+            defaultValue: '420',
+            description: 'Fallback transition duration in milliseconds when spring is disabled.',
+          },
+          {
+            name: 'spring',
+            type: 'boolean | NeedleGaugeSpringConfig',
+            defaultValue: 'true',
+            description: 'Enables spring-driven needle animation or overrides spring settings.',
           },
           {
             name: 'scaleClassName / needleClassName / hubClassName',
@@ -2213,6 +2536,11 @@ export function CustomNeedleGauge() {
         description: 'Props passed to renderNeedle for the animated pointer layer.',
         props: [
           {
+            name: 'value / min / max / ratio',
+            type: 'number',
+            description: 'Resolved value state and normalized position.',
+          },
+          {
             name: 'needleAngle / needleRotation',
             type: 'number',
             description: 'Target absolute angle and CSS rotation.',
@@ -2228,6 +2556,11 @@ export function CustomNeedleGauge() {
             description: 'CSS transition used when spring animation is disabled.',
           },
           {
+            name: 'needleVariant / tone',
+            type: 'NeedleGaugeNeedleVariant / AnalogTone',
+            description: 'Resolved needle material mode and tone color.',
+          },
+          {
             name: 'className / style',
             type: 'string / React.CSSProperties',
             description: 'Default needle classes and animated style.',
@@ -2238,6 +2571,11 @@ export function CustomNeedleGauge() {
         title: 'NeedleGaugeRenderHub',
         description: 'Props passed to renderHub for the center cap.',
         props: [
+          {
+            name: 'value / min / max / ratio',
+            type: 'number',
+            description: 'Resolved value state and normalized position.',
+          },
           {
             name: 'variant',
             type: 'AnalogMaterialVariant',
@@ -2268,6 +2606,11 @@ export function CustomNeedleGauge() {
             name: 'label / unit / formattedValue',
             type: 'React.ReactNode',
             description: 'Resolved readout content.',
+          },
+          {
+            name: 'value / min / max / ratio',
+            type: 'number',
+            description: 'Resolved value state and normalized position.',
           },
           {
             name: 'showValue',
@@ -2435,6 +2778,28 @@ export function CustomVuMeter() {
             description: 'Preset scale and zone behavior.',
           },
           {
+            name: 'marks',
+            type: 'MeterMark[]',
+            description: 'Custom scale labels with optional normalized positions.',
+          },
+          {
+            name: 'showScale',
+            type: 'boolean',
+            defaultValue: 'false',
+            description: 'Controls whether the scale layer renders.',
+          },
+          {
+            name: 'scaleSide',
+            type: '"leading" | "trailing"',
+            defaultValue: '"leading"',
+            description: 'Places the default scale labels before or after the track.',
+          },
+          {
+            name: 'zones',
+            type: 'MeterZone[]',
+            description: 'Custom color ranges for metered fills.',
+          },
+          {
             name: 'ballistics',
             type: 'MeterBallistics',
             description: 'Controls meter attack, release, and peak hold timing.',
@@ -2524,6 +2889,11 @@ export function CustomVuMeter() {
         description: 'Props passed to renderTrack for the visual meter cavity.',
         props: [
           {
+            name: 'orientation / isVertical',
+            type: '"horizontal" | "vertical" / boolean',
+            description: 'Current meter axis and convenience boolean.',
+          },
+          {
             name: 'value / min / max',
             type: 'number',
             description: 'Resolved meter domain state.',
@@ -2532,6 +2902,11 @@ export function CustomVuMeter() {
             name: 'percentage / peakPercentage',
             type: 'number / number | null',
             description: 'Normalized fill and peak positions.',
+          },
+          {
+            name: 'variant / tone',
+            type: 'MeterVariant / AnalogTone',
+            description: 'Resolved meter finish and active tone.',
           },
           {
             name: 'className / style',
@@ -2550,9 +2925,24 @@ export function CustomVuMeter() {
         description: 'Props passed to renderIndicator for the clipped fill layer.',
         props: [
           {
+            name: 'orientation / isVertical',
+            type: '"horizontal" | "vertical" / boolean',
+            description: 'Current meter axis and convenience boolean.',
+          },
+          {
+            name: 'value / min / max / percentage',
+            type: 'number',
+            description: 'Resolved meter domain state and normalized fill position.',
+          },
+          {
             name: 'clipPath / transitionMs',
             type: 'string / number',
             description: 'Resolved clipping and ballistics timing.',
+          },
+          {
+            name: 'variant / tone',
+            type: 'MeterVariant / AnalogTone',
+            description: 'Resolved meter finish and active tone.',
           },
           {
             name: 'className / style',
@@ -2644,18 +3034,43 @@ export function CustomVuMeter() {
         description: 'Layout helpers for channel groups and separators.',
         props: [
           {
+            name: 'orientation',
+            type: '"horizontal" | "vertical"',
+            defaultValue: '"horizontal"',
+            description: 'Direction used for group layout and child channel defaults.',
+          },
+          {
             name: 'variant',
             type: '"panel" | "chrome" | "black"',
-            defaultValue: '"chrome"',
+            defaultValue: '"panel"',
             description: 'Sets the group shell material.',
           },
+          lightingProp,
+          classNameProp,
+        ],
+      },
+      {
+        title: 'MeterGroupChannel',
+        description: 'Labeled channel wrapper for meters inside a MeterGroup.',
+        props: [
           {
             name: 'label',
             type: 'React.ReactNode',
             description: 'Channel label for MeterGroupChannel.',
           },
+          {
+            name: 'labelPosition',
+            type: '"top" | "bottom" | "left" | "right"',
+            defaultValue: 'group orientation dependent',
+            description: 'Places the channel label around the meter.',
+          },
           classNameProp,
         ],
+      },
+      {
+        title: 'MeterGroupSeparator',
+        description: 'Visual separator that follows the parent MeterGroup orientation.',
+        props: [classNameProp, styleProp],
       },
     ],
   },

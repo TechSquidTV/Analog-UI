@@ -22,6 +22,7 @@ const negativeCssLength = (value: CssLength) =>
 
 export interface RockerThumbSurfaceProps {
   className?: string;
+  style?: React.CSSProperties;
   variant?: RockerVariant;
   orientation?: RockerOrientation;
   raisedSide?: RockerRaisedSide;
@@ -198,6 +199,7 @@ const GripRidges = ({
             ? 'top-[18%]'
             : 'bottom-[18%]',
       )}
+      data-slot="rocker-thumb-grip-ridges"
       style={{ opacity: ridgeOpacity }}
     >
       {[...Array(4)].map((_, index) => (
@@ -207,6 +209,7 @@ const GripRidges = ({
             isHorizontal ? 'h-full w-[2px]' : 'h-[2px] w-full',
             'rounded-[var(--analog-radius-micro)]',
           )}
+          data-slot="rocker-thumb-grip-ridge"
           style={{
             background: `linear-gradient(${isHorizontal ? 'to right' : 'to bottom'}, var(--analog-rocker-ridge-edge-tone), var(--analog-rocker-ridge-center-tone) 50%, var(--analog-rocker-ridge-edge-tone))`,
             boxShadow: isHorizontal
@@ -258,9 +261,13 @@ function RockerOverlay({
       : 'var(--analog-rocker-sheen-shadow-alpha-single)';
 
   return (
-    <div className="absolute inset-0 overflow-hidden rounded-[var(--analog-radius-window)]">
+    <div
+      className="absolute inset-0 overflow-hidden rounded-[var(--analog-radius-window)]"
+      data-slot="rocker-thumb-overlay"
+    >
       <div
         className="analog-foil z-[1]"
+        data-slot="rocker-thumb-foil"
         style={{
           backgroundSize: '250%',
           opacity: foilOpacity,
@@ -270,12 +277,14 @@ function RockerOverlay({
       />
       <div
         className="absolute inset-0 z-[2] pointer-events-none"
+        data-slot="rocker-thumb-sheen"
         style={{
           background: `linear-gradient(${axisGradientAngle(orientation)}, rgb(var(--analog-highlight-rgb) / calc(${sheenHighlightAlpha} * var(--analog-light-power, 1))) 0%, rgb(var(--analog-highlight-rgb) / 0.02) 38%, transparent 56%, rgb(var(--analog-shadow-rgb) / calc(${sheenShadowAlpha} * var(--analog-light-power, 1))) 100%)`,
         }}
       />
       <div
         className="absolute inset-0 z-[3] pointer-events-none"
+        data-slot="rocker-thumb-glare"
         style={{
           mixBlendMode: cssVariableBlendMode('var(--analog-rocker-glare-blend)'),
           background: `linear-gradient(${crossAxisGradientAngle(orientation)}, transparent 4%, rgb(var(--analog-highlight-rgb) / calc(${glareEdgeAlpha} * 0.85 * var(--analog-light-power, 1))) 24%, rgb(var(--analog-highlight-rgb) / calc(${glareMidAlpha} * var(--analog-light-power, 1))) 40%, rgb(var(--analog-highlight-rgb) / calc(${glareCoreAlpha} * 0.72 * var(--analog-light-power, 1))) 50%, rgb(var(--analog-highlight-rgb) / calc(${glareMidAlpha} * var(--analog-light-power, 1))) 60%, rgb(var(--analog-highlight-rgb) / calc(${glareEdgeAlpha} * 0.85 * var(--analog-light-power, 1))) 76%, transparent 96%), radial-gradient(110% 72% at 50% 24%, rgb(var(--analog-highlight-rgb) / calc(${glareMidAlpha} * var(--analog-light-power, 1))) 0%, rgb(var(--analog-highlight-rgb) / calc(${glareEdgeAlpha} * var(--analog-light-power, 1))) 42%, transparent 78%)`,
@@ -292,6 +301,7 @@ function RockerOverlay({
               ? 'top-0 bottom-0 left-1/2 -ml-[1px] w-[2px]'
               : 'left-0 right-0 top-1/2 -mt-[1px] h-[2px]',
           )}
+          data-slot="rocker-thumb-seam"
           style={{
             boxShadow:
               orientation === 'horizontal'
@@ -301,9 +311,13 @@ function RockerOverlay({
         />
       ) : null}
 
-      {children ? <div className="absolute inset-0 z-[6]">{children}</div> : null}
+      {children ? (
+        <div className="absolute inset-0 z-[6]" data-slot="rocker-thumb-content">
+          {children}
+        </div>
+      ) : null}
 
-      <div className="absolute inset-0 z-[5]">
+      <div className="absolute inset-0 z-[5]" data-slot="rocker-thumb-grips">
         {gripPositions.includes('start') ? (
           <GripRidges orientation={orientation} position="start" surfaceMode={surfaceMode} />
         ) : null}
@@ -335,7 +349,11 @@ function RockerSegment({
   children?: React.ReactNode;
 }) {
   return (
-    <div className={cn('pointer-events-none', className)} style={style}>
+    <div
+      className={cn('pointer-events-none', className)}
+      data-slot="rocker-thumb-segment"
+      style={style}
+    >
       <div className="relative size-full" style={{ perspective: '800px' }}>
         <div
           className="absolute inset-0 rounded-[var(--analog-radius-window)]"
@@ -350,6 +368,7 @@ function RockerSegment({
             <div
               key={`extrusion-${raisedSide}-${index}`}
               className="absolute inset-0 rounded-[var(--analog-radius-window)] border"
+              data-slot="rocker-thumb-extrusion-layer"
               style={{
                 transform: `translateZ(-${index + 1}px)`,
                 backgroundColor: 'var(--analog-material-mid)',
@@ -360,6 +379,7 @@ function RockerSegment({
 
           <div
             className={cn('absolute inset-0', faceClassName)}
+            data-slot="rocker-thumb-face"
             style={{
               ...getSingleFaceStyle(orientation, raisedSide, surfaceMode),
               transformStyle: 'preserve-3d',
@@ -390,6 +410,7 @@ const getDualClipStyle = (orientation: RockerOrientation, visibleSide: RockerSin
 
 export function RockerThumbSurface({
   className,
+  style,
   variant,
   orientation = 'horizontal',
   raisedSide = 'start',
@@ -404,7 +425,9 @@ export function RockerThumbSurface({
     return (
       <div
         data-analog-variant={resolvedVariant}
+        data-slot="rocker-thumb-surface"
         className={cn('relative pointer-events-none', className)}
+        style={style}
       >
         <RockerSegment
           className="absolute inset-0"
@@ -425,7 +448,9 @@ export function RockerThumbSurface({
   return (
     <div
       data-analog-variant={resolvedVariant}
+      data-slot="rocker-thumb-surface"
       className={cn('relative pointer-events-none', className)}
+      style={style}
     >
       <RockerSegment
         className="absolute inset-0"

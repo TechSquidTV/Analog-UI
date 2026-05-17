@@ -12,6 +12,7 @@ export interface SquarePlungerProps {
   children?: React.ReactNode;
   indicator?: React.ReactNode;
   className?: string;
+  style?: React.CSSProperties;
   faceClassName?: string;
   faceStyle?: React.CSSProperties;
 }
@@ -23,6 +24,7 @@ export const SquarePlunger = ({
   children,
   indicator,
   className,
+  style,
   faceClassName,
   faceStyle,
 }: SquarePlungerProps) => {
@@ -109,7 +111,7 @@ export const SquarePlunger = ({
         damping: 25,
         mass: 1.2,
       }}
-      style={{ transformStyle: 'preserve-3d' }}
+      style={{ ...style, transformStyle: 'preserve-3d' }}
     >
       <div
         data-slot="square-plunger-stack"

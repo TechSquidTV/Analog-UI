@@ -71,23 +71,29 @@ export const SurfaceButton = React.forwardRef<HTMLDivElement, SurfaceButtonProps
     const pointerAngle = `${-rotation * 0.75}deg`;
 
     return (
-      <div className={cn('inline-flex', containerClassName)}>
+      <div className={cn('inline-flex', containerClassName)} data-slot="surface-button-container">
         <div
           ref={mergedRef}
+          {...props}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
           aria-disabled={disabled || undefined}
           data-analog-variant={resolvedVariant}
+          data-slot="surface-button"
           className={cn('surface-button', `variant-${resolvedVariant}`, className)}
           style={{
             ...lightingStyle,
             ...style,
           }}
-          {...props}
         >
-          <div className="holo-bg" style={{ transform: `rotate(${rotation}deg)` }} />
+          <div
+            className="holo-bg"
+            data-slot="surface-button-background"
+            style={{ transform: `rotate(${rotation}deg)` }}
+          />
           <motion.div
             className="holo-glare"
+            data-slot="surface-button-glare"
             style={
               {
                 '--pointer-angle': pointerAngle,
@@ -95,8 +101,16 @@ export const SurfaceButton = React.forwardRef<HTMLDivElement, SurfaceButtonProps
               } as any
             }
           />
-          <div className="holo-texture" style={{ transform: `rotate(${rotation}deg)` }} />
-          {children && <span className="content">{children}</span>}
+          <div
+            className="holo-texture"
+            data-slot="surface-button-texture"
+            style={{ transform: `rotate(${rotation}deg)` }}
+          />
+          {children && (
+            <span className="content" data-slot="surface-button-content">
+              {children}
+            </span>
+          )}
         </div>
       </div>
     );
