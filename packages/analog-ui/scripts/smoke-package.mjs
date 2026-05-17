@@ -21,8 +21,8 @@ const requiredTarballEntries = [
   'package/dist/registry/hooks/use-pointer-lighting.js',
   'package/dist/registry/hooks/use-pointer-lighting.d.ts',
   'package/components.json',
-  'package/registry.json',
 ];
+const prohibitedTarballEntries = ['package/registry.json'];
 
 function log(message) {
   console.log(`[package-smoke] ${message}`);
@@ -56,31 +56,27 @@ function assertFileExists(path) {
 function writeRuntimeSmoke() {
   writeFileSync(
     resolve(consumerDir, 'runtime-smoke.mjs'),
-    `import { existsSync } from 'node:fs';
+    `import { existsSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import { basename } from 'node:path';
 import * as React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 
+const localRegistryPath = ${JSON.stringify(resolve(packageDir, 'registry.json'))};
 const require = createRequire(import.meta.url);
 const analogUi = await import('analog-ui');
 const sliderModule = await import('analog-ui/components/Slider');
 const pointerLightingModule = await import('analog-ui/hooks/use-pointer-lighting');
 
-for (const subpath of [
-  'analog-ui/styles.css',
-  'analog-ui/components.json',
-  'analog-ui/registry.json',
-]) {
+for (const subpath of ['analog-ui/styles.css', 'analog-ui/components.json']) {
   const resolved = require.resolve(subpath);
   if (!existsSync(resolved)) {
     throw new Error(\`Resolved \${subpath} to missing file: \${resolved}\`);
   }
 }
 
-const registry = require('analog-ui/registry.json');
+const registry = JSON.parse(readFileSync(localRegistryPath, 'utf8'));
 if (!Array.isArray(registry.items) || registry.items.length === 0) {
-  throw new Error('analog-ui/registry.json did not expose registry items');
+  throw new Error('Local registry.json did not expose registry items');
 }
 
 const exportedComponentNames = [
@@ -136,7 +132,7 @@ if (!markup.includes('data-slot="dial-root"')) {
 }
 
 console.log(
-  \`Runtime import smoke passed for \${exportedComponentNames.length} component exports from \${basename(require.resolve('analog-ui/registry.json'))}.\`,
+  \`Runtime import smoke passed for \${exportedComponentNames.length} component exports from local registry metadata.\`,
 );
 `,
   );
@@ -238,6 +234,15 @@ try {
   );
   if (missingTarballEntries.length > 0) {
     throw new Error(`Packed tarball is missing: ${missingTarballEntries.join(', ')}`);
+  }
+
+  const presentProhibitedEntries = prohibitedTarballEntries.filter((entry) =>
+    tarballEntries.has(entry),
+  );
+  if (presentProhibitedEntries.length > 0) {
+    throw new Error(
+      `Packed tarball includes excluded entries: ${presentProhibitedEntries.join(', ')}`,
+    );
   }
 
   log('Unpacking tarball into an isolated consumer fixture');

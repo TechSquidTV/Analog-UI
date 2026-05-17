@@ -19,8 +19,7 @@
   ],
   "files": [
     "dist",
-    "components.json",
-    "registry.json"
+    "components.json"
   ],
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -43,8 +42,7 @@
       "import": "./dist/lib/*.js"
     },
     "./styles.css": "./dist/index.css",
-    "./components.json": "./components.json",
-    "./registry.json": "./registry.json"
+    "./components.json": "./components.json"
   },
   "scripts": {
     "build": "tsup --config tsup.config.ts && node ./scripts/fix-esm-extensions.mjs && node ./scripts/copy-assets.mjs",
