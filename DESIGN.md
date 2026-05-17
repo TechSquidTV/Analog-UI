@@ -170,8 +170,7 @@ Short description:
 
 When space is tight, keep the phrase near the front and connect it to concrete UI outputs:
 
-- Prefer: `Studio Hyper-Skeuomorphic components for tactile controls and analog lighting.`
-- Prefer: `Studio Hyper-Skeuomorphic React components for machined panels, meters, and control surfaces.`
+- Prefer: `Studio Hyper-Skeuomorphic components for tactile controls with immersive lighting.`
 - Avoid: generic descriptions that say only `beautiful`, `modern`, `hardware-like`, or `skeuomorphic` without naming the studio-control vocabulary.
 
 ## Colors
