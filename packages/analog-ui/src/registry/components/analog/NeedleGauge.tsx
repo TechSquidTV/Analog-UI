@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Meter } from '@base-ui/react/meter';
 import { cn } from '../../../lib/utils';
+import { useMergedRefs } from '../../../lib/refs';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 import {
   useAnalogMaterialVariant,
@@ -557,6 +558,8 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
     },
     ref,
   ) => {
+    const internalRef = React.useRef<HTMLDivElement>(null);
+    const mergedRef = useMergedRefs(ref, internalRef);
     const resolvedVariant = useAnalogMaterialVariant(variant);
     const isBlack = resolvedVariant === 'black';
     const domain = defaultScaleDomains[scalePreset];
@@ -713,6 +716,9 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
         track: { travel: 1 },
         ...lighting,
       },
+      {
+        targetRef: internalRef,
+      },
     );
     const accessibilityValue =
       typeof formattedValue === 'string' || typeof formattedValue === 'number'
@@ -845,7 +851,7 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
 
     return (
       <Meter.Root
-        ref={ref}
+        ref={mergedRef}
         value={currentValue}
         min={resolvedMin}
         max={resolvedMax}

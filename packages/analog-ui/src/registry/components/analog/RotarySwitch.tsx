@@ -351,7 +351,10 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
     const resolvedMax = Math.round(Math.max(min, max));
     const range = resolvedMax - resolvedMin;
     const resolvedSweepAngle = clamp(sweepAngle, 0, 359.999);
-    const lightingStyle = useAnalogLighting(['surface', 'bezel', 'pointer', 'track'], lighting);
+    const rootRef = React.useRef<HTMLDivElement>(null);
+    const lightingStyle = useAnalogLighting(['surface', 'bezel', 'pointer', 'track'], lighting, {
+      targetRef: rootRef,
+    });
     const surfaceLighting = lighting?.surface ? { surface: lighting.surface } : undefined;
     const isControlled = value !== undefined;
     const [internalValue, setInternalValue] = React.useState(() =>
@@ -363,7 +366,6 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
       resolvedMax,
     );
     const currentValueRef = React.useRef(currentValue);
-    const rootRef = React.useRef<HTMLDivElement>(null);
     const activePointerIdRef = React.useRef<number | null>(null);
     currentValueRef.current = currentValue;
 

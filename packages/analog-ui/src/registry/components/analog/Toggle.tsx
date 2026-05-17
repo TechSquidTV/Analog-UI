@@ -109,7 +109,9 @@ export const Toggle = React.forwardRef<HTMLDivElement, ToggleProps>(
     const isVertical = orientation === 'vertical';
     const groupValue = value === undefined ? undefined : [value];
     const groupDefaultValue = value === undefined ? [defaultValue] : undefined;
-    const lightingStyle = useAnalogLighting(['track', 'thumb', 'lens', 'surface'], lighting);
+    const lightingStyle = useAnalogLighting(['track', 'thumb', 'lens', 'surface'], lighting, {
+      targetRef: internalRef,
+    });
     const basePlateBackground = isChrome
       ? `linear-gradient(calc(var(--analog-light-angle-surface, 180deg) - 180deg), color-mix(in oklch, var(--analog-surface-metal-hi) 76%, var(--analog-highlight-color) 24%) 0%, var(--analog-surface-metal-mid) 42%, var(--analog-surface-metal-lo) 100%)`
       : `linear-gradient(calc(var(--analog-light-angle-surface, 180deg) - 180deg), color-mix(in oklch, var(--analog-surface-onyx-hi) 72%, var(--analog-surface-metal-lo) 28%) 0%, var(--analog-surface-onyx-mid) 46%, var(--analog-surface-onyx-lo) 100%)`;

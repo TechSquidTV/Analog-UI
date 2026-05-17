@@ -30,7 +30,6 @@ import {
   Switch,
   Toggle,
   useAnalogLighting,
-  usePointerLighting,
   type AnalogMaterialChannel,
   type AnalogTone,
 } from '../../../../../packages/analog-ui/src/index';
@@ -1603,12 +1602,6 @@ export default function CreateThemePage() {
   const themeStyle = useMemo(() => getThemeStyle(values), [values]);
   const exportCss = useMemo(() => getThemeCss(values), [values]);
   const activeGroup = tokenGroups.find((group) => group.id === activeGroupId) ?? tokenGroups[0];
-  const sourceAngle = usePointerLighting({
-    baseAngle: 180,
-    influence: 0.34,
-    targetRef: pageRef,
-  });
-
   const handleExport = async () => {
     setActiveTab('Code');
 
@@ -1638,7 +1631,11 @@ export default function CreateThemePage() {
   };
 
   return (
-    <AnalogLightingProvider baseAngle={180} sourceAngle={sourceAngle} power={1}>
+    <AnalogLightingProvider
+      baseAngle={180}
+      power={1}
+      localLighting={{ enabled: true, surfaceRef: pageRef, strength: 0.66 }}
+    >
       <section ref={pageRef} className="site-frame pt-8 md:pt-10">
         <div className="mb-6 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div>

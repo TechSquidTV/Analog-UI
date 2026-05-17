@@ -118,13 +118,16 @@ export const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
     },
     ref,
   ) => {
+    const controlRef = React.useRef<HTMLDivElement>(null);
     const resolvedVariant = useAnalogMaterialVariant(variant);
     const isVertical = orientation === 'vertical';
     const sliderLighting: AnalogLightingConfig<'track' | 'thumb'> = {
       track: { travel: 1 },
       ...lighting,
     };
-    const lightingStyle = useAnalogLighting(['track', 'thumb'], sliderLighting);
+    const lightingStyle = useAnalogLighting(['track', 'thumb'], sliderLighting, {
+      targetRef: controlRef,
+    });
     const sliderRange = max - min;
     const resolvedMarks = React.useMemo<SliderResolvedMark[]>(() => {
       if (!showMarks || !marks?.length) return [];
@@ -156,6 +159,7 @@ export const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
         {...props}
       >
         <BaseSlider.Control
+          ref={controlRef}
           data-slot="slider-control"
           className={cn(
             'group relative flex items-center justify-center touch-none select-none data-[orientation=horizontal]:h-16 data-[orientation=horizontal]:w-full data-[orientation=horizontal]:min-w-0 data-[orientation=vertical]:h-64 data-[orientation=vertical]:w-16 data-[orientation=vertical]:shrink-0',

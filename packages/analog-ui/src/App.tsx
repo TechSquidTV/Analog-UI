@@ -4,7 +4,6 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
-import { usePointerLighting } from './registry/hooks/use-pointer-lighting';
 import { AnalogLightingProvider } from './registry/hooks/use-analog-lighting';
 import { Dial } from './registry/components/analog/Dial';
 import { Toggle } from './registry/components/analog/Toggle';
@@ -148,12 +147,6 @@ export default function App() {
   const [lightPower, setLightPower] = useState(120);
   const [mouseInfluence, setMouseInfluence] = useState(1);
 
-  const dynamicLightAngle = usePointerLighting({
-    baseAngle: lightAngle,
-    influence: mouseInfluence,
-    targetRef: surfaceRef,
-  });
-
   const [panelVariant, setPanelVariant] = useState<'default' | 'rack'>('rack');
   const [panelScrews, setPanelScrews] = useState(true);
   const [screwVariant, setScrewVariant] = useState<'chrome' | 'black'>('chrome');
@@ -194,8 +187,12 @@ export default function App() {
   return (
     <AnalogLightingProvider
       baseAngle={lightAngle}
-      sourceAngle={dynamicLightAngle}
       power={lightPower / 120}
+      localLighting={{
+        enabled: mouseInfluence > 0,
+        surfaceRef,
+        strength: mouseInfluence,
+      }}
     >
       <div
         ref={surfaceRef}

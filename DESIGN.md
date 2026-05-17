@@ -300,10 +300,14 @@ Analog UI lighting is driven by three runtime inputs:
 - `baseAngle` is the art-directed resting direction for the scene.
 - `sourceAngle` is the live direction from the environment, cursor, or another interaction model.
 - `power` scales highlight and shadow intensity without changing the geometric direction of the light.
+- `localLighting` optionally turns pointer movement into component-relative source angles while preserving the same material channel model.
 
 Rules for moving light:
 
 - Mouse-driven or pointer-driven lighting should orbit around the lit surface or panel center, not the viewport, unless the whole viewport is intentionally the lit surface.
+- Component-relative lighting should be enabled at the provider/surface level, measure target bounds outside pointer movement, and resolve each target from its own screen-space center.
+- Local lighting falloff should be based on the lit surface and target dimensions rather than fixed pixels, so the same control behaves correctly in a compact demo, a rack panel, and a full viewport.
+- Disabling or omitting `localLighting` must detach pointer listeners, observers, and RAF work; individual components can opt out with `lighting={{ local: false }}`.
 - `influence` should only blend the live source back toward the base direction. At `1`, the light should track the live source directly with no hidden damping.
 - If the pointer passes through the exact angular singularity at the center of a surface, prefer a tiny dead zone or a brief hold instead of easing the entire orbit.
 - Per-material feel should come from `travel`, `offset`, and optional arc constraints rather than ad hoc lag.
@@ -469,6 +473,7 @@ Implementation guidance:
 
 - Public components should expose typed lighting props scoped to their visible materials.
 - Internals should consume resolved per-material variables such as `--analog-light-angle-track`, `--analog-light-angle-wheel`, or `--analog-light-angle-panel`.
+- Public component roots should pass a stable target ref to `useAnalogLighting` when they should participate in provider-level `localLighting`.
 - New components should not read legacy pre-provider lighting variables directly.
 - Material lighting should be numeric-first, with presets as named configuration options.
 - Materials should react immediately; shape their response with `travel`, `offset`, and optional arc constraints instead of per-material easing lag.
@@ -484,7 +489,7 @@ Rules for interactive controls and demos:
 
 - Keep continuous motion state in the smallest subtree that actually needs it. Meter ballistics, scrub state, and other high-frequency updates should not live at the page or whole-surface level if only one panel is moving.
 - For expensive showcase surfaces, let controls keep their own live drag state and only synchronize heavier outer state on commit when possible. Scrubbing should stay responsive even if labels, derived stats, or unrelated controls update later.
-- Scope mouse or pointer lighting to the active surface, cache its bounds, and coalesce movement with `requestAnimationFrame`. Do not force fresh layout reads on every raw pointer event.
+- Scope mouse or pointer lighting to the active surface, cache surface and component bounds, and coalesce movement with `requestAnimationFrame`. Do not force fresh layout reads on every raw pointer event.
 - Avoid “wake-up” React state flips just to start tracking the pointer. First-touch latency matters, especially for sliders, dials, and other scrub controls.
 - Pause decorative animation and synthetic telemetry when a showcase is offscreen or otherwise inactive.
 - Pre-promote heavily dragged or transformed parts such as slider thumbs when the visual treatment is dense enough to benefit from an isolated layer.

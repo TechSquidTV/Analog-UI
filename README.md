@@ -57,6 +57,34 @@ Components use a semantic `tone` prop for emitted or highlighted color:
 Material structure stays on component variants such as `chrome`, `black`, or
 display style variants. Color roles stay on `tone`.
 
+## Lighting
+
+Controls render with fallback lighting on their own. Wrap a panel or dense
+control bank in `AnalogLightingProvider` when controls should share a scene,
+and enable `localLighting` when pointer movement should react from each
+component's on-screen center:
+
+```tsx
+import * as React from 'react';
+import { AnalogLightingProvider, Dial, Panel } from 'analog-ui';
+
+export function ConsolePanel() {
+  const panelRef = React.useRef<HTMLDivElement>(null);
+
+  return (
+    <AnalogLightingProvider
+      baseAngle={180}
+      power={1}
+      localLighting={{ enabled: true, surfaceRef: panelRef }}
+    >
+      <Panel ref={panelRef}>
+        <Dial />
+      </Panel>
+    </AnalogLightingProvider>
+  );
+}
+```
+
 ## Development
 
 ```bash

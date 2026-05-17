@@ -318,6 +318,33 @@ function PointerLightingCase() {
   );
 }
 
+function LocalLightingCase() {
+  const surfaceRef = useRef<HTMLDivElement>(null);
+
+  return (
+    <AnalogLightingProvider
+      baseAngle={180}
+      power={1}
+      localLighting={{ enabled: true, surfaceRef, strength: 0.7 }}
+    >
+      <div
+        ref={surfaceRef}
+        className="perf-lighting-surface"
+        data-perf-count-rect
+        data-perf-target="lighting-surface"
+      >
+        <Panel className="perf-lighting-stage" data-perf-count-rect screws={false} variant="rack">
+          <div className="perf-lighting-controls">
+            <Dial data-perf-count-rect value={35} />
+            <Switch data-perf-count-rect checked aria-label="Lighting switch" />
+            <LCDDisplay data-perf-count-rect value="LIGHT" />
+          </div>
+        </Panel>
+      </div>
+    </AnalogLightingProvider>
+  );
+}
+
 function WheelCleanupCase() {
   const [mounted, setMounted] = useState(true);
 
@@ -360,6 +387,7 @@ function PerfCase() {
   }, [caseName]);
 
   if (caseName === 'pointer-lighting') return <PointerLightingCase />;
+  if (caseName === 'local-lighting') return <LocalLightingCase />;
   if (caseName === 'wheel-cleanup') return <WheelCleanupCase />;
 
   return <SliderDragCase />;

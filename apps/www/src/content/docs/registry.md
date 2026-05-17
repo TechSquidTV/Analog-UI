@@ -39,3 +39,5 @@ The registry includes:
 Controls that support inherited material finishes pull in `analog-material-scope` automatically through their registry dependencies, so you only need to install it directly when composing your own subtree scopes.
 
 Controls that expose `tone` pull in `analog-tone` automatically. Install it directly only when you are composing your own component around the same semantic color roles.
+
+Controls that participate in provider-level `localLighting` pull in `use-analog-lighting` through their registry dependencies. Install that hook directly only when you are authoring a custom component that should register its own local lighting target.

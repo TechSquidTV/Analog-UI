@@ -33,7 +33,9 @@ export const SurfaceButton = React.forwardRef<HTMLDivElement, SurfaceButtonProps
   ) => {
     const internalRef = useRef<HTMLDivElement>(null);
     const mergedRef = useMergedRefs(forwardedRef, internalRef);
-    const lightingStyle = useAnalogLighting(['surface'], lighting);
+    const lightingStyle = useAnalogLighting(['surface'], lighting, {
+      targetRef: internalRef,
+    });
     const resolvedVariant = useAnalogMaterialVariant(variant);
 
     const rawCenter = useMotionValue(0.4);

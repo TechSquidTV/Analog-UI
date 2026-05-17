@@ -1,10 +1,6 @@
 import { useRef } from 'react';
 
-import {
-  AnalogLightingProvider,
-  PushButton,
-  usePointerLighting,
-} from '../../../../../packages/analog-ui/src/index';
+import { AnalogLightingProvider, PushButton } from '../../../../../packages/analog-ui/src/index';
 import HomeVstSurface from './HomeVstSurface';
 
 interface HomePageProps {
@@ -13,14 +9,13 @@ interface HomePageProps {
 
 export default function HomePage({ componentCountLabel }: HomePageProps) {
   const homeRef = useRef<HTMLDivElement>(null);
-  const sourceAngle = usePointerLighting({
-    baseAngle: 180,
-    influence: 0.42,
-    targetRef: homeRef,
-  });
 
   return (
-    <AnalogLightingProvider baseAngle={180} sourceAngle={sourceAngle} power={1}>
+    <AnalogLightingProvider
+      baseAngle={180}
+      power={1}
+      localLighting={{ enabled: true, surfaceRef: homeRef, strength: 0.72 }}
+    >
       <div ref={homeRef}>
         <section className="site-frame pt-10 text-center md:pt-16">
           <div className="mx-auto max-w-3xl">

@@ -1,36 +1,35 @@
 ---
 title: Lighting
-description: How Analog UI resolves shared light direction, material channels, and per-component lighting overrides.
+description: How Analog UI resolves shared and component-relative light direction, material channels, and component material overrides.
 section: design
 order: 21
 navTitle: Lighting
 draft: false
 ---
 
-Analog UI lighting makes separate controls feel like one piece of hardware. A surface gets a shared scene direction, then each material channel resolves its own angle and intensity from that scene.
+Analog UI lighting makes separate controls feel like one piece of hardware. A surface gets a shared scene direction, and it can optionally add component-relative pointer lighting so each control reacts from its own screen-space center.
 
-Controls can render without a provider because the hooks fall back to a 180 degree light and `power={1}`. Add a provider when a panel, rack, or dense control bank should share one moving light source.
+Controls can render without a provider because the hooks fall back to a 180 degree light and `power={1}`. Add a provider when a panel, rack, or dense control bank should share a scene, react to pointer movement, or define scene-wide material behavior.
 
 ## Basic Setup
 
-Wrap a panel or control bank in `AnalogLightingProvider`. Use `usePointerLighting` when the light should follow the pointer around that surface.
+Wrap a panel or control bank in `AnalogLightingProvider`. Use `localLighting` when pointer movement should feel like a local light moving across actual controls on the surface.
 
 ```tsx
 'use client';
 
 import * as React from 'react';
-import { AnalogLightingProvider, Dial, Panel, Toggle, usePointerLighting } from 'analog-ui';
+import { AnalogLightingProvider, Dial, Panel, Toggle } from 'analog-ui';
 
 export function ConsoleStrip() {
   const surfaceRef = React.useRef<HTMLDivElement>(null);
-  const sourceAngle = usePointerLighting({
-    baseAngle: 180,
-    influence: 0.35,
-    targetRef: surfaceRef,
-  });
 
   return (
-    <AnalogLightingProvider baseAngle={180} sourceAngle={sourceAngle} power={1}>
+    <AnalogLightingProvider
+      baseAngle={180}
+      power={1}
+      localLighting={{ enabled: true, surfaceRef, strength: 0.7 }}
+    >
       <Panel ref={surfaceRef} variant="rack">
         <Dial />
         <Toggle />
@@ -40,17 +39,18 @@ export function ConsoleStrip() {
 }
 ```
 
-The provider supplies three runtime inputs:
+The provider supplies shared runtime inputs and an optional local pointer engine:
 
 - `baseAngle` is the art-directed resting direction for the scene.
 - `sourceAngle` is the live direction from the pointer, environment, or interaction model.
 - `power` scales highlight and shadow strength without changing the geometry of the light.
+- `localLighting` enables component-relative pointer lighting without changing individual component APIs.
 
-`baseAngle`, `sourceAngle`, and `power` can be numbers or Motion values. If `sourceAngle` is omitted, it falls back to `baseAngle`.
+`baseAngle`, `sourceAngle`, and `power` can be numbers or Motion values. If `sourceAngle` is omitted, it falls back to `baseAngle`. If `localLighting` is omitted or disabled, no local pointer listeners, observers, or animation-frame work are installed.
 
-## Pointer Lighting
+## Shared Pointer Lighting
 
-`usePointerLighting` maps pointer position to a continuous Motion value around the target surface.
+Use `usePointerLighting` when the whole surface should share one moving source angle, rather than each registered component resolving from its own center.
 
 - Pass `targetRef` so light orbits the panel or control bank instead of the viewport.
 - Omit `targetRef` only when the viewport is intentionally the lit surface.
@@ -72,6 +72,49 @@ const sourceAngle = usePointerLighting({
 });
 ```
 
+## Local Component Lighting
+
+Use provider-level `localLighting` when each control should react to the pointer from its own screen-space center. The provider installs one pointer listener for the surface, caches component bounds, and updates registered controls in one animation-frame batch.
+
+```tsx
+const panelRef = React.useRef<HTMLDivElement>(null);
+
+<AnalogLightingProvider
+  baseAngle={180}
+  power={1}
+  localLighting={{
+    enabled: true,
+    surfaceRef: panelRef,
+    strength: 0.7,
+  }}
+>
+  <Panel ref={panelRef}>
+    <Dial />
+    <Switch />
+  </Panel>
+</AnalogLightingProvider>;
+```
+
+Falloff is dimension-relative. The default outer radius is based on the lit surface diagonal and
+clamped by each target's diagonal, so compact demos, rack panels, and full-screen surfaces keep a
+similar feel. Set `localLighting={{ enabled: false }}` or omit `localLighting` to detach the local
+pointer loop and use the shared scene angle. A single component can opt out with
+`lighting={{ local: false }}`.
+
+`localLighting` accepts:
+
+| Option           | Use It For                                              | Default  |
+| ---------------- | ------------------------------------------------------- | -------- |
+| `enabled`        | Attaching or detaching the local lighting engine        | `false`  |
+| `surfaceRef`     | Scoping pointer events and surface-relative falloff     | viewport |
+| `strength`       | Maximum local influence before material travel applies  | `0.78`   |
+| `radius`         | Outer falloff as a fraction of the surface diagonal     | `0.3`    |
+| `innerRadius`    | Full-strength radius as a target-diagonal multiplier    | `0.35`   |
+| `minRadius`      | Minimum outer radius as a target-diagonal multiplier    | `2.2`    |
+| `maxRadius`      | Maximum outer radius as a target-diagonal multiplier    | `7`      |
+| `deadZone`       | Center hold radius as a target-diagonal multiplier      | `0.06`   |
+| `responsiveness` | Angle smoothing per pointer frame, from `0` through `1` | `0.42`   |
+
 ## Material Channels
 
 Components call `useAnalogLighting` for the visible material channels they render.
@@ -92,7 +135,7 @@ Use the most specific channel that describes the material. A slider should not l
 
 ## Response Values
 
-Lighting responses can be numbers, presets, or response objects. Numbers are clamped from `0` to `1`; `0` stays on `baseAngle`, and `1` tracks `sourceAngle` directly.
+Lighting responses can be numbers, presets, or response objects. Numbers are clamped from `0` to `1`; `0` stays on `baseAngle`, and `1` tracks the resolved source directly. With shared lighting that source is `sourceAngle`; with local lighting it is the component-relative pointer angle after distance falloff.
 
 ```tsx
 <Dial
@@ -114,7 +157,7 @@ Available presets:
 
 Response object fields:
 
-- `travel` controls how much a channel follows `sourceAngle`.
+- `travel` controls how much a channel follows the resolved source angle.
 - `offset` rotates the resolved channel angle.
 - `constraint` limits motion to an arc with `{ anchor, arc, mode }`.
 
@@ -123,7 +166,9 @@ Use `constraint.mode: "clamp"` for a hard stop and `constraint.mode: "fold"` whe
 ```tsx
 type AnalogLightingConfig<Channel extends AnalogMaterialChannel> = Partial<
   Record<Channel, number | 'fixed' | 'muted' | 'standard' | 'eager' | AnalogLightingResponse>
->;
+> & {
+  local?: boolean;
+};
 ```
 
 ## Provider Defaults
@@ -150,7 +195,7 @@ Use provider defaults when an entire surface should feel heavier, calmer, or mor
 
 ## Component Overrides
 
-Use a component `lighting` prop when one control needs a local response:
+Use a component `lighting` prop when one control needs a material-specific response:
 
 ```tsx
 <Toggle
@@ -164,15 +209,21 @@ Use a component `lighting` prop when one control needs a local response:
 
 Component overrides are merged channel-by-channel over provider defaults, then over the built-in channel defaults. They should describe material behavior, not visual decoration. If the component introduces a visible material channel, expose a typed `lighting` prop for it.
 
+Set `lighting={{ local: false }}` when a component should keep the shared scene angle even inside a provider with `localLighting` enabled.
+
 ## CSS Authoring
 
 Use `useAnalogLighting` inside public components to resolve CSS variables for the channels you render. Route moving gradients, highlights, and shadows through those variables:
 
 ```tsx
-const lightingStyle = useAnalogLighting(['track', 'thumb'], lighting);
+const rootRef = React.useRef<HTMLDivElement>(null);
+const lightingStyle = useAnalogLighting(['track', 'thumb'], lighting, {
+  targetRef: rootRef,
+});
 
 return (
   <div
+    ref={rootRef}
     style={{
       ...lightingStyle,
       background:
@@ -183,6 +234,8 @@ return (
   />
 );
 ```
+
+Pass `targetRef` when a public component should participate in provider-level `localLighting`. The hook still returns fallback CSS variables, so installed components render correctly when local lighting is disabled or no provider exists.
 
 Use `useAnalogLightStyle` when a component needs a secondary light variable for a custom layer:
 

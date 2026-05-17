@@ -446,7 +446,9 @@ export const Dial = React.forwardRef<HTMLDivElement, DialProps>(
 
     const resolvedVariant = useAnalogMaterialVariant(variant);
     const isBlack = resolvedVariant === 'black';
-    const lightingStyle = useAnalogLighting(['surface', 'pointer'], lighting);
+    const lightingStyle = useAnalogLighting(['surface', 'pointer'], lighting, {
+      targetRef: dialRef,
+    });
     const pointerBorderColor = isBlack
       ? 'var(--analog-control-border-strong)'
       : 'color-mix(in oklch, var(--analog-surface-metal-lo) 52%, transparent)';

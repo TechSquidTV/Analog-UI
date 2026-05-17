@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Meter as BaseMeter } from '@base-ui/react/meter';
 import { cn } from '../../../lib/utils';
+import { useMergedRefs } from '../../../lib/refs';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 import type { AnalogOrientation } from './orientation';
 import type { AnalogTone } from './tone';
@@ -697,7 +698,11 @@ export const MeterGroup = React.forwardRef<HTMLDivElement, MeterGroupProps>(
     },
     ref,
   ) => {
-    const lightingStyle = useAnalogLighting(['panel', 'bezel', 'track', 'lens'], lighting);
+    const internalRef = React.useRef<HTMLDivElement>(null);
+    const mergedRef = useMergedRefs(ref, internalRef);
+    const lightingStyle = useAnalogLighting(['panel', 'bezel', 'track', 'lens'], lighting, {
+      targetRef: internalRef,
+    });
     const shellClassName =
       variant === 'chrome'
         ? 'analog-bezel-shell-chrome'
@@ -708,7 +713,7 @@ export const MeterGroup = React.forwardRef<HTMLDivElement, MeterGroupProps>(
     return (
       <MeterGroupContext.Provider value={{ orientation }}>
         <div
-          ref={ref}
+          ref={mergedRef}
           role={role ?? 'group'}
           data-slot="meter-group"
           data-orientation={orientation}

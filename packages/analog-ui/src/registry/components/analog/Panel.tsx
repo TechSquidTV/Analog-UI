@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { cn } from '../../../lib/utils';
+import { useMergedRefs } from '../../../lib/refs';
 import { SurfaceButton } from './SurfaceButton';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 import { useAnalogMaterialVariant } from '../../hooks/analog-material-scope';
@@ -149,11 +150,15 @@ const Panel = React.forwardRef<HTMLDivElement, PanelProps>(
     },
     ref,
   ) => {
-    const lightingStyle = useAnalogLighting(['panel', 'screw'], lighting);
+    const internalRef = React.useRef<HTMLDivElement>(null);
+    const mergedRef = useMergedRefs(ref, internalRef);
+    const lightingStyle = useAnalogLighting(['panel', 'screw'], lighting, {
+      targetRef: internalRef,
+    });
 
     return (
       <div
-        ref={ref}
+        ref={mergedRef}
         className={cn(
           'relative overflow-hidden rounded-[var(--analog-radius-panel)] border text-[var(--analog-panel-foreground)]',
           variantStyles[variant],

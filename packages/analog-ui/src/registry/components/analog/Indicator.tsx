@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { cn } from '../../../lib/utils';
+import { useMergedRefs } from '../../../lib/refs';
 import {
   useAnalogLightAngle,
   useAnalogLighting,
@@ -86,12 +87,16 @@ export const Indicator = React.forwardRef<HTMLDivElement, IndicatorProps>(
     },
     ref,
   ) => {
+    const internalRef = React.useRef<HTMLDivElement>(null);
+    const mergedRef = useMergedRefs(ref, internalRef);
     const glow = glowMaps[size];
     const resolvedVariant = useAnalogMaterialVariant(variant);
     const isChrome = resolvedVariant === 'chrome';
     const hasBezel = !disableBezel;
     const radius = shape === 'square' ? '15%' : '50%';
-    const lightingStyle = useAnalogLighting(['bezel', 'lens'], lighting);
+    const lightingStyle = useAnalogLighting(['bezel', 'lens'], lighting, {
+      targetRef: internalRef,
+    });
     const lensLightAngle = useAnalogLightAngle('lens', {}, lighting?.lens);
     const lensGlintPosition = React.useMemo(() => {
       const radians = (lensLightAngle * Math.PI) / 180;
@@ -109,7 +114,7 @@ export const Indicator = React.forwardRef<HTMLDivElement, IndicatorProps>(
 
     return (
       <div
-        ref={ref}
+        ref={mergedRef}
         className={cn(
           'relative inline-flex items-center justify-center shrink-0',
           sizeMaps[size],

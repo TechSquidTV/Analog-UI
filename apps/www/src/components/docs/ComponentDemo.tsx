@@ -33,7 +33,6 @@ import {
   NeedleGauge,
   type AnalogTone,
   type NeedleGaugeScalePreset,
-  usePointerLighting,
 } from '../../../../../packages/analog-ui/src/index';
 import { cn } from '../../../../../packages/analog-ui/src/lib/utils';
 import type { ComponentName } from '../../data/component-catalog';
@@ -159,14 +158,17 @@ function DemoStage({
   children: ReactNode;
 }) {
   const surfaceRef = useRef<HTMLDivElement>(null);
-  const sourceAngle = usePointerLighting({
-    baseAngle: 180,
-    influence: mode === 'compact' ? 0.24 : 0.38,
-    targetRef: surfaceRef,
-  });
 
   return (
-    <AnalogLightingProvider baseAngle={180} sourceAngle={sourceAngle} power={1}>
+    <AnalogLightingProvider
+      baseAngle={180}
+      power={1}
+      localLighting={{
+        enabled: true,
+        surfaceRef,
+        strength: mode === 'compact' ? 0.58 : 0.68,
+      }}
+    >
       <div
         ref={surfaceRef}
         className={cn(

@@ -242,12 +242,15 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
     },
     ref,
   ) => {
+    const localLightingRef = React.useRef<HTMLDivElement>(null);
     const gaugeId = React.useId().replace(/:/g, '');
     const colors = {
       glow: 'var(--analog-display-glow)',
       bg: 'var(--analog-display-fill)',
     };
-    const lightingStyle = useAnalogLighting(['surface', 'pointer', 'lens'], lighting);
+    const lightingStyle = useAnalogLighting(['surface', 'pointer', 'lens'], lighting, {
+      targetRef: localLightingRef,
+    });
 
     return (
       <Slider.Root
@@ -257,6 +260,10 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
         max={max}
         {...props}
         render={(rootProps, state) => {
+          const rootPropsWithRef = rootProps as React.HTMLAttributes<HTMLDivElement> & {
+            ref?: React.Ref<HTMLDivElement>;
+          };
+          const { ref: rootRenderRef, ...resolvedRootProps } = rootPropsWithRef;
           const val = state.values[0] ?? min;
           const ratio = normalizeRatio(val, min, max, val >= max ? 1 : 0);
           const resolvedSweepAngle = clamp(sweepAngle, 0, 359.999);
@@ -373,7 +380,16 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
 
           return (
             <div
-              {...rootProps}
+              {...resolvedRootProps}
+              ref={(node) => {
+                localLightingRef.current = node;
+
+                if (typeof rootRenderRef === 'function') {
+                  rootRenderRef(node);
+                } else if (rootRenderRef) {
+                  rootRenderRef.current = node;
+                }
+              }}
               data-slot="gauge-root"
               className={cn(
                 'relative mx-auto flex aspect-square w-full min-w-0 max-w-[12rem] items-center justify-center p-4',

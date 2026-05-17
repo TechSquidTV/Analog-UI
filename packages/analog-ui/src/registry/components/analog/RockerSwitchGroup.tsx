@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { cn } from '../../../lib/utils';
+import { useMergedRefs } from '../../../lib/refs';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 import type { AnalogOrientation } from './orientation';
 import { Toggle, type ToggleProps } from './Toggle';
@@ -49,7 +50,11 @@ export const RockerSwitchGroup = React.forwardRef<HTMLDivElement, RockerSwitchGr
     },
     ref,
   ) => {
-    const lightingStyle = useAnalogLighting(['track', 'surface', 'thumb', 'lens'], lighting);
+    const internalRef = React.useRef<HTMLDivElement>(null);
+    const mergedRef = useMergedRefs(ref, internalRef);
+    const lightingStyle = useAnalogLighting(['track', 'surface', 'thumb', 'lens'], lighting, {
+      targetRef: internalRef,
+    });
     const contextValue = React.useMemo<RockerSwitchGroupContextValue>(
       () => ({
         variant,
@@ -63,7 +68,7 @@ export const RockerSwitchGroup = React.forwardRef<HTMLDivElement, RockerSwitchGr
     return (
       <RockerSwitchGroupContext.Provider value={contextValue}>
         <div
-          ref={ref}
+          ref={mergedRef}
           role="group"
           className={cn(
             'inline-flex min-w-0 shrink-0 rounded-[var(--analog-radius-panel)] analog-surface-recess p-3',

@@ -85,9 +85,12 @@ export const PushButton = React.forwardRef<PushButtonElement, PushButtonProps>(
     },
     ref,
   ) => {
+    const containerRef = React.useRef<HTMLDivElement>(null);
     const internalRef = React.useRef<HTMLElement>(null);
     const mergedRef = useMergedRefs(ref, internalRef);
-    const lightingStyle = useAnalogLighting(['surface', 'track', 'thumb'], lighting);
+    const lightingStyle = useAnalogLighting(['surface', 'track', 'thumb'], lighting, {
+      targetRef: containerRef,
+    });
     const resolvedHeight = height ?? '3.5rem';
     const shouldRenderSizer = width === undefined;
 
@@ -146,6 +149,7 @@ export const PushButton = React.forwardRef<PushButtonElement, PushButtonProps>(
 
     return (
       <div
+        ref={containerRef}
         data-slot="push-button"
         className={cn(
           'relative inline-flex min-w-14 shrink-0 items-center justify-center analog-surface-recess p-1.5',

@@ -24,7 +24,9 @@ export const Switch = React.forwardRef<HTMLElement, SwitchProps>(
       track: { travel: 1 },
       ...lighting,
     };
-    const lightingStyle = useAnalogLighting(['track', 'thumb'], switchLighting);
+    const lightingStyle = useAnalogLighting(['track', 'thumb'], switchLighting, {
+      targetRef: internalRef,
+    });
 
     return (
       <BaseSwitch.Root

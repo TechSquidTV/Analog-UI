@@ -48,9 +48,12 @@ export const PushToggle = React.forwardRef<HTMLButtonElement, PushToggleProps>(
     },
     ref,
   ) => {
+    const containerRef = React.useRef<HTMLDivElement>(null);
     const internalRef = React.useRef<HTMLButtonElement>(null);
     const mergedRef = useMergedRefs(ref, internalRef);
-    const lightingStyle = useAnalogLighting(['surface', 'track', 'thumb', 'lens'], lighting);
+    const lightingStyle = useAnalogLighting(['surface', 'track', 'thumb', 'lens'], lighting, {
+      targetRef: containerRef,
+    });
     const resolvedHeight = height ?? '3.5rem';
     const shouldRenderSizer = width === undefined;
 
@@ -100,6 +103,7 @@ export const PushToggle = React.forwardRef<HTMLButtonElement, PushToggleProps>(
 
     return (
       <div
+        ref={containerRef}
         data-slot="push-toggle"
         className={cn(
           'relative inline-flex min-w-14 shrink-0 items-center justify-center analog-surface-recess p-1.5',

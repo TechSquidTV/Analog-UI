@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { cn } from '../../../lib/utils';
+import { useMergedRefs } from '../../../lib/refs';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 import type { AnalogTone } from './tone';
 
@@ -120,10 +121,18 @@ export const LCDDisplay = React.forwardRef<HTMLDivElement, LCDDisplayProps>(
     },
     ref,
   ) => {
-    const lightingStyle = useAnalogLighting(['surface', 'track', 'lens'], {
-      track: { travel: 1 },
-      ...lighting,
-    });
+    const internalRef = React.useRef<HTMLDivElement>(null);
+    const mergedRef = useMergedRefs(ref, internalRef);
+    const lightingStyle = useAnalogLighting(
+      ['surface', 'track', 'lens'],
+      {
+        track: { travel: 1 },
+        ...lighting,
+      },
+      {
+        targetRef: internalRef,
+      },
+    );
     const sizeStyle = displaySizeStyles[size];
     const formattedValue = React.useMemo(
       () => formatDisplayValue(value, digits, align),
@@ -133,7 +142,7 @@ export const LCDDisplay = React.forwardRef<HTMLDivElement, LCDDisplayProps>(
 
     return (
       <div
-        ref={ref}
+        ref={mergedRef}
         className={cn('relative inline-flex max-w-full', className)}
         data-analog-tone={tone}
         style={{

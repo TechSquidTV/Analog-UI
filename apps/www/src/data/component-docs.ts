@@ -44,7 +44,8 @@ import { ${names.join(', ')} } from "analog-ui"`;
 const lightingProp = {
   name: 'lighting',
   type: 'AnalogLightingConfig<...>',
-  description: 'Overrides resolved light channels for the component materials.',
+  description:
+    'Overrides resolved light channels for the component materials. Set local: false to opt out of provider-level local lighting.',
 };
 
 const classNameProp = {

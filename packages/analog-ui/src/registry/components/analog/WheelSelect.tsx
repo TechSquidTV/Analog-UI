@@ -279,7 +279,9 @@ export const WheelSelect = React.forwardRef<HTMLDivElement, WheelSelectProps>(
       wheel: { travel: 0.36 },
       ...lighting,
     };
-    const lightingStyle = useAnalogLighting(['track', 'wheel'], wheelLighting);
+    const lightingStyle = useAnalogLighting(['track', 'wheel'], wheelLighting, {
+      targetRef: containerRef,
+    });
     const wheelFaceStyle = useAnalogLightStyle(
       'wheel',
       {

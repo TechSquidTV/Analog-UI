@@ -95,7 +95,11 @@ export const ToggleButtonGroup = React.forwardRef<HTMLDivElement, ToggleButtonGr
     },
     ref,
   ) => {
-    const lightingStyle = useAnalogLighting(['track', 'surface', 'thumb', 'lens'], lighting);
+    const internalRef = React.useRef<HTMLDivElement>(null);
+    const mergedRef = useMergedRefs(ref, internalRef);
+    const lightingStyle = useAnalogLighting(['track', 'surface', 'thumb', 'lens'], lighting, {
+      targetRef: internalRef,
+    });
     const contextValue = React.useMemo<ToggleButtonGroupContextValue>(
       () => ({
         variant,
@@ -110,7 +114,7 @@ export const ToggleButtonGroup = React.forwardRef<HTMLDivElement, ToggleButtonGr
     return (
       <ToggleButtonGroupContext.Provider value={contextValue}>
         <BaseToggleGroup
-          ref={ref}
+          ref={mergedRef}
           className={cn(
             'inline-flex min-w-0 shrink-0 rounded-[var(--analog-radius-panel)] analog-surface-recess p-1.5',
             orientation === 'vertical' ? 'flex-col gap-1.5' : 'flex-row flex-wrap gap-1.5',
@@ -168,9 +172,12 @@ export const ToggleButtonGroupItem = React.forwardRef<
     ref,
   ) => {
     const context = React.useContext(ToggleButtonGroupContext);
+    const containerRef = React.useRef<HTMLDivElement>(null);
     const internalRef = React.useRef<ToggleButtonGroupElement>(null);
     const mergedRef = useMergedRefs(ref, internalRef);
-    const lightingStyle = useAnalogLighting(['surface', 'thumb', 'lens'], lighting);
+    const lightingStyle = useAnalogLighting(['surface', 'thumb', 'lens'], lighting, {
+      targetRef: containerRef,
+    });
     const resolvedVariant = variant ?? context?.variant;
     const resolvedIndicatorTone = indicatorTone ?? context?.indicatorTone;
     const resolvedIndicatorActive = indicatorActive ?? context?.indicatorActive ?? 'auto';
@@ -268,6 +275,7 @@ export const ToggleButtonGroupItem = React.forwardRef<
 
     return (
       <div
+        ref={containerRef}
         className={cn(
           'relative inline-flex min-w-14 shrink-0 items-center justify-center p-0',
           className,

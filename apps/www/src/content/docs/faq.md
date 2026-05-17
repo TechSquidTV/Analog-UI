@@ -82,7 +82,7 @@ Then remap tone variables in CSS when your product palette needs a different res
 
 ## Do I need an `AnalogLightingProvider`?
 
-Individual controls include fallback lighting values, so they can render on their own. Use `AnalogLightingProvider` when controls should share one light direction across a panel, rack, or dense control bank. Pair it with `usePointerLighting` when the light should respond to pointer movement over a surface.
+Individual controls include fallback lighting values, so they can render on their own. Use `AnalogLightingProvider` when controls should share one scene across a panel, rack, or dense control bank. Add `localLighting` when pointer movement should react from each component's on-screen center, or pair the provider with `usePointerLighting` when the whole surface should share one moving source angle.
 
 See [Lighting](/docs/design/lighting) for setup examples.
 

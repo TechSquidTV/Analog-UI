@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Checkbox as BaseCheckbox } from '@base-ui/react/checkbox';
 import { CheckboxGroup as BaseCheckboxGroup } from '@base-ui/react/checkbox-group';
 import { cn } from '../../../lib/utils';
+import { useMergedRefs } from '../../../lib/refs';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 import { SquarePlunger, type SquarePlungerVariant } from './SquarePlunger';
 import type { AnalogOrientation } from './orientation';
@@ -105,7 +106,10 @@ export const Checkbox = React.forwardRef<HTMLElement, CheckboxProps>(
     const resolvedSize = size ?? context?.itemSize ?? '2.75rem';
     const resolvedLabelPosition = labelPosition ?? context?.labelPosition ?? 'end';
     const resolvedExtrusionLayers = extrusionLayers ?? context?.extrusionLayers ?? 18;
-    const lightingStyle = useAnalogLighting(['surface', 'track', 'thumb'], lighting);
+    const shellRef = React.useRef<HTMLSpanElement>(null);
+    const lightingStyle = useAnalogLighting(['surface', 'track', 'thumb'], lighting, {
+      targetRef: shellRef,
+    });
     const [isPressing, setIsPressing] = React.useState(false);
 
     const labelNode = children ? (
@@ -122,6 +126,7 @@ export const Checkbox = React.forwardRef<HTMLElement, CheckboxProps>(
 
     const controlNode = (
       <span
+        ref={shellRef}
         data-slot="checkbox-control-shell"
         className={cn(
           'relative inline-flex shrink-0 items-center justify-center rounded-[var(--analog-radius-shell)] analog-surface-recess p-0.5',
@@ -282,7 +287,11 @@ export const CheckboxGroup = React.forwardRef<HTMLDivElement, CheckboxGroupProps
     },
     ref,
   ) => {
-    const lightingStyle = useAnalogLighting(['track', 'surface', 'thumb'], lighting);
+    const internalRef = React.useRef<HTMLDivElement>(null);
+    const mergedRef = useMergedRefs(ref, internalRef);
+    const lightingStyle = useAnalogLighting(['track', 'surface', 'thumb'], lighting, {
+      targetRef: internalRef,
+    });
     const contextValue = React.useMemo<CheckboxContextValue>(
       () => ({
         variant,
@@ -297,7 +306,7 @@ export const CheckboxGroup = React.forwardRef<HTMLDivElement, CheckboxGroupProps
     return (
       <CheckboxContext.Provider value={contextValue}>
         <BaseCheckboxGroup
-          ref={ref}
+          ref={mergedRef}
           data-slot="checkbox-group"
           className={cn(
             'inline-flex min-w-0 shrink-0 rounded-[var(--analog-radius-panel)] analog-surface-recess p-2',

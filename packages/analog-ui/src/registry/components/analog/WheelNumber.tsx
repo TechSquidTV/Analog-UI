@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { cn } from '../../../lib/utils';
+import { useMergedRefs } from '../../../lib/refs';
 import { NumberField } from '@base-ui/react/number-field';
 import { createChangeEventDetails } from '@base-ui/react/internals/createBaseUIEventDetails';
 import { motion, useMotionValue, animate } from 'motion/react';
@@ -68,6 +69,8 @@ export const WheelNumber = React.forwardRef<HTMLDivElement, WheelNumberProps>(
     const actualValue = value !== undefined ? (value as number) : internalValue;
 
     const rotation = useMotionValue(0);
+    const rootRef = React.useRef<HTMLDivElement>(null);
+    const mergedRef = useMergedRefs(ref, rootRef);
     const scrubAreaRef = React.useRef<HTMLDivElement>(null);
     const scrollDirectionFactor = getWheelDirectionFactor(scrollDirection);
     const wheelLighting: AnalogLightingConfig<'surface' | 'track' | 'wheel'> = {
@@ -75,7 +78,9 @@ export const WheelNumber = React.forwardRef<HTMLDivElement, WheelNumberProps>(
       wheel: { travel: 0.36 },
       ...lighting,
     };
-    const lightingStyle = useAnalogLighting(['surface', 'track', 'wheel'], wheelLighting);
+    const lightingStyle = useAnalogLighting(['surface', 'track', 'wheel'], wheelLighting, {
+      targetRef: rootRef,
+    });
     const wheelFaceStyle = useAnalogLightStyle(
       'wheel',
       {
@@ -132,7 +137,7 @@ export const WheelNumber = React.forwardRef<HTMLDivElement, WheelNumberProps>(
 
     return (
       <NumberField.Root
-        ref={ref}
+        ref={mergedRef}
         value={actualValue}
         onValueChange={(val, details) => {
           if (val !== null) {

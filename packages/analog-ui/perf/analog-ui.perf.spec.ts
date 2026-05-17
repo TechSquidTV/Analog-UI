@@ -105,6 +105,61 @@ test('usePointerLighting coalesces pointer moves without pointer-time layout rea
   expect(pointerMetrics.rafScheduled).toBeLessThanOrEqual(2);
 });
 
+test('local component lighting coalesces pointer moves without pointer-time layout reads', async ({
+  page,
+}) => {
+  await openPerfCase(page, 'local-lighting');
+  await waitForFrames(page, 3);
+
+  const warmupReads = await page.evaluate(async () => {
+    window.__analogPerf.resetMetrics();
+
+    const target = document.querySelector<HTMLElement>('[data-perf-target="lighting-surface"]');
+    if (!target) throw new Error('Missing lighting surface.');
+
+    target.dispatchEvent(
+      new PointerEvent('pointerenter', {
+        bubbles: true,
+        clientX: 260,
+        clientY: 260,
+        pointerId: 1,
+      }),
+    );
+
+    await new Promise((resolve) => window.setTimeout(resolve, 20));
+
+    return window.__analogPerf.getMetrics().rectReads;
+  });
+
+  expect(warmupReads).toBeGreaterThanOrEqual(1);
+
+  const pointerMetrics = await page.evaluate(async () => {
+    window.__analogPerf.resetMetrics();
+
+    const target = document.querySelector<HTMLElement>('[data-perf-target="lighting-surface"]');
+    if (!target) throw new Error('Missing lighting surface.');
+
+    for (let index = 0; index < 240; index += 1) {
+      target.dispatchEvent(
+        new PointerEvent('pointermove', {
+          bubbles: true,
+          clientX: 180 + index,
+          clientY: 220 + (index % 30),
+          pointerId: 1,
+        }),
+      );
+    }
+
+    await new Promise((resolve) => window.setTimeout(resolve, 50));
+
+    return window.__analogPerf.getMetrics();
+  });
+
+  expect(pointerMetrics.rectReads).toBe(0);
+  expect(pointerMetrics.rafExecuted).toBeGreaterThanOrEqual(1);
+  expect(pointerMetrics.rafScheduled).toBeLessThanOrEqual(2);
+});
+
 test('Slider drag stays within the interaction frame budget', async ({ page }) => {
   await openPerfCase(page, 'slider-drag');
 

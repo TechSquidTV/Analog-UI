@@ -7,7 +7,6 @@ import {
   PushButton,
   ToggleButtonGroup,
   ToggleButtonGroupItem,
-  usePointerLighting,
 } from '../../../../../packages/analog-ui/src/index';
 
 interface SiteNavLink {
@@ -32,11 +31,6 @@ export default function SiteNavToggleGroup({
   const navRef = useRef<HTMLDivElement>(null);
   const navigationTimeoutRef = useRef<number | undefined>(undefined);
   const [selectedHref, setSelectedHref] = useState(activeHref);
-  const sourceAngle = usePointerLighting({
-    baseAngle: 180,
-    influence: 0.5,
-    targetRef: navRef,
-  });
 
   useEffect(() => {
     setSelectedHref(activeHref);
@@ -85,7 +79,11 @@ export default function SiteNavToggleGroup({
   };
 
   return (
-    <AnalogLightingProvider baseAngle={180} sourceAngle={sourceAngle} power={1}>
+    <AnalogLightingProvider
+      baseAngle={180}
+      power={1}
+      localLighting={{ enabled: true, surfaceRef: navRef, strength: 0.62 }}
+    >
       <div ref={navRef} className="flex flex-wrap items-center justify-center gap-3 sm:justify-end">
         <ToggleButtonGroup
           value={selectedHref}
