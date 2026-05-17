@@ -37,7 +37,7 @@ export default defineConfig({
   bundle: false,
   dts: true,
   clean: true,
-  sourcemap: true,
+  sourcemap: false,
   external: [
     '@base-ui/react',
     '@base-ui/react/*',

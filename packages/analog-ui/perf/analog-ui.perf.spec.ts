@@ -43,14 +43,11 @@ async function openPerfCase(page: Page, caseName: string) {
 }
 
 async function waitForFrames(page: Page, count = 2) {
-  await page.evaluate(
-    async (frameCount) => {
-      for (let index = 0; index < frameCount; index += 1) {
-        await new Promise((resolve) => window.requestAnimationFrame(resolve));
-      }
-    },
-    count,
-  );
+  await page.evaluate(async (frameCount) => {
+    for (let index = 0; index < frameCount; index += 1) {
+      await new Promise((resolve) => window.requestAnimationFrame(resolve));
+    }
+  }, count);
 }
 
 test('usePointerLighting coalesces pointer moves without pointer-time layout reads', async ({
