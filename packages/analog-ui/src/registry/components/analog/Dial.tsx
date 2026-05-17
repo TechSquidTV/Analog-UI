@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { SurfaceButton } from './SurfaceButton';
-import { cn } from '@/lib/utils';
-import { useMergedRefs } from '@/lib/refs';
+import { cn } from '../../../lib/utils';
+import { useMergedRefs } from '../../../lib/refs';
 import { useWheelInput } from '../../hooks/use-wheel-input';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 import { useAnalogMaterialVariant } from '../../hooks/analog-material-scope';

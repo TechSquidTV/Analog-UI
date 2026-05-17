@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
-import { cn } from '@/lib/utils';
-import { useMergedRefs } from '@/lib/refs';
+import { cn } from '../../../lib/utils';
+import { useMergedRefs } from '../../../lib/refs';
 import { motion, useMotionValue, useSpring } from 'motion/react';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 import { useAnalogMaterialVariant } from '../../hooks/analog-material-scope';

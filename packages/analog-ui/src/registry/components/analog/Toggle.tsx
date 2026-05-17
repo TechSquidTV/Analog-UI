@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { ToggleGroup as BaseToggleGroup } from '@base-ui/react/toggle-group';
 import { Toggle as BaseToggle } from '@base-ui/react/toggle';
-import { cn } from '@/lib/utils';
-import { useMergedRefs } from '@/lib/refs';
+import { cn } from '../../../lib/utils';
+import { useMergedRefs } from '../../../lib/refs';
 import { Indicator } from './Indicator';
 import { RockerThumbSurface } from './RockerThumbSurface';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';

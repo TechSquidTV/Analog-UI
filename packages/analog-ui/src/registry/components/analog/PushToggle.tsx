@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Toggle } from '@base-ui/react/toggle';
-import { cn } from '@/lib/utils';
-import { useMergedRefs } from '@/lib/refs';
+import { cn } from '../../../lib/utils';
+import { useMergedRefs } from '../../../lib/refs';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 import { Indicator } from './Indicator';
 import { SquarePlunger } from './SquarePlunger';

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Button } from '@base-ui/react/button';
-import { cn } from '@/lib/utils';
-import { useMergedRefs } from '@/lib/refs';
+import { cn } from '../../../lib/utils';
+import { useMergedRefs } from '../../../lib/refs';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 import { SquarePlunger } from './SquarePlunger';
 

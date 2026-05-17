@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { Switch as BaseSwitch } from '@base-ui/react';
-import { cn } from '@/lib/utils';
-import { useMergedRefs } from '@/lib/refs';
+import { Switch as BaseSwitch } from '@base-ui/react/switch';
+import { cn } from '../../../lib/utils';
+import { useMergedRefs } from '../../../lib/refs';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 import { useAnalogMaterialVariant } from '../../hooks/analog-material-scope';
 import type { AnalogOrientation } from './orientation';

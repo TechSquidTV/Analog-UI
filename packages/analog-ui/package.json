@@ -34,13 +34,28 @@
       "types": "./dist/demo.d.ts",
       "import": "./dist/demo.js"
     },
+    "./components/*": {
+      "types": "./dist/registry/components/analog/*.d.ts",
+      "import": "./dist/registry/components/analog/*.js"
+    },
+    "./hooks/*": {
+      "types": "./dist/registry/hooks/*.d.ts",
+      "import": "./dist/registry/hooks/*.js"
+    },
+    "./lib/*": {
+      "types": "./dist/lib/*.d.ts",
+      "import": "./dist/lib/*.js"
+    },
     "./styles.css": "./dist/index.css",
     "./components.json": "./components.json",
     "./registry.json": "./registry.json"
   },
   "scripts": {
-    "build": "tsup --config tsup.config.ts && node ./scripts/copy-assets.mjs",
+    "build": "tsup --config tsup.config.ts && node ./scripts/fix-esm-extensions.mjs && node ./scripts/copy-assets.mjs",
     "dev": "pnpm run build && tsup --watch --config tsup.config.ts --onSuccess \"node ./scripts/copy-assets.mjs\"",
+    "perf:harness": "vite --config ./perf/vite.config.ts",
+    "perf:ui": "playwright test --config ./playwright.perf.config.ts",
+    "perf:ui:headed": "playwright test --config ./playwright.perf.config.ts --headed",
     "smoke:package": "pnpm run build && node ./scripts/smoke-package.mjs",
     "lint": "pnpm run lint:eslint && pnpm run typecheck",
     "lint:eslint": "pnpm exec eslint .",
@@ -64,7 +79,11 @@
     "tailwind-merge": "^3.5.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
+    "@tailwindcss/vite": "^4.2.4",
+    "@vitejs/plugin-react": "4.7.0",
     "shadcn": "^4.6.0",
-    "tsup": "^8.3.5"
+    "tsup": "^8.3.5",
+    "vite": "6.4.2"
   }
 }

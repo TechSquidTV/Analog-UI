@@ -1,0 +1,123 @@
+@import '../../src/index.css';
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  overflow: hidden;
+  background: #050505;
+  color: #f5f5f5;
+  font-family:
+    Helvetica Neue,
+    Arial,
+    sans-serif;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.perf-shell {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 48px;
+}
+
+.perf-panel {
+  width: min(760px, calc(100vw - 96px));
+  min-height: 360px;
+  padding: 40px;
+}
+
+.perf-panel-content {
+  display: grid;
+  min-height: 280px;
+  align-content: center;
+  justify-items: center;
+  gap: 28px;
+}
+
+.perf-title {
+  margin: 0;
+  color: #bdbdbd;
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    Liberation Mono,
+    Menlo,
+    monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.perf-slider-control {
+  width: min(520px, calc(100vw - 220px));
+}
+
+.perf-slider-value {
+  color: var(--analog-telemetry-value);
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    Liberation Mono,
+    Menlo,
+    monospace;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.perf-static-bank {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 6px;
+  width: min(420px, calc(100vw - 220px));
+}
+
+.perf-static-led {
+  height: 10px;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 50% 35%, rgb(255 255 255 / 0.42), transparent 45%),
+    color-mix(in oklch, var(--analog-tone-info) 55%, black);
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.08),
+    0 0 12px color-mix(in oklch, var(--analog-tone-info) 34%, transparent);
+}
+
+.perf-lighting-surface {
+  width: min(620px, calc(100vw - 120px));
+  min-height: 360px;
+}
+
+.perf-lighting-stage {
+  display: grid;
+  min-height: 360px;
+  place-items: center;
+  padding: 40px;
+}
+
+.perf-lighting-controls {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.perf-wheel-stage {
+  display: grid;
+  min-height: 300px;
+  place-items: center;
+}

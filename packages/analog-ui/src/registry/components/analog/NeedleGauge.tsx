@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Meter } from '@base-ui/react/meter';
-import { cn } from '@/lib/utils';
+import { cn } from '../../../lib/utils';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 import {
   useAnalogMaterialVariant,

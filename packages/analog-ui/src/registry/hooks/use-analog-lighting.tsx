@@ -5,7 +5,7 @@ import {
   blendAngleTowardSource,
   constrainAngleToArc,
   type AnalogLightConstraintMode,
-} from '@/lib/angle-utils';
+} from '../../lib/angle-utils';
 
 export const ANALOG_LIGHTING_PRESETS = {
   fixed: 0,

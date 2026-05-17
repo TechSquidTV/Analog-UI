@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { cn } from '@/lib/utils';
-import { useMergedRefs } from '@/lib/refs';
+import { cn } from '../../../lib/utils';
+import { useMergedRefs } from '../../../lib/refs';
 import { motion, useMotionValue, useTransform, animate } from 'motion/react';
 import { useWheelInput } from '../../hooks/use-wheel-input';
 import {

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '../../../lib/utils';
 import { NumberField } from '@base-ui/react/number-field';
 import { createChangeEventDetails } from '@base-ui/react/internals/createBaseUIEventDetails';
 import { motion, useMotionValue, animate } from 'motion/react';

@@ -5,7 +5,7 @@ import {
   blendAngleTowardSource,
   clampLightingInfluence,
   vectorToLightingAngle,
-} from '@/lib/angle-utils';
+} from '../../lib/angle-utils';
 
 export interface UsePointerLightingOptions {
   baseAngle?: number;

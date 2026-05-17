@@ -18,6 +18,10 @@ const requiredTarballEntries = [
   'package/dist/index.css',
   'package/dist/demo.js',
   'package/dist/demo.d.ts',
+  'package/dist/registry/components/analog/Slider.js',
+  'package/dist/registry/components/analog/Slider.d.ts',
+  'package/dist/registry/hooks/use-pointer-lighting.js',
+  'package/dist/registry/hooks/use-pointer-lighting.d.ts',
   'package/components.json',
   'package/registry.json',
 ];
@@ -62,6 +66,8 @@ import { renderToStaticMarkup } from 'react-dom/server';
 
 const require = createRequire(import.meta.url);
 const analogUi = await import('analog-ui');
+const sliderModule = await import('analog-ui/components/Slider');
+const pointerLightingModule = await import('analog-ui/hooks/use-pointer-lighting');
 await import('analog-ui/demo');
 
 for (const subpath of [
@@ -105,6 +111,16 @@ const requiredExports = [
 const missingExports = requiredExports.filter((name) => !(name in analogUi));
 if (missingExports.length > 0) {
   throw new Error(\`Missing package exports: \${missingExports.join(', ')}\`);
+}
+
+if (sliderModule.Slider !== analogUi.Slider) {
+  throw new Error('analog-ui/components/Slider did not resolve to the root Slider export');
+}
+
+if (pointerLightingModule.usePointerLighting !== analogUi.usePointerLighting) {
+  throw new Error(
+    'analog-ui/hooks/use-pointer-lighting did not resolve to the root usePointerLighting export',
+  );
 }
 
 const markup = renderToStaticMarkup(
@@ -170,16 +186,20 @@ import {
   type RockerThumbSurfaceProps,
   type SliderProps,
 } from 'analog-ui';
+import { Slider as SubpathSlider, type SliderProps as SubpathSliderProps } from 'analog-ui/components/Slider';
+import { usePointerLighting } from 'analog-ui/hooks/use-pointer-lighting';
 
 const tone: AnalogTone = 'primary';
 const dialProps: DialProps = { defaultValue: 12, variant: 'chrome' };
 const sliderProps: SliderProps = { defaultValue: 30 };
+const subpathSliderProps: SubpathSliderProps = { defaultValue: 12 };
 const thumbProps: RockerThumbSurfaceProps = { raisedSide: 'both', variant: 'black' };
 
 const view: ReactElement = (
   <AnalogLightingProvider baseAngle={180}>
     <Dial {...dialProps} />
     <Slider {...sliderProps} />
+    <SubpathSlider {...subpathSliderProps} />
     <Switch defaultChecked />
     <Meter value={42} />
     <RockerThumbSurface {...thumbProps} />
@@ -188,6 +208,7 @@ const view: ReactElement = (
 );
 
 void tone;
+void usePointerLighting;
 void view;
 `,
   );

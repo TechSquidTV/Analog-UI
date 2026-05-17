@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Slider as BaseSlider } from '@base-ui/react';
-import { cn } from '@/lib/utils';
+import { Slider as BaseSlider } from '@base-ui/react/slider';
+import { cn } from '../../../lib/utils';
 import { RockerThumbSurface } from './RockerThumbSurface';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 import { useAnalogMaterialVariant } from '../../hooks/analog-material-scope';

@@ -7,7 +7,11 @@ import { fileURLToPath } from 'node:url';
 import tseslint from 'typescript-eslint';
 import analogDesign from './tools/eslint-plugin-analog-design/index.mjs';
 
-const reactFiles = ['apps/www/src/**/*.{jsx,tsx}', 'packages/analog-ui/src/**/*.{jsx,tsx}'];
+const reactFiles = [
+  'apps/www/src/**/*.{jsx,tsx}',
+  'packages/analog-ui/src/**/*.{jsx,tsx}',
+  'packages/analog-ui/perf/src/**/*.{jsx,tsx}',
+];
 const analogComponentFiles = ['packages/analog-ui/src/registry/components/analog/**/*.{ts,tsx}'];
 const analogThemeFile = fileURLToPath(
   new URL('./packages/analog-ui/src/theme.css', import.meta.url),
@@ -54,7 +58,11 @@ export default tseslint.config(
     },
   },
   {
-    files: ['apps/www/src/**/*.{ts,tsx}', 'packages/analog-ui/src/**/*.{ts,tsx}'],
+    files: [
+      'apps/www/src/**/*.{ts,tsx}',
+      'packages/analog-ui/src/**/*.{ts,tsx}',
+      'packages/analog-ui/perf/src/**/*.{ts,tsx}',
+    ],
     languageOptions: {
       globals: {
         ...globals.browser,
@@ -65,6 +73,9 @@ export default tseslint.config(
     files: [
       'apps/www/astro.config.mjs',
       'eslint.config.mjs',
+      'packages/analog-ui/perf/**/*.spec.ts',
+      'packages/analog-ui/perf/vite.config.ts',
+      'packages/analog-ui/playwright.perf.config.ts',
       'packages/analog-ui/scripts/**/*.mjs',
       'packages/analog-ui/tsup.config.ts',
       'tools/**/*.mjs',

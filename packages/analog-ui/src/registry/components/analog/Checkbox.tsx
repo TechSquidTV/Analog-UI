@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Checkbox as BaseCheckbox } from '@base-ui/react/checkbox';
 import { CheckboxGroup as BaseCheckboxGroup } from '@base-ui/react/checkbox-group';
-import { cn } from '@/lib/utils';
+import { cn } from '../../../lib/utils';
 import { useAnalogLighting, type AnalogLightingConfig } from '../../hooks/use-analog-lighting';
 import { SquarePlunger, type SquarePlungerVariant } from './SquarePlunger';
 import type { AnalogOrientation } from './orientation';
