@@ -6,7 +6,7 @@ import { useAnalogMaterialVariant } from '../../hooks/analog-material-scope';
 
 const variantStyles = {
   default: 'border-[color:var(--analog-panel-border)] shadow-sm',
-  rack: 'border-[color:var(--analog-panel-border)]',
+  rack: 'analog-panel-shell',
 };
 
 type PanelSurfaceStyle = React.CSSProperties & {
@@ -169,26 +169,15 @@ const Panel = React.forwardRef<HTMLDivElement, PanelProps>(
                 paddingBlock: 'var(--analog-panel-screw-safe-block, calc(var(--spacing) * 8))',
               }
             : null),
-          ...(variant === 'rack'
+          ...(variant === 'default'
             ? {
-                background:
-                  `linear-gradient(calc(var(--analog-light-angle-panel, 180deg) - 90deg), ` +
-                  `rgb(var(--analog-highlight-rgb) / calc(0.03 * var(--analog-light-power, 1))), ` +
-                  `rgb(var(--analog-highlight-rgb) / 0) 45%, ` +
-                  `rgb(var(--analog-shadow-rgb) / calc(0.22 * var(--analog-light-power, 1))))` +
-                  `, var(--analog-surface-panel)`,
-                boxShadow:
-                  `inset calc(sin(var(--analog-light-angle-panel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-panel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 0.25) rgb(var(--analog-highlight-rgb) / calc(0.07 * var(--analog-light-power, 1))), ` +
-                  `calc(sin(var(--analog-light-angle-panel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-panel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) 0 rgb(var(--analog-highlight-rgb) / calc(0.04 * var(--analog-light-power, 1))), ` +
-                  `0 var(--analog-bevel-width, 4px) calc(var(--analog-bevel-width, 4px) * 3) rgb(var(--analog-shadow-rgb) / calc(0.5 * var(--analog-shadow-depth, 1)))`,
-              }
-            : {
                 background:
                   `radial-gradient(circle at center, ` +
                   `color-mix(in oklch, var(--analog-control-surface-strong) var(--analog-panel-hotspot-mix, 72%), var(--analog-surface-panel)) 0%, ` +
                   `var(--analog-panel-edge-surface) var(--analog-panel-hotspot-stop, 72%))`,
                 boxShadow: `0 calc(var(--analog-bevel-width, 4px) * 0.5) calc(var(--analog-bevel-width, 4px) * 1.5) rgb(var(--analog-shadow-rgb) / calc(0.28 * var(--analog-shadow-depth, 1)))`,
-              }),
+              }
+            : null),
         }}
         {...props}
       >

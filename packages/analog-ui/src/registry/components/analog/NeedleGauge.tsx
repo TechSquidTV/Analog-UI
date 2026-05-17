@@ -6,6 +6,7 @@ import {
   useAnalogMaterialVariant,
   type AnalogMaterialVariant,
 } from '../../hooks/analog-material-scope';
+import { clamp, normalizeRatio, polarPoint as radialPoint } from './radial';
 import type { AnalogTone } from './tone';
 
 export type NeedleGaugeScalePreset = 'linear' | 'dbfs' | 'vu';
@@ -215,29 +216,6 @@ const defaultScaleMarks: Record<Exclude<NeedleGaugeScalePreset, 'linear'>, Needl
   ],
 };
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
-
-const roundSvgNumber = (value: number) => Number(value.toFixed(4));
-
-const normalizeRatio = (value: number, min: number, max: number) => {
-  const range = max - min;
-
-  if (range <= 0) {
-    return value >= max ? 1 : 0;
-  }
-
-  return clamp((value - min) / range, 0, 1);
-};
-
-const polarPoint = (centerX: number, centerY: number, radius: number, angle: number) => {
-  const radians = (angle * Math.PI) / 180;
-
-  return {
-    x: roundSvgNumber(centerX + Math.cos(radians) * radius),
-    y: roundSvgNumber(centerY + Math.sin(radians) * radius),
-  };
-};
-
 const arcPath = (
   centerX: number,
   centerY: number,
@@ -245,12 +223,15 @@ const arcPath = (
   startAngle: number,
   endAngle: number,
 ) => {
-  const start = polarPoint(centerX, centerY, radius, startAngle);
-  const end = polarPoint(centerX, centerY, radius, endAngle);
+  const start = radialPoint(radius, startAngle, centerX, centerY);
+  const end = radialPoint(radius, endAngle, centerX, centerY);
   const largeArc = Math.abs(endAngle - startAngle) > 180 ? 1 : 0;
 
   return `M ${start.x} ${start.y} A ${radius} ${radius} 0 ${largeArc} 1 ${end.x} ${end.y}`;
 };
+
+const normalizeNeedleGaugeRatio = (value: number, min: number, max: number) =>
+  normalizeRatio(value, min, max, value >= max ? 1 : 0);
 
 function getLinearMarks(min: number, max: number): NeedleGaugeMark[] {
   return Array.from({ length: 6 }, (_, index) => {
@@ -349,32 +330,6 @@ function resolveNeedleGaugeSpring(
   };
 }
 
-const getNeedleGaugeShellStyle = (variant: AnalogMaterialVariant): React.CSSProperties => {
-  if (variant === 'black') {
-    return {
-      borderColor: 'transparent',
-      background: `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 90deg), var(--analog-surface-onyx-hi) 0%, var(--analog-surface-onyx-mid) 45%, var(--analog-surface-onyx-lo) 100%)`,
-      boxShadow:
-        `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 0.25) rgb(var(--analog-highlight-rgb) / calc(0.14 * var(--analog-light-power, 1))), ` +
-        `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(var(--analog-bevel-width, 4px) * 0.5) rgb(var(--analog-shadow-rgb) / calc(0.8 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), ` +
-        `calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) 0 rgb(var(--analog-highlight-rgb) / calc(0.08 * var(--analog-light-power, 1))), ` +
-        `0 calc(var(--analog-bevel-width, 4px) * 0.5) var(--analog-bevel-width, 4px) rgb(var(--analog-shadow-rgb) / calc(0.9 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), ` +
-        `0 0 0 calc(var(--analog-bevel-width, 4px) * 0.25) rgb(var(--analog-shadow-rgb) / calc(0.6 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
-    };
-  }
-
-  return {
-    borderColor: 'transparent',
-    background: `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 90deg), color-mix(in oklch, var(--analog-surface-metal-hi) 82%, var(--analog-highlight-color) 10%) 0%, var(--analog-surface-metal-hi) 18%, var(--analog-surface-metal-mid) 52%, var(--analog-surface-metal-lo) 100%)`,
-    boxShadow:
-      `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 0.25) rgb(var(--analog-highlight-rgb) / calc(0.95 * var(--analog-light-power, 1))), ` +
-      `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(var(--analog-bevel-width, 4px) * 0.5) rgb(var(--analog-shadow-rgb) / calc(0.25 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), ` +
-      `calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) 0 rgb(var(--analog-highlight-rgb) / calc(0.18 * var(--analog-light-power, 1))), ` +
-      `0 calc(var(--analog-bevel-width, 4px) * 0.5) var(--analog-bevel-width, 4px) rgb(var(--analog-shadow-rgb) / calc(0.5 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), ` +
-      `0 0 0 calc(var(--analog-bevel-width, 4px) * 0.25) rgb(var(--analog-shadow-rgb) / calc(0.1 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
-  };
-};
-
 function DefaultNeedleGaugeScale({
   startAngle,
   sweepAngle,
@@ -460,23 +415,23 @@ function DefaultNeedleGaugeScale({
       ))}
 
       {marks.map((mark) => {
-        const tickInner = polarPoint(
-          geometry.centerX,
-          geometry.centerY,
+        const tickInner = radialPoint(
           geometry.majorTickInnerRadius,
           mark.angle,
-        );
-        const tickOuter = polarPoint(
           geometry.centerX,
           geometry.centerY,
+        );
+        const tickOuter = radialPoint(
           geometry.majorTickOuterRadius,
           mark.angle,
-        );
-        const labelPoint = polarPoint(
           geometry.centerX,
           geometry.centerY,
+        );
+        const labelPoint = radialPoint(
           geometry.labelRadius,
           mark.angle,
+          geometry.centerX,
+          geometry.centerY,
         );
 
         return (
@@ -608,7 +563,7 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
     const resolvedMin = min ?? domain.min;
     const resolvedMax = max ?? domain.max;
     const currentValue = value ?? resolvedMin;
-    const ratio = normalizeRatio(currentValue, resolvedMin, resolvedMax);
+    const ratio = normalizeNeedleGaugeRatio(currentValue, resolvedMin, resolvedMax);
     const resolvedSweepAngle = Math.min(300, Math.max(40, sweepAngle));
     const needleAngle = startAngle + ratio * resolvedSweepAngle;
     const needleRotation = needleAngle - 270;
@@ -692,7 +647,7 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
         const markRatio =
           mark.position !== undefined
             ? clamp(mark.position, 0, 1)
-            : normalizeRatio(mark.value, resolvedMin, resolvedMax);
+            : normalizeNeedleGaugeRatio(mark.value, resolvedMin, resolvedMax);
 
         return {
           ...mark,
@@ -714,17 +669,17 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
           return {
             ratio: tickRatio,
             angle,
-            inner: polarPoint(
-              dialGeometry.centerX,
-              dialGeometry.centerY,
+            inner: radialPoint(
               dialGeometry.minorTickInnerRadius,
               angle,
-            ),
-            outer: polarPoint(
               dialGeometry.centerX,
               dialGeometry.centerY,
+            ),
+            outer: radialPoint(
               dialGeometry.minorTickOuterRadius,
               angle,
+              dialGeometry.centerX,
+              dialGeometry.centerY,
             ),
           };
         }).filter((tick): tick is NeedleGaugeResolvedTick => tick !== null),
@@ -734,8 +689,12 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
       const sourceZones = zones ?? getDefaultZones(resolvedMin, resolvedMax, scalePreset);
 
       return sourceZones.map((zone) => {
-        const fromRatio = normalizeRatio(zone.from ?? resolvedMin, resolvedMin, resolvedMax);
-        const toRatio = normalizeRatio(zone.to ?? resolvedMax, resolvedMin, resolvedMax);
+        const fromRatio = normalizeNeedleGaugeRatio(
+          zone.from ?? resolvedMin,
+          resolvedMin,
+          resolvedMax,
+        );
+        const toRatio = normalizeNeedleGaugeRatio(zone.to ?? resolvedMax, resolvedMin, resolvedMax);
         const startRatio = Math.min(fromRatio, toRatio);
         const endRatio = Math.max(fromRatio, toRatio);
 
@@ -755,7 +714,6 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
         ...lighting,
       },
     );
-    const shellStyle = getNeedleGaugeShellStyle(resolvedVariant);
     const accessibilityValue =
       typeof formattedValue === 'string' || typeof formattedValue === 'number'
         ? String(formattedValue)
@@ -896,11 +854,11 @@ export const NeedleGauge = React.forwardRef<HTMLDivElement, NeedleGaugeProps>(
         data-analog-tone={needleTone}
         className={cn(
           'relative inline-flex aspect-[11/7] w-full max-w-[19rem] min-w-0 shrink-0 items-center justify-center rounded-[var(--analog-radius-panel)] border border-transparent p-[var(--spacing-track-padding)] text-[var(--analog-control-foreground)]',
+          isBlack ? 'analog-bezel-shell-black' : 'analog-bezel-shell-chrome',
           className,
         )}
         style={{
           ...lightingStyle,
-          ...shellStyle,
           ...style,
         }}
         aria-label={rootLabel}

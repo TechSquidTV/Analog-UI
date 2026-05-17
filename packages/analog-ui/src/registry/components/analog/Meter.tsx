@@ -292,44 +292,6 @@ function buildZoneGradient(
   return `linear-gradient(${direction}, ${stops.join(', ')})`;
 }
 
-const getMeterGroupShellStyle = (variant: MeterGroupVariant): React.CSSProperties => {
-  switch (variant) {
-    case 'chrome':
-      return {
-        borderColor: 'transparent',
-        background: `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 90deg), color-mix(in oklch, var(--analog-surface-metal-hi) 82%, var(--analog-highlight-color) 10%) 0%, var(--analog-surface-metal-hi) 18%, var(--analog-surface-metal-mid) 52%, var(--analog-surface-metal-lo) 100%)`,
-        boxShadow:
-          `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 0.25) rgb(var(--analog-highlight-rgb) / calc(0.95 * var(--analog-light-power, 1))), ` +
-          `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(var(--analog-bevel-width, 4px) * 0.5) rgb(var(--analog-shadow-rgb) / calc(0.25 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), ` +
-          `calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) 0 rgb(var(--analog-highlight-rgb) / calc(0.18 * var(--analog-light-power, 1))), ` +
-          `0 calc(var(--analog-bevel-width, 4px) * 0.5) var(--analog-bevel-width, 4px) rgb(var(--analog-shadow-rgb) / calc(0.5 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), ` +
-          `0 0 0 calc(var(--analog-bevel-width, 4px) * 0.25) rgb(var(--analog-shadow-rgb) / calc(0.1 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
-      };
-    case 'black':
-      return {
-        borderColor: 'transparent',
-        background: `linear-gradient(calc(var(--analog-light-angle-bezel, 180deg) - 90deg), var(--analog-surface-onyx-hi) 0%, var(--analog-surface-onyx-mid) 45%, var(--analog-surface-onyx-lo) 100%)`,
-        boxShadow:
-          `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 0.25) rgb(var(--analog-highlight-rgb) / calc(0.14 * var(--analog-light-power, 1))), ` +
-          `inset calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(var(--analog-bevel-width, 4px) * 0.5) rgb(var(--analog-shadow-rgb) / calc(0.8 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), ` +
-          `calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) 0 rgb(var(--analog-highlight-rgb) / calc(0.08 * var(--analog-light-power, 1))), ` +
-          `0 calc(var(--analog-bevel-width, 4px) * 0.5) var(--analog-bevel-width, 4px) rgb(var(--analog-shadow-rgb) / calc(0.9 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1))), ` +
-          `0 0 0 calc(var(--analog-bevel-width, 4px) * 0.25) rgb(var(--analog-shadow-rgb) / calc(0.6 * var(--analog-shadow-depth, 1) * var(--analog-light-power, 1)))`,
-      };
-    case 'panel':
-    default:
-      return {
-        borderColor: 'transparent',
-        background: `linear-gradient(calc(var(--analog-light-angle-panel, 180deg) - 90deg), rgb(var(--analog-highlight-rgb) / calc(0.03 * var(--analog-light-power, 1))) 0%, rgb(var(--analog-highlight-rgb) / 0) 45%, rgb(var(--analog-shadow-rgb) / calc(0.22 * var(--analog-light-power, 1))) 100%), var(--analog-surface-panel)`,
-        boxShadow:
-          `inset calc(sin(var(--analog-light-angle-panel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-panel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) calc(var(--analog-bevel-width, 4px) * 0.25) rgb(var(--analog-highlight-rgb) / calc(0.07 * var(--analog-light-power, 1))), ` +
-          `calc(sin(var(--analog-light-angle-panel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25) calc(cos(var(--analog-light-angle-panel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25) 0 rgb(var(--analog-highlight-rgb) / calc(0.04 * var(--analog-light-power, 1))), ` +
-          `0 var(--analog-bevel-width, 4px) calc(var(--analog-bevel-width, 4px) * 3) rgb(var(--analog-shadow-rgb) / calc(0.5 * var(--analog-shadow-depth, 1))), ` +
-          `0 0 0 1px color-mix(in oklch, var(--analog-surface-raised) 38%, transparent)`,
-      };
-  }
-};
-
 function DefaultMeterScale({
   isVertical,
   scaleSide,
@@ -736,7 +698,12 @@ export const MeterGroup = React.forwardRef<HTMLDivElement, MeterGroupProps>(
     ref,
   ) => {
     const lightingStyle = useAnalogLighting(['panel', 'bezel', 'track', 'lens'], lighting);
-    const shellStyle = getMeterGroupShellStyle(variant);
+    const shellClassName =
+      variant === 'chrome'
+        ? 'analog-bezel-shell-chrome'
+        : variant === 'black'
+          ? 'analog-bezel-shell-black'
+          : 'analog-panel-shell';
 
     return (
       <MeterGroupContext.Provider value={{ orientation }}>
@@ -748,11 +715,11 @@ export const MeterGroup = React.forwardRef<HTMLDivElement, MeterGroupProps>(
           className={cn(
             'relative inline-flex min-w-0 max-w-full rounded-[var(--analog-radius-panel)] border border-transparent p-[var(--spacing-track-padding)] text-[color:var(--analog-panel-foreground)]',
             orientation === 'horizontal' ? 'flex-row items-stretch' : 'flex-col items-stretch',
+            shellClassName,
             className,
           )}
           style={{
             ...lightingStyle,
-            ...shellStyle,
             ...style,
           }}
           {...props}

@@ -4,6 +4,108 @@
 }
 
 @layer components {
+  .analog-bezel-shell-chrome,
+  .analog-bezel-shell-black {
+    border-color: transparent;
+    background: var(--analog-bezel-shell-background);
+    box-shadow:
+      inset
+        calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25)
+        calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25)
+        calc(var(--analog-bevel-width, 4px) * 0.25)
+        rgb(
+          var(--analog-highlight-rgb) /
+            calc(var(--analog-bezel-shell-inset-highlight-alpha) * var(--analog-light-power, 1))
+        ),
+      inset
+        calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25)
+        calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25)
+        calc(var(--analog-bevel-width, 4px) * 0.5)
+        rgb(
+          var(--analog-shadow-rgb) /
+            calc(
+              var(--analog-bezel-shell-inset-shadow-alpha) * var(--analog-shadow-depth, 1) *
+                var(--analog-light-power, 1)
+            )
+        ),
+      calc(sin(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25)
+        calc(cos(var(--analog-light-angle-bezel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25)
+        0
+        rgb(
+          var(--analog-highlight-rgb) /
+            calc(var(--analog-bezel-shell-drop-highlight-alpha) * var(--analog-light-power, 1))
+        ),
+      0 calc(var(--analog-bevel-width, 4px) * 0.5) var(--analog-bevel-width, 4px)
+        rgb(
+          var(--analog-shadow-rgb) /
+            calc(
+              var(--analog-bezel-shell-drop-shadow-alpha) * var(--analog-shadow-depth, 1) *
+                var(--analog-light-power, 1)
+            )
+        ),
+      0 0 0 calc(var(--analog-bevel-width, 4px) * 0.25)
+        rgb(
+          var(--analog-shadow-rgb) /
+            calc(
+              var(--analog-bezel-shell-ring-shadow-alpha) * var(--analog-shadow-depth, 1) *
+                var(--analog-light-power, 1)
+            )
+        );
+  }
+
+  .analog-bezel-shell-chrome {
+    --analog-bezel-shell-inset-highlight-alpha: 0.95;
+    --analog-bezel-shell-inset-shadow-alpha: 0.25;
+    --analog-bezel-shell-drop-highlight-alpha: 0.18;
+    --analog-bezel-shell-drop-shadow-alpha: 0.5;
+    --analog-bezel-shell-ring-shadow-alpha: 0.1;
+    --analog-bezel-shell-background: linear-gradient(
+      calc(var(--analog-light-angle-bezel, 180deg) - 90deg),
+      color-mix(in oklch, var(--analog-surface-metal-hi) 82%, var(--analog-highlight-color) 10%) 0%,
+      var(--analog-surface-metal-hi) 18%,
+      var(--analog-surface-metal-mid) 52%,
+      var(--analog-surface-metal-lo) 100%
+    );
+  }
+
+  .analog-bezel-shell-black {
+    --analog-bezel-shell-inset-highlight-alpha: 0.14;
+    --analog-bezel-shell-inset-shadow-alpha: 0.8;
+    --analog-bezel-shell-drop-highlight-alpha: 0.08;
+    --analog-bezel-shell-drop-shadow-alpha: 0.9;
+    --analog-bezel-shell-ring-shadow-alpha: 0.6;
+    --analog-bezel-shell-background: linear-gradient(
+      calc(var(--analog-light-angle-bezel, 180deg) - 90deg),
+      var(--analog-surface-onyx-hi) 0%,
+      var(--analog-surface-onyx-mid) 45%,
+      var(--analog-surface-onyx-lo) 100%
+    );
+  }
+
+  .analog-panel-shell {
+    border-color: transparent;
+    background:
+      linear-gradient(
+        calc(var(--analog-light-angle-panel, 180deg) - 90deg),
+        rgb(var(--analog-highlight-rgb) / calc(0.03 * var(--analog-light-power, 1))) 0%,
+        rgb(var(--analog-highlight-rgb) / 0) 45%,
+        rgb(var(--analog-shadow-rgb) / calc(0.22 * var(--analog-light-power, 1))) 100%
+      ),
+      var(--analog-surface-panel);
+    box-shadow:
+      inset
+        calc(sin(var(--analog-light-angle-panel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25)
+        calc(cos(var(--analog-light-angle-panel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25)
+        calc(var(--analog-bevel-width, 4px) * 0.25)
+        rgb(var(--analog-highlight-rgb) / calc(0.07 * var(--analog-light-power, 1))),
+      calc(sin(var(--analog-light-angle-panel, 180deg)) * var(--analog-bevel-width, 4px) * 0.25)
+        calc(cos(var(--analog-light-angle-panel, 180deg)) * var(--analog-bevel-width, 4px) * -0.25)
+        0 rgb(var(--analog-highlight-rgb) / calc(0.04 * var(--analog-light-power, 1))),
+      0 var(--analog-bevel-width, 4px) calc(var(--analog-bevel-width, 4px) * 3)
+        rgb(var(--analog-shadow-rgb) / calc(0.5 * var(--analog-shadow-depth, 1))),
+      0 0 0 1px color-mix(in oklch, var(--analog-surface-raised) 38%, transparent);
+  }
+
   .analog-surface-recess {
     --recess-depth: var(--analog-bevel-width, 4px);
     --recess-depth-inner: calc(var(--analog-bevel-width, 4px) * 0.5);

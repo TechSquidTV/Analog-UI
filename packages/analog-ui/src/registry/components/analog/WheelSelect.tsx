@@ -29,11 +29,14 @@ const WHEEL_RIDGE_COUNT = 40;
 const WHEEL_LABEL_RENDER_BUFFER = 2;
 const WHEEL_LABEL_FRONT_OPACITY = [1, 0.84, 0.54, 0.24] as const;
 const WHEEL_UNBOUNDED_DRAG_STEPS = 2048;
+const WHEEL_RIDGE_INDICES = Array.from({ length: WHEEL_RIDGE_COUNT }, (_, index) => index);
+const WHEEL_MARKED_RIDGE_BACKGROUND =
+  'linear-gradient(var(--analog-light-angle-wheel-face, 180deg), var(--analog-wheel-ridge-marked-hi) 0%, var(--analog-wheel-ridge-marked-mid) 52%, var(--analog-wheel-ridge-marked-lo) 100%)';
+const WHEEL_UNMARKED_RIDGE_BACKGROUND =
+  'linear-gradient(var(--analog-light-angle-wheel-face, 180deg), var(--analog-wheel-ridge-unmarked-hi) 0%, var(--analog-wheel-ridge-unmarked-mid) 48%, var(--analog-wheel-ridge-unmarked-lo) 100%)';
 
 function getWheelRidgeBackground(isMarked: boolean) {
-  return isMarked
-    ? `linear-gradient(var(--analog-light-angle-wheel-face, 180deg), var(--analog-wheel-ridge-marked-hi) 0%, var(--analog-wheel-ridge-marked-mid) 52%, var(--analog-wheel-ridge-marked-lo) 100%)`
-    : `linear-gradient(var(--analog-light-angle-wheel-face, 180deg), var(--analog-wheel-ridge-unmarked-hi) 0%, var(--analog-wheel-ridge-unmarked-mid) 48%, var(--analog-wheel-ridge-unmarked-lo) 100%)`;
+  return isMarked ? WHEEL_MARKED_RIDGE_BACKGROUND : WHEEL_UNMARKED_RIDGE_BACKGROUND;
 }
 
 function getWheelLabelSlotOffsets(stepAngle: number) {
@@ -564,11 +567,7 @@ export const WheelSelect = React.forwardRef<HTMLDivElement, WheelSelectProps>(
                 insetInline: 'var(--analog-wheel-cylinder-inset-inline)',
                 borderColor:
                   'color-mix(in oklch, var(--analog-control-glass-border) 72%, transparent)',
-                background:
-                  `linear-gradient(var(--analog-light-angle-wheel-face, 180deg), ` +
-                  `var(--analog-wheel-ridge-unmarked-hi) 0%, ` +
-                  `var(--analog-wheel-ridge-unmarked-mid) 48%, ` +
-                  `var(--analog-wheel-ridge-unmarked-lo) 100%)`,
+                background: WHEEL_UNMARKED_RIDGE_BACKGROUND,
                 boxShadow:
                   'inset 0 0 0 1px rgb(var(--analog-shadow-rgb) / 0.5), inset 10px 0 14px rgb(var(--analog-highlight-rgb) / 0.04), inset -10px 0 14px rgb(var(--analog-shadow-rgb) / 0.5)',
               }}
@@ -617,7 +616,7 @@ export const WheelSelect = React.forwardRef<HTMLDivElement, WheelSelectProps>(
                 rotateX: wheelRotation,
               }}
             >
-              {[...Array(WHEEL_RIDGE_COUNT)].map((_, i) => {
+              {WHEEL_RIDGE_INDICES.map((i) => {
                 const angle = (i / WHEEL_RIDGE_COUNT) * 360;
                 const isMarked = i % 10 === 0;
                 return (

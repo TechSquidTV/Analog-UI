@@ -555,7 +555,7 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
       knobRotation,
       disabled,
     };
-    const pointerNode = renderPointer?.({
+    const pointerProps: RotarySwitchRenderPointerProps = {
       ...renderState,
       className: 'absolute left-1/2 top-[5%] h-[28%] w-[4.5%] -translate-x-1/2 rounded-full',
       style: {
@@ -564,49 +564,26 @@ export const RotarySwitch = React.forwardRef<HTMLDivElement, RotarySwitchProps>(
         boxShadow:
           '0 0 0 1px var(--analog-material-border-strong), 0 0 5px rgb(var(--analog-highlight-rgb) / 0.14), inset 0 0 1px rgb(var(--analog-highlight-rgb) / 0.82)',
       },
-    }) ?? (
-      <DefaultRotarySwitchPointer
-        {...renderState}
-        className="absolute left-1/2 top-[5%] h-[28%] w-[4.5%] -translate-x-1/2 rounded-full"
-        style={{
-          background:
-            'linear-gradient(calc(var(--analog-light-angle-pointer, 180deg) - 90deg), var(--analog-surface-metal-hi) 0%, var(--analog-surface-metal-mid) 58%, var(--analog-surface-metal-lo) 100%)',
-          boxShadow:
-            '0 0 0 1px var(--analog-material-border-strong), 0 0 5px rgb(var(--analog-highlight-rgb) / 0.14), inset 0 0 1px rgb(var(--analog-highlight-rgb) / 0.82)',
-        }}
-      />
+    };
+    const pointerNode = renderPointer?.(pointerProps) ?? (
+      <DefaultRotarySwitchPointer {...pointerProps} />
     );
-    const knobNode = renderKnob?.({
+    const knobProps: RotarySwitchRenderKnobProps = {
       ...renderState,
       className: 'pointer-events-none absolute inset-[8%] z-20 overflow-visible',
       style: {},
       children: pointerNode,
-    }) ?? (
-      <DefaultRotarySwitchKnob
-        {...renderState}
-        className="pointer-events-none absolute inset-[8%] z-20 overflow-visible"
-        style={{}}
-      >
-        {pointerNode}
-      </DefaultRotarySwitchKnob>
-    );
-    const capNode = renderCap?.({
+    };
+    const knobNode = renderKnob?.(knobProps) ?? <DefaultRotarySwitchKnob {...knobProps} />;
+    const capProps: RotarySwitchRenderCapProps = {
       ...renderState,
       lighting: surfaceLighting,
       containerClassName: 'pointer-events-none absolute inset-[27%] z-30 rounded-full',
       surfaceContainerClassName: 'h-full w-full pointer-events-none',
       surfaceClassName: 'analog-dial-surface no-chamfer h-full w-full pointer-events-none',
       surfaceStyle: { pointerEvents: 'none' },
-    }) ?? (
-      <DefaultRotarySwitchCap
-        {...renderState}
-        lighting={surfaceLighting}
-        containerClassName="pointer-events-none absolute inset-[27%] z-30 rounded-full"
-        surfaceContainerClassName="h-full w-full pointer-events-none"
-        surfaceClassName="analog-dial-surface no-chamfer h-full w-full pointer-events-none"
-        surfaceStyle={{ pointerEvents: 'none' }}
-      />
-    );
+    };
+    const capNode = renderCap?.(capProps) ?? <DefaultRotarySwitchCap {...capProps} />;
 
     return (
       <BaseSlider.Root

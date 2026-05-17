@@ -657,6 +657,7 @@
         "analog-tone",
         "use-analog-lighting",
         "analog-material-scope",
+        "radial-helpers",
         "utils"
       ],
       "files": [
