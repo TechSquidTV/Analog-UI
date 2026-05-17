@@ -87,6 +87,40 @@ export default tseslint.config(
     },
   },
   {
+    files: ['packages/analog-ui/src/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: '@base-ui/react',
+              message:
+                'Use Base UI primitive subpath imports, such as @base-ui/react/slider, so analog-ui stays treeshakable.',
+            },
+            {
+              name: 'analog-ui',
+              message:
+                'Do not self-import the analog-ui package from its source; use relative internal modules instead.',
+            },
+          ],
+          patterns: [
+            {
+              group: ['@/*'],
+              message:
+                'Use relative imports inside packages/analog-ui/src so emitted ESM stays portable without bundling.',
+            },
+            {
+              group: ['analog-ui/*'],
+              message:
+                'Do not self-import analog-ui subpaths from package source; use relative internal modules instead.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     files: ['**/*.{ts,tsx,mts,cts}'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
