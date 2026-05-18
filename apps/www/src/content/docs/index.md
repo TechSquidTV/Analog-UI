@@ -15,7 +15,7 @@ Studio Hyper-Skeuomorphic React components for tactile controls, machined panels
 | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
 | **[Installation](/docs/getting-started)** | Tailwind CSS and a shadcn-compatible registry.                                                                             |
 | **[Tokens](/docs/design/tokens)**         | Host semantic tokens, Analog material tokens, Analog tone tokens, Analog optical slot tokens, and runtime lighting tokens. |
-| **[Lighting](/docs/design/lighting)**     | `baseAngle`, `sourceAngle`, `power`, local component lighting, device tilt, and material response.                         |
+| **[Lighting](/docs/design/lighting)**     | `baseAngle`, `sourceAngle`, `power`, interactive lighting inputs, and material response.                                   |
 | **[All Components](/docs/components)**    | Tactile controls, machined panels, meters, and analog lighting.                                                            |
 | **[Registry](/docs/registry)**            | Studio Hyper-Skeuomorphic as the category phrase in registry listings, site metadata, and short product descriptions.      |
 | **[FAQ](/docs/faq)**                      | Host semantic tokens, material recipes, and the shadcn-compatible registry.                                                |

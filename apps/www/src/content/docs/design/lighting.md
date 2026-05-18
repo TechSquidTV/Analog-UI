@@ -7,13 +7,13 @@ navTitle: Lighting
 draft: false
 ---
 
-Analog UI lighting makes separate controls feel like one piece of hardware. A surface gets a shared scene direction, and it can optionally add component-relative pointer lighting or device-tilt lighting so controls react to the actual surface in front of the user.
+Analog UI lighting makes separate controls feel like one piece of hardware. A surface gets one shared scene direction, and optional interactive inputs can steer that same light with component-relative pointer movement or device tilt.
 
-Controls can render without a provider because the hooks fall back to a 180 degree light and `power={1}`. Add a provider when a panel, rack, or dense control bank should share a scene, react to pointer movement, or define scene-wide material behavior.
+Controls can render without a provider because the hooks return the default 180 degree light and `power={1}`. Add a provider when a panel, rack, or dense control bank should share a scene, react to pointer movement, or define scene-wide material behavior.
 
 ## Basic Setup
 
-Wrap a panel or control bank in `AnalogLightingProvider`. Use `localLighting` when pointer movement should feel like a local light moving across actual controls on the surface. Add `motionLighting` when mobile tilt should steer the same scene light.
+Wrap a panel or control bank in `AnalogLightingProvider`. Use `interactiveLighting` when pointer movement, mobile tilt, or both should steer the same scene light.
 
 ```tsx
 'use client';
@@ -28,8 +28,10 @@ export function ConsoleStrip() {
     <AnalogLightingProvider
       baseAngle={180}
       power={1}
-      localLighting={{ enabled: true, surfaceRef, strength: 0.7 }}
-      motionLighting={{ enabled: true }}
+      interactiveLighting={{
+        pointer: { enabled: true, surfaceRef, strength: 0.7 },
+        motion: { enabled: true },
+      }}
     >
       <Panel ref={surfaceRef} variant="rack">
         <Dial />
@@ -40,15 +42,15 @@ export function ConsoleStrip() {
 }
 ```
 
-The provider supplies shared runtime inputs and an optional local pointer engine:
+The provider supplies shared runtime inputs and optional interactive input sources:
 
 - `baseAngle` is the art-directed resting direction for the scene.
 - `sourceAngle` is the live direction from the pointer, environment, or interaction model.
 - `power` scales highlight and shadow strength without changing the geometry of the light.
-- `localLighting` enables component-relative pointer lighting without changing individual component APIs.
-- `motionLighting` enables device-tilt lighting without changing individual component APIs.
+- `interactiveLighting.pointer` enables component-relative pointer lighting without changing individual component APIs.
+- `interactiveLighting.motion` enables device-tilt lighting without changing individual component APIs.
 
-`baseAngle`, `sourceAngle`, and `power` can be numbers or Motion values. If `sourceAngle` is omitted, it falls back to `baseAngle`. If `localLighting` or `motionLighting` are omitted or disabled, their pointer, sensor, observer, and animation-frame work is not installed.
+`baseAngle`, `sourceAngle`, and `power` can be numbers or Motion values. If `sourceAngle` is omitted, it falls back to `baseAngle`. If `interactiveLighting` is omitted or disabled, pointer, sensor, observer, and animation-frame work is not installed.
 
 ## Shared Pointer Lighting
 
@@ -74,9 +76,9 @@ const sourceAngle = usePointerLighting({
 });
 ```
 
-## Local Component Lighting
+## Interactive Lighting
 
-Use provider-level `localLighting` when each control should react to the pointer from its own screen-space center. The provider installs one pointer listener for the surface, caches component bounds, and updates registered controls in one animation-frame batch.
+Use provider-level `interactiveLighting` when the scene light should respond to user input. Pointer and motion are input sources for the same `sourceAngle` and `power` pipeline, so components keep one material response model across desktop and mobile.
 
 ```tsx
 const panelRef = React.useRef<HTMLDivElement>(null);
@@ -84,10 +86,44 @@ const panelRef = React.useRef<HTMLDivElement>(null);
 <AnalogLightingProvider
   baseAngle={180}
   power={1}
-  localLighting={{
-    enabled: true,
-    surfaceRef: panelRef,
-    strength: 0.7,
+  interactiveLighting={{
+    pointer: {
+      enabled: true,
+      surfaceRef: panelRef,
+      strength: 0.7,
+    },
+    motion: {
+      enabled: true,
+      strength: 0.52,
+      powerRange: [0.96, 1.08],
+    },
+  }}
+>
+  <Panel ref={panelRef}>
+    <Dial />
+    <Switch />
+  </Panel>
+</AnalogLightingProvider>;
+```
+
+Set `interactiveLighting={true}` to enable both inputs with defaults. Set `interactiveLighting={false}` or omit it to detach all interactive lighting work. Pointer and motion inputs are configured only under `interactiveLighting`.
+
+## Component Pointer Lighting
+
+Use `interactiveLighting.pointer` when each control should react to the pointer from its own screen-space center. The provider installs one pointer listener for the surface, caches component bounds, and updates registered controls in one animation-frame batch.
+
+```tsx
+const panelRef = React.useRef<HTMLDivElement>(null);
+
+<AnalogLightingProvider
+  baseAngle={180}
+  power={1}
+  interactiveLighting={{
+    pointer: {
+      enabled: true,
+      surfaceRef: panelRef,
+      strength: 0.7,
+    },
   }}
 >
   <Panel ref={panelRef}>
@@ -99,46 +135,48 @@ const panelRef = React.useRef<HTMLDivElement>(null);
 
 Falloff is dimension-relative. The default outer radius is based on the lit surface diagonal and
 clamped by each target's diagonal, so compact demos, rack panels, and full-screen surfaces keep a
-similar feel. Set `localLighting={{ enabled: false }}` or omit `localLighting` to detach the local
-pointer loop and use the shared scene angle. A single component can opt out with
-`lighting={{ local: false }}`.
+similar feel. Set `interactiveLighting={{ pointer: false }}` or omit `interactiveLighting.pointer`
+to detach the component pointer loop and use the shared scene angle. A single component can opt out
+with `lighting={{ interactive: false }}`.
 
-`localLighting` accepts:
+`interactiveLighting.pointer` accepts:
 
-| Option           | Use It For                                              | Default  |
-| ---------------- | ------------------------------------------------------- | -------- |
-| `enabled`        | Attaching or detaching the local lighting engine        | `false`  |
-| `surfaceRef`     | Scoping pointer events and surface-relative falloff     | viewport |
-| `strength`       | Maximum local influence before material travel applies  | `0.78`   |
-| `radius`         | Outer falloff as a fraction of the surface diagonal     | `0.3`    |
-| `innerRadius`    | Full-strength radius as a target-diagonal multiplier    | `0.35`   |
-| `minRadius`      | Minimum outer radius as a target-diagonal multiplier    | `2.2`    |
-| `maxRadius`      | Maximum outer radius as a target-diagonal multiplier    | `7`      |
-| `deadZone`       | Center hold radius as a target-diagonal multiplier      | `0.06`   |
-| `responsiveness` | Angle smoothing per pointer frame, from `0` through `1` | `0.42`   |
+| Option           | Use It For                                               | Default  |
+| ---------------- | -------------------------------------------------------- | -------- |
+| `enabled`        | Attaching or detaching the pointer lighting engine       | `false`  |
+| `surfaceRef`     | Scoping pointer events and surface-relative falloff      | viewport |
+| `strength`       | Maximum pointer influence before material travel applies | `0.78`   |
+| `radius`         | Outer falloff as a fraction of the surface diagonal      | `0.3`    |
+| `innerRadius`    | Full-strength radius as a target-diagonal multiplier     | `0.35`   |
+| `minRadius`      | Minimum outer radius as a target-diagonal multiplier     | `2.2`    |
+| `maxRadius`      | Maximum outer radius as a target-diagonal multiplier     | `7`      |
+| `deadZone`       | Center hold radius as a target-diagonal multiplier       | `0.06`   |
+| `responsiveness` | Angle smoothing per pointer frame, from `0` through `1`  | `0.42`   |
 
 ## Device Tilt Lighting
 
-Use provider-level `motionLighting` when a mobile surface should react to physical device tilt. The provider listens for `deviceorientation`, stores only the latest sensor values, and updates the shared `sourceAngle` and `power` once per animation frame.
+Use `interactiveLighting.motion` when a mobile surface should react to physical device tilt. The provider listens for `deviceorientation`, stores only the latest sensor values, and updates the shared `sourceAngle` and `power` once per animation frame.
 
 ```tsx
 <AnalogLightingProvider
   baseAngle={180}
   power={1}
-  motionLighting={{
-    enabled: true,
-    maxTilt: 34,
-    strength: 0.52,
-    powerRange: [0.96, 1.08],
+  interactiveLighting={{
+    motion: {
+      enabled: true,
+      maxTilt: 34,
+      strength: 0.52,
+      powerRange: [0.96, 1.08],
+    },
   }}
 >
   <Panel>{children}</Panel>
 </AnalogLightingProvider>
 ```
 
-On browsers that require sensor permission, Analog UI requests access on the first pointer or keyboard interaction after `motionLighting` is enabled. Call `requestAnalogMotionLightingPermission()` from your own button if you want to control that moment yourself, and set `requestPermission: "none"` on the provider.
+On browsers that require sensor permission, Analog UI requests access on the first pointer or keyboard interaction after `interactiveLighting.motion` is enabled. Call `requestAnalogMotionLightingPermission()` from your own button if you want to control that moment yourself, and set `requestPermission: "none"` on the motion input.
 
-`motionLighting` accepts:
+`interactiveLighting.motion` accepts:
 
 | Option              | Use It For                                                  | Default            |
 | ------------------- | ----------------------------------------------------------- | ------------------ |
@@ -151,6 +189,24 @@ On browsers that require sensor permission, Analog UI requests access on the fir
 | `requestPermission` | Sensor permission timing: `"on-interaction"` or `"none"`    | `"on-interaction"` |
 
 ```tsx
+type AnalogInteractiveLightingConfig = {
+  enabled?: boolean;
+  pointer?: boolean | AnalogInteractivePointerLightingConfig;
+  motion?: boolean | AnalogMotionLightingConfig;
+};
+
+type AnalogInteractivePointerLightingConfig = {
+  enabled?: boolean;
+  surfaceRef?: React.RefObject<HTMLElement | null>;
+  strength?: number;
+  radius?: number;
+  innerRadius?: number;
+  minRadius?: number;
+  maxRadius?: number;
+  deadZone?: number;
+  responsiveness?: number;
+};
+
 type AnalogMotionLightingConfig = {
   enabled?: boolean;
   maxTilt?: number;
@@ -182,7 +238,7 @@ Use the most specific channel that describes the material. A slider should not l
 
 ## Response Values
 
-Lighting responses can be numbers, presets, or response objects. Numbers are clamped from `0` to `1`; `0` stays on `baseAngle`, and `1` tracks the resolved source directly. With shared lighting that source is `sourceAngle`; with local lighting it is the component-relative pointer angle after distance falloff.
+Lighting responses can be numbers, presets, or response objects. Numbers are clamped from `0` to `1`; `0` stays on `baseAngle`, and `1` tracks the resolved source directly. With shared lighting that source is `sourceAngle`; with `interactiveLighting.pointer` it is the component-relative pointer angle after distance falloff.
 
 ```tsx
 <Dial
@@ -214,7 +270,7 @@ Use `constraint.mode: "clamp"` for a hard stop and `constraint.mode: "fold"` whe
 type AnalogLightingConfig<Channel extends AnalogMaterialChannel> = Partial<
   Record<Channel, number | 'fixed' | 'muted' | 'standard' | 'eager' | AnalogLightingResponse>
 > & {
-  local?: boolean;
+  interactive?: boolean;
 };
 ```
 
@@ -256,7 +312,7 @@ Use a component `lighting` prop when one control needs a material-specific respo
 
 Component overrides are merged channel-by-channel over provider defaults, then over the built-in channel defaults. They should describe material behavior, not visual decoration. If the component introduces a visible material channel, expose a typed `lighting` prop for it.
 
-Set `lighting={{ local: false }}` when a component should keep the shared scene angle even inside a provider with `localLighting` enabled.
+Set `lighting={{ interactive: false }}` when a component should keep the shared scene angle even inside a provider with `interactiveLighting.pointer` enabled.
 
 ## CSS Authoring
 
@@ -282,7 +338,7 @@ return (
 );
 ```
 
-Pass `targetRef` when a public component should participate in provider-level `localLighting`. The hook still returns fallback CSS variables, so installed components render correctly when local lighting is disabled or no provider exists.
+Pass `targetRef` when a public component should participate in provider-level `interactiveLighting.pointer`. The hook still returns default CSS variables, so installed components render correctly when pointer lighting is disabled or no provider exists.
 
 Use `useAnalogLightStyle` when a component needs a secondary light variable for a custom layer:
 

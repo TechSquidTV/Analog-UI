@@ -163,10 +163,12 @@ function DemoStage({
     <AnalogLightingProvider
       baseAngle={180}
       power={1}
-      localLighting={{
-        enabled: true,
-        surfaceRef,
-        strength: mode === 'compact' ? 0.58 : 0.68,
+      interactiveLighting={{
+        pointer: {
+          enabled: true,
+          surfaceRef,
+          strength: mode === 'compact' ? 0.58 : 0.68,
+        },
       }}
     >
       <div

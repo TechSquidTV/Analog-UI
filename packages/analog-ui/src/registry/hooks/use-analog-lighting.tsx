@@ -47,10 +47,10 @@ export type AnalogMaterialChannel =
 
 export type AnalogLightingConfig<Channel extends AnalogMaterialChannel = AnalogMaterialChannel> =
   Partial<Record<Channel, AnalogLightingSetting>> & {
-    local?: boolean;
+    interactive?: boolean;
   };
 
-export interface AnalogLocalLightingConfig {
+export interface AnalogInteractivePointerLightingConfig {
   /**
    * Enables component-relative lighting for controls that register a target element.
    * When false, no pointer listeners, observers, or RAF work are installed.
@@ -62,7 +62,7 @@ export interface AnalogLocalLightingConfig {
    */
   surfaceRef?: React.RefObject<HTMLElement | null>;
   /**
-   * Maximum influence of the local pointer angle before material channel travel is applied.
+   * Maximum influence of the component pointer angle before material channel travel is applied.
    */
   strength?: number;
   /**
@@ -124,9 +124,24 @@ export interface AnalogMotionLightingConfig {
   requestPermission?: AnalogMotionLightingPermissionMode;
 }
 
+export interface AnalogInteractiveLightingConfig {
+  /**
+   * Enables or disables all interactive lighting inputs.
+   */
+  enabled?: boolean;
+  /**
+   * Pointer-driven lighting, resolved from each registered component target.
+   */
+  pointer?: boolean | AnalogInteractivePointerLightingConfig;
+  /**
+   * Device-orientation lighting for mobile tilt.
+   */
+  motion?: boolean | AnalogMotionLightingConfig;
+}
+
 export interface UseAnalogLightingOptions {
   targetRef?: React.RefObject<HTMLElement | null>;
-  local?: boolean;
+  interactive?: boolean;
 }
 
 type AnalogLightingInputValue = number | MotionValue<number>;
@@ -141,10 +156,6 @@ interface ResolvedAnalogLightConstraint {
   anchor: number;
   arc: number;
   mode: AnalogLightConstraintMode;
-}
-
-interface LegacyAnalogLightingResponse extends AnalogLightingResponse {
-  follow?: AnalogLightingValue;
 }
 
 export const DEFAULT_ANALOG_MATERIAL_RESPONSES: Record<
@@ -167,7 +178,7 @@ interface AnalogLightingContextValue {
   sourceAngle: AnalogLightingInputValue;
   power: AnalogLightingInputValue;
   materials: Partial<Record<AnalogMaterialChannel, ResolvedAnalogLightingResponse>>;
-  localLighting: AnalogLocalLightingController | null;
+  pointerLighting: AnalogPointerLightingController | null;
 }
 
 export interface AnalogLightingProviderProps {
@@ -176,36 +187,35 @@ export interface AnalogLightingProviderProps {
   sourceAngle?: number | MotionValue<number>;
   power?: number | MotionValue<number>;
   materials?: Partial<Record<AnalogMaterialChannel, AnalogLightingSetting>>;
-  localLighting?: boolean | AnalogLocalLightingConfig;
-  motionLighting?: boolean | AnalogMotionLightingConfig;
+  interactiveLighting?: boolean | AnalogInteractiveLightingConfig;
 }
 
 const AnalogLightingContext = React.createContext<AnalogLightingContextValue | null>(null);
 
-interface AnalogLocalLightingTargetConfig {
+interface AnalogPointerLightingTargetConfig {
   channels: readonly AnalogMaterialChannel[];
   overrides?: AnalogLightingConfig;
   enabled: boolean;
 }
 
-interface AnalogLocalLightingTarget {
+interface AnalogPointerLightingTarget {
   element: HTMLElement;
   rect: DOMRect | null;
-  getConfig: () => AnalogLocalLightingTargetConfig;
+  getConfig: () => AnalogPointerLightingTargetConfig;
   previousRawAngle: number | null;
   continuousAngle: number;
   smoothedAngle: number | null;
 }
 
-interface AnalogLocalLightingController {
+interface AnalogPointerLightingController {
   enabled: boolean;
   registerTarget: (
     element: HTMLElement,
-    getConfig: () => AnalogLocalLightingTargetConfig,
+    getConfig: () => AnalogPointerLightingTargetConfig,
   ) => () => void;
 }
 
-interface ResolvedAnalogLocalLightingConfig {
+interface ResolvedAnalogPointerLightingConfig {
   enabled: boolean;
   surfaceRef?: React.RefObject<HTMLElement | null>;
   strength: number;
@@ -234,7 +244,7 @@ interface AnalogLightingScene {
   materials: Partial<Record<AnalogMaterialChannel, ResolvedAnalogLightingResponse>>;
 }
 
-const DEFAULT_LOCAL_LIGHTING_CONFIG: ResolvedAnalogLocalLightingConfig = {
+const DEFAULT_POINTER_LIGHTING_CONFIG: ResolvedAnalogPointerLightingConfig = {
   enabled: false,
   strength: 0.78,
   radius: 0.3,
@@ -359,29 +369,29 @@ function clampPowerRange(
   return first <= second ? [first, second] : [second, first];
 }
 
-function resolveLocalLightingConfig(
-  value: boolean | AnalogLocalLightingConfig | undefined,
-): ResolvedAnalogLocalLightingConfig {
+function resolvePointerLightingConfig(
+  value: boolean | AnalogInteractivePointerLightingConfig | undefined,
+): ResolvedAnalogPointerLightingConfig {
   if (value === true) {
-    return { ...DEFAULT_LOCAL_LIGHTING_CONFIG, enabled: true };
+    return { ...DEFAULT_POINTER_LIGHTING_CONFIG, enabled: true };
   }
 
   if (!value || value.enabled === false) {
-    return DEFAULT_LOCAL_LIGHTING_CONFIG;
+    return DEFAULT_POINTER_LIGHTING_CONFIG;
   }
 
   return {
     enabled: true,
     surfaceRef: value.surfaceRef,
-    strength: clampResponsive(value.strength, DEFAULT_LOCAL_LIGHTING_CONFIG.strength),
-    radius: clampPositive(value.radius, DEFAULT_LOCAL_LIGHTING_CONFIG.radius),
-    innerRadius: clampPositive(value.innerRadius, DEFAULT_LOCAL_LIGHTING_CONFIG.innerRadius),
-    minRadius: clampPositive(value.minRadius, DEFAULT_LOCAL_LIGHTING_CONFIG.minRadius),
-    maxRadius: clampPositive(value.maxRadius, DEFAULT_LOCAL_LIGHTING_CONFIG.maxRadius),
-    deadZone: clampPositive(value.deadZone, DEFAULT_LOCAL_LIGHTING_CONFIG.deadZone),
+    strength: clampResponsive(value.strength, DEFAULT_POINTER_LIGHTING_CONFIG.strength),
+    radius: clampPositive(value.radius, DEFAULT_POINTER_LIGHTING_CONFIG.radius),
+    innerRadius: clampPositive(value.innerRadius, DEFAULT_POINTER_LIGHTING_CONFIG.innerRadius),
+    minRadius: clampPositive(value.minRadius, DEFAULT_POINTER_LIGHTING_CONFIG.minRadius),
+    maxRadius: clampPositive(value.maxRadius, DEFAULT_POINTER_LIGHTING_CONFIG.maxRadius),
+    deadZone: clampPositive(value.deadZone, DEFAULT_POINTER_LIGHTING_CONFIG.deadZone),
     responsiveness: clampResponsive(
       value.responsiveness,
-      DEFAULT_LOCAL_LIGHTING_CONFIG.responsiveness,
+      DEFAULT_POINTER_LIGHTING_CONFIG.responsiveness,
     ),
   };
 }
@@ -408,6 +418,36 @@ function resolveMotionLightingConfig(
     ),
     powerRange: clampPowerRange(value.powerRange, DEFAULT_MOTION_LIGHTING_CONFIG.powerRange),
     requestPermission: value.requestPermission ?? DEFAULT_MOTION_LIGHTING_CONFIG.requestPermission,
+  };
+}
+
+function resolveInteractiveLightingInputs(
+  interactiveLighting: boolean | AnalogInteractiveLightingConfig | undefined,
+) {
+  if (!interactiveLighting) {
+    return {
+      pointer: false,
+      motion: false,
+    };
+  }
+
+  if (interactiveLighting === true) {
+    return {
+      pointer: true,
+      motion: true,
+    };
+  }
+
+  if (interactiveLighting.enabled === false) {
+    return {
+      pointer: false,
+      motion: false,
+    };
+  }
+
+  return {
+    pointer: interactiveLighting.pointer ?? false,
+    motion: interactiveLighting.motion ?? false,
   };
 }
 
@@ -541,16 +581,12 @@ function resolveLightingResponse(
   fallback: ResolvedAnalogLightingResponse,
 ): ResolvedAnalogLightingResponse {
   if (isLightingResponse(value)) {
-    const legacyValue = value as LegacyAnalogLightingResponse;
-    const resolvedTravel = resolveLightingValue(
-      legacyValue.travel ?? legacyValue.follow,
-      fallback.travel,
-    );
+    const resolvedTravel = resolveLightingValue(value.travel, fallback.travel);
 
     return {
       travel: resolvedTravel,
-      offset: Number.isFinite(legacyValue.offset) ? legacyValue.offset! : fallback.offset,
-      constraint: resolveLightingConstraint(legacyValue.constraint, fallback.constraint),
+      offset: Number.isFinite(value.offset) ? value.offset! : fallback.offset,
+      constraint: resolveLightingConstraint(value.constraint, fallback.constraint),
     };
   }
 
@@ -592,7 +628,7 @@ function useAnalogLightingEnvironment() {
     sourceAngle: continuousSourceAngle.current,
     power,
     materials,
-    localLighting: context?.localLighting ?? null,
+    pointerLighting: context?.pointerLighting ?? null,
   };
 }
 
@@ -616,20 +652,20 @@ function resolveAnalogLightAngle(
   return resolvedAngle;
 }
 
-function useAnalogLocalLightingController({
+function useAnalogPointerLightingController({
   baseAngle,
   sourceAngle,
   power,
   materials,
-  localLighting,
+  pointerLighting,
 }: {
   baseAngle: AnalogLightingInputValue;
   sourceAngle: AnalogLightingInputValue;
   power: AnalogLightingInputValue;
   materials: Partial<Record<AnalogMaterialChannel, ResolvedAnalogLightingResponse>>;
-  localLighting: boolean | AnalogLocalLightingConfig | undefined;
+  pointerLighting: boolean | AnalogInteractivePointerLightingConfig | undefined;
 }) {
-  const config = resolveLocalLightingConfig(localLighting);
+  const config = resolvePointerLightingConfig(pointerLighting);
   const configRef = React.useRef(config);
   const sceneInputsRef = React.useRef({
     baseAngle,
@@ -638,7 +674,7 @@ function useAnalogLocalLightingController({
     materials,
   });
   const surfaceRectRef = React.useRef<DOMRect | null>(null);
-  const targetsRef = React.useRef(new Set<AnalogLocalLightingTarget>());
+  const targetsRef = React.useRef(new Set<AnalogPointerLightingTarget>());
   const latestPointerRef = React.useRef<{ x: number; y: number } | null>(null);
   const animationFrameRef = React.useRef<number | null>(null);
   const resizeObserverRef = React.useRef<ResizeObserver | null>(null);
@@ -675,11 +711,11 @@ function useAnalogLocalLightingController({
   }, []);
 
   const writeSceneLighting = React.useCallback(
-    (target: AnalogLocalLightingTarget, scene: AnalogLightingScene) => {
+    (target: AnalogPointerLightingTarget, scene: AnalogLightingScene) => {
       const targetConfig = target.getConfig();
 
       target.element.style.setProperty('--analog-light-power', `${scene.power}`);
-      target.element.style.setProperty('--analog-local-light-strength', '0');
+      target.element.style.setProperty('--analog-pointer-light-strength', '0');
 
       for (const channel of targetConfig.channels) {
         const response = resolveLightingResponse(
@@ -694,8 +730,8 @@ function useAnalogLocalLightingController({
     [],
   );
 
-  const writeLocalLighting = React.useCallback(
-    (target: AnalogLocalLightingTarget, scene: AnalogLightingScene) => {
+  const writePointerLighting = React.useCallback(
+    (target: AnalogPointerLightingTarget, scene: AnalogLightingScene) => {
       const targetConfig = target.getConfig();
 
       if (!targetConfig.enabled) {
@@ -729,7 +765,7 @@ function useAnalogLocalLightingController({
       const influence =
         resolvedConfig.strength * (1 - smoothstep(innerRadius, outerRadius, distance));
 
-      let localSourceAngle = scene.baseAngle;
+      let pointerSourceAngle = scene.baseAngle;
 
       if (influence > 0.0001) {
         const rawAngle =
@@ -755,18 +791,26 @@ function useAnalogLocalLightingController({
                 target.continuousAngle,
                 resolvedConfig.responsiveness,
               );
-        localSourceAngle = blendAngleTowardSource(scene.baseAngle, target.smoothedAngle, influence);
+        pointerSourceAngle = blendAngleTowardSource(
+          scene.baseAngle,
+          target.smoothedAngle,
+          influence,
+        );
       }
 
       target.element.style.setProperty('--analog-light-power', `${scene.power}`);
-      target.element.style.setProperty('--analog-local-light-strength', `${influence}`);
+      target.element.style.setProperty('--analog-pointer-light-strength', `${influence}`);
 
       for (const channel of targetConfig.channels) {
         const response = resolveLightingResponse(
           targetConfig.overrides?.[channel],
           scene.materials[channel] ?? DEFAULT_ANALOG_MATERIAL_RESPONSES[channel],
         );
-        const resolvedAngle = resolveAnalogLightAngle(scene.baseAngle, localSourceAngle, response);
+        const resolvedAngle = resolveAnalogLightAngle(
+          scene.baseAngle,
+          pointerSourceAngle,
+          response,
+        );
 
         target.element.style.setProperty(`--analog-light-angle-${channel}`, `${resolvedAngle}deg`);
       }
@@ -782,9 +826,9 @@ function useAnalogLocalLightingController({
     const scene = readScene();
 
     for (const target of targetsRef.current) {
-      writeLocalLighting(target, scene);
+      writePointerLighting(target, scene);
     }
-  }, [readScene, writeLocalLighting]);
+  }, [readScene, writePointerLighting]);
 
   const scheduleLighting = React.useCallback(() => {
     if (!configRef.current.enabled || animationFrameRef.current !== null) return;
@@ -801,9 +845,9 @@ function useAnalogLocalLightingController({
   }, [readScene, writeSceneLighting]);
 
   const registerTarget = React.useCallback(
-    (element: HTMLElement, getConfig: () => AnalogLocalLightingTargetConfig) => {
+    (element: HTMLElement, getConfig: () => AnalogPointerLightingTargetConfig) => {
       const scene = readScene();
-      const target: AnalogLocalLightingTarget = {
+      const target: AnalogPointerLightingTarget = {
         element,
         rect: null,
         getConfig,
@@ -815,7 +859,7 @@ function useAnalogLocalLightingController({
       targetsRef.current.add(target);
       resizeObserverRef.current?.observe(element);
       measureLayout();
-      writeLocalLighting(target, scene);
+      writePointerLighting(target, scene);
 
       return () => {
         targetsRef.current.delete(target);
@@ -823,7 +867,7 @@ function useAnalogLocalLightingController({
         writeSceneLighting(target, readScene());
       };
     },
-    [measureLayout, readScene, writeLocalLighting, writeSceneLighting],
+    [measureLayout, readScene, writePointerLighting, writeSceneLighting],
   );
 
   React.useEffect(() => {
@@ -924,7 +968,7 @@ function useAnalogLocalLightingController({
     }
   });
 
-  return React.useMemo<AnalogLocalLightingController | null>(
+  return React.useMemo<AnalogPointerLightingController | null>(
     () =>
       config.enabled
         ? {
@@ -1172,9 +1216,9 @@ export function AnalogLightingProvider({
   sourceAngle,
   power = 1,
   materials,
-  localLighting,
-  motionLighting,
+  interactiveLighting,
 }: AnalogLightingProviderProps) {
+  const interactiveLightingInputs = resolveInteractiveLightingInputs(interactiveLighting);
   const mergedMaterials = React.useMemo(() => {
     const next: Partial<Record<AnalogMaterialChannel, ResolvedAnalogLightingResponse>> = {};
 
@@ -1194,14 +1238,14 @@ export function AnalogLightingProvider({
     baseAngle,
     sourceAngle: sceneSourceAngle,
     power,
-    motionLighting,
+    motionLighting: interactiveLightingInputs.motion,
   });
-  const localLightingController = useAnalogLocalLightingController({
+  const pointerLightingController = useAnalogPointerLightingController({
     baseAngle,
     sourceAngle: motionLightingScene.sourceAngle,
     power: motionLightingScene.power,
     materials: mergedMaterials,
-    localLighting,
+    pointerLighting: interactiveLightingInputs.pointer,
   });
 
   const value = React.useMemo(
@@ -1210,11 +1254,11 @@ export function AnalogLightingProvider({
       sourceAngle: motionLightingScene.sourceAngle,
       power: motionLightingScene.power,
       materials: mergedMaterials,
-      localLighting: localLightingController,
+      pointerLighting: pointerLightingController,
     }),
     [
       baseAngle,
-      localLightingController,
+      pointerLightingController,
       mergedMaterials,
       motionLightingScene.power,
       motionLightingScene.sourceAngle,
@@ -1230,27 +1274,29 @@ export function useAnalogLighting<Channel extends AnalogMaterialChannel>(
   options: UseAnalogLightingOptions = {},
 ) {
   const environment = useAnalogLightingEnvironment();
-  const targetConfigRef = React.useRef<AnalogLocalLightingTargetConfig>({
+  const targetConfigRef = React.useRef<AnalogPointerLightingTargetConfig>({
     channels,
     overrides,
     enabled: false,
   });
-  const localTargetEnabled =
-    options.local !== false && overrides?.local !== false && environment.localLighting !== null;
+  const pointerTargetEnabled =
+    options.interactive !== false &&
+    overrides?.interactive !== false &&
+    environment.pointerLighting !== null;
 
   targetConfigRef.current = {
     channels,
     overrides,
-    enabled: localTargetEnabled,
+    enabled: pointerTargetEnabled,
   };
 
   React.useEffect(() => {
     const element = options.targetRef?.current;
 
-    if (!element || !environment.localLighting || !localTargetEnabled) return;
+    if (!element || !environment.pointerLighting || !pointerTargetEnabled) return;
 
-    return environment.localLighting.registerTarget(element, () => targetConfigRef.current);
-  }, [environment.localLighting, localTargetEnabled, options.targetRef]);
+    return environment.pointerLighting.registerTarget(element, () => targetConfigRef.current);
+  }, [environment.pointerLighting, pointerTargetEnabled, options.targetRef]);
 
   const style = {
     '--analog-light-power': `${environment.power}`,

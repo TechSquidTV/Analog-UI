@@ -59,10 +59,9 @@ display style variants. Color roles stay on `tone`.
 
 ## Lighting
 
-Controls render with fallback lighting on their own. Wrap a panel or dense
-control bank in `AnalogLightingProvider` when controls should share a scene,
-enable `localLighting` when pointer movement should react from each component's
-on-screen center, and add `motionLighting` when mobile tilt should steer the
+Controls render with the default 180 degree light on their own. Wrap a panel or
+dense control bank in `AnalogLightingProvider` when controls should share a scene.
+Use `interactiveLighting` to let pointer movement and mobile tilt steer the
 same light source:
 
 ```tsx
@@ -76,8 +75,10 @@ export function ConsolePanel() {
     <AnalogLightingProvider
       baseAngle={180}
       power={1}
-      localLighting={{ enabled: true, surfaceRef: panelRef }}
-      motionLighting={{ enabled: true }}
+      interactiveLighting={{
+        pointer: { enabled: true, surfaceRef: panelRef },
+        motion: { enabled: true },
+      }}
     >
       <Panel ref={panelRef}>
         <Dial />

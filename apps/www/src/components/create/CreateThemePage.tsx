@@ -1634,7 +1634,7 @@ export default function CreateThemePage() {
     <AnalogLightingProvider
       baseAngle={180}
       power={1}
-      localLighting={{ enabled: true, surfaceRef: pageRef, strength: 0.66 }}
+      interactiveLighting={{ pointer: { enabled: true, surfaceRef: pageRef, strength: 0.66 } }}
     >
       <section ref={pageRef} className="site-frame pt-8 md:pt-10">
         <div className="mb-6 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">

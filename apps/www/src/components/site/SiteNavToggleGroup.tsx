@@ -82,7 +82,7 @@ export default function SiteNavToggleGroup({
     <AnalogLightingProvider
       baseAngle={180}
       power={1}
-      localLighting={{ enabled: true, surfaceRef: navRef, strength: 0.62 }}
+      interactiveLighting={{ pointer: { enabled: true, surfaceRef: navRef, strength: 0.62 } }}
     >
       <div ref={navRef} className="flex flex-wrap items-center justify-center gap-3 sm:justify-end">
         <ToggleButtonGroup

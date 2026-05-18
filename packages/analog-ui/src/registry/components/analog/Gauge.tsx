@@ -245,14 +245,14 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
     },
     ref,
   ) => {
-    const localLightingRef = React.useRef<HTMLDivElement>(null);
+    const pointerLightingRef = React.useRef<HTMLDivElement>(null);
     const gaugeId = React.useId().replace(/:/g, '');
     const colors = {
       glow: 'var(--analog-display-glow)',
       bg: 'var(--analog-display-fill)',
     };
     const lightingStyle = useAnalogLighting(['surface', 'pointer', 'lens'], lighting, {
-      targetRef: localLightingRef,
+      targetRef: pointerLightingRef,
     });
 
     return (
@@ -385,7 +385,7 @@ export const Gauge = React.forwardRef<HTMLDivElement, GaugeProps>(
             <div
               {...resolvedRootProps}
               ref={(node) => {
-                localLightingRef.current = node;
+                pointerLightingRef.current = node;
 
                 if (typeof rootRenderRef === 'function') {
                   rootRenderRef(node);

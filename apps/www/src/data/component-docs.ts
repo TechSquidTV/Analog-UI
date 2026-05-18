@@ -45,7 +45,7 @@ const lightingProp = {
   name: 'lighting',
   type: 'AnalogLightingConfig<...>',
   description:
-    'Overrides resolved light channels for the component materials. Set local: false to opt out of provider-level local lighting.',
+    'Overrides resolved light channels for the component materials. Set interactive: false to opt out of interactive pointer lighting.',
 };
 
 const classNameProp = {

@@ -318,14 +318,14 @@ function PointerLightingCase() {
   );
 }
 
-function LocalLightingCase() {
+function InteractivePointerLightingCase() {
   const surfaceRef = useRef<HTMLDivElement>(null);
 
   return (
     <AnalogLightingProvider
       baseAngle={180}
       power={1}
-      localLighting={{ enabled: true, surfaceRef, strength: 0.7 }}
+      interactiveLighting={{ pointer: { enabled: true, surfaceRef, strength: 0.7 } }}
     >
       <div
         ref={surfaceRef}
@@ -350,9 +350,11 @@ function MotionLightingCase() {
     <AnalogLightingProvider
       baseAngle={180}
       power={1}
-      motionLighting={{
-        enabled: true,
-        requestPermission: 'none',
+      interactiveLighting={{
+        motion: {
+          enabled: true,
+          requestPermission: 'none',
+        },
       }}
     >
       <div className="perf-lighting-surface" data-perf-target="lighting-surface">
@@ -410,7 +412,7 @@ function PerfCase() {
   }, [caseName]);
 
   if (caseName === 'pointer-lighting') return <PointerLightingCase />;
-  if (caseName === 'local-lighting') return <LocalLightingCase />;
+  if (caseName === 'interactive-pointer-lighting') return <InteractivePointerLightingCase />;
   if (caseName === 'motion-lighting') return <MotionLightingCase />;
   if (caseName === 'wheel-cleanup') return <WheelCleanupCase />;
 

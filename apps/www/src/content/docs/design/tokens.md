@@ -37,7 +37,7 @@ Think in three layers when you theme the system:
 - **Analog tone tokens** map semantic color roles into emissive indicators, displays, and measured ranges.
 - **Analog recipe tokens** control geometry, finish intensity, grain, bloom, bevel depth, and other physical details.
 
-Runtime lighting variables such as `--analog-light-angle-*`, `--analog-light-power`, and `--analog-local-light-strength` are covered in [Lighting](/docs/design/lighting). Treat them as live rendering state, not static theme tokens.
+Runtime lighting variables such as `--analog-light-angle-*`, `--analog-light-power`, and `--analog-pointer-light-strength` are covered in [Lighting](/docs/design/lighting). Treat them as live rendering state, not static theme tokens.
 
 ## Material Tokens
 

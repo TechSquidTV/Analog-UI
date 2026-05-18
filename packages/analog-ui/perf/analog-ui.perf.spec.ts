@@ -105,10 +105,10 @@ test('usePointerLighting coalesces pointer moves without pointer-time layout rea
   expect(pointerMetrics.rafScheduled).toBeLessThanOrEqual(2);
 });
 
-test('local component lighting coalesces pointer moves without pointer-time layout reads', async ({
+test('interactive pointer lighting coalesces pointer moves without pointer-time layout reads', async ({
   page,
 }) => {
-  await openPerfCase(page, 'local-lighting');
+  await openPerfCase(page, 'interactive-pointer-lighting');
   await waitForFrames(page, 3);
 
   const warmupReads = await page.evaluate(async () => {

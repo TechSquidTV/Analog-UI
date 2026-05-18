@@ -188,16 +188,18 @@ export default function App() {
     <AnalogLightingProvider
       baseAngle={lightAngle}
       power={lightPower / 120}
-      localLighting={{
-        enabled: mouseInfluence > 0,
-        surfaceRef,
-        strength: mouseInfluence,
-      }}
-      motionLighting={{
-        enabled: true,
-        strength: 0.5,
-        maxTilt: 34,
-        powerRange: [0.96, 1.08],
+      interactiveLighting={{
+        pointer: {
+          enabled: mouseInfluence > 0,
+          surfaceRef,
+          strength: mouseInfluence,
+        },
+        motion: {
+          enabled: true,
+          strength: 0.5,
+          maxTilt: 34,
+          powerRange: [0.96, 1.08],
+        },
       }}
     >
       <div
