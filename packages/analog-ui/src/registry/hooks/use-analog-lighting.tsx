@@ -212,6 +212,8 @@ interface AnalogPointerLightingTarget {
   previousRawAngle: number | null;
   continuousAngle: number;
   smoothedAngle: number | null;
+  lastInfluence: number;
+  lastSceneKey: string | null;
 }
 
 interface AnalogPointerLightingController {
@@ -263,6 +265,7 @@ const DEFAULT_POINTER_LIGHTING_CONFIG: ResolvedAnalogPointerLightingConfig = {
   responsiveness: 0.42,
   pointerTypes: ['mouse', 'pen'],
 };
+const POINTER_LIGHTING_EPSILON = 0.0001;
 
 const DEFAULT_MOTION_LIGHTING_CONFIG: ResolvedAnalogMotionLightingConfig = {
   enabled: false,
@@ -384,6 +387,16 @@ function readLightingInput(value: AnalogLightingInputValue | undefined, fallback
   if (typeof value === 'number' && Number.isFinite(value)) return value;
   if (isMotionValue(value)) return value.get();
   return fallback;
+}
+
+function roundLightingSceneValue(value: number) {
+  return Math.round(value * 1000) / 1000;
+}
+
+function getLightingSceneKey(scene: AnalogLightingScene) {
+  return `${roundLightingSceneValue(scene.baseAngle)}:${roundLightingSceneValue(
+    scene.sourceAngle,
+  )}:${roundLightingSceneValue(scene.power)}`;
 }
 
 function clamp01(value: number) {
@@ -777,6 +790,7 @@ function useAnalogPointerLightingController({
   const writeSceneLighting = React.useCallback(
     (target: AnalogPointerLightingTarget, scene: AnalogLightingScene) => {
       const targetConfig = target.getConfig();
+      const sceneKey = getLightingSceneKey(scene);
 
       target.element.style.setProperty('--analog-light-power', `${scene.power}`);
       target.element.style.setProperty('--analog-pointer-light-strength', '0');
@@ -790,6 +804,9 @@ function useAnalogPointerLightingController({
 
         target.element.style.setProperty(`--analog-light-angle-${channel}`, `${resolvedAngle}deg`);
       }
+
+      target.lastInfluence = 0;
+      target.lastSceneKey = sceneKey;
     },
     [],
   );
@@ -828,10 +845,19 @@ function useAnalogPointerLightingController({
       const deadZoneRadius = componentSize * resolvedConfig.deadZone;
       const influence =
         resolvedConfig.strength * (1 - smoothstep(innerRadius, outerRadius, distance));
+      const sceneKey = getLightingSceneKey(scene);
+
+      if (
+        influence <= POINTER_LIGHTING_EPSILON &&
+        target.lastInfluence <= POINTER_LIGHTING_EPSILON &&
+        target.lastSceneKey === sceneKey
+      ) {
+        return;
+      }
 
       let pointerSourceAngle = scene.baseAngle;
 
-      if (influence > 0.0001) {
+      if (influence > POINTER_LIGHTING_EPSILON) {
         const rawAngle =
           distance <= deadZoneRadius && target.previousRawAngle !== null
             ? target.previousRawAngle
@@ -878,6 +904,9 @@ function useAnalogPointerLightingController({
 
         target.element.style.setProperty(`--analog-light-angle-${channel}`, `${resolvedAngle}deg`);
       }
+
+      target.lastInfluence = influence;
+      target.lastSceneKey = sceneKey;
     },
     [writeSceneLighting],
   );
@@ -918,6 +947,8 @@ function useAnalogPointerLightingController({
         previousRawAngle: null,
         continuousAngle: scene.baseAngle,
         smoothedAngle: null,
+        lastInfluence: 0,
+        lastSceneKey: null,
       };
 
       targetsRef.current.add(target);

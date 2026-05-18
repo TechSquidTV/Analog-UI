@@ -15,7 +15,15 @@ export default function HomePage({ componentCountLabel }: HomePageProps) {
       baseAngle={180}
       power={1}
       interactiveLighting={{
-        pointer: { enabled: true, surfaceRef: homeRef, strength: 0.72 },
+        pointer: {
+          enabled: true,
+          surfaceRef: homeRef,
+          strength: 0.62,
+          radius: 0.16,
+          innerRadius: 0.28,
+          minRadius: 1.4,
+          maxRadius: 3.2,
+        },
         motion: { enabled: true, strength: 0.46 },
       }}
     >
