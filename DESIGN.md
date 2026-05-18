@@ -165,7 +165,7 @@ Use **Studio Hyper-Skeuomorphic** as the category phrase in registry listings, s
 
 Canonical registry description:
 
-> Studio Hyper-Skeuomorphic React components for tactile controls, machined panels, meters, and analog lighting. Built with Tailwind CSS and a shadcn-compatible registry.
+> Studio Hyper-Skeuomorphic React components for tactile controls with immersive lighting. Built with Tailwind CSS and a shadcn-compatible registry.
 
 Short description:
 

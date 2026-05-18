@@ -1,7 +1,7 @@
 {
   "name": "analog-ui",
   "version": "0.0.0",
-  "description": "Studio Hyper-Skeuomorphic React components for tactile controls, machined panels, meters, and analog lighting.",
+  "description": "Studio Hyper-Skeuomorphic React components for tactile controls with immersive lighting.",
   "keywords": [
     "analog-ui",
     "react",
