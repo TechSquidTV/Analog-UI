@@ -61,6 +61,7 @@ Use `usePointerLighting` when the whole surface should share one moving source a
 - Use `influence` to blend the pointer angle back toward `baseAngle`.
 - Use `deadZoneRadius` to avoid noisy angle flips near the center.
 - Use `enabled={false}` to return to the base angle and detach pointer tracking.
+- Use `pointerTypes` when touch should intentionally steer pointer lighting; by default touch is ignored so mobile scroll stays separate from lighting input.
 - Use `suspendRef` during heavy scrubbing if pointer lighting competes with drag interaction.
 
 At `influence: 1`, the returned light follows the pointer directly. Lower values keep the scene calmer.
@@ -141,17 +142,18 @@ with `lighting={{ interactive: false }}`.
 
 `interactiveLighting.pointer` accepts:
 
-| Option           | Use It For                                               | Default  |
-| ---------------- | -------------------------------------------------------- | -------- |
-| `enabled`        | Attaching or detaching the pointer lighting engine       | `false`  |
-| `surfaceRef`     | Scoping pointer events and surface-relative falloff      | viewport |
-| `strength`       | Maximum pointer influence before material travel applies | `0.78`   |
-| `radius`         | Outer falloff as a fraction of the surface diagonal      | `0.3`    |
-| `innerRadius`    | Full-strength radius as a target-diagonal multiplier     | `0.35`   |
-| `minRadius`      | Minimum outer radius as a target-diagonal multiplier     | `2.2`    |
-| `maxRadius`      | Maximum outer radius as a target-diagonal multiplier     | `7`      |
-| `deadZone`       | Center hold radius as a target-diagonal multiplier       | `0.06`   |
-| `responsiveness` | Angle smoothing per pointer frame, from `0` through `1`  | `0.42`   |
+| Option           | Use It For                                               | Default            |
+| ---------------- | -------------------------------------------------------- | ------------------ |
+| `enabled`        | Attaching or detaching the pointer lighting engine       | `false`            |
+| `surfaceRef`     | Scoping pointer events and surface-relative falloff      | viewport           |
+| `strength`       | Maximum pointer influence before material travel applies | `0.78`             |
+| `radius`         | Outer falloff as a fraction of the surface diagonal      | `0.3`              |
+| `innerRadius`    | Full-strength radius as a target-diagonal multiplier     | `0.35`             |
+| `minRadius`      | Minimum outer radius as a target-diagonal multiplier     | `2.2`              |
+| `maxRadius`      | Maximum outer radius as a target-diagonal multiplier     | `7`                |
+| `deadZone`       | Center hold radius as a target-diagonal multiplier       | `0.06`             |
+| `responsiveness` | Angle smoothing per pointer frame, from `0` through `1`  | `0.42`             |
+| `pointerTypes`   | Pointer input types that can steer lighting              | `["mouse", "pen"]` |
 
 ## Device Tilt Lighting
 
@@ -174,7 +176,7 @@ Use `interactiveLighting.motion` when a mobile surface should react to physical 
 </AnalogLightingProvider>
 ```
 
-On browsers that require sensor permission, Analog UI requests access on the first pointer or keyboard interaction after `interactiveLighting.motion` is enabled. Call `requestAnalogMotionLightingPermission()` from your own button if you want to control that moment yourself, and set `requestPermission: "none"` on the motion input.
+On browsers that require sensor permission, Analog UI requests access on the first click/tap or keyboard interaction after `interactiveLighting.motion` is enabled. Scroll gestures do not trigger the request. Call `requestAnalogMotionLightingPermission()` from your own button if you want to control that moment yourself, and set `requestPermission: "none"` on the motion input.
 
 `interactiveLighting.motion` accepts:
 
@@ -205,6 +207,7 @@ type AnalogInteractivePointerLightingConfig = {
   maxRadius?: number;
   deadZone?: number;
   responsiveness?: number;
+  pointerTypes?: readonly ('mouse' | 'pen' | 'touch')[];
 };
 
 type AnalogMotionLightingConfig = {

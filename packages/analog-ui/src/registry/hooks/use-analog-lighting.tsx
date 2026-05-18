@@ -34,6 +34,8 @@ export interface AnalogLightStyleOptions extends AnalogLightingResponse {
   varName?: `--${string}`;
 }
 
+export type AnalogPointerLightingInputType = 'mouse' | 'pen' | 'touch';
+
 export type AnalogMaterialChannel =
   | 'panel'
   | 'screw'
@@ -89,6 +91,11 @@ export interface AnalogInteractivePointerLightingConfig {
    * Angle response per pointer frame. 1 follows directly; lower values smooth direction changes.
    */
   responsiveness?: number;
+  /**
+   * Pointer input types that can steer pointer lighting. Touch is excluded by default so
+   * mobile scroll and drag gestures leave tilt lighting in charge.
+   */
+  pointerTypes?: readonly AnalogPointerLightingInputType[];
 }
 
 export type AnalogMotionLightingPermissionMode = 'on-interaction' | 'none';
@@ -225,6 +232,7 @@ interface ResolvedAnalogPointerLightingConfig {
   maxRadius: number;
   deadZone: number;
   responsiveness: number;
+  pointerTypes: readonly AnalogPointerLightingInputType[];
 }
 
 interface ResolvedAnalogMotionLightingConfig {
@@ -253,6 +261,7 @@ const DEFAULT_POINTER_LIGHTING_CONFIG: ResolvedAnalogPointerLightingConfig = {
   maxRadius: 7,
   deadZone: 0.06,
   responsiveness: 0.42,
+  pointerTypes: ['mouse', 'pen'],
 };
 
 const DEFAULT_MOTION_LIGHTING_CONFIG: ResolvedAnalogMotionLightingConfig = {
@@ -269,6 +278,10 @@ type AnalogDeviceOrientationEventConstructor = typeof DeviceOrientationEvent & {
   requestPermission?: () => Promise<PermissionState>;
 };
 
+type AnalogMotionPermissionConstructor = {
+  requestPermission?: () => Promise<PermissionState>;
+};
+
 type AnalogDeviceOrientationListener = (event: DeviceOrientationEvent) => void;
 
 const analogDeviceOrientationListeners = new Set<AnalogDeviceOrientationListener>();
@@ -281,6 +294,31 @@ function getDeviceOrientationEventConstructor() {
   }
 
   return window.DeviceOrientationEvent as AnalogDeviceOrientationEventConstructor;
+}
+
+function getDeviceMotionEventConstructor() {
+  if (typeof window === 'undefined') return null;
+
+  return (
+    (window as Window & { DeviceMotionEvent?: AnalogMotionPermissionConstructor })
+      .DeviceMotionEvent ?? null
+  );
+}
+
+function getAnalogMotionPermissionRequest() {
+  const OrientationEventConstructor = getDeviceOrientationEventConstructor();
+
+  if (typeof OrientationEventConstructor?.requestPermission === 'function') {
+    return () => OrientationEventConstructor.requestPermission!.call(OrientationEventConstructor);
+  }
+
+  const MotionEventConstructor = getDeviceMotionEventConstructor();
+
+  if (typeof MotionEventConstructor?.requestPermission === 'function') {
+    return () => MotionEventConstructor.requestPermission!.call(MotionEventConstructor);
+  }
+
+  return null;
 }
 
 function handleAnalogDeviceOrientation(event: DeviceOrientationEvent) {
@@ -317,11 +355,14 @@ export function requestAnalogMotionLightingPermission() {
   const OrientationEventConstructor = getDeviceOrientationEventConstructor();
 
   if (!OrientationEventConstructor) return Promise.resolve(false);
-  if (typeof OrientationEventConstructor.requestPermission !== 'function') {
+
+  const requestPermission = getAnalogMotionPermissionRequest();
+
+  if (!requestPermission) {
     return Promise.resolve(true);
   }
 
-  analogMotionPermissionPromise ??= OrientationEventConstructor.requestPermission()
+  analogMotionPermissionPromise ??= requestPermission()
     .then((state) => state === 'granted')
     .catch(() => false);
 
@@ -369,6 +410,28 @@ function clampPowerRange(
   return first <= second ? [first, second] : [second, first];
 }
 
+function resolvePointerLightingInputTypes(
+  value: readonly AnalogPointerLightingInputType[] | undefined,
+) {
+  if (!value) return DEFAULT_POINTER_LIGHTING_CONFIG.pointerTypes;
+
+  const next = value.filter(
+    (pointerType): pointerType is AnalogPointerLightingInputType =>
+      pointerType === 'mouse' || pointerType === 'pen' || pointerType === 'touch',
+  );
+
+  return next.length > 0 ? next : DEFAULT_POINTER_LIGHTING_CONFIG.pointerTypes;
+}
+
+function isPointerLightingInputEvent(
+  event: PointerEvent,
+  pointerTypes: readonly AnalogPointerLightingInputType[],
+) {
+  return event.pointerType === ''
+    ? pointerTypes.includes('mouse')
+    : pointerTypes.includes(event.pointerType as AnalogPointerLightingInputType);
+}
+
 function resolvePointerLightingConfig(
   value: boolean | AnalogInteractivePointerLightingConfig | undefined,
 ): ResolvedAnalogPointerLightingConfig {
@@ -393,6 +456,7 @@ function resolvePointerLightingConfig(
       value.responsiveness,
       DEFAULT_POINTER_LIGHTING_CONFIG.responsiveness,
     ),
+    pointerTypes: resolvePointerLightingInputTypes(value.pointerTypes),
   };
 }
 
@@ -883,14 +947,30 @@ function useAnalogPointerLightingController({
     }
 
     const resolvedSurface = config.surfaceRef?.current;
-    const handlePointerMove = (event: PointerEvent | MouseEvent) => {
+    const handleIgnoredPointer = () => {
+      if (latestPointerRef.current === null) return;
+
+      latestPointerRef.current = null;
+      scheduleLighting();
+    };
+    const handlePointerMove = (event: PointerEvent) => {
+      if (!isPointerLightingInputEvent(event, configRef.current.pointerTypes)) {
+        handleIgnoredPointer();
+        return;
+      }
+
       latestPointerRef.current = {
         x: event.clientX,
         y: event.clientY,
       };
       scheduleLighting();
     };
-    const handlePointerWarmup = (event: PointerEvent | MouseEvent) => {
+    const handlePointerWarmup = (event: PointerEvent) => {
+      if (!isPointerLightingInputEvent(event, configRef.current.pointerTypes)) {
+        handleIgnoredPointer();
+        return;
+      }
+
       measureLayout();
       handlePointerMove(event);
     };
@@ -1140,7 +1220,7 @@ function useAnalogMotionLighting({
 
       if (!latestConstructor) return;
 
-      if (typeof latestConstructor.requestPermission !== 'function') {
+      if (!getAnalogMotionPermissionRequest()) {
         installMotionListener();
         return;
       }
@@ -1155,11 +1235,8 @@ function useAnalogMotionLighting({
       });
     };
 
-    if (
-      typeof OrientationEventConstructor.requestPermission === 'function' &&
-      config.requestPermission === 'on-interaction'
-    ) {
-      window.addEventListener('pointerdown', requestAndInstall, { once: true, passive: true });
+    if (getAnalogMotionPermissionRequest() && config.requestPermission === 'on-interaction') {
+      window.addEventListener('click', requestAndInstall, { once: true, passive: true });
       window.addEventListener('keydown', requestAndInstall, { once: true });
     } else {
       requestAndInstall();
@@ -1176,7 +1253,7 @@ function useAnalogMotionLighting({
       }
 
       cleanupMotionListener?.();
-      window.removeEventListener('pointerdown', requestAndInstall);
+      window.removeEventListener('click', requestAndInstall);
       window.removeEventListener('keydown', requestAndInstall);
     };
   }, [

@@ -370,6 +370,30 @@ function MotionLightingCase() {
   );
 }
 
+function MotionPermissionLightingCase() {
+  return (
+    <AnalogLightingProvider
+      baseAngle={180}
+      power={1}
+      interactiveLighting={{
+        motion: {
+          enabled: true,
+        },
+      }}
+    >
+      <div className="perf-lighting-surface" data-perf-target="lighting-surface">
+        <Panel className="perf-lighting-stage" screws={false} variant="rack">
+          <div className="perf-lighting-controls">
+            <Dial value={35} />
+            <Switch checked aria-label="Permission lighting switch" />
+            <LCDDisplay value="TILT" />
+          </div>
+        </Panel>
+      </div>
+    </AnalogLightingProvider>
+  );
+}
+
 function WheelCleanupCase() {
   const [mounted, setMounted] = useState(true);
 
@@ -414,6 +438,7 @@ function PerfCase() {
   if (caseName === 'pointer-lighting') return <PointerLightingCase />;
   if (caseName === 'interactive-pointer-lighting') return <InteractivePointerLightingCase />;
   if (caseName === 'motion-lighting') return <MotionLightingCase />;
+  if (caseName === 'motion-permission-lighting') return <MotionPermissionLightingCase />;
   if (caseName === 'wheel-cleanup') return <WheelCleanupCase />;
 
   return <SliderDragCase />;

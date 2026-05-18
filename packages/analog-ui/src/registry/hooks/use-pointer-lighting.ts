@@ -7,6 +7,8 @@ import {
   vectorToLightingAngle,
 } from '../../lib/angle-utils';
 
+export type PointerLightingInputType = 'mouse' | 'pen' | 'touch';
+
 export interface UsePointerLightingOptions {
   baseAngle?: number;
   influence?: number; // 0 keeps the base angle, 1 follows the pointer immediately
@@ -14,7 +16,10 @@ export interface UsePointerLightingOptions {
   targetRef?: RefObject<HTMLElement | null>;
   suspendRef?: RefObject<boolean>;
   deadZoneRadius?: number;
+  pointerTypes?: readonly PointerLightingInputType[];
 }
+
+const DEFAULT_POINTER_LIGHTING_INPUT_TYPES = ['mouse', 'pen'] as const;
 
 function resolveAnchorPoint(targetRef: RefObject<HTMLElement | null> | undefined) {
   const element = targetRef?.current;
@@ -36,6 +41,15 @@ function resolveAnchorPoint(targetRef: RefObject<HTMLElement | null> | undefined
   };
 }
 
+function isPointerLightingInputEvent(
+  event: PointerEvent,
+  pointerTypes: readonly PointerLightingInputType[],
+) {
+  return event.pointerType === ''
+    ? pointerTypes.includes('mouse')
+    : pointerTypes.includes(event.pointerType as PointerLightingInputType);
+}
+
 /**
  * Maps pointer movement to a continuous light angle around the lit surface.
  * Lower influence values blend the moving light back toward the base angle.
@@ -47,6 +61,7 @@ export function usePointerLighting({
   targetRef,
   suspendRef,
   deadZoneRadius = 8,
+  pointerTypes = DEFAULT_POINTER_LIGHTING_INPUT_TYPES,
 }: UsePointerLightingOptions = {}) {
   const angleValue = useMotionValue(baseAngle);
   const continuousPointerAngle = useRef(baseAngle);
@@ -150,6 +165,10 @@ export function usePointerLighting({
     const targetElement = targetRef?.current;
     const handlePointerMove = (e: PointerEvent) => {
       if (isSuspended()) return;
+      if (!isPointerLightingInputEvent(e, pointerTypes)) {
+        latestPointer.current = null;
+        return;
+      }
 
       latestPointer.current = {
         x: e.clientX,
@@ -161,8 +180,12 @@ export function usePointerLighting({
       pendingFrame.current = window.requestAnimationFrame(processPointer);
     };
 
-    const handleTargetWarmup = () => {
+    const handleTargetWarmup = (e: PointerEvent) => {
       if (isSuspended()) return;
+      if (!isPointerLightingInputEvent(e, pointerTypes)) {
+        latestPointer.current = null;
+        return;
+      }
 
       updateAnchorPoint();
     };
@@ -212,6 +235,7 @@ export function usePointerLighting({
     resolvedInfluence,
     suspendRef,
     targetRef,
+    pointerTypes,
   ]);
 
   return angleValue;

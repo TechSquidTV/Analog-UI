@@ -68,6 +68,7 @@ test('usePointerLighting coalesces pointer moves without pointer-time layout rea
         clientX: 260,
         clientY: 260,
         pointerId: 1,
+        pointerType: 'mouse',
       }),
     );
 
@@ -91,6 +92,7 @@ test('usePointerLighting coalesces pointer moves without pointer-time layout rea
           clientX: 180 + index,
           clientY: 220 + (index % 30),
           pointerId: 1,
+          pointerType: 'mouse',
         }),
       );
     }
@@ -103,6 +105,48 @@ test('usePointerLighting coalesces pointer moves without pointer-time layout rea
   expect(pointerMetrics.rectReads).toBe(0);
   expect(pointerMetrics.rafExecuted).toBeGreaterThanOrEqual(1);
   expect(pointerMetrics.rafScheduled).toBeLessThanOrEqual(2);
+});
+
+test('usePointerLighting ignores touch pointer events while scrolling', async ({ page }) => {
+  await openPerfCase(page, 'pointer-lighting');
+  await waitForFrames(page, 3);
+
+  const touchMetrics = await page.evaluate(async () => {
+    window.__analogPerf.resetMetrics();
+
+    const target = document.querySelector<HTMLElement>('[data-perf-target="lighting-surface"]');
+    if (!target) throw new Error('Missing lighting surface.');
+
+    target.dispatchEvent(
+      new PointerEvent('pointerdown', {
+        bubbles: true,
+        clientX: 260,
+        clientY: 260,
+        pointerId: 9,
+        pointerType: 'touch',
+      }),
+    );
+
+    for (let index = 0; index < 60; index += 1) {
+      target.dispatchEvent(
+        new PointerEvent('pointermove', {
+          bubbles: true,
+          clientX: 180 + index,
+          clientY: 220 + index,
+          pointerId: 9,
+          pointerType: 'touch',
+        }),
+      );
+    }
+
+    await new Promise((resolve) => window.setTimeout(resolve, 50));
+
+    return window.__analogPerf.getMetrics();
+  });
+
+  expect(touchMetrics.rectReads).toBe(0);
+  expect(touchMetrics.rafExecuted).toBe(0);
+  expect(touchMetrics.rafScheduled).toBe(0);
 });
 
 test('interactive pointer lighting coalesces pointer moves without pointer-time layout reads', async ({
@@ -123,6 +167,7 @@ test('interactive pointer lighting coalesces pointer moves without pointer-time 
         clientX: 260,
         clientY: 260,
         pointerId: 1,
+        pointerType: 'mouse',
       }),
     );
 
@@ -146,6 +191,7 @@ test('interactive pointer lighting coalesces pointer moves without pointer-time 
           clientX: 180 + index,
           clientY: 220 + (index % 30),
           pointerId: 1,
+          pointerType: 'mouse',
         }),
       );
     }
@@ -158,6 +204,50 @@ test('interactive pointer lighting coalesces pointer moves without pointer-time 
   expect(pointerMetrics.rectReads).toBe(0);
   expect(pointerMetrics.rafExecuted).toBeGreaterThanOrEqual(1);
   expect(pointerMetrics.rafScheduled).toBeLessThanOrEqual(2);
+});
+
+test('interactive pointer lighting ignores touch pointer events while scrolling', async ({
+  page,
+}) => {
+  await openPerfCase(page, 'interactive-pointer-lighting');
+  await waitForFrames(page, 3);
+
+  const touchMetrics = await page.evaluate(async () => {
+    window.__analogPerf.resetMetrics();
+
+    const target = document.querySelector<HTMLElement>('[data-perf-target="lighting-surface"]');
+    if (!target) throw new Error('Missing lighting surface.');
+
+    target.dispatchEvent(
+      new PointerEvent('pointerdown', {
+        bubbles: true,
+        clientX: 260,
+        clientY: 260,
+        pointerId: 9,
+        pointerType: 'touch',
+      }),
+    );
+
+    for (let index = 0; index < 60; index += 1) {
+      target.dispatchEvent(
+        new PointerEvent('pointermove', {
+          bubbles: true,
+          clientX: 180 + index,
+          clientY: 220 + index,
+          pointerId: 9,
+          pointerType: 'touch',
+        }),
+      );
+    }
+
+    await new Promise((resolve) => window.setTimeout(resolve, 50));
+
+    return window.__analogPerf.getMetrics();
+  });
+
+  expect(touchMetrics.rectReads).toBe(0);
+  expect(touchMetrics.rafExecuted).toBe(0);
+  expect(touchMetrics.rafScheduled).toBe(0);
 });
 
 test('motion lighting coalesces device orientation events without layout reads', async ({
@@ -189,6 +279,70 @@ test('motion lighting coalesces device orientation events without layout reads',
   expect(motionMetrics.rectReads).toBe(0);
   expect(motionMetrics.rafExecuted).toBeGreaterThanOrEqual(1);
   expect(motionMetrics.rafScheduled).toBeLessThanOrEqual(2);
+});
+
+test('motion lighting requests mobile sensor permission from tap using available sensor API', async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    class MockDeviceOrientationEvent extends Event {}
+
+    Object.defineProperty(window, 'DeviceOrientationEvent', {
+      configurable: true,
+      value: MockDeviceOrientationEvent,
+    });
+    Object.defineProperty(window, 'DeviceMotionEvent', {
+      configurable: true,
+      value: {
+        requestPermission: () => {
+          const target = window as typeof window & {
+            __analogMotionPermissionRequests?: number;
+          };
+
+          target.__analogMotionPermissionRequests =
+            (target.__analogMotionPermissionRequests ?? 0) + 1;
+
+          return Promise.resolve('granted');
+        },
+      },
+    });
+  });
+  await openPerfCase(page, 'motion-permission-lighting');
+  await waitForFrames(page, 3);
+
+  const motionPermissionResult = await page.evaluate(async () => {
+    window.__analogPerf.resetMetrics();
+    window.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+    await new Promise((resolve) => window.setTimeout(resolve, 20));
+
+    for (let index = 0; index < 24; index += 1) {
+      const event = new Event('deviceorientation') as DeviceOrientationEvent;
+
+      Object.defineProperty(event, 'beta', {
+        value: 16,
+      });
+      Object.defineProperty(event, 'gamma', {
+        value: -12,
+      });
+      window.dispatchEvent(event);
+    }
+
+    await new Promise((resolve) => window.setTimeout(resolve, 50));
+
+    const target = window as typeof window & {
+      __analogMotionPermissionRequests?: number;
+    };
+
+    return {
+      permissionRequests: target.__analogMotionPermissionRequests ?? 0,
+      metrics: window.__analogPerf.getMetrics(),
+    };
+  });
+
+  expect(motionPermissionResult.permissionRequests).toBe(1);
+  expect(motionPermissionResult.metrics.rectReads).toBe(0);
+  expect(motionPermissionResult.metrics.rafExecuted).toBeGreaterThanOrEqual(1);
 });
 
 test('Slider drag stays within the interaction frame budget', async ({ page }) => {
