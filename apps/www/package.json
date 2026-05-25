@@ -25,14 +25,14 @@
   },
   "dependencies": {
     "@astrojs/react": "^4.4.0",
-    "@tailwindcss/vite": "^4.1.14",
+    "@tailwindcss/vite": "^4.3.0",
     "analog-ui": "workspace:*",
     "astro": "^5.13.5",
     "geist": "1.7.0",
     "lucide-react": "^0.546.0",
     "react": "^19.0.1",
     "react-dom": "^19.0.1",
-    "tailwindcss": "^4.1.14"
+    "tailwindcss": "^4.3.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",

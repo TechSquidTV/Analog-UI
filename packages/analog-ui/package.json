@@ -88,7 +88,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.60.0",
-    "@tailwindcss/vite": "^4.2.4",
+    "@tailwindcss/vite": "^4.3.0",
     "@vitejs/plugin-react": "4.7.0",
     "esbuild": "^0.27.7",
     "shadcn": "^4.6.0",
