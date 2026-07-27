@@ -24,10 +24,10 @@
     "clean": "rm -rf dist .astro"
   },
   "dependencies": {
-    "@astrojs/react": "^4.4.0",
+    "@astrojs/react": "^6.0.1",
     "@tailwindcss/vite": "^4.1.14",
     "analog-ui": "workspace:*",
-    "astro": "^5.13.5",
+    "astro": "^7.1.4",
     "geist": "1.7.0",
     "lucide-react": "^0.546.0",
     "react": "^19.0.1",
@@ -35,7 +35,7 @@
     "tailwindcss": "^4.1.14"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.4",
+    "@astrojs/check": "^0.9.10",
     "typescript": "~5.8.2"
   }
 }
